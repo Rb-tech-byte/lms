@@ -10,8 +10,8 @@
 
 | Phase | Description | Status | Approval Gate |
 |---|---|:---:|:---:|
-| **Step 1** | Create proposed directory architecture in workspace | 🟡 **Ready to Start** | Awaiting User Approval |
-| **Step 2** | Clone official Moodle, configure WAMP DB, and run migrations | ⚪ Pending Step 1 | Required before Step 2 |
+| **Step 1** | Create proposed directory architecture in workspace | 🟢 **Completed** | Approved & Committed (658fdf3) |
+| **Step 2** | Clone official Moodle, configure WAMP DB, and run migrations | 🟡 **Ready to Start** | Awaiting User Approval |
 | **Step 3** | Enable Web Services, create Service User/Tokens & wire React API | ⚪ Pending Step 2 | Required before Step 3 |
 | **Step 4** | Adapt Payment Plugin template for Pesapal & Selcom (M-Pesa/Airtel/Tigo) | ⚪ Pending Step 3 | Required before Step 4 |
 

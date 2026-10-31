@@ -10,7 +10,7 @@ import Knowledge from './section/knowledge';
 import Testimonials from './section/testimonials';
 import Latestblog from './section/latest-blog';
 
-const HomeSix = () => {
+const Home = () => {
 
 
   return (
@@ -29,4 +29,4 @@ const HomeSix = () => {
   )
 }
 
-export default HomeSix
+export default Home

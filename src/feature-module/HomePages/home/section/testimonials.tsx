@@ -19,7 +19,7 @@ const Testimonials = () => {
                 <ImageWithBasePath
                     src="./assets/img/shapes/quote.png"
                     className="d-none d-lg-flex testimonials-quote"
-                    alt="Img"
+                    alt="Student Reviewer"
                 />
                 <div className="container">
                     <div className="header-five-title text-center" data-aos="fade-down">
@@ -66,7 +66,7 @@ const Testimonials = () => {
                                     <div className="testimonial-image">
                                         <ImageWithBasePath
                                             src="assets/img/testimonial/testimonials-1.png"
-                                            alt="Img"
+                                            alt="Student Reviewer"
                                         />
                                     </div>
                                 </div>
@@ -103,7 +103,7 @@ const Testimonials = () => {
                                     <div className="testimonial-image">
                                         <ImageWithBasePath
                                             src="assets/img/testimonial/testimonial-02.png"
-                                            alt="Img"
+                                            alt="Student Reviewer"
                                         />
                                     </div>
                                 </div>
@@ -140,7 +140,7 @@ const Testimonials = () => {
                                     <div className="testimonial-image">
                                         <ImageWithBasePath
                                             src="assets/img/testimonial/testimonial-03.png"
-                                            alt="Img"
+                                            alt="Student Reviewer"
                                         />
                                     </div>
                                 </div>

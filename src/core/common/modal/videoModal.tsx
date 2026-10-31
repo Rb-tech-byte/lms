@@ -22,4 +22,3 @@ const VideoModal = ({ show, handleClose, videoUrl }: ModalsProps) => {
 };
 
 export default VideoModal;
-   .;,

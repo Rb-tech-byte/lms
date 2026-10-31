@@ -11,6 +11,8 @@ import store from './core/redux/store';
 import "../node_modules/@tabler/icons-webfont/dist/tabler-icons.css";
 import "../node_modules/@fortawesome/fontawesome-free/css/fontawesome.min.css";
 import "../node_modules/@fortawesome/fontawesome-free/css/all.min.css";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import "../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js";
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

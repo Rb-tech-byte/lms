@@ -192,71 +192,94 @@
             }
         }
         &-six {            
-            background: $light-900;
-            border: 1px solid transparent;
-            padding: 24px;
+            background: $white;
+            border: 1px solid #EBF1F7;
+            box-shadow: 0 4px 18px rgba(9, 34, 68, 0.05);
+            border-radius: 14px;
+            padding: 30px 20px 24px;
             margin-bottom: 0;
+            transition: all 0.35s ease;
+            text-align: center;
             .categories-icon {
-                margin-bottom: 24px;
+                margin-bottom: 20px;
                 text-align: center;
                 .icon-bg {
                     position: relative;
-                    background: $primary;
-                    border-radius: 75px 30px 75px 30px;
-                    width: 90px;
+                    background: #EAF3FA;
+                    border-radius: 50%;
+                    width: 72px;
+                    height: 72px;
                     margin: auto auto 0;
-                }
-                img {
-                    background: $white;
-                    padding: 20px;
+                    display: flex;
                     align-items: center;
                     justify-content: center;
-                    transition: all 0.4s ease 0s;
-                    border-radius: 50%;
+                    transition: all 0.35s ease;
+                }
+                img {
+                    background: transparent;
+                    padding: 0;
+                    width: 38px;
+                    height: 38px;
+                    display: inline-block;
+                    object-fit: contain;
+                    transition: all 0.35s ease;
+                    border-radius: 0;
                 }
             }
             .title {
                 font-size: $font-size-20;
+                font-weight: 700;
+                margin-bottom: 8px;
                 @include respond-below(md) {
                     font-size: $font-size-18;
                 }
+                a {
+                    color: $purple;
+                    transition: color 0.3s ease;
+                }
             }
             p {
-                margin-bottom: 20px;
+                margin-bottom: 18px;
+                color: #685F78;
+                font-size: 14px;
+                font-weight: 500;
+                transition: color 0.3s ease;
             }
             .view-icon {
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                transition: all 0.4s ease 0s;
-                width: 30px;
-                height: 30px;
-                background: $primary;
+                transition: all 0.35s ease;
+                width: 36px;
+                height: 36px;
+                background: #F4F7FB;
+                border: 1px solid #E2E8F0;
                 border-radius: 50%;
-                -webkit-transition: 0.7s;
-                -moz-transition: 0.7s;
-                -o-transition: 0.7s;
-                transition: 0.7s;
                 margin: 0 auto;
-                color: $white;
+                color: $purple;
                 font-size: $font-size-12;
             }
             &:hover {
                 border: 1px solid $primary;
                 background: $primary;
-                border-radius: 10px;
-                transition-duration: 0s;
+                border-radius: 14px;
+                box-shadow: 0 14px 32px rgba(0, 114, 188, 0.22);
+                transform: translateY(-6px);
                 .icon-bg {
                     background: $secondary;
+                    transform: scale(1.08);
                 }
-                h3 {
-                    color: $white;
+                h3, h3 a {
+                    color: $white !important;
                 }
-                p{
-                    color: $light;
+                p {
+                    color: rgba(255, 255, 255, 0.9) !important;
                 }
                 .view-icon {
                     background: $secondary;
+                    border-color: $secondary;
+                    color: $white;
+                    transform: scale(1.08);
                 }
             }
         }

@@ -1,6 +1,6 @@
 import { Navigate, Route } from "react-router-dom";
 import { all_routes } from "./all_routes";
-import HomeSix from "../HomePages/home-six/homeSix";
+import Home from "../HomePages/home/home";
 import CourseGrid from "../Courses/courses-grid/courseGrid";
 import CourseList from "../Courses/course-list/courseList";
 import CourseCategory from "../Courses/course-category/courseCategory";
@@ -96,17 +96,17 @@ export const publicRoutes = [
   {
     path: "/",
     name: "Root",
-    element: <HomeSix />,
+    element: <Home />,
     route: Route,
   },
   {
     path: routes.homeone,
-    element: <HomeSix />,
+    element: <Home />,
     route: Route,
   },
   {
     path: routes.homesix,
-    element: <HomeSix />,
+    element: <Navigate to="/index" replace />,
     route: Route,
   },
   {

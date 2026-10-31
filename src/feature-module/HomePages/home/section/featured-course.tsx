@@ -42,7 +42,7 @@ const Featuredcourse = () => {
                                                     <Link to={route.courseDetails}>
                                                         <ImageWithBasePath
                                                             className="img-fluid"
-                                                            alt="Img"
+                                                            alt="Course"
                                                             src="assets/img/course/course-40.jpg"
                                                         />
                                                     </Link>
@@ -58,7 +58,7 @@ const Featuredcourse = () => {
                                                             <Link to={route.instructorProfile}>
                                                                 <ImageWithBasePath
                                                                     src="assets/img/avatar/avatar-21.jpg"
-                                                                    alt="Img"
+                                                                    alt="Course"
                                                                     className="img-fluid"
                                                                 />
                                                             </Link>
@@ -80,11 +80,11 @@ const Featuredcourse = () => {
                                                     </h3>
                                                     <div className="course-info d-flex align-items-center">
                                                         <div className="course-lesson d-flex align-items-center">
-                                                            <ImageWithBasePath src="assets/img/icons/icon-3.svg" alt="Img" />
+                                                            <ImageWithBasePath src="assets/img/icons/icon-3.svg" alt="Course" />
                                                             <p>12+ Lesson</p>
                                                         </div>
                                                         <div className="course-time d-flex align-items-center">
-                                                            <ImageWithBasePath src="assets/img/icons/icon-4.svg" alt="Img" />
+                                                            <ImageWithBasePath src="assets/img/icons/icon-4.svg" alt="Course" />
                                                             <p>9hr 30min</p>
                                                         </div>
                                                     </div>
@@ -119,7 +119,7 @@ const Featuredcourse = () => {
                                                     <Link to={route.courseDetails}>
                                                         <ImageWithBasePath
                                                             className="img-fluid"
-                                                            alt="Img"
+                                                            alt="Course"
                                                             src="assets/img/course/course-02.jpg"
                                                         />
                                                     </Link>
@@ -133,7 +133,7 @@ const Featuredcourse = () => {
                                                             <Link to={route.instructorProfile}>
                                                                 <ImageWithBasePath
                                                                     src="assets/img/avatar/avatar-22.jpg"
-                                                                    alt="Img"
+                                                                    alt="Course"
                                                                     className="img-fluid"
                                                                 />
                                                             </Link>
@@ -155,11 +155,11 @@ const Featuredcourse = () => {
                                                     </h3>
                                                     <div className="course-info d-flex align-items-center">
                                                         <div className="course-lesson d-flex align-items-center">
-                                                            <ImageWithBasePath src="assets/img/icons/icon-3.svg" alt="Img" />
+                                                            <ImageWithBasePath src="assets/img/icons/icon-3.svg" alt="Course" />
                                                             <p>11+ Lesson</p>
                                                         </div>
                                                         <div className="course-time d-flex align-items-center">
-                                                            <ImageWithBasePath src="assets/img/icons/icon-4.svg" alt="Img" />
+                                                            <ImageWithBasePath src="assets/img/icons/icon-4.svg" alt="Course" />
                                                             <p>6hr 30min</p>
                                                         </div>
                                                     </div>
@@ -194,7 +194,7 @@ const Featuredcourse = () => {
                                                     <Link to={route.courseDetails}>
                                                         <ImageWithBasePath
                                                             className="img-fluid"
-                                                            alt="Img"
+                                                            alt="Course"
                                                             src="assets/img/course/course-03.jpg"
                                                         />
                                                     </Link>
@@ -208,7 +208,7 @@ const Featuredcourse = () => {
                                                             <Link to={route.instructorProfile}>
                                                                 <ImageWithBasePath
                                                                     src="assets/img/avatar/avatar-25.jpg"
-                                                                    alt="Img"
+                                                                    alt="Course"
                                                                     className="img-fluid"
                                                                 />
                                                             </Link>
@@ -232,11 +232,11 @@ const Featuredcourse = () => {
                                                     </h3>
                                                     <div className="course-info d-flex align-items-center">
                                                         <div className="course-lesson d-flex align-items-center">
-                                                            <ImageWithBasePath src="assets/img/icons/icon-3.svg" alt="Img" />
+                                                            <ImageWithBasePath src="assets/img/icons/icon-3.svg" alt="Course" />
                                                             <p>16+ Lesson</p>
                                                         </div>
                                                         <div className="course-time d-flex align-items-center">
-                                                            <ImageWithBasePath src="assets/img/icons/icon-4.svg" alt="Img" />
+                                                            <ImageWithBasePath src="assets/img/icons/icon-4.svg" alt="Course" />
                                                             <p>12hr 30min</p>
                                                         </div>
                                                     </div>
@@ -271,7 +271,7 @@ const Featuredcourse = () => {
                                                     <Link to={route.courseDetails}>
                                                         <ImageWithBasePath
                                                             className="img-fluid"
-                                                            alt="Img"
+                                                            alt="Course"
                                                             src="assets/img/course/course-04.jpg"
                                                         />
                                                     </Link>
@@ -285,7 +285,7 @@ const Featuredcourse = () => {
                                                             <Link to={route.instructorProfile}>
                                                                 <ImageWithBasePath
                                                                     src="assets/img/avatar/avatar-24.jpg"
-                                                                    alt="Img"
+                                                                    alt="Course"
                                                                     className="img-fluid"
                                                                 />
                                                             </Link>
@@ -310,11 +310,11 @@ const Featuredcourse = () => {
                                                     </h3>
                                                     <div className="course-info d-flex align-items-center">
                                                         <div className="course-lesson d-flex align-items-center">
-                                                            <ImageWithBasePath src="assets/img/icons/icon-3.svg" alt="Img" />
+                                                            <ImageWithBasePath src="assets/img/icons/icon-3.svg" alt="Course" />
                                                             <p>10+ Lesson</p>
                                                         </div>
                                                         <div className="course-time d-flex align-items-center">
-                                                            <ImageWithBasePath src="assets/img/icons/icon-4.svg" alt="Img" />
+                                                            <ImageWithBasePath src="assets/img/icons/icon-4.svg" alt="Course" />
                                                             <p>8hr 30min</p>
                                                         </div>
                                                     </div>
@@ -349,7 +349,7 @@ const Featuredcourse = () => {
                                                     <Link to={route.courseDetails}>
                                                         <ImageWithBasePath
                                                             className="img-fluid"
-                                                            alt="Img"
+                                                            alt="Course"
                                                             src="assets/img/course/course-13.jpg"
                                                         />
                                                     </Link>
@@ -363,7 +363,7 @@ const Featuredcourse = () => {
                                                             <Link to={route.instructorProfile}>
                                                                 <ImageWithBasePath
                                                                     src="assets/img/avatar/avatar-23.jpg"
-                                                                    alt="Img"
+                                                                    alt="Course"
                                                                     className="img-fluid"
                                                                 />
                                                             </Link>
@@ -386,11 +386,11 @@ const Featuredcourse = () => {
                                                     </h3>
                                                     <div className="course-info d-flex align-items-center">
                                                         <div className="course-lesson d-flex align-items-center">
-                                                            <ImageWithBasePath src="assets/img/icons/icon-3.svg" alt="Img" />
+                                                            <ImageWithBasePath src="assets/img/icons/icon-3.svg" alt="Course" />
                                                             <p>13+ Lesson</p>
                                                         </div>
                                                         <div className="course-time d-flex align-items-center">
-                                                            <ImageWithBasePath src="assets/img/icons/icon-4.svg" alt="Img" />
+                                                            <ImageWithBasePath src="assets/img/icons/icon-4.svg" alt="Course" />
                                                             <p>10hr 30min</p>
                                                         </div>
                                                     </div>
@@ -425,7 +425,7 @@ const Featuredcourse = () => {
                                                     <Link to={route.courseDetails}>
                                                         <ImageWithBasePath
                                                             className="img-fluid"
-                                                            alt="Img"
+                                                            alt="Course"
                                                             src="assets/img/course/course-44.jpg"
                                                         />
                                                     </Link>
@@ -441,7 +441,7 @@ const Featuredcourse = () => {
                                                             <Link to={route.instructorProfile}>
                                                                 <ImageWithBasePath
                                                                     src="assets/img/avatar/avatar-26.jpg"
-                                                                    alt="Img"
+                                                                    alt="Course"
                                                                     className="img-fluid"
                                                                 />
                                                             </Link>
@@ -466,11 +466,11 @@ const Featuredcourse = () => {
                                                     </h3>
                                                     <div className="course-info d-flex align-items-center">
                                                         <div className="course-lesson d-flex align-items-center">
-                                                            <ImageWithBasePath src="assets/img/icons/icon-3.svg" alt="Img" />
+                                                            <ImageWithBasePath src="assets/img/icons/icon-3.svg" alt="Course" />
                                                             <p>7+ Lesson</p>
                                                         </div>
                                                         <div className="course-time d-flex align-items-center">
-                                                            <ImageWithBasePath src="assets/img/icons/icon-4.svg" alt="Img" />
+                                                            <ImageWithBasePath src="assets/img/icons/icon-4.svg" alt="Course" />
                                                             <p>7hr 30min</p>
                                                         </div>
                                                     </div>

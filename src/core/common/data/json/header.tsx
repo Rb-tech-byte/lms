@@ -2,15 +2,6 @@ import { all_routes } from "../../../../feature-module/router/all_routes";
 
 export const header = [
   {
-    tittle: "Home",
-    base: "home",
-    showAsTab: false,
-    separateRoute: false,
-    isDirectLink: true,
-    route: all_routes.homeone,
-    menu: [],
-  },
-  {
     tittle: "Courses",
     base: "course",
     showAsTab: false,

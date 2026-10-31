@@ -53,7 +53,7 @@ const Knowledge = () => {
                         <div className="col-lg-6 col-sm-12" data-aos="fade-down">
                             <div className="joing-count-five text-center">
                                 <div className="joing-count-image">
-                                    <ImageWithBasePath src="assets/img/feature/feature-7.png" alt="Img" />
+                                    <ImageWithBasePath src="assets/img/feature/feature-7.png" alt="Learning Graphic" />
                                     <ImageWithBasePath
                                         src="./assets/img/shapes/dot-2.svg"
                                         alt="img"

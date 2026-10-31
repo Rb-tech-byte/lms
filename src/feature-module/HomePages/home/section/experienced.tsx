@@ -14,7 +14,7 @@ const Experienced = () => {
                         <div className="col-lg-6" data-aos="fade-down">
                             <div className="experienced-five-group">
                                 <div className="instructor-vector-left">
-                                    <ImageWithBasePath src="assets/img/bg/instructor-vector-left.svg" alt="Img" />
+                                    <ImageWithBasePath src="assets/img/bg/instructor-vector-left.svg" alt="Instructor Graphic" />
                                 </div>
                                 <div className="developer-five-list">
                                     <ul>
@@ -245,7 +245,7 @@ const Experienced = () => {
                                     </ul>
                                 </div>
                                 <div className="instructor-vector-right">
-                                    <ImageWithBasePath src="assets/img/bg/instructor-vector-right.svg" alt="Img" />
+                                    <ImageWithBasePath src="assets/img/bg/instructor-vector-right.svg" alt="Instructor Graphic" />
                                 </div>
                             </div>
                         </div>

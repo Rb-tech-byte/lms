@@ -189,7 +189,7 @@ const Banner = () => {
                         </div>
                     </div>
                     <div className="vector-shapes-five d-none d-lg-flex">
-                        <ImageWithBasePath src="assets/img/bg/banner-vector.svg" alt="Img" />
+                        <ImageWithBasePath src="assets/img/bg/banner-vector.svg" alt="OUT LMS Feature" />
                     </div>
                 </div>
             </section>
@@ -213,7 +213,7 @@ const Banner = () => {
                                         <div className="lead-img">
                                             <ImageWithBasePath
                                                 className="img-fluid"
-                                                alt="Img"
+                                                alt="OUT LMS Feature"
                                                 src="assets/img/client/client-28.svg"
                                             />
                                         </div>
@@ -222,7 +222,7 @@ const Banner = () => {
                                         <div className="lead-img">
                                             <ImageWithBasePath
                                                 className="img-fluid"
-                                                alt="Img"
+                                                alt="OUT LMS Feature"
                                                 src="assets/img/client/client-29.svg"
                                             />
                                         </div>
@@ -231,7 +231,7 @@ const Banner = () => {
                                         <div className="lead-img">
                                             <ImageWithBasePath
                                                 className="img-fluid"
-                                                alt="Img"
+                                                alt="OUT LMS Feature"
                                                 src="assets/img/client/client-30.svg"
                                             />
                                         </div>
@@ -240,7 +240,7 @@ const Banner = () => {
                                         <div className="lead-img">
                                             <ImageWithBasePath
                                                 className="img-fluid"
-                                                alt="Img"
+                                                alt="OUT LMS Feature"
                                                 src="assets/img/client/client-31.svg"
                                             />
                                         </div>
@@ -249,7 +249,7 @@ const Banner = () => {
                                         <div className="lead-img">
                                             <ImageWithBasePath
                                                 className="img-fluid"
-                                                alt="Img"
+                                                alt="OUT LMS Feature"
                                                 src="assets/img/client/client-32.svg"
                                             />
                                         </div>
@@ -258,7 +258,7 @@ const Banner = () => {
                                         <div className="lead-img">
                                             <ImageWithBasePath
                                                 className="img-fluid"
-                                                alt="Img"
+                                                alt="OUT LMS Feature"
                                                 src="assets/img/client/client-30.svg"
                                             />
                                         </div>
@@ -267,7 +267,7 @@ const Banner = () => {
                                         <div className="lead-img">
                                             <ImageWithBasePath
                                                 className="img-fluid"
-                                                alt="Img"
+                                                alt="OUT LMS Feature"
                                                 src="assets/img/client/client-31.svg"
                                             />
                                         </div>

@@ -16,7 +16,7 @@ const Feature = () => {
   return (
     <>
       <div className="main-wrapper">
-        <div className={isHome ? 'home-six' : ''}>
+        <div className={isHome ? 'home-page home-six' : ''}>
           <Header />
           <Outlet />
           {isHome ? <></> : <Footer />}

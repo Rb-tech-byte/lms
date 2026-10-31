@@ -24,3 +24,5 @@ yarn-error.log*
 # Platform Sub-components
 /moodle-backend/
 /gateway-bridge/node_modules/
+/frontend/node_modules/
+/frontend/build/

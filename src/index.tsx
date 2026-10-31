@@ -8,6 +8,7 @@ import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import './index.scss';
 import { Provider } from 'react-redux';
 import store from './core/redux/store';
+import { AuthProvider } from './core/auth/authContext';
 import "../node_modules/@tabler/icons-webfont/dist/tabler-icons.css";
 import "../node_modules/@fortawesome/fontawesome-free/css/fontawesome.min.css";
 import "../node_modules/@fortawesome/fontawesome-free/css/all.min.css";
@@ -20,9 +21,11 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      <BrowserRouter basename={base_path}>
-        <ALLRoutes />
-      </BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter basename={base_path}>
+          <ALLRoutes />
+        </BrowserRouter>
+      </AuthProvider>
     </Provider>
   </React.StrictMode>
 );

@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import Slider from "react-slick";
 import { all_routes } from "../../router/all_routes";
 import ImageWithBasePath from "../../../core/common/imageWithBasePath";
+import { useAuth } from "../../../core/auth/authContext";
+import { DEMO_USERS } from "../../../core/auth/demoUsers";
 type PasswordField = "password" | "confirmPassword";
 
 const Login = () => {
@@ -27,13 +29,31 @@ const Login = () => {
     }));
   };
 
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { login, loginAs } = useAuth();
   const route = all_routes;
   const navigate = useNavigate();
+
+  const handleDemoClick = (role: 'student' | 'instructor' | 'admin') => {
+    const profile = loginAs(role);
+    setEmail(DEMO_USERS[role].email);
+    setPassword(DEMO_USERS[role].password);
+    navigate(profile.dashboardUrl);
+  };
+
   const handleSubmit = (event: React.FormEvent) => {
-      event.preventDefault(); 
-      const Path = route.homeone; 
-      navigate(Path);
-    };
+    event.preventDefault();
+    login(email || 'student@out.ac.tz', password);
+    const trimmed = (email || '').toLowerCase();
+    if (trimmed.includes('admin')) {
+      navigate('/admin/dashboard');
+    } else if (trimmed.includes('instructor') || trimmed.includes('teacher')) {
+      navigate(route.instructorDashboard);
+    } else {
+      navigate('/student/student-dashboard');
+    }
+  };
   return (
     <>
       {/* Main Wrapper */}
@@ -133,6 +153,49 @@ const Login = () => {
                     <h1 className="fs-32 fw-bold topic">
                       Sign into Your Account
                     </h1>
+
+                    {/* Quick Demo Access Box */}
+                    <div className="bg-light p-3 rounded-3 mb-4 border">
+                      <div className="d-flex align-items-center justify-content-between mb-2">
+                        <span className="fw-bold fs-13 text-dark">
+                          <i className="isax isax-key text-primary me-1" /> One-Click Demo Access:
+                        </span>
+                        <span className="badge bg-primary text-white fs-10 px-2 py-1">Instant Demo</span>
+                      </div>
+                      <div className="row g-2">
+                        <div className="col-4">
+                          <button
+                            type="button"
+                            className="btn btn-outline-primary btn-sm w-100 py-2 d-flex flex-column align-items-center"
+                            onClick={() => handleDemoClick('student')}
+                          >
+                            <span className="fs-18 mb-1">🎓</span>
+                            <span className="fw-bold fs-11">Student</span>
+                          </button>
+                        </div>
+                        <div className="col-4">
+                          <button
+                            type="button"
+                            className="btn btn-outline-secondary btn-sm w-100 py-2 d-flex flex-column align-items-center"
+                            onClick={() => handleDemoClick('instructor')}
+                          >
+                            <span className="fs-18 mb-1">👨‍🏫</span>
+                            <span className="fw-bold fs-11">Instructor</span>
+                          </button>
+                        </div>
+                        <div className="col-4">
+                          <button
+                            type="button"
+                            className="btn btn-outline-dark btn-sm w-100 py-2 d-flex flex-column align-items-center"
+                            onClick={() => handleDemoClick('admin')}
+                          >
+                            <span className="fs-18 mb-1">🛡️</span>
+                            <span className="fw-bold fs-11">Admin</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
                     <form onSubmit={handleSubmit} className="mb-3 pb-3">
                       <div className="mb-3 position-relative">
                         <label className="form-label">
@@ -142,6 +205,10 @@ const Login = () => {
                           <input
                             type="email"
                             className="form-control form-control-lg"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="student@out.ac.tz"
+                            required
                           />
                           <span>
                             <i className="isax isax-sms input-icon text-gray-7 fs-14" />
@@ -158,6 +225,10 @@ const Login = () => {
                               passwordVisibility.password ? "text" : "password"
                             }
                             className="form-control form-control-lg pass-input"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="••••••••"
+                            required
                           />
                           <span
                             className={`isax toggle-passwords fs-14 ${

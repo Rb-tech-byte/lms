@@ -353,6 +353,43 @@ export const header = [
           },
         ],
       },
+      {
+        menuValue: "Admin Portal",
+        hasSubRoute: true,
+        showSubRoute: true,
+        showAsTab2: false,
+        base: "admin",
+        subMenus: [
+          {
+            menuValue: "Admin Dashboard",
+            route: all_routes.adminDashboard,
+            hasSubRoute: false,
+            showSubRoute: false,
+            subMenus: [],
+          },
+          {
+            menuValue: "Student Directory",
+            route: all_routes.studentsList,
+            hasSubRoute: false,
+            showSubRoute: false,
+            subMenus: [],
+          },
+          {
+            menuValue: "Faculty Directory",
+            route: all_routes.instructorList,
+            hasSubRoute: false,
+            showSubRoute: false,
+            subMenus: [],
+          },
+          {
+            menuValue: "Academic Categories",
+            route: all_routes.courseCategory,
+            hasSubRoute: false,
+            showSubRoute: false,
+            subMenus: [],
+          },
+        ],
+      },
     ],
   },
   {

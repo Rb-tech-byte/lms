@@ -1,10 +1,13 @@
 import React from 'react'
 import { instructorSidebarData } from '../../../core/common/data/json/instructor-sidebar'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { all_routes } from '../../router/all_routes';
+import { useAuth } from '../../../core/auth/authContext';
 
 const InstructorSidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { logout } = useAuth();
   return (
     <div className="col-lg-3 ">
     <div className="settings-sidebar mb-lg-0 theiaStickySidebar">
@@ -37,13 +40,14 @@ const InstructorSidebar = () => {
             </Link>
           </li>
           <li>
-            <Link
-              to={all_routes.login}
-              className="d-inline-flex align-items-center"
+            <button
+              type="button"
+              className="btn btn-link text-danger d-inline-flex align-items-center p-0 text-decoration-none"
+              onClick={() => { logout(); navigate(all_routes.homeone); }}
             >
               <i className="isax isax-logout5 me-2" />
               Logout
-            </Link>
+            </button>
           </li>
         </ul>
       </div>

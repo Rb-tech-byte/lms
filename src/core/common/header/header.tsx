@@ -1,11 +1,18 @@
 import React, { useEffect, useState } from "react";
 import ImageWithBasePath from "../imageWithBasePath";
 import { header } from "../data/json/header";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../../auth/authContext";
 import { all_routes } from "../../../feature-module/router/all_routes";
 import { setDataTheme } from "../../redux/themeSettingSlice";
 import { useDispatch, useSelector } from "react-redux";
 const Header = () => {
+  const navigate = useNavigate();
+  const { user, role, isAuthenticated, logout, switchRole } = useAuth();
+  const handleLogout = () => {
+    logout();
+    navigate(all_routes.homeone);
+  };
   const [scrolled, setScrolled] = useState(false);
   const [isMegaMenu, setIsMegaMenu] = useState(false);
   const [subOpen, setSubopen] = useState<any>("");
@@ -406,65 +413,287 @@ const Header = () => {
            
           </ul>
         </div>
-        {isHome ?
+        {isAuthenticated && user ? (
           <div className="header-btn d-flex align-items-center">
+            {/* Dark Mode Toggle */}
+            <DarkButton />
+
+            {/* Cart Icon */}
             <div className="icon-btn me-2">
-              <Link
-                to="#"
-                className="bg-white dropdown-toggle"
+              <Link to={all_routes.cart} className="position-relative">
+                <i className="isax isax-shopping-cart5" />
+                <span className="count-icon bg-success p-1 rounded-pill text-white fs-10 fw-bold">
+                  1
+                </span>
+              </Link>
+            </div>
+
+            {/* Role Badge Indicator */}
+            <div className="d-none d-md-block me-2">
+              {role === 'admin' ? (
+                <span className="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 fs-12 fw-semibold d-inline-flex align-items-center">
+                  <i className="isax isax-security-safe me-1 fs-14" /> Admin Portal
+                </span>
+              ) : role === 'instructor' ? (
+                <span className="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 fs-12 fw-semibold d-inline-flex align-items-center">
+                  <i className="isax isax-teacher me-1 fs-14" /> Instructor
+                </span>
+              ) : (
+                <span className="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-2 fs-12 fw-semibold d-inline-flex align-items-center">
+                  <i className="isax isax-user-tag me-1 fs-14" /> Student
+                </span>
+              )}
+            </div>
+
+            {/* Quick Demo Switcher Dropdown */}
+            <div className="dropdown me-2 d-none d-lg-block">
+              <button
+                type="button"
+                className="btn btn-sm btn-outline-secondary dropdown-toggle d-inline-flex align-items-center"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
+                title="Switch demo role"
               >
-                <ImageWithBasePath
-                  className="rounded-pill"
-                  src="assets/img/flags/us-flag.svg"
-                  alt="flag"
-                />
-              </Link>
-              <ul className="dropdown-menu p-2 mt-2">
-                <li className="mb-2">
-                  <Link
-                    className="dropdown-item w-100 rounded d-flex align-items-center"
-                    to="#"
+                <i className="isax isax-user-cirlce-add me-1" />
+                <span className="text-capitalize">{role}</span>
+              </button>
+              <ul className="dropdown-menu dropdown-menu-end shadow p-2">
+                <li className="px-2 py-1 text-muted fs-11 fw-bold text-uppercase">Switch Demo Role</li>
+                <li>
+                  <button
+                    type="button"
+                    className={`dropdown-item rounded d-flex align-items-center py-2 ${role === 'student' ? 'active' : ''}`}
+                    onClick={() => { switchRole('student'); navigate('/student/student-dashboard'); }}
                   >
-                    <ImageWithBasePath src="assets/img/flags/us-flag.svg" className="me-2" alt="flag" />
-                    ENG
-                  </Link>
-                </li>
-                <li className="mb-2">
-                  <Link
-                    className="dropdown-item w-100 rounded d-flex align-items-center"
-                    to="#"
-                  >
-                    <ImageWithBasePath
-                      src="assets/img/flags/arab-flag.svg"
-                      className="me-2"
-                      alt="flag"
-                    />
-                    ARA
-                  </Link>
+                    <span className="me-2 fs-14">🎓</span>
+                    <div>
+                      <div className="fw-semibold fs-13">Student</div>
+                      <small className="text-muted d-block fs-11">Baraka Mkwawa</small>
+                    </div>
+                  </button>
                 </li>
                 <li>
-                  <Link
-                    className="dropdown-item w-100 rounded d-flex align-items-center"
-                    to="#"
+                  <button
+                    type="button"
+                    className={`dropdown-item rounded d-flex align-items-center py-2 ${role === 'instructor' ? 'active' : ''}`}
+                    onClick={() => { switchRole('instructor'); navigate('/instructor/instructor-dashboard'); }}
                   >
-                    <ImageWithBasePath
-                      src="assets/img/flags/france-flag.svg"
-                      className="me-2"
-                      alt="flag"
-                    />
-                    FRE
-                  </Link>
+                    <span className="me-2 fs-14">👨‍🏫</span>
+                    <div>
+                      <div className="fw-semibold fs-13">Instructor</div>
+                      <small className="text-muted d-block fs-11">Dr. Amina Kilindo</small>
+                    </div>
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    className={`dropdown-item rounded d-flex align-items-center py-2 ${role === 'admin' ? 'active' : ''}`}
+                    onClick={() => { switchRole('admin'); navigate('/admin/dashboard'); }}
+                  >
+                    <span className="me-2 fs-14">🛡️</span>
+                    <div>
+                      <div className="fw-semibold fs-13">Administrator</div>
+                      <small className="text-muted d-block fs-11">OUT LMS Admin</small>
+                    </div>
+                  </button>
                 </li>
               </ul>
             </div>
-            <div className="icon-btn me-2">
-              <Link to="#" className="bg-white text-primary">
-                <i className="isax isax-dollar-circle4" />
+
+            {/* User Profile Dropdown */}
+            <div className="dropdown profile-dropdown">
+              <Link
+                to="#"
+                className="d-flex align-items-center"
+                data-bs-toggle="dropdown"
+              >
+                <span className="avatar">
+                  <ImageWithBasePath
+                    src={user.avatar || "assets/img/user/user-02.jpg"}
+                    alt={user.name}
+                    className="img-fluid rounded-circle"
+                  />
+                </span>
               </Link>
+              <div className="dropdown-menu dropdown-menu-end shadow">
+                <div className="profile-header d-flex align-items-center p-3 border-bottom">
+                  <div className="avatar me-2">
+                    <ImageWithBasePath
+                      src={user.avatar || "assets/img/user/user-02.jpg"}
+                      alt={user.name}
+                      className="img-fluid rounded-circle"
+                    />
+                  </div>
+                  <div>
+                    <h6 className="mb-0 fw-bold">{user.name}</h6>
+                    <p className="text-muted fs-12 mb-0">{user.email}</p>
+                    <span className={`badge mt-1 ${role === 'admin' ? 'bg-danger' : role === 'instructor' ? 'bg-primary' : 'bg-success'}`}>
+                      {user.title}
+                    </span>
+                  </div>
+                </div>
+
+                <ul className="profile-body list-unstyled mb-0 py-2">
+                  <li>
+                    <Link
+                      className="dropdown-item d-inline-flex align-items-center rounded fw-medium px-3 py-2"
+                      to={user.dashboardUrl}
+                    >
+                      <i className="isax isax-element-4 me-2 text-primary fs-16" />
+                      Dashboard
+                    </Link>
+                  </li>
+
+                  {role === 'student' && (
+                    <>
+                      <li>
+                        <Link
+                          className="dropdown-item d-inline-flex align-items-center rounded fw-medium px-3 py-2"
+                          to={all_routes.studentProfile}
+                        >
+                          <i className="isax isax-security-user me-2 text-primary fs-16" />
+                          My Profile
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          className="dropdown-item d-inline-flex align-items-center rounded fw-medium px-3 py-2"
+                          to={all_routes.studentCourses}
+                        >
+                          <i className="isax isax-book me-2 text-primary fs-16" />
+                          Enrolled Courses
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          className="dropdown-item d-inline-flex align-items-center rounded fw-medium px-3 py-2"
+                          to={all_routes.studentQuiz}
+                        >
+                          <i className="isax isax-award me-2 text-primary fs-16" />
+                          Quiz Attempts
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          className="dropdown-item d-inline-flex align-items-center rounded fw-medium px-3 py-2"
+                          to={all_routes.studentSettings}
+                        >
+                          <i className="isax isax-setting-2 me-2 text-primary fs-16" />
+                          Settings
+                        </Link>
+                      </li>
+                    </>
+                  )}
+
+                  {role === 'instructor' && (
+                    <>
+                      <li>
+                        <Link
+                          className="dropdown-item d-inline-flex align-items-center rounded fw-medium px-3 py-2"
+                          to={all_routes.instructorProfile}
+                        >
+                          <i className="isax isax-security-user me-2 text-primary fs-16" />
+                          My Profile
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          className="dropdown-item d-inline-flex align-items-center rounded fw-medium px-3 py-2"
+                          to={all_routes.instructorCourse}
+                        >
+                          <i className="isax isax-teacher me-2 text-primary fs-16" />
+                          Manage Courses
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          className="dropdown-item d-inline-flex align-items-center rounded fw-medium px-3 py-2"
+                          to={all_routes.addNewCourse}
+                        >
+                          <i className="isax isax-add-circle me-2 text-primary fs-16" />
+                          Add New Course
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          className="dropdown-item d-inline-flex align-items-center rounded fw-medium px-3 py-2"
+                          to={all_routes.instructorEarning}
+                        >
+                          <i className="isax isax-dollar-circle me-2 text-primary fs-16" />
+                          Earnings
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          className="dropdown-item d-inline-flex align-items-center rounded fw-medium px-3 py-2"
+                          to={all_routes.instructorsettings}
+                        >
+                          <i className="isax isax-setting-2 me-2 text-primary fs-16" />
+                          Settings
+                        </Link>
+                      </li>
+                    </>
+                  )}
+
+                  {role === 'admin' && (
+                    <>
+                      <li>
+                        <Link
+                          className="dropdown-item d-inline-flex align-items-center rounded fw-medium px-3 py-2"
+                          to={all_routes.adminDashboard}
+                        >
+                          <i className="isax isax-shield-tick me-2 text-danger fs-16" />
+                          Admin Overview
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          className="dropdown-item d-inline-flex align-items-center rounded fw-medium px-3 py-2"
+                          to={all_routes.studentsList}
+                        >
+                          <i className="isax isax-user-tag me-2 text-danger fs-16" />
+                          Student Directory
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          className="dropdown-item d-inline-flex align-items-center rounded fw-medium px-3 py-2"
+                          to={all_routes.instructorList}
+                        >
+                          <i className="isax isax-teacher me-2 text-danger fs-16" />
+                          Faculty Directory
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          className="dropdown-item d-inline-flex align-items-center rounded fw-medium px-3 py-2"
+                          to={all_routes.courseCategory}
+                        >
+                          <i className="isax isax-category me-2 text-danger fs-16" />
+                          Academic Categories
+                        </Link>
+                      </li>
+                    </>
+                  )}
+                </ul>
+
+                <div className="profile-footer p-2 border-top">
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="btn btn-secondary d-inline-flex align-items-center justify-content-center w-100"
+                  >
+                    <i className="isax isax-logout me-2" />
+                    Sign Out
+                  </button>
+                </div>
+              </div>
             </div>
-            <DarkButton/>
+          </div>
+        ) : (
+          <div className="header-btn d-flex align-items-center">
+            <DarkButton />
             <div className="icon-btn me-3">
               <Link to={all_routes.cart} className="bg-white text-primary position-relative">
                 <i className="isax isax-shopping-cart5" />
@@ -478,337 +707,16 @@ const Header = () => {
                 to={all_routes.login}
                 className="btn btn-primary d-inline-flex align-items-center me-2 px-3"
               >
+                <i className="isax isax-lock-circle me-2" />
                 Sign In
               </Link>
             </div>
             <Link to={all_routes.register} className="btn btn-secondary me-0 px-3">
+              <i className="isax isax-user-edit me-2" />
               Register
             </Link>
           </div>
-        
-          :  location.pathname.includes('instructor') ?
-          <div className="header-btn d-flex align-items-center">
-            <DarkButton/>
-            <div className="icon-btn me-3">
-              <Link to={all_routes.cart} className="position-relative">
-                <i className="isax isax-shopping-cart5" />
-                <span className="count-icon bg-success p-1 rounded-pill text-white fs-10 fw-bold">
-                  1
-                </span>
-              </Link>
-            </div>
-            <div className="dropdown profile-dropdown">
-              <Link
-                to="#"
-                className="d-flex align-items-center"
-                data-bs-toggle="dropdown"
-              >
-                <span className="avatar">
-                  <ImageWithBasePath
-                    src="assets/img/user/user-01.jpg"
-                    alt="Img"
-                    className="img-fluid rounded-circle"
-                  />
-                </span>
-              </Link>
-              <div className="dropdown-menu dropdown-menu-end">
-                <div className="profile-header d-flex align-items-center">
-                  <div className="avatar">
-                    <ImageWithBasePath
-                      src="assets/img/user/user-01.jpg"
-                      alt="Img"
-                      className="img-fluid rounded-circle"
-                    />
-                  </div>
-                  <div>
-                    <h6>Eugene Andre</h6>
-                    <p>instructerdemo@example.com</p>
-                  </div>
-                </div>
-                <ul className="profile-body">
-                  <li>
-                    <Link
-                      className="dropdown-item d-inline-flex align-items-center rounded fw-medium"
-                      to={all_routes.instructorProfile}
-                    >
-                      <i className="isax isax-security-user me-2" />
-                      My Profile
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      className="dropdown-item d-inline-flex align-items-center rounded fw-medium"
-                      to={all_routes.instructorCourse}
-                    >
-                      <i className="isax isax-teacher me-2" />
-                      Courses
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      className="dropdown-item d-inline-flex align-items-center rounded fw-medium2"
-                      to={all_routes.instructorEarning}
-                    >
-                      <i className="isax isax-dollar-circle me-2" />
-                      Earnings
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      className="dropdown-item d-inline-flex align-items-center rounded fw-medium"
-                      to={all_routes.instructorPayout}
-                    >
-                      <i className="isax isax-coin me-2" />
-                      Payouts
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      className="dropdown-item d-inline-flex align-items-center rounded fw-medium"
-                      to={all_routes.instructorMessage}
-                    >
-                      <i className="isax isax-messages-3 me-2" />
-                      Messages<span className="message-count">2</span>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      className="dropdown-item d-inline-flex align-items-center rounded fw-medium"
-                      to={all_routes.instructorsettings}
-                    >
-                      <i className="isax isax-setting-2 me-2" />
-                      Settings
-                    </Link>
-                  </li>
-                </ul>
-                <div className="profile-footer">
-                  <Link
-                    className="dropdown-item d-inline-flex align-items-center rounded fw-medium"
-                    to={all_routes.login}
-                  >
-                    <i className="isax isax-arrow-2 me-2" />
-                    Log in as Student
-                  </Link>
-                  <Link
-                    to={all_routes.homeone}
-                    className="btn btn-secondary d-inline-flex align-items-center justify-content-center w-100"
-                  >
-                    <i className="isax isax-logout me-2" />
-                    Logout
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          : location.pathname.includes('student') ?
-          <div className="header-btn d-flex align-items-center">
-            <DarkButton/>
-            <div className="icon-btn me-3">
-              <Link to={all_routes.cart} className="position-relative">
-                <i className="isax isax-shopping-cart5" />
-                <span className="count-icon bg-success p-1 rounded-pill text-white fs-10 fw-bold">
-                  1
-                </span>
-              </Link>
-            </div>
-            <div className="dropdown profile-dropdown">
-              <Link
-                to="#"
-                className="d-flex align-items-center"
-                data-bs-toggle="dropdown"
-              >
-                <span className="avatar">
-                  <ImageWithBasePath
-                    src="assets/img/user/user-02.jpg"
-                    alt="Img"
-                    className="img-fluid rounded-circle"
-                  />
-                </span>
-              </Link>
-              <div className="dropdown-menu dropdown-menu-end">
-                <div className="profile-header d-flex align-items-center">
-                  <div className="avatar">
-                    <ImageWithBasePath
-                      src="assets/img/user/user-02.jpg"
-                      alt="Img"
-                      className="img-fluid rounded-circle"
-                    />
-                  </div>
-                  <div>
-                    <h6>Ronald Richard</h6>
-                    <p>studentdemo@example.com</p>
-                  </div>
-                </div>
-                <ul className="profile-body">
-                  <li>
-                    <Link
-                      className="dropdown-item d-inline-flex align-items-center rounded fw-medium"
-                      to={all_routes.studentProfile}
-                    >
-                      <i className="isax isax-security-user me-2" />
-                      My Profile
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      className="dropdown-item d-inline-flex align-items-center rounded fw-medium"
-                      to={all_routes.studentQuiz}
-                    >
-                      <i className="isax isax-award me-2" />
-                      Quiz Attempts
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      className="dropdown-item d-inline-flex align-items-center rounded fw-medium2"
-                      to={all_routes.studentOrderHistory}
-                    >
-                      <i className="isax isax-shopping-cart me-2" />
-                      Order History
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      className="dropdown-item d-inline-flex align-items-center rounded fw-medium"
-                      to={all_routes.studentMessage}
-                    >
-                      <i className="isax isax-messages-3 me-2" />
-                      Messages<span className="message-count">2</span>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      className="dropdown-item d-inline-flex align-items-center rounded fw-medium"
-                      to={all_routes.studentSettings}
-                    >
-                      <i className="isax isax-setting-2 me-2" />
-                      Settings
-                    </Link>
-                  </li>
-                </ul>
-                <div className="profile-footer">
-                  <Link
-                    className="dropdown-item d-inline-flex align-items-center rounded fw-medium"
-                    to={all_routes.login}
-                  >
-                    <i className="isax isax-arrow-2 me-2" />
-                    Log in as Instructor
-                  </Link>
-                  <Link
-                    to={all_routes.homeone}
-                    className="btn btn-secondary d-inline-flex align-items-center justify-content-center w-100"
-                  >
-                    <i className="isax isax-logout me-2" />
-                    Logout
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          :
-          <div className="header-btn d-flex align-items-center">
-            {location.pathname === '/index-2' && 
-            <>
-          <div className="dropdown flag-dropdown icon-btn">
-            <Link
-              to="#"
-              className="d-inline-flex align-items-center"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
-              <ImageWithBasePath src="assets/img/flags/us-flag.svg" alt="flag" />
-            </Link>
-            <ul className="dropdown-menu p-2 mt-2">
-              <li>
-                <Link
-                  className="dropdown-item rounded d-flex align-items-center"
-                  to="#"
-                >
-                  <ImageWithBasePath src="assets/img/flags/us-flag.svg" className="me-2" alt="flag" />
-                  ENG
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="dropdown-item rounded d-flex align-items-center"
-                  to="#"
-                >
-                  <ImageWithBasePath
-                    src="assets/img/flags/arab-flag.svg"
-                    className="me-2"
-                    alt="flag"
-                  />
-                  ARA
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="dropdown-item rounded d-flex align-items-center"
-                  to="#"
-                >
-                  <ImageWithBasePath
-                    src="assets/img/flags/france-flag.svg"
-                    className="me-2"
-                    alt="flag"
-                  />
-                  FRE
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div className="dropdown icon-btn">
-            <Link
-              to="#"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
-              <i className="isax isax-dollar-circle4" />
-            </Link>
-            <ul className="dropdown-menu p-2 mt-2">
-              <li>
-                <Link className="dropdown-item rounded" to="#">
-                  USD
-                </Link>
-              </li>
-              <li>
-                <Link className="dropdown-item rounded" to="#">
-                  YEN
-                </Link>
-              </li>
-              <li>
-                <Link className="dropdown-item rounded" to="#">
-                  EURO
-                </Link>
-              </li>
-            </ul>
-          </div>
-          </>
-          }
-          <DarkButton/>
-          <div className="icon-btn me-3">
-            <Link to={all_routes.cart} className="position-relative">
-              <i className="isax isax-shopping-cart5" />
-              <span className="count-icon bg-success p-1 rounded-pill text-white fs-10 fw-bold">
-                1
-              </span>
-            </Link>
-          </div>
-          <Link
-            to={all_routes.login}
-            className="btn btn-light d-inline-flex align-items-center me-2"
-          >
-            <i className="isax isax-lock-circle me-2" />
-            Sign In
-          </Link>
-          <Link to={all_routes.register} className="btn btn-secondary me-0">
-            <i className="isax isax-user-edit me-2" />
-            Register
-          </Link>
-        </div>
-
-         }
+        )}
         
       </div>
     </div>

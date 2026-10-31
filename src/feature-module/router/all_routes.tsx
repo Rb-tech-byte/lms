@@ -122,4 +122,6 @@ export const all_routes = {
     blogDetailsLeftSidebar: "/blog/blog-details-left-sidebar",
     blogDetailsRightSidebar: "/blog/blog-details-right-sidebar",
 
+    // Admin Module
+    adminDashboard: "/admin/dashboard",
 };

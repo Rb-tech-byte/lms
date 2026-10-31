@@ -3,7 +3,14 @@ import { Link } from 'react-router-dom'
 import { all_routes } from '../../router/all_routes'
 import ImageWithBasePath from '../../../core/common/imageWithBasePath'
 
+import { useAuth } from '../../../core/auth/authContext'
+
 const ProfileCard = () => {
+  const { user } = useAuth();
+  const displayName = user?.name || "Dr. Amina Kilindo";
+  const displayTitle = user?.title || "Senior Lecturer & Researcher • Faculty of Science";
+  const displayAvatar = user?.avatar || "assets/img/user/user-01.jpg";
+
   return (
     <div className="instructor-profile">
     <div className="instructor-profile-bg">
@@ -17,14 +24,14 @@ const ProfileCard = () => {
       <div className="col-md-6">
         <div className="d-flex align-items-center">
           <span className="avatar flex-shrink-0 avatar-xxl avatar-rounded me-3 border border-white border-3 position-relative">
-            <ImageWithBasePath src="assets/img/user/user-01.jpg" alt="img" />
+            <ImageWithBasePath src={displayAvatar} alt={displayName} />
             <span className="verify-tick">
               <i className="isax isax-verify5" />
             </span>
           </span>
           <div>
             <h5 className="mb-1 text-white d-inline-flex align-items-center">
-              Eugene Andre
+              {displayName}
               <Link
                 to={all_routes.instructorProfile}
                 className="link-light fs-16 ms-2"
@@ -32,7 +39,7 @@ const ProfileCard = () => {
                 <i className="isax isax-edit-2" />
               </Link>
             </h5>
-            <p className="text-light">Instructor</p>
+            <p className="text-light">{displayTitle}</p>
           </div>
         </div>
       </div>

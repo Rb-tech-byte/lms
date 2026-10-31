@@ -28,7 +28,7 @@
        - `moodleEndpoints.ts` (centralized registry of Moodle external function names and paths)
        - `courseService.ts`, `studentService.ts`, `instructorService.ts`, `adminService.ts`, `paymentService.ts`
   2. **Gateway Bridge:**
-     - Create `gateway-bridge/` scaffold with `package.json`, environment configurations, and controllers for authentication, payments (Pesapal/Selcom), and privileged CLI tasks.
+     - Create `gateway-bridge/` scaffold with PHP 8.3 (`index.php`, `config.php`, `MoodleClient.php`, and `PaymentController.php`) for token brokering, payments (Pesapal/Selcom), and IPN webhooks.
   3. **Backend Root Preparation:**
      - Create `/moodle-backend` mount point and `/moodledata` secure storage folder (`c:\wamp64\moodledata`).
 * **Verification & Checkpoint:**

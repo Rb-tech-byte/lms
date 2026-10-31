@@ -20,7 +20,7 @@ flowchart TB
 
     subgraph GatewayLayer ["2. API Gateway & Middleware Bridge"]
         B1["Reverse Proxy / SSL<br/>(Nginx / Caddy)"]
-        B2["OUT API Gateway<br/>(Express / FastAPI / PHP Bridge)"]
+        B2["OUT API Gateway<br/>(PHP 8.3 REST Bridge)"]
         B3["Token & Session Vault<br/>(Redis / JWT)"]
         B4["IPN Webhook Listener<br/>(Pesapal / Selcom Callbacks)"]
     end
@@ -123,19 +123,16 @@ Here is the exact structural organization for the complete enterprise ecosystem,
 │   ├── package.json
 │   └── tsconfig.json
 │
-├── 📂 gateway-bridge/                     # [NEW] Lightweight Middleware / Orchestrator (Node or PHP)
+├── 📂 gateway-bridge/                     # [NEW] Lightweight Middleware / Orchestrator (PHP 8.3)
 │   ├── 📂 src/
-│   │   ├── 📂 controllers/
-│   │   │   ├── authController.js         # Exchanges user credentials for Moodle WS Token
-│   │   │   ├── pesapalController.js      # Creates Pesapal Order, listens to IPN webhook
-│   │   │   ├── selcomController.js       # Creates Selcom Checkout, processes USSD push
-│   │   │   └── adminBridgeController.js  # Executes privileged CLI / DDL tasks for Admin
-│   │   ├── 📂 services/
-│   │   │   ├── moodleClient.js           # Secure server-to-server call to Moodle Web Services
-│   │   │   └── notificationService.js    # SMS / Email triggers (M-Pesa confirmation)
-│   │   ├── server.js                     # Express API entry point on port 5000
-│   │   └── .env.example
-│   └── package.json
+│   │   ├── 📂 Controllers/
+│   │   │   ├── AuthController.php        # Exchanges user credentials for Moodle WS Token
+│   │   │   └── PaymentController.php     # Pesapal & Selcom checkout + IPN webhooks
+│   │   └── 📂 Services/
+│   │       └── MoodleClient.php          # Secure server-to-server call to Moodle Web Services
+│   ├── index.php                         # Front controller / REST router
+│   ├── config.php                        # Environment & Moodle credentials
+│   └── .env.example
 │
 └── 📂 moodle-backend/                     # Moodle 5.3 Core Engine
     ├── 📂 admin/                         # Native Moodle site administration & CLI scripts

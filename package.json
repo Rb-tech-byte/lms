@@ -6,7 +6,7 @@
     "start:frontend": "cd frontend && npm start",
     "build:frontend": "cd frontend && npm run build",
     "serve:frontend": "cd frontend && node serve_build.js",
-    "start:gateway": "cd gateway-bridge && npm start",
-    "dev:gateway": "cd gateway-bridge && npm run dev"
+    "start:gateway": "php -S localhost:5000 -t gateway-bridge",
+    "test:gateway": "php -r \"require 'gateway-bridge/index.php';\""
   }
 }

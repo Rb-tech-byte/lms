@@ -20,3 +20,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Platform Sub-components
+/moodle-backend/
+/gateway-bridge/node_modules/

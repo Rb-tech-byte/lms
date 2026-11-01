@@ -10,6 +10,7 @@ interface AuthContextType {
   loginAs: (role: 'student' | 'instructor' | 'admin') => UserProfile;
   logout: () => void;
   switchRole: (role: 'student' | 'instructor' | 'admin') => void;
+  updateUser: (partial: Partial<UserProfile>) => void;
 }
 
 const STORAGE_KEY = 'out_lms_auth_user';
@@ -118,6 +119,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loginAs(newRole);
   };
 
+  const updateUser = (partial: Partial<UserProfile>) => {
+    setUser((prev) => (prev ? { ...prev, ...partial } : null));
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -128,6 +133,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         loginAs,
         logout,
         switchRole,
+        updateUser,
       }}
     >
       {children}

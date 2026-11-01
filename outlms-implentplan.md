@@ -16,7 +16,9 @@
 | **Step 4** | Adapt Payment Gateway Plugin for Pesapal API 3.0 (M-Pesa/Airtel/Tigo/Cards) | 🟢 **Completed** | Approved & Committed (48895ff) |
 | **Step 5** | Student Learning Classroom & Course Player (Videos, Readings, Handouts, Moodle Completion) | 🟢 **Completed** | Approved & Committed (4692dca) |
 | **Step 6** | Headless Student Dashboard & Enrolled Courses Portal (Live Enrolments, Progress Meters, Tabs) | 🟢 **Completed** | Approved & Committed (2c80dca) |
-| **Step 7** | Interactive Assessment & Quiz Engine (Moodle mod_quiz, Timers, Matrix, Scoring & Breakdown) | 🟢 **Completed** | **Awaiting Review / Approval Gate 7** |
+| **Step 7** | Interactive Assessment & Quiz Engine (Moodle mod_quiz, Timers, Matrix, Scoring & Breakdown) | 🟢 **Completed** | Approved & Committed (e76f8b1) |
+| **Step 8** | Student Certificates, Academic Gradebook Transcripts & Account Settings | 🟢 **Completed** | **Awaiting Review / Approval Gate 8** |
+| **Step 9** | Instructor & Course Director Portal (Management, Course Enrolments & Gradebook) | ⏳ **Pending** | Next Action |
 
 ---
 
@@ -185,20 +187,64 @@
     - Question Explanations Breakdown: `quiz_result_breakdown_1793526782281.png`
     - Updated Quizzes List: `updated_quizzes_list_1793526846939.png`
     - Full Session Recording: `student_quiz_engine_test_1793526165627.webp`
-* **👉 User Approval Gate 7**: Ready for user review and approval.
+* **👉 User Approval Gate 7**: Approved & Committed (`e76f8b1`).
+
+---
+
+### 🔹 STEP 8: Student Certificates, Official Gradebook Transcripts & Account Settings
+* **Objective:** Connect `/student/student-certificates` and `/student/student-settings` to Moodle Core Gradebook Web Services (`gradereport_user_get_grade_items`) and dynamic user authentication profiles to provide verifiable academic completion certificates, official gradebook transcripts, and responsive student profile management.
+* **Implemented Components:**
+  1. **Moodle Gradebook Seeding (`scratch/seed_student_grades.php`):**
+     - Seeded real grade records for active student (User ID 2 & 3):
+       - Course 2 (`CS101`): Quiz raw grade 85/100, Course Aggregate Total: 85.00% (Grade B+ • Upper Second Class).
+       - Course 4 (`BBA301`): Quiz raw grade 96/100, Course Aggregate Total: 96.00% (Grade A • First-Class Honours / Summa Cum Laude).
+     - Executed `grade_regrade_final_grades()` to recalculate official weighted marks and grade letter assignments.
+  2. **TypeScript Web Service Integration Layer (`frontend/src/core/api/certificateService.ts`):**
+     - Defined typed interfaces `MoodleGradeItem`, `CourseGradeReport`, and `StudentCertificate`.
+     - Integrated `getUserGradeReports(userId, courseIds)` calling Moodle core endpoint `gradereport_user_get_grade_items`.
+     - Integrated `getUserCertificates(userId, studentName, regNumber)` to generate verifiable qualifications with hash codes (e.g., `OUT-BBA-9684-2024-TZ`).
+  3. **Certificates & Transcripts Portal (`frontend/src/feature-module/student/student-certificates/student-certificates.tsx`):**
+     - **Dynamic Stats Summary:** Conferred Certificates (2), Graded Course Units (3), Cumulative GPA / Average (`90.5% • Grade A`).
+     - **Certificate Listing Tab:** Displays official academic credentials with honors classifications, course codes, completion marks, issue dates, and unique verification IDs.
+     - **Official Gradebook Transcript Tab:** Comprehensive breakdown of course aggregates and individual assessment items (quizzes, modules) with percentage, raw marks, letter grade badges, and instructor feedback.
+     - **High-Resolution Academic Certificate Modal:**
+       - Authentic Open University of Tanzania crest, Latin motto (*“Kujifunza Hakuna Mwisho • Learning Never Ends”*), gold double-border framing, and subtle security watermark.
+       - Formal conferral text with student name, registration number, course title, and faculty.
+       - Signature blocks for Vice-Chancellor (Prof. E. T. Bisanda) and Dean of Faculty (Dr. J. K. Itika), official barcode/verification code, and print/save PDF trigger (`window.print()`).
+  4. **Dynamic Student Profile & Settings Portal (`frontend/src/feature-module/student/student-settings/`):**
+     - Synchronized with `useAuth()` to load real student profile data (Baraka Mkwawa, Reg No: `OUT/2024/04812`, email, phone, academic bio).
+     - Connected `updateUser` state management to immediately synchronize changes across all student headers and profile badges.
+* **Live Verification & End-to-End Test Results:**
+  - Production build compiled successfully (`npm run build`).
+  - Tested live in browser using `browser_subagent`:
+    - Loaded `/student/student-certificates`: verified 2 conferred certificates loaded dynamically from Moodle Web Services.
+    - Clicked "View Certificate" on BBA301: verified high-resolution academic certificate modal opened with correct student name, marks, honors, and signatures.
+    - Switched to "Official Gradebook Transcript": verified complete Moodle grade breakdown with 90.5% Cumulative GPA, CS101 (85.00%), and BBA301 (96.00%).
+    - Loaded `/student/student-settings`: verified student profile form rendered Baraka Mkwawa's details.
+  - Proof artifacts captured:
+    - Certificate Modal: `perfect_academic_certificate_modal_1793528832171.png`
+    - Certificate Cards: `student_certificates_scrolled_1793528055224.png`
+    - Gradebook Transcript: `gradebook_transcript_table_1793528203738.png`
+    - Student Profile Settings: `student_profile_settings_1793528254617.png`
+    - Full Browser Session Recording: `certificates_screenshots_1793527976789.webp`
+* **👉 User Approval Gate 8**: Ready for user review and approval.
 
 ---
 
 ## Current Status & Next Action
 
-**Step 7 (Interactive Assessment & Quiz Engine)** is fully built, integrated with Moodle Web Services, and verified live end-to-end. We are currently at **Approval Gate 7**.
+**Step 8 (Student Certificates, Gradebook Transcripts & Account Settings)** is fully implemented, connected to Moodle Web Services, and verified live end-to-end. We are currently at **Approval Gate 8**.
 
-### Proposed Step 8 Options:
-1. **Option A (Student Profile, Security & Account Settings - Recommended):**
-   - Connect `/student/student-settings` to Moodle user profile update endpoints (`core_user_update_users`) for profile bio, contact info, notification preferences, and password changes.
-2. **Option B (Student Certificates & Gradebook Transcripts):**
-   - Connect `/student/student-certificates` and grade reports (`gradereport_user_get_grade_items`) with printable/downloadable academic completion certificates for completed courses (e.g. BBA301).
-3. **Option C (Instructor & Course Director Portal):**
-   - Connect `/instructor/instructor-dashboard` and `/instructor/instructor-course` to Moodle teacher role web services for student enrolment oversight and gradebook submissions.
+### Proposed Step 9: Instructor & Course Director Portal
+- **Feature Set:**
+  1. Connect `/instructor/instructor-dashboard` to Moodle teacher role web services:
+     - Real-time instructor statistics (total enrolled students, active courses taught, pending submissions, course ratings).
+     - Recent student activity feed and upcoming assessment deadlines.
+  2. Connect `/instructor/instructor-course` to dynamic course list:
+     - View all courses assigned to the logged-in instructor (e.g., CS101, BBA301).
+     - Course management actions: manage students, view course completion rates, launch classroom.
+  3. Gradebook & Student Submissions Management:
+     - Connect student assessment submissions to instructor review stage.
+
 
 

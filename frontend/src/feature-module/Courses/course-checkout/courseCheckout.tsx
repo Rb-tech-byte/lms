@@ -131,6 +131,24 @@ const CourseCheckout = () => {
     }
   };
 
+  /**
+   * Opens Pesapal checkout in a focused dedicated window with window.opener attached
+   * This provides full compatibility with browsers that restrict cross-site cookies in iframes.
+   */
+  const handleOpenDedicatedWindow = (e?: React.MouseEvent) => {
+    if (e) e.preventDefault();
+    if (pesapalOrder?.redirect_url) {
+      const popup = window.open(
+        pesapalOrder.redirect_url,
+        'PesapalPaymentWindow',
+        'width=650,height=800,scrollbars=yes,resizable=yes'
+      );
+      if (popup) {
+        popup.focus();
+      }
+    }
+  };
+
   return (
     <>
       <Breadcrumb title="Checkout" />
@@ -389,16 +407,15 @@ const CourseCheckout = () => {
                             </div>
 
                             <div className="d-flex align-items-center gap-2">
-                              <a
-                                href={pesapalOrder.redirect_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
+                              <button
+                                type="button"
+                                onClick={handleOpenDedicatedWindow}
                                 className="btn btn-outline-success btn-sm rounded-pill px-3"
-                                title="Open Pesapal in a dedicated secure tab"
+                                title="Open Pesapal in a dedicated secure window"
                               >
                                 <i className="isax isax-export-1 me-1"></i>
-                                Open in New Tab
-                              </a>
+                                Pay in Dedicated Window
+                              </button>
 
                               <button
                                 type="button"
@@ -430,9 +447,15 @@ const CourseCheckout = () => {
                           </div>
 
                           <div className="small text-muted mb-2 d-flex justify-content-between align-items-center">
-                            <span>Select your preferred mobile money network or card inside the Pesapal window below:</span>
-                            <span className="small text-muted">
-                              Blocked by browser? <a href={pesapalOrder.redirect_url} target="_blank" rel="noopener noreferrer" className="text-primary fw-semibold">Click here to pay in new window &rarr;</a>
+                            <span>Select your preferred mobile money network or card below:</span>
+                            <span className="small">
+                              <button
+                                type="button"
+                                onClick={handleOpenDedicatedWindow}
+                                className="btn btn-link p-0 text-primary fw-semibold text-decoration-none small"
+                              >
+                                Pay in Dedicated Window &rarr;
+                              </button>
                             </span>
                           </div>
 
@@ -449,14 +472,13 @@ const CourseCheckout = () => {
                                 <div className="spinner-border text-primary mb-3" style={{ width: '3rem', height: '3rem' }} role="status"></div>
                                 <h6 className="fw-bold text-dark mb-1">Connecting to Pesapal Payment Gateway...</h6>
                                 <p className="text-muted small mb-3">Loading Bank of Tanzania regulated East African payment channels</p>
-                                <a
-                                  href={pesapalOrder.redirect_url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
+                                <button
+                                  type="button"
+                                  onClick={handleOpenDedicatedWindow}
                                   className="btn btn-primary btn-sm rounded-pill px-4"
                                 >
                                   Open in Dedicated Window Now
-                                </a>
+                                </button>
                               </div>
                             )}
 

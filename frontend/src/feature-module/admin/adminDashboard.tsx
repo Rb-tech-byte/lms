@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import AdminSidebar from './common/adminSidebar';
 import SiteAdminHub from './common/siteAdminHub';
+import CourseSettingsStudio from './common/courseSettingsStudio';
 import {
   adminService,
   PlatformTelemetry,
@@ -68,6 +69,13 @@ const AdminDashboard: React.FC = () => {
   const [showCourseModal, setShowCourseModal] = useState(false);
   const [showActivityModal, setShowActivityModal] = useState(false);
   const [showPluginModal, setShowPluginModal] = useState(false);
+  const [studioCourseId, setStudioCourseId] = useState<number | null>(null);
+  const [showCourseStudio, setShowCourseStudio] = useState(false);
+
+  const handleOpenStudio = (courseId: number) => {
+    setStudioCourseId(courseId);
+    setShowCourseStudio(true);
+  };
 
   // New Course Form state
   const [newCourse, setNewCourse] = useState({
@@ -492,6 +500,7 @@ const AdminDashboard: React.FC = () => {
                     onRefresh={loadAdminData}
                     onNotify={(type, message) => setActionAlert({ type, message })}
                     onOpenCourseModal={() => setShowCourseModal(true)}
+                    onOpenCourseStudio={handleOpenStudio}
                   />
                 )}
 
@@ -507,7 +516,14 @@ const AdminDashboard: React.FC = () => {
                           Configure learning modules, activity structures (Quizzes, Assignments, Resources), and Pesapal tuition rates.
                         </p>
                       </div>
-                      <div className="d-flex gap-2">
+                      <div className="d-flex gap-2 flex-wrap">
+                        <button
+                          onClick={() => handleOpenStudio(4)}
+                          className="btn btn-outline-success btn-sm rounded-pill px-3 shadow-sm"
+                          title="Open Course 4 Settings Studio"
+                        >
+                          <i className="feather-settings me-1" /> Course #4 Settings Studio
+                        </button>
                         <button
                           onClick={() => setShowActivityModal(true)}
                           className="btn btn-outline-primary btn-sm rounded-pill px-3"
@@ -592,6 +608,14 @@ const AdminDashboard: React.FC = () => {
                               </td>
                               <td>
                                 <div className="d-flex gap-1">
+                                  <button
+                                    onClick={() => handleOpenStudio(c.id)}
+                                    className="btn btn-sm btn-primary px-2 py-1"
+                                    title="Edit Course Settings & Sections Studio"
+                                  >
+                                    <i className="feather-settings fs-14 me-1" />
+                                    Settings
+                                  </button>
                                   <button
                                     onClick={() => {
                                       setNewActivity((prev) => ({ ...prev, course_id: c.id }));
@@ -1502,6 +1526,21 @@ const AdminDashboard: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Course Settings & Sections Studio Modal */}
+      {showCourseStudio && studioCourseId && (
+        <CourseSettingsStudio
+          courseId={studioCourseId}
+          isOpen={showCourseStudio}
+          onClose={() => {
+            setShowCourseStudio(false);
+            setStudioCourseId(null);
+          }}
+          categories={adminCategories}
+          onNotify={(type, message) => setActionAlert({ type, message })}
+          onCourseUpdated={loadAdminData}
+        />
       )}
     </div>
   );

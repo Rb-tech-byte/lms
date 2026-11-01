@@ -528,3 +528,50 @@
   - Recorded browser verification session: `admin_site_admin_hub_1793558499513.webp`.
 * **👉 Master Plan Status**: Complete and Verified.
 
+---
+
+### 🔹 STEP 17: Headless Course Settings Studio & Curriculum Index Integration (`/course/edit.php`)
+* **Objective:** Enable complete course configuration, curriculum index exploration, assessment management, participant rosters, and zero-prompt SSO redirection directly from the React Admin portal for any course (specifically `/course/edit.php?id=4` - "Financial Management & Strategic Planning") without requiring administrators to enter credentials into Moodle.
+* **Backend Architecture & API Endpoints (`moodle-backend/admin_api.php`):**
+  1. `action=get_course_details`:
+     - Loads course record (`mdl_course`), category details, fast modinfo (`get_fast_modinfo`), sections outline, and child activity modules (`forum`, `page`, `quiz`, `assign`, etc.).
+     - Loads enrolled participants count (`count_enrolled_users`), grade items count (`grade_item::fetch_all`), and cohort groups count.
+     - Computes Zero-Prompt SSO launch URLs for `course` view, `settings` (`/course/edit.php`), `participants` (`/user/index.php`), `grades` (`/grade/report/index.php`), `activities` overview (`/course/overview.php`), `reset` (`/course/reset.php`), `backup` (`/backup/backup.php`), and `restore` (`/backup/restorefile.php`).
+     - Computes activity-level SSO view and edit URLs (`/course/modedit.php?update={cmid}`).
+  2. `action=update_course_settings`:
+     - Headless course settings persistence via Moodle core `update_course()` and `course_modinfo::clear_instance_cache()`.
+     - Supports all Moodle `/course/edit.php` fields: Full name, Short name, ID number, Category ID, Visibility (Show/Hide), Start date, End date, Summary, Format (topics, weeks, singleactivity, social), Hidden sections, Course layout, Force language, News items announcements count, Show gradebook, Show activity reports, Show activity dates, Max upload size (maxbytes), Completion tracking, Group mode, Force group mode, and Default grouping ID.
+  3. `action=get_course_participants`:
+     - Headless roster retrieval via `get_enrolled_users()` with roles (`editingteacher`, `student`, `admin`), email, department, status, and direct profile SSO URLs.
+  4. `action=get_course_grades`:
+     - Grade items retrieval via `grade_item::fetch_all()` with max/min grades, lock/hidden flags, and direct SSO links to Grader Report and Gradebook Setup.
+  5. `action=manage_course_section`:
+     - Headless course section renaming, summary updates, and visibility toggling directly in `mdl_course_sections`.
+* **Frontend Implementation (`courseSettingsStudio.tsx` & `adminDashboard.tsx`):**
+  1. **Course Settings Studio Component (`CourseSettingsStudio.tsx`):**
+     - Full-featured studio modal with breadcrumbs navigation (`OUTLMS > Dashboard > My courses > Faculty > Course`).
+     - Header badges for course code (`BBA301`), ID (`#4`), and visibility status (`Visible`).
+     - Action buttons: "Launch Moodle View (SSO)", "Moodle Edit (/edit.php) (SSO)", "Purge Caches", and "Save Course Settings".
+     - **Contextual Tabs:**
+       - **Settings**: Sidebar navigation across 6 categories: General, Description & Media, Course Format, Appearance, Files & Uploads, Completion Tracking & Group Mode.
+       - **Course Index & Sections**: Left collapsible section tree (General + Sections 1–6) mirroring Moodle's Course Index, with activity badges, visibility indicators, and SSO launchers. Right pane includes inline section renaming, visibility toggling, and module inspection.
+       - **Participants**: Live student and faculty roster with roles, department, and direct SSO profile links.
+       - **Grades & Assessments**: Assessment item table (Course Total, Quiz) with max grades, visibility, and direct SSO links to Grader Report and Gradebook Setup Tree.
+       - **More & Utilities**: Direct SSO wizard launchers for Course Backup, Course Restore, and Reset Course Data.
+  2. **Dashboard & Site Admin Hub Integration:**
+     - Added quick launcher button in Courses tab: "Course #4 Settings Studio".
+     - Added "Settings" action button to every course row in the Academic Course Models table.
+     - Connected `onOpenCourseStudio` to `SiteAdminHub` Cohort Groups selector and tools.
+* **Live Verification & End-to-End Test Results:**
+  - Production build compiled successfully (`npm run build`, exit code 0).
+  - Browser verification executed via `browser_subagent`:
+    - Navigated to `http://localhost:3000/admin/dashboard?tab=courses`.
+    - Opened Course Settings Studio for Course 4 ("Financial Management & Strategic Planning", BBA301).
+    - Verified **Settings** tab with all 6 sub-navigation forms.
+    - Verified **Course Index & Sections** tab: Section 0 (General) with Announcements (forum), Module 1: Corporate Financial Governance & Policy (page), and BBA301 Quiz (quiz), plus Sections 1–6.
+    - Verified **Participants** tab: loaded enrolled participants (Dr. Amina Kilindo, Baraka Mkwawa, Admin User).
+    - Verified **Grades & Assessments** tab: loaded Course Total and Quiz items.
+    - Verified **Moodle Edit SSO** button pointing directly to `/sso.php?token=...&redirect=%2Fcourse%2Fedit.php%3Fid%3D4`.
+    - Recorded session: `course_settings_studio_test_1793561457822.webp`.
+* **👉 Master Plan Status**: Complete and Verified.
+

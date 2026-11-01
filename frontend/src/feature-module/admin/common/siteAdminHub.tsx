@@ -16,6 +16,7 @@ interface SiteAdminHubProps {
   onRefresh: () => Promise<void>;
   onNotify: (type: 'success' | 'danger', message: string) => void;
   onOpenCourseModal: () => void;
+  onOpenCourseStudio?: (courseId: number) => void;
 }
 
 const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
@@ -26,6 +27,7 @@ const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
   onRefresh,
   onNotify,
   onOpenCourseModal,
+  onOpenCourseStudio,
 }) => {
   // Search and Category Filter
   const [searchQuery, setSearchQuery] = useState('');
@@ -771,8 +773,7 @@ const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
             </div>
           </div>
           <div className="card-body p-4">
-            {/* Select Course */}
-            <div className="row mb-4">
+            <div className="row mb-4 align-items-end">
               <div className="col-md-6">
                 <label className="form-label fs-13 fw-semibold">Select Course</label>
                 <select
@@ -786,6 +787,27 @@ const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
                     </option>
                   ))}
                 </select>
+              </div>
+              <div className="col-md-6 mt-3 mt-md-0 d-flex gap-2">
+                {onOpenCourseStudio && (
+                  <button
+                    type="button"
+                    onClick={() => onOpenCourseStudio(selectedCourseForGroups)}
+                    className="btn btn-outline-primary btn-sm rounded-pill px-3 shadow-sm"
+                    title="Open Headless Course Settings & Sections Studio"
+                  >
+                    <i className="feather-settings me-1" /> Open Course Settings Studio
+                  </button>
+                )}
+                <a
+                  href={adminService.getMoodleSsoUrl(`/course/edit.php?id=${selectedCourseForGroups}`)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn btn-outline-warning btn-sm rounded-pill px-3 shadow-sm text-dark"
+                  title="Direct SSO into Moodle /course/edit.php"
+                >
+                  <i className="feather-edit me-1" /> Moodle /edit.php (SSO)
+                </a>
               </div>
             </div>
 

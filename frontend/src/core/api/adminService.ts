@@ -651,6 +651,105 @@ export const adminService = {
     }
     return data;
   },
+
+  /**
+   * Retrieves complete course details, sections, modules, and SSO links
+   */
+  async getCourseDetails(courseId: number): Promise<CourseDetailFull> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl()}?action=get_course_details&course_id=${courseId}&token=${encodeURIComponent(token)}`;
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    const data = await res.json();
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to fetch course details');
+    }
+    return data.course;
+  },
+
+  /**
+   * Updates full course settings and format configurations
+   */
+  async updateCourseSettings(courseId: number, settings: Partial<CourseDetailFull>): Promise<any> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl()}?action=update_course_settings`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ ...settings, course_id: courseId, token })
+    });
+    const data = await res.json();
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to update course settings');
+    }
+    return data;
+  },
+
+  /**
+   * Retrieves enrolled students and instructors for a course
+   */
+  async getCourseParticipants(courseId: number): Promise<{ participants: CourseParticipantRecord[]; total: number; sso_manage_url: string }> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl()}?action=get_course_participants&course_id=${courseId}&token=${encodeURIComponent(token)}`;
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    const data = await res.json();
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to fetch course participants');
+    }
+    return data;
+  },
+
+  /**
+   * Retrieves grade items and gradebook links for a course
+   */
+  async getCourseGrades(courseId: number): Promise<{ grade_items: CourseGradeItemRecord[]; total_items: number; sso_grader_report_url: string; sso_grade_setup_url: string }> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl()}?action=get_course_grades&course_id=${courseId}&token=${encodeURIComponent(token)}`;
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    const data = await res.json();
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to fetch course grade items');
+    }
+    return data;
+  },
+
+  /**
+   * Manages course section name, summary or visibility
+   */
+  async manageCourseSection(payload: { course_id: number; section: number; sec_action: 'rename' | 'update_summary' | 'toggle_visibility'; name?: string; summary?: string }): Promise<any> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl()}?action=manage_course_section`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ ...payload, token })
+    });
+    const data = await res.json();
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to manage course section');
+    }
+    return data;
+  },
 };
 
 export interface AdminSectionItem {
@@ -789,6 +888,93 @@ export interface AdminCourseRecord {
 export interface CourseCategoryRecord {
   id: number;
   name: string;
+}
+
+export interface CourseModuleItem {
+  id: number;
+  instance: number;
+  modname: string;
+  name: string;
+  visible: number;
+  completion: number;
+  uservisible: boolean;
+  sso_url: string;
+  sso_edit_url: string;
+}
+
+export interface CourseSectionDetail {
+  id: number;
+  section: number;
+  name: string;
+  summary: string;
+  visible: number;
+  modules_count: number;
+  modules: CourseModuleItem[];
+  sso_url: string;
+}
+
+export interface CourseDetailFull {
+  id: number;
+  fullname: string;
+  shortname: string;
+  idnumber: string;
+  category_id: number;
+  category_name: string;
+  summary: string;
+  format: string;
+  visible: number;
+  startdate: number;
+  enddate: number;
+  hiddensections: number;
+  coursedisplay: number;
+  lang: string;
+  newsitems: number;
+  showgrades: number;
+  showreports: number;
+  showactivitydates: number;
+  maxbytes: number;
+  enablecompletion: number;
+  groupmode: number;
+  groupmodeforce: number;
+  defaultgroupingid: number;
+  sections_count: number;
+  participants_count: number;
+  grade_items_count: number;
+  groups_count: number;
+  sso_links: {
+    course: string;
+    settings: string;
+    participants: string;
+    grades: string;
+    activities: string;
+    reset: string;
+    backup: string;
+    restore: string;
+  };
+  sections: CourseSectionDetail[];
+}
+
+export interface CourseParticipantRecord {
+  id: number;
+  username: string;
+  fullname: string;
+  email: string;
+  role: string;
+  suspended: number;
+  lastaccess: number;
+  department: string;
+  sso_profile_url: string;
+}
+
+export interface CourseGradeItemRecord {
+  id: number;
+  itemname: string;
+  itemtype: string;
+  itemmodule: string;
+  grademax: number;
+  grademin: number;
+  hidden: number;
+  locked: number;
 }
 
 const getAdminApiUrl = (): string => {

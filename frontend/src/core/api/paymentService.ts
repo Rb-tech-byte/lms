@@ -7,6 +7,7 @@ export interface PesapalOrderRequest {
   itemid: number;         // Enrolment instance ID or fee item ID
   phone?: string;         // Customer mobile money phone number
   description?: string;   // Course or payment description
+  callbackUrl?: string;   // Optional custom return URL
 }
 
 export interface PesapalOrderResult {
@@ -43,6 +44,7 @@ export const paymentService = {
           itemid: request.itemid,
           phone: request.phone || '',
           description: request.description || 'Course Enrolment Fee',
+          callback_url: request.callbackUrl || '',
         }
       );
       return result;

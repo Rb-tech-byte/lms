@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Breadcrumb from '../../../core/common/Breadcrumb/breadcrumb';
 import { Link } from 'react-router-dom';
 import { all_routes } from '../../router/all_routes';
@@ -8,10 +8,7 @@ import { paymentService, PesapalOrderResult, PesapalStatusResult } from '../../.
 const CourseCheckout = () => {
   const route = all_routes;
 
-  // Active payment gateway tab
-  const [activeTab, setActiveTab] = useState<'pesapal' | 'card' | 'paypal' | 'stripe'>('pesapal');
-
-  // Form inputs
+  // Student Billing Information
   const [formData, setFormData] = useState({
     firstName: 'Student',
     lastName: 'User',
@@ -34,7 +31,55 @@ const CourseCheckout = () => {
   };
 
   /**
-   * Initiates payment order via Moodle Web Service (paygw_pesapal_create_order)
+   * Listen for postMessage from process.php when payment completes inside the embedded iframe
+   */
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'PESAPAL_PAYMENT_STATUS') {
+        if (event.data.isCompleted) {
+          setStatusResult({
+            order_tracking_id: event.data.orderTrackingId || '',
+            status: 'COMPLETED',
+            amount: '150000',
+            currency: 'TZS',
+            payment_method: 'Pesapal Gateway',
+            payment_account: 'OUT LMS Main Account',
+            is_completed: true,
+            message: 'Your payment was successfully confirmed and your course enrolment is active!',
+          });
+        }
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
+
+  /**
+   * Auto-poll transaction status from Moodle backend every 5 seconds while an order is active
+   */
+  useEffect(() => {
+    if (!pesapalOrder?.order_tracking_id || statusResult?.is_completed) {
+      return;
+    }
+
+    const intervalId = setInterval(async () => {
+      try {
+        const res = await paymentService.checkPesapalStatus(pesapalOrder.order_tracking_id);
+        if (res.is_completed) {
+          setStatusResult(res);
+          clearInterval(intervalId);
+        }
+      } catch (e) {
+        // Background polling check
+      }
+    }, 5000);
+
+    return () => clearInterval(intervalId);
+  }, [pesapalOrder, statusResult]);
+
+  /**
+   * Initiates real payment order with Pesapal API 3.0 via Moodle Web Service
    */
   const handleInitiatePesapal = async () => {
     setLoading(true);
@@ -61,7 +106,7 @@ const CourseCheckout = () => {
   };
 
   /**
-   * Verifies payment status and automated enrolment via Moodle (paygw_pesapal_check_status)
+   * Manual verification trigger
    */
   const handleVerifyStatus = async () => {
     if (!pesapalOrder?.order_tracking_id) return;
@@ -87,217 +132,193 @@ const CourseCheckout = () => {
           <div className="checkout-content">
             <div className="row">
               <div className="col-lg-8">
-                {/* Billing Address */}
-                <div className="checkout-item-1">
-                  <div className="border-bottom pb-3 mb-3">
-                    <h5>Billing Address</h5>
-                  </div>
-                  <div className="row">
-                    <div className="col-md-6">
-                      <div className="input-block">
-                        <label className="form-label">
-                          First Name<span className="text-danger ms-1">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          name="firstName"
-                          value={formData.firstName}
-                          onChange={handleInputChange}
-                          className="form-control"
-                        />
+                {/* SUCCESS SCREEN */}
+                {statusResult?.is_completed ? (
+                  <div className="card shadow-sm border-0 rounded-4 p-4 text-center mb-4 bg-white">
+                    <div className="mb-3">
+                      <div
+                        className="rounded-circle bg-success text-white d-inline-flex align-items-center justify-content-center"
+                        style={{ width: '80px', height: '80px' }}
+                      >
+                        <i className="isax isax-tick-circle text-white" style={{ fontSize: '42px' }}></i>
                       </div>
                     </div>
-                    <div className="col-md-6">
-                      <div className="input-block">
-                        <label className="form-label">
-                          Last Name<span className="text-danger ms-1">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          name="lastName"
-                          value={formData.lastName}
-                          onChange={handleInputChange}
-                          className="form-control"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6">
-                      <div className="input-block">
-                        <label className="form-label">
-                          Email Address<span className="text-danger ms-1">*</span>
-                        </label>
-                        <input
-                          type="email"
-                          name="email"
-                          value={formData.email}
-                          onChange={handleInputChange}
-                          className="form-control"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6">
-                      <div className="input-block">
-                        <label className="form-label">
-                          Phone Number (Mobile Money)<span className="text-danger ms-1">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          name="phone"
-                          value={formData.phone}
-                          onChange={handleInputChange}
-                          className="form-control"
-                          placeholder="e.g. 0712345678"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-12">
-                      <div className="input-block">
-                        <label className="form-label">
-                          Address Line 1<span className="text-danger ms-1">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          name="address1"
-                          value={formData.address1}
-                          onChange={handleInputChange}
-                          className="form-control"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6">
-                      <div className="input-block">
-                        <label className="form-label">
-                          City<span className="text-danger ms-1">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          name="city"
-                          value={formData.city}
-                          onChange={handleInputChange}
-                          className="form-control"
-                        />
-                      </div>
-                    </div>
-                    <div className="col-md-6">
-                      <div className="input-block">
-                        <label className="form-label">
-                          Country<span className="text-danger ms-1">*</span>
-                        </label>
-                        <input
-                          type="text"
-                          name="country"
-                          value={formData.country}
-                          onChange={handleInputChange}
-                          className="form-control"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                    <h3 className="fw-bold text-success mb-2">🎉 Enrolment Confirmed!</h3>
+                    <p className="text-muted mb-4 lead fs-6">
+                      Your payment of <strong>TZS 150,000</strong> has been verified by Pesapal.
+                      You are now officially enrolled in <strong>CS101: Introduction to Computer Science</strong>.
+                    </p>
 
-                {/* Payment Method Selector */}
-                <div className="checkout-item-1">
-                  <div className="border-bottom pb-3 mb-3 d-flex align-items-center justify-content-between">
-                    <h5 className="mb-0">Payment Method</h5>
-                    <span className="badge bg-success-subtle text-success border border-success-subtle px-3 py-1">
-                      <i className="isax isax-shield-tick me-1"></i> 256-bit Secure Checkout
-                    </span>
-                  </div>
+                    <div className="bg-light p-3 rounded-3 text-start mb-4 mx-auto" style={{ maxWidth: '480px' }}>
+                      <div className="d-flex justify-content-between mb-2">
+                        <span className="text-muted small">Tracking Reference:</span>
+                        <span className="font-monospace small fw-bold">{statusResult.order_tracking_id}</span>
+                      </div>
+                      <div className="d-flex justify-content-between mb-2">
+                        <span className="text-muted small">Payment Processor:</span>
+                        <span className="badge bg-primary-subtle text-primary">Pesapal API 3.0</span>
+                      </div>
+                      <div className="d-flex justify-content-between">
+                        <span className="text-muted small">Status:</span>
+                        <span className="badge bg-success">ACTIVE &amp; ENROLLED</span>
+                      </div>
+                    </div>
 
-                  <ul
-                    className="nav-tabs mb-4 nav-justified border-0 nav-style-1 d-sm-flex d-block gap-2"
-                    role="tablist"
-                  >
-                    <li className="nav-item">
+                    <div className="d-flex justify-content-center gap-3">
+                      <Link to={route.courseDetails} className="btn btn-primary rounded-pill px-5 py-2 fw-semibold">
+                        Go to Course Dashboard &rarr;
+                      </Link>
                       <button
                         type="button"
-                        className={`btn nav-link p-3 w-100 ${activeTab === 'pesapal' ? 'active border-primary shadow-sm' : ''}`}
-                        onClick={() => setActiveTab('pesapal')}
+                        className="btn btn-outline-secondary rounded-pill px-4"
+                        onClick={() => {
+                          setPesapalOrder(null);
+                          setStatusResult(null);
+                        }}
                       >
-                        <div className="d-flex justify-content-center align-items-center">
+                        New Payment
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    {/* Billing Address */}
+                    {!pesapalOrder && (
+                      <div className="checkout-item-1 mb-4">
+                        <div className="border-bottom pb-3 mb-3">
+                          <h5 className="mb-0">Billing &amp; Student Information</h5>
+                        </div>
+                        <div className="row">
+                          <div className="col-md-6">
+                            <div className="input-block">
+                              <label className="form-label">
+                                First Name<span className="text-danger ms-1">*</span>
+                              </label>
+                              <input
+                                type="text"
+                                name="firstName"
+                                value={formData.firstName}
+                                onChange={handleInputChange}
+                                className="form-control"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6">
+                            <div className="input-block">
+                              <label className="form-label">
+                                Last Name<span className="text-danger ms-1">*</span>
+                              </label>
+                              <input
+                                type="text"
+                                name="lastName"
+                                value={formData.lastName}
+                                onChange={handleInputChange}
+                                className="form-control"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6">
+                            <div className="input-block">
+                              <label className="form-label">
+                                Email Address<span className="text-danger ms-1">*</span>
+                              </label>
+                              <input
+                                type="email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleInputChange}
+                                className="form-control"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6">
+                            <div className="input-block">
+                              <label className="form-label">
+                                Phone Number (M-Pesa / Tigo / Airtel)<span className="text-danger ms-1">*</span>
+                              </label>
+                              <input
+                                type="text"
+                                name="phone"
+                                value={formData.phone}
+                                onChange={handleInputChange}
+                                className="form-control"
+                                placeholder="0712345678"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-12">
+                            <div className="input-block">
+                              <label className="form-label">
+                                Address Line 1<span className="text-danger ms-1">*</span>
+                              </label>
+                              <input
+                                type="text"
+                                name="address1"
+                                value={formData.address1}
+                                onChange={handleInputChange}
+                                className="form-control"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6">
+                            <div className="input-block">
+                              <label className="form-label">City</label>
+                              <input
+                                type="text"
+                                name="city"
+                                value={formData.city}
+                                onChange={handleInputChange}
+                                className="form-control"
+                              />
+                            </div>
+                          </div>
+                          <div className="col-md-6">
+                            <div className="input-block">
+                              <label className="form-label">Country</label>
+                              <input
+                                type="text"
+                                name="country"
+                                value={formData.country}
+                                onChange={handleInputChange}
+                                className="form-control"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* PESAPAL UNIFIED PAYMENT GATEWAY */}
+                    <div className="checkout-item-1">
+                      <div className="border-bottom pb-3 mb-3 d-flex align-items-center justify-content-between">
+                        <div className="d-flex align-items-center">
                           <ImageWithBasePath
                             src="assets/img/icons/pesapal.svg"
                             alt="Pesapal"
-                            className="img-fluid me-2"
-                            height={28}
+                            className="img-fluid me-3"
+                            height={32}
                           />
-                          <div className="text-start">
-                            <p className="fw-bold mb-0 text-dark">Pesapal</p>
-                            <small className="text-muted" style={{ fontSize: '11px' }}>M-Pesa / Tigo / Airtel / Cards</small>
+                          <div>
+                            <h5 className="mb-0 fw-bold">Pesapal Payment Gateway</h5>
+                            <small className="text-muted">
+                              Unified checkout for East African Mobile Money, Cards, and Banks
+                            </small>
                           </div>
                         </div>
-                      </button>
-                    </li>
-                    <li className="nav-item">
-                      <button
-                        type="button"
-                        className={`btn nav-link p-3 w-100 ${activeTab === 'card' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('card')}
-                      >
-                        <div className="d-flex justify-content-center align-items-center">
-                          <ImageWithBasePath
-                            src="assets/img/icons/card.svg"
-                            alt="card"
-                            className="img-fluid me-2"
-                          />
-                          <p className="fw-medium mb-0">Card</p>
-                        </div>
-                      </button>
-                    </li>
-                    <li className="nav-item">
-                      <button
-                        type="button"
-                        className={`btn nav-link p-3 w-100 ${activeTab === 'paypal' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('paypal')}
-                      >
-                        <div className="d-flex justify-content-center align-items-center">
-                          <ImageWithBasePath
-                            src="assets/img/icons/paypal-2.svg"
-                            alt="paypal"
-                            className="img-fluid me-2"
-                          />
-                          <p className="fw-medium mb-0">PayPal</p>
-                        </div>
-                      </button>
-                    </li>
-                    <li className="nav-item">
-                      <button
-                        type="button"
-                        className={`btn nav-link p-3 w-100 ${activeTab === 'stripe' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('stripe')}
-                      >
-                        <div className="d-flex justify-content-center align-items-center">
-                          <ImageWithBasePath
-                            src="assets/img/icons/stripe.svg"
-                            alt="stripe"
-                            className="img-fluid me-2"
-                          />
-                          <p className="fw-medium mb-0">Stripe</p>
-                        </div>
-                      </button>
-                    </li>
-                  </ul>
-
-                  {/* PESAPAL TAB CONTENT */}
-                  {activeTab === 'pesapal' && (
-                    <div className="p-4 border rounded-3 bg-light-subtle">
-                      <div className="d-flex align-items-center justify-content-between mb-3 pb-3 border-bottom">
-                        <div>
-                          <h6 className="fw-bold mb-1 text-primary">Pesapal 3.0 Payment Gateway</h6>
-                          <p className="text-muted mb-0 small">
-                            Official East Africa payment integration: M-Pesa, Tigo Pesa, Airtel Money, Halopesa &amp; International Cards.
-                          </p>
-                        </div>
-                        <span className="badge bg-primary px-3 py-2 fs-6">TZS 150,000</span>
+                        <span className="badge bg-success-subtle text-success border border-success-subtle px-3 py-1">
+                          <i className="isax isax-shield-tick me-1"></i> 256-bit Secure
+                        </span>
                       </div>
 
-                      {/* Network Badges */}
-                      <div className="d-flex flex-wrap gap-2 align-items-center mb-4">
-                        <span className="badge bg-light text-dark border px-3 py-2">🟢 Vodacom M-Pesa</span>
-                        <span className="badge bg-light text-dark border px-3 py-2">🔵 Tigo Pesa</span>
-                        <span className="badge bg-light text-dark border px-3 py-2">🔴 Airtel Money</span>
-                        <span className="badge bg-light text-dark border px-3 py-2">🟠 Halopesa</span>
-                        <span className="badge bg-light text-dark border px-3 py-2">💳 Visa &amp; Mastercard</span>
+                      {/* Supported Channels Bar */}
+                      <div className="d-flex flex-wrap gap-2 align-items-center mb-4 p-3 bg-light rounded-3 border">
+                        <span className="small text-muted fw-semibold me-1">Supported Channels:</span>
+                        <span className="badge bg-white text-dark border px-2 py-1 shadow-xs">🟢 Vodacom M-Pesa</span>
+                        <span className="badge bg-white text-dark border px-2 py-1 shadow-xs">🔵 Tigo Pesa</span>
+                        <span className="badge bg-white text-dark border px-2 py-1 shadow-xs">🔴 Airtel Money</span>
+                        <span className="badge bg-white text-dark border px-2 py-1 shadow-xs">🟠 Halopesa</span>
+                        <span className="badge bg-white text-dark border px-2 py-1 shadow-xs">💳 Visa &amp; Mastercard</span>
+                        <span className="badge bg-white text-dark border px-2 py-1 shadow-xs">🏦 Bank Transfer</span>
                       </div>
 
                       {errorMessage && (
@@ -307,25 +328,23 @@ const CourseCheckout = () => {
                         </div>
                       )}
 
-                      {/* INITIAL OR PENDING STATE */}
+                      {/* INITIAL CHECKOUT CARD (BEFORE ORDER INITIATION) */}
                       {!pesapalOrder && (
-                        <div>
-                          <div className="bg-white p-3 rounded border mb-3">
-                            <div className="d-flex justify-content-between align-items-center mb-2">
-                              <span className="text-muted">Target Course:</span>
-                              <span className="fw-semibold">CS101 - Introduction to Computer Science</span>
+                        <div className="p-4 border rounded-3 bg-white">
+                          <div className="d-flex align-items-center justify-content-between mb-3 pb-3 border-bottom">
+                            <div>
+                              <h6 className="fw-bold mb-1">Course Enrolment Fee</h6>
+                              <p className="text-muted mb-0 small">
+                                Complete your payment directly via Pesapal's official secure gateway.
+                              </p>
                             </div>
-                            <div className="d-flex justify-content-between align-items-center mb-2">
-                              <span className="text-muted">Enrolment Fee:</span>
-                              <span className="fw-bold text-success">TZS 150,000</span>
-                            </div>
-                            <div className="d-flex justify-content-between align-items-center">
-                              <span className="text-muted">Payment Processor:</span>
-                              <span className="badge bg-secondary-subtle text-secondary">Pesapal Sandbox API 3.0</span>
-                            </div>
+                            <span className="badge bg-primary px-3 py-2 fs-6">TZS 150,000</span>
                           </div>
 
-                          <div className="d-flex justify-content-end">
+                          <div className="d-flex justify-content-between align-items-center">
+                            <span className="text-muted small">
+                              Clicking below will embed Pesapal's secure checkout interface right inside this page.
+                            </span>
                             <button
                               type="button"
                               className="btn btn-primary rounded-pill px-4 py-2 fw-semibold d-flex align-items-center"
@@ -335,12 +354,12 @@ const CourseCheckout = () => {
                               {loading ? (
                                 <>
                                   <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                                  Connecting to Pesapal...
+                                  Initializing Pesapal Gateway...
                                 </>
                               ) : (
                                 <>
                                   <i className="isax isax-card-tick me-2"></i>
-                                  Proceed with Pesapal (TZS 150,000)
+                                  Pay with Pesapal (TZS 150,000)
                                 </>
                               )}
                             </button>
@@ -348,173 +367,78 @@ const CourseCheckout = () => {
                         </div>
                       )}
 
-                      {/* ORDER CREATED & ACTIVE PESAPAL SESSION */}
+                      {/* EMBEDDED PESAPAL IFRAME SECTION */}
                       {pesapalOrder && (
-                        <div className="border border-success rounded-3 p-3 bg-white">
-                          <div className="d-flex align-items-center justify-content-between pb-3 border-bottom mb-3">
-                            <div>
-                              <span className="badge bg-success-subtle text-success me-2">Order Active</span>
-                              <span className="text-muted small">Tracking ID: <strong>{pesapalOrder.order_tracking_id}</strong></span>
+                        <div className="border border-primary-subtle rounded-3 p-3 bg-white shadow-sm">
+                          <div className="d-flex flex-wrap align-items-center justify-content-between pb-3 border-bottom mb-3 gap-2">
+                            <div className="d-flex align-items-center gap-2">
+                              <span className="spinner-grow spinner-grow-sm text-primary" role="status"></span>
+                              <span className="badge bg-primary-subtle text-primary fw-semibold">
+                                Secure Checkout Session Active
+                              </span>
+                              <span className="text-muted small">
+                                Tracking ID: <strong className="font-monospace">{pesapalOrder.order_tracking_id}</strong>
+                              </span>
                             </div>
-                            <span className="fw-bold text-primary">{pesapalOrder.currency} {pesapalOrder.amount}</span>
+
+                            <div className="d-flex align-items-center gap-2">
+                              <button
+                                type="button"
+                                className="btn btn-outline-primary btn-sm rounded-pill px-3"
+                                onClick={handleVerifyStatus}
+                                disabled={checkingStatus}
+                              >
+                                {checkingStatus ? (
+                                  <>
+                                    <span className="spinner-border spinner-border-sm me-1"></span>
+                                    Verifying...
+                                  </>
+                                ) : (
+                                  <>
+                                    <i className="isax isax-refresh me-1"></i>
+                                    Verify Payment Status
+                                  </>
+                                )}
+                              </button>
+
+                              <button
+                                type="button"
+                                className="btn btn-outline-secondary btn-sm rounded-pill px-3"
+                                onClick={() => setPesapalOrder(null)}
+                              >
+                                Edit Details
+                              </button>
+                            </div>
                           </div>
 
-                          <p className="small text-muted mb-3">
-                            Your payment order reference is <code>{pesapalOrder.merchant_reference}</code>.
-                            Complete your payment on Pesapal's secure checkout page, then verify below.
-                          </p>
-
-                          <div className="d-flex flex-wrap gap-2 mb-3">
-                            <a
-                              href={pesapalOrder.redirect_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="btn btn-success rounded-pill px-4"
-                            >
-                              <i className="isax isax-export-1 me-2"></i>
-                              Open Pesapal Payment Page
-                            </a>
-
-                            <button
-                              type="button"
-                              className="btn btn-outline-primary rounded-pill px-4"
-                              onClick={handleVerifyStatus}
-                              disabled={checkingStatus}
-                            >
-                              {checkingStatus ? (
-                                <>
-                                  <span className="spinner-border spinner-border-sm me-2"></span>
-                                  Verifying with Moodle...
-                                </>
-                              ) : (
-                                <>
-                                  <i className="isax isax-refresh me-2"></i>
-                                  Check Enrolment Status
-                                </>
-                              )}
-                            </button>
+                          <div className="small text-muted mb-2">
+                            Select your preferred mobile money network or card inside the Pesapal window below:
                           </div>
 
-                          {/* STATUS RESULT DISPLAY */}
-                          {statusResult && (
-                            <div className={`alert ${statusResult.is_completed ? 'alert-success' : 'alert-info'} mt-3 mb-0`}>
-                              <div className="d-flex align-items-center justify-content-between mb-1">
-                                <h6 className="alert-heading mb-0 fw-bold">
-                                  {statusResult.is_completed ? '🎉 Enrolment Confirmed!' : `Status: ${statusResult.status}`}
-                                </h6>
-                                <span className="badge bg-dark">{statusResult.payment_method || 'Mobile Money / Card'}</span>
-                              </div>
-                              <p className="mb-2 small">{statusResult.message}</p>
-                              {statusResult.is_completed && (
-                                <Link to={route.courseDetails} className="btn btn-success btn-sm mt-1">
-                                  Go to Course Dashboard &rarr;
-                                </Link>
-                              )}
-                            </div>
-                          )}
+                          {/* DIRECT EMBEDDED IFRAME */}
+                          <div
+                            className="border rounded-3 overflow-hidden position-relative"
+                            style={{ minHeight: '680px', background: '#fafafa' }}
+                          >
+                            <iframe
+                              src={pesapalOrder.redirect_url}
+                              title="Pesapal Checkout Interface"
+                              width="100%"
+                              height="720px"
+                              style={{ border: 'none', display: 'block' }}
+                              allow="payment"
+                            />
+                          </div>
                         </div>
                       )}
                     </div>
-                  )}
-
-                  {/* CARD TAB CONTENT */}
-                  {activeTab === 'card' && (
-                    <div className="p-3 border rounded-3">
-                      <div className="row">
-                        <div className="col-md-6">
-                          <div className="input-block">
-                            <label className="form-label">
-                              Card Number<span className="text-danger ms-1">*</span>
-                            </label>
-                            <input type="text" className="form-control" placeholder="4111 2222 3333 4444" />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="input-block">
-                            <label className="form-label">
-                              Name on Card<span className="text-danger ms-1">*</span>
-                            </label>
-                            <input type="text" className="form-control" placeholder="Student Name" />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="input-block">
-                            <label className="form-label">
-                              Expiry Date<span className="text-danger ms-1">*</span>
-                            </label>
-                            <input type="text" className="form-control" placeholder="MM/YY" />
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="input-block">
-                            <label className="form-label">
-                              CVV<span className="text-danger ms-1">*</span>
-                            </label>
-                            <input type="text" className="form-control" placeholder="123" />
-                          </div>
-                        </div>
-                        <div className="col-md-12">
-                          <div className="d-flex align-items-center justify-content-end">
-                            <button type="button" className="btn btn-secondary rounded-pill">
-                              Pay $200.25
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* PAYPAL TAB CONTENT */}
-                  {activeTab === 'paypal' && (
-                    <div className="p-3 border rounded-3">
-                      <div className="row">
-                        <div className="col-md-6">
-                          <div className="input-block">
-                            <label className="form-label">
-                              PayPal Email<span className="text-danger ms-1">*</span>
-                            </label>
-                            <input type="email" className="form-control" placeholder="paypal@student.out.ac.tz" />
-                          </div>
-                        </div>
-                        <div className="col-md-12">
-                          <div className="d-flex align-items-center justify-content-end">
-                            <button type="button" className="btn btn-secondary rounded-pill">
-                              Pay via PayPal
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* STRIPE TAB CONTENT */}
-                  {activeTab === 'stripe' && (
-                    <div className="p-3 border rounded-3">
-                      <div className="row">
-                        <div className="col-md-6">
-                          <div className="input-block">
-                            <label className="form-label">
-                              Stripe Email<span className="text-danger ms-1">*</span>
-                            </label>
-                            <input type="email" className="form-control" placeholder="user@student.out.ac.tz" />
-                          </div>
-                        </div>
-                        <div className="col-md-12">
-                          <div className="d-flex align-items-center justify-content-end">
-                            <button type="button" className="btn btn-secondary rounded-pill">
-                              Pay via Stripe
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                  </>
+                )}
               </div>
 
               {/* Order Summary Sidebar */}
               <div className="col-lg-4">
-                <div className="checkout-item-2">
+                <div className="checkout-item-2 shadow-sm rounded-3">
                   <div className="pb-3 border-bottom mb-3">
                     <h5 className="mb-0">Order Summary</h5>
                   </div>
@@ -540,15 +464,15 @@ const CourseCheckout = () => {
                     </div>
                   </div>
                   <div className="d-flex align-items-center justify-content-between mb-2">
-                    <p className="mb-0 text-muted">Course Fee</p>
+                    <p className="mb-0 text-muted">Course Tuition</p>
                     <p className="text-gray-9 fw-medium mb-0">TZS 150,000</p>
                   </div>
                   <div className="d-flex align-items-center justify-content-between mb-2">
-                    <p className="mb-0 text-muted">Gateway Processing Fee</p>
-                    <p className="text-success fw-medium mb-0">Free (Waived)</p>
+                    <p className="mb-0 text-muted">Pesapal Processing Fee</p>
+                    <p className="text-success fw-medium mb-0">Free (Waived by OUT)</p>
                   </div>
                   <div className="d-flex align-items-center justify-content-between border-bottom pb-3 mb-3">
-                    <p className="mb-0 text-muted">VAT (Inclusive)</p>
+                    <p className="mb-0 text-muted">Tax / VAT</p>
                     <p className="text-gray-9 fw-medium mb-0">TZS 0</p>
                   </div>
                   <div className="total d-flex align-items-center justify-content-between">

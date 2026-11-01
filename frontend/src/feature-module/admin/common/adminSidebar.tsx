@@ -25,68 +25,71 @@ const AdminSidebar = () => {
   ];
 
   return (
-    <div className="col-lg-3 theiaStickySidebar">
-      <div className="settings-widget dash-profile mb-4">
-        <div className="settings-menu p-0">
-          <div className="profile-bg text-center">
-            <h5>Super Administrator</h5>
-            <ImageWithBasePath
-              src="assets/img/user/user-03.jpg"
-              alt="Admin Avatar"
-              className="img-fluid rounded-circle avatar-xxl mb-3 border border-3 border-white shadow-sm"
-            />
+    <div className="col-lg-3">
+      <div className="settings-sidebar mb-lg-0 theiaStickySidebar">
+        {/* Admin Identity Card */}
+        <div className="card border-0 shadow-sm p-3 mb-4 rounded-3 text-center" style={{ background: "linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)", color: "#ffffff" }}>
+          <div className="avatar avatar-xl rounded-circle mx-auto mb-2 bg-white text-primary d-flex align-items-center justify-content-center shadow-sm">
+            <i className="isax isax-security-user fs-24" />
           </div>
-          <div className="profile-group text-center px-3 pb-3">
-            <h5 className="mb-1">{user?.name || 'OUT LMS Administrator'}</h5>
-            <p className="badge bg-danger text-white mb-2 px-3 py-1">Super Admin</p>
-            <p className="text-muted fs-13 mb-3">{user?.department || 'Directorate of ICT Services'}</p>
-
-            {/* Quick Role Switcher for Demo */}
-            <div className="bg-light p-2 rounded text-start mb-3 border">
-              <small className="text-muted fw-bold d-block mb-1">Demo Quick Switch:</small>
-              <div className="d-flex gap-1">
-                <button
-                  type="button"
-                  className="btn btn-sm btn-outline-primary flex-fill fs-11"
-                  onClick={() => { switchRole('student'); navigate('/student/student-dashboard'); }}
-                >
-                  🎓 Student
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-sm btn-outline-secondary flex-fill fs-11"
-                  onClick={() => { switchRole('instructor'); navigate('/instructor/instructor-dashboard'); }}
-                >
-                  👨‍🏫 Instructor
-                </button>
-              </div>
-            </div>
-          </div>
+          <h6 className="text-white mb-0 fw-bold">Eng. Godfrey Makundi</h6>
+          <span className="badge bg-danger text-white my-1 align-self-center px-2 py-1 fs-11">
+            Super Administrator
+          </span>
+          <p className="text-white-50 fs-12 mb-0">Directorate of ICT Services & Registrar</p>
         </div>
-      </div>
 
-      <div className="settings-widget account-settings">
-        <div className="settings-menu">
-          <h6 className="px-3 pt-2 text-muted text-uppercase fs-12 fw-bold">Administration</h6>
+        <div>
+          <h6 className="mb-3">Governance Menu</h6>
+          <ul className="mb-3 pb-1">
+            {menuItems.map((menu, index) => (
+              <li key={index}>
+                <Link
+                  to={menu.path}
+                  className={`d-inline-flex align-items-center ${location.pathname === menu.path ? 'active' : ''}`}
+                >
+                  <i className={`${menu.icon} me-2`} />
+                  {menu.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <hr />
+          <h6 className="mb-3">Portal Switcher</h6>
+          <div className="d-flex flex-column gap-2 mb-3">
+            <button
+              type="button"
+              className="btn btn-sm btn-outline-primary text-start d-flex align-items-center gap-2"
+              onClick={() => { switchRole('student'); navigate('/student/student-dashboard'); }}
+            >
+              <span>🎓</span> Student Portal
+            </button>
+            <button
+              type="button"
+              className="btn btn-sm btn-outline-secondary text-start d-flex align-items-center gap-2"
+              onClick={() => { switchRole('instructor'); navigate('/instructor/instructor-dashboard'); }}
+            >
+              <span>👨‍🏫</span> Instructor Portal
+            </button>
+            <a
+              href="http://localhost/outlmstheme/moodle-backend/admin/index.php"
+              target="_blank"
+              rel="noreferrer"
+              className="btn btn-sm btn-outline-warning text-dark text-start d-flex align-items-center gap-2 fw-medium"
+            >
+              <span>⚙️</span> Moodle Site Admin
+            </a>
+          </div>
+          <hr />
+          <h6>Session</h6>
           <ul>
-            {menuItems.map((item, idx) => {
-              const isActive = location.pathname === item.path;
-              return (
-                <li key={idx} className={isActive ? 'active' : ''}>
-                  <Link to={item.path}>
-                    <i className={`${item.icon} me-2`} />
-                    {item.title}
-                  </Link>
-                </li>
-              );
-            })}
-            <li className="border-top mt-2 pt-2">
+            <li>
               <button
                 type="button"
-                className="btn btn-link text-danger text-start w-100 px-3 py-2 text-decoration-none d-flex align-items-center"
+                className="btn btn-link text-danger d-inline-flex align-items-center p-0 text-decoration-none"
                 onClick={handleLogout}
               >
-                <i className="isax isax-logout me-2 fs-16" />
+                <i className="isax isax-logout5 me-2" />
                 Sign Out
               </button>
             </li>

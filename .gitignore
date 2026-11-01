@@ -26,3 +26,7 @@ yarn-error.log*
 /gateway-bridge/node_modules/
 /frontend/node_modules/
 /frontend/build/
+/scratch/
+.env
+*.env
+!.env.example

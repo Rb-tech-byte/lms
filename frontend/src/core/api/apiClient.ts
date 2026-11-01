@@ -11,9 +11,34 @@ export interface MoodleResponse<T = any> {
   message?: string;
 }
 
-const MOODLE_BASE_URL = process.env.REACT_APP_MOODLE_URL || 'http://localhost:8080/moodle';
+declare global {
+  interface Window {
+    __OUT_LMS_CONFIG__?: {
+      moodleUrl?: string;
+      gatewayUrl?: string;
+    };
+  }
+}
+
+const getDynamicMoodleUrl = (): string => {
+  if (process.env.REACT_APP_MOODLE_URL) {
+    return process.env.REACT_APP_MOODLE_URL.replace(/\/+$/, '');
+  }
+  if (typeof window !== 'undefined') {
+    if (window.__OUT_LMS_CONFIG__?.moodleUrl) {
+      return window.__OUT_LMS_CONFIG__.moodleUrl.replace(/\/+$/, '');
+    }
+    // Dynamic fallback matching relative hosting environment
+    const pathParts = window.location.pathname.split('/').filter(Boolean);
+    const appBase = pathParts.length > 0 && pathParts[0] !== 'frontend' ? `/${pathParts[0]}` : '';
+    return `${window.location.protocol}//${window.location.host}${appBase}/moodle-backend`;
+  }
+  return 'http://localhost/moodle-backend';
+};
+
+const MOODLE_BASE_URL = getDynamicMoodleUrl();
 const MOODLE_TOKEN = process.env.REACT_APP_MOODLE_TOKEN || '';
-const USE_MOCK = process.env.REACT_APP_USE_MOCK !== 'false';
+const USE_MOCK = process.env.REACT_APP_USE_MOCK === 'true';
 
 /**
  * Encodes complex nested objects/arrays into Moodle's required query parameter format:
@@ -99,10 +124,27 @@ export async function callMoodleWs<T = any>(
 /**
  * Authentication helper: exchanges user credentials for a Moodle Web Service token
  */
-export async function fetchMoodleToken(username: string, password: string): Promise<string> {
-  const tokenUrl = `${MOODLE_BASE_URL}${MOODLE_ENDPOINTS.TOKEN}?service=out_lms_service&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
+export async function fetchMoodleToken(
+  username: string,
+  password: string,
+  service = process.env.REACT_APP_MOODLE_SERVICE || 'moodle_mobile_app'
+): Promise<string> {
+  const tokenUrl = `${MOODLE_BASE_URL}${MOODLE_ENDPOINTS.TOKEN}`;
+  const bodyParams = new URLSearchParams({
+    username,
+    password,
+    service,
+  });
 
-  const response = await fetch(tokenUrl);
+  const response = await fetch(tokenUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Accept': 'application/json',
+    },
+    body: bodyParams.toString(),
+  });
+
   if (!response.ok) {
     throw new Error('Failed to reach Moodle token endpoint');
   }

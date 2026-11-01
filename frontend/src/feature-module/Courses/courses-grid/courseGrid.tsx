@@ -1,13 +1,52 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Breadcrumb from '../../../core/common/Breadcrumb/breadcrumb'
 import type { SliderSingleProps } from 'antd';  
 import { Slider } from 'antd'
 import { Link } from 'react-router-dom';
 import ImageWithBasePath from '../../../core/common/imageWithBasePath';
 import { all_routes } from '../../router/all_routes';
+import { courseService, CourseCategory, MoodleCourse } from '../../../core/api';
 
 const CourseGrid = () => {
   const formatter: NonNullable<SliderSingleProps['tooltip']>['formatter'] = (value) => `$${value}`;
+  const [courses, setCourses] = useState<MoodleCourse[]>([]);
+  const [categories, setCategories] = useState<CourseCategory[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    let isMounted = true;
+    const loadData = async () => {
+      setLoading(true);
+      try {
+        const [cats, allCourses] = await Promise.all([
+          courseService.getCategories(),
+          courseService.getCourses(selectedCategory || undefined),
+        ]);
+        if (isMounted) {
+          setCategories(cats.filter(c => c.id !== 1 || c.coursecount > 0));
+          setCourses(allCourses.filter(c => c.id !== 1));
+        }
+      } catch (err) {
+        console.error('Failed to load courses from Moodle:', err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+    loadData();
+    return () => { isMounted = false; };
+  }, [selectedCategory]);
+
+  const filteredCourses = courses.filter(c => {
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      c.fullname.toLowerCase().includes(q) ||
+      c.shortname.toLowerCase().includes(q) ||
+      (c.summary && c.summary.toLowerCase().includes(q))
+    );
+  });
   return (
     <>
   
@@ -50,61 +89,33 @@ const CourseGrid = () => {
                   style={{}}
                 >
                   <div className="accordion-body">
-                    <div>
-                      <label className="custom_check">
-                        <input type="checkbox" name="select_specialist" />
-                        <span className="checkmark" /> Backend (3)
-                      </label>
-                    </div>
-                    <div>
-                      <label className="custom_check">
-                        <input type="checkbox" name="select_specialist" />
-                        <span className="checkmark" /> CSS (2)
-                      </label>
-                    </div>
-                    <div>
-                      <label className="custom_check">
-                        <input type="checkbox" name="select_specialist" />
-                        <span className="checkmark" /> Frontend (2)
-                      </label>
-                    </div>
-                    <div>
-                      <label className="custom_check">
-                        <input type="checkbox" name="select_specialist" />
-                        <span className="checkmark" /> General (2)
-                      </label>
-                    </div>
-                    <div>
-                      <label className="custom_check">
-                        <input
-                          type="checkbox"
-                          name="select_specialist"
-                          defaultChecked
-                        />
-                        <span className="checkmark" /> IT &amp; Software (2)
-                      </label>
-                    </div>
-                    <div>
-                      <label className="custom_check">
-                        <input type="checkbox" name="select_specialist" />
-                        <span className="checkmark" /> Photography (2)
-                      </label>
-                    </div>
-                    <div>
-                      <label className="custom_check">
-                        <input type="checkbox" name="select_specialist" />
-                        <span className="checkmark" /> Programming Language (3)
-                      </label>
-                    </div>
-                    <div>
-                      <label className="custom_check mb-0">
-                        <input type="checkbox" name="select_specialist" />
-                        <span className="checkmark" /> Technology (2)
-                      </label>
-                    </div>
-                    <Link to="#" className="see-more-btn">
-                      See More
-                    </Link>
+                    {categories.length === 0 ? (
+                      <p className="text-muted fs-13 mb-0">Loading faculties...</p>
+                    ) : (
+                      categories.map((cat) => (
+                        <div key={cat.id} className="mb-2">
+                          <label className="custom_check">
+                            <input
+                              type="checkbox"
+                              name="moodle_category"
+                              checked={selectedCategory === cat.id}
+                              onChange={() => setSelectedCategory(selectedCategory === cat.id ? null : cat.id)}
+                            />
+                            <span className="checkmark" />
+                            {cat.name} ({cat.coursecount})
+                          </label>
+                        </div>
+                      ))
+                    )}
+                    {selectedCategory && (
+                      <button
+                        type="button"
+                        onClick={() => setSelectedCategory(null)}
+                        className="btn btn-sm btn-link text-danger p-0 mt-2"
+                      >
+                        Reset Category Filter
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -370,12 +381,18 @@ const CourseGrid = () => {
             <div className="row align-items-center">
               <div className="col-lg-4">
                 <div className="show-result text-center text-lg-start">
-                  <h6 className="fw-medium">Showing 1-9 of 50 results</h6>
+                  <h6 className="fw-medium">
+                    {loading ? (
+                      'Loading courses from Moodle...'
+                    ) : (
+                      `Showing ${filteredCourses.length} Moodle course${filteredCourses.length === 1 ? '' : 's'}`
+                    )}
+                  </h6>
                 </div>
               </div>
               <div className="col-lg-8">
                 <div className="show-filter add-course-info">
-                  <form action="#">
+                  <form onSubmit={(e) => e.preventDefault()}>
                     <div className="d-sm-flex justify-content-center justify-content-lg-end mb-1 mb-lg-0">
                       <div className="view-icons mb-2 mb-sm-0">
                         <Link to={all_routes.courseGrid} className="grid-view active">
@@ -385,18 +402,14 @@ const CourseGrid = () => {
                           <i className="isax isax-task" />
                         </Link>
                       </div>
-                      <select className="form-select">
-                        <option>Newly Published </option>
-                        <option>Trending Courses</option>
-                        <option>Top Rated</option>
-                        <option>Free Courses</option>
-                      </select>
-                      <div className=" search-group">
+                      <div className="search-group">
                         <i className="isax isax-search-normal-1" />
                         <input
                           type="text"
                           className="form-control"
-                          placeholder="Search"
+                          placeholder="Search Moodle courses..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
                         />
                       </div>
                     </div>
@@ -407,583 +420,91 @@ const CourseGrid = () => {
           </div>
           {/* /Filter */}
           <div className="row">
-            <div className="col-xl-4 col-md-6">
-              <div className="course-item-two course-item mx-0">
-                <div className="course-img">
-                  <Link to={all_routes.courseDetails}>
-                    <ImageWithBasePath
-                      src="assets/img/course/course-01.jpg"
-                      alt="img"
-                      className="img-fluid"
-                    />
-                  </Link>
-                  <div className="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-3">
-                    <div className="badge text-bg-danger">15% off</div>
-                    <Link to="#" className="fav-icon ms-auto">
-                      <i className="isax isax-heart" />
-                    </Link>
-                  </div>
+            {loading ? (
+              <div className="col-12 text-center py-5">
+                <div className="spinner-border text-primary" role="status">
+                  <span className="visually-hidden">Loading...</span>
                 </div>
-                <div className="course-content">
-                  <div className="d-flex justify-content-between mb-2">
-                    <div className="d-flex align-items-center">
-                      <Link
-                        to={all_routes.instructorDetails}
-                        className="avatar avatar-sm"
-                      >
-                        <ImageWithBasePath
-                          src="assets/img/user/user-29.jpg"
-                          alt="img"
-                          className="img-fluid avatar avatar-sm rounded-circle"
-                        />
-                      </Link>
-                      <div className="ms-2">
-                        <Link
-                          to={all_routes.instructorDetails}
-                          className="link-default fs-14"
-                        >
-                          Brenda Slaton
-                        </Link>
-                      </div>
-                    </div>
-                    <span className="badge badge-light rounded-pill bg-light d-inline-flex align-items-center fs-13 fw-medium mb-0">
-                      Design
-                    </span>
-                  </div>
-                  <h6 className="title mb-2">
-                    <Link to={all_routes.courseDetails}>
-                      Information About UI/UX Design Degree
-                    </Link>
-                  </h6>
-                  <p className="d-flex align-items-center mb-3">
-                    <i className="fa-solid fa-star text-warning me-2" />
-                    4.9 (200 Reviews)
-                  </p>
-                  <div className="d-flex align-items-center justify-content-between">
-                    <h5 className="text-secondary mb-0">$120</h5>
-                    <Link
-                      to={all_routes.courseDetails}
-                      className="btn btn-dark btn-sm d-inline-flex align-items-center"
+                <p className="mt-2 text-muted">Fetching live course catalog from Moodle Web Services...</p>
+              </div>
+            ) : filteredCourses.length === 0 ? (
+              <div className="col-12 text-center py-5">
+                <div className="empty-state">
+                  <i className="isax isax-book text-muted fs-40 mb-3" />
+                  <h5>No courses found</h5>
+                  <p className="text-muted">No courses match your filter or search query.</p>
+                  {(selectedCategory || searchQuery) && (
+                    <button
+                      type="button"
+                      className="btn btn-outline-primary btn-sm mt-2"
+                      onClick={() => {
+                        setSelectedCategory(null);
+                        setSearchQuery('');
+                      }}
                     >
-                      View Course
-                      <i className="isax isax-arrow-right-3 ms-1" />
-                    </Link>
-                  </div>
+                      Clear Filters
+                    </button>
+                  )}
                 </div>
               </div>
-            </div>
-            <div className="col-xl-4 col-md-6">
-              <div className="course-item-two course-item mx-0">
-                <div className="course-img">
-                  <Link to={all_routes.courseDetails}>
-                    <ImageWithBasePath
-                      src="assets/img/course/course-02.jpg"
-                      alt="img"
-                      className="img-fluid"
-                    />
-                  </Link>
-                  <div className="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-3">
-                    <Link to="#" className="fav-icon ms-auto">
-                      <i className="isax isax-heart" />
-                    </Link>
-                  </div>
-                </div>
-                <div className="course-content">
-                  <div className="d-flex justify-content-between mb-2">
-                    <div className="d-flex align-items-center">
-                      <Link
-                        to={all_routes.instructorDetails}
-                        className="avatar avatar-sm"
-                      >
-                        <ImageWithBasePath
-                          src="assets/img/user/user-30.jpg"
-                          alt="img"
-                          className="img-fluid avatar avatar-sm rounded-circle"
-                        />
-                      </Link>
-                      <div className="ms-2">
-                        <Link
-                          to={all_routes.instructorDetails}
-                          className="link-default fs-14"
-                        >
-                          Ana Reyes
+            ) : (
+              filteredCourses.map((course, index) => {
+                const categoryObj = categories.find((c) => c.id === course.categoryid);
+                const categoryName = categoryObj ? categoryObj.name : 'Faculty Course';
+                const courseImg = `assets/img/course/course-0${(index % 8) + 1}.jpg`;
+                const cleanSummary = course.summary ? course.summary.replace(/<[^>]*>?/gm, '') : 'Comprehensive degree course offering theoretical foundations and practical laboratory assessments.';
+                return (
+                  <div key={course.id} className="col-xl-4 col-md-6">
+                    <div className="course-item-two course-item mx-0 mb-4 shadow-sm border-0">
+                      <div className="course-img position-relative">
+                        <Link to={all_routes.courseDetails}>
+                          <ImageWithBasePath
+                            src={courseImg}
+                            alt={course.fullname}
+                            className="img-fluid"
+                          />
                         </Link>
+                        <div className="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-3">
+                          <span className="badge text-bg-primary">{course.shortname}</span>
+                          <Link to="#" className="fav-icon ms-auto">
+                            <i className="isax isax-heart" />
+                          </Link>
+                        </div>
+                      </div>
+                      <div className="course-content p-3">
+                        <div className="d-flex justify-content-between align-items-center mb-2">
+                          <span className="badge badge-light rounded-pill bg-light text-primary d-inline-flex align-items-center fs-12 fw-medium mb-0 text-truncate" style={{ maxWidth: '170px' }}>
+                            {categoryName}
+                          </span>
+                          <span className="text-muted fs-12">
+                            <i className="feather-users me-1" />
+                            {course.enrolledusercount || 120} Students
+                          </span>
+                        </div>
+                        <h6 className="title mb-2" style={{ minHeight: '44px' }}>
+                          <Link to={all_routes.courseDetails} className="text-dark fw-bold">
+                            {course.fullname}
+                          </Link>
+                        </h6>
+                        <p className="text-muted fs-13 mb-3 text-truncate" title={cleanSummary}>
+                          {cleanSummary}
+                        </p>
+                        <div className="d-flex align-items-center justify-content-between pt-2 border-top">
+                          <h6 className="text-success mb-0 fw-bold">TZS 150,000</h6>
+                          <Link
+                            to={all_routes.courseDetails}
+                            className="btn btn-dark btn-sm d-inline-flex align-items-center"
+                          >
+                            View Course
+                            <i className="isax isax-arrow-right-3 ms-1" />
+                          </Link>
+                        </div>
                       </div>
                     </div>
-                    <span className="badge badge-light rounded-pill bg-light d-inline-flex align-items-center fs-13 fw-medium mb-0">
-                      Wordpress
-                    </span>
                   </div>
-                  <h6 className="title mb-2">
-                    <Link to={all_routes.courseDetails}>
-                      Wordpress for Beginners - Master Wordpress Quickly
-                    </Link>
-                  </h6>
-                  <p className="d-flex align-items-center mb-3">
-                    <i className="fa-solid fa-star text-warning me-2" />
-                    4.4 (160 Reviews)
-                  </p>
-                  <div className="d-flex align-items-center justify-content-between">
-                    <h5 className="text-secondary mb-0">$140</h5>
-                    <Link
-                      to={all_routes.courseDetails}
-                      className="btn btn-dark btn-sm d-inline-flex align-items-center"
-                    >
-                      View Course
-                      <i className="isax isax-arrow-right-3 ms-1" />
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-xl-4 col-md-6">
-              <div className="course-item-two course-item mx-0">
-                <div className="course-img">
-                  <Link to={all_routes.courseDetails}>
-                    <ImageWithBasePath
-                      src="assets/img/course/course-03.jpg"
-                      alt="img"
-                      className="img-fluid"
-                    />
-                  </Link>
-                  <div className="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-3">
-                    <Link to="#" className="fav-icon ms-auto">
-                      <i className="isax isax-heart" />
-                    </Link>
-                  </div>
-                </div>
-                <div className="course-content">
-                  <div className="d-flex justify-content-between mb-2">
-                    <div className="d-flex align-items-center">
-                      <Link
-                        to={all_routes.instructorDetails}
-                        className="avatar avatar-sm"
-                      >
-                        <ImageWithBasePath
-                          src="assets/img/user/user-31.jpg"
-                          alt="img"
-                          className="img-fluid avatar avatar-sm rounded-circle"
-                        />
-                      </Link>
-                      <div className="ms-2">
-                        <Link
-                          to={all_routes.instructorDetails}
-                          className="link-default fs-14"
-                        >
-                          Andrew Pirtle
-                        </Link>
-                      </div>
-                    </div>
-                    <span className="badge badge-light rounded-pill bg-light d-inline-flex align-items-center fs-13 fw-medium mb-0">
-                      Design
-                    </span>
-                  </div>
-                  <h6 className="title mb-2">
-                    <Link to={all_routes.courseDetails}>
-                      Sketch from A to Z (2024): Become an app designer
-                    </Link>
-                  </h6>
-                  <p className="d-flex align-items-center mb-3">
-                    <i className="fa-solid fa-star text-warning me-2" />
-                    4.4 (160 Reviews)
-                  </p>
-                  <div className="d-flex align-items-center justify-content-between">
-                    <h5 className="text-secondary mb-0">$140</h5>
-                    <Link
-                      to={all_routes.courseDetails}
-                      className="btn btn-dark btn-sm d-inline-flex align-items-center"
-                    >
-                      View Course
-                      <i className="isax isax-arrow-right-3 ms-1" />
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-xl-4 col-md-6">
-              <div className="course-item-two course-item mx-0">
-                <div className="course-img">
-                  <Link to={all_routes.courseDetails}>
-                    <ImageWithBasePath
-                      src="assets/img/course/course-04.jpg"
-                      alt="img"
-                      className="img-fluid"
-                    />
-                  </Link>
-                  <div className="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-3">
-                    <Link to="#" className="fav-icon ms-auto">
-                      <i className="isax isax-heart" />
-                    </Link>
-                  </div>
-                </div>
-                <div className="course-content">
-                  <div className="d-flex justify-content-between mb-2">
-                    <div className="d-flex align-items-center">
-                      <Link
-                        to={all_routes.instructorDetails}
-                        className="avatar avatar-sm"
-                      >
-                        <ImageWithBasePath
-                          src="assets/img/user/user-32.jpg"
-                          alt="img"
-                          className="img-fluid avatar avatar-sm rounded-circle"
-                        />
-                      </Link>
-                      <div className="ms-2">
-                        <Link
-                          to={all_routes.instructorDetails}
-                          className="link-default fs-14"
-                        >
-                          Christy Garner
-                        </Link>
-                      </div>
-                    </div>
-                    <span className="badge badge-light rounded-pill bg-light d-inline-flex align-items-center fs-13 fw-medium mb-0">
-                      Programming
-                    </span>
-                  </div>
-                  <h6 className="title mb-2">
-                    <Link to={all_routes.courseDetails}>
-                      Build Responsive Real World Websites with Crash Course
-                    </Link>
-                  </h6>
-                  <p className="d-flex align-items-center mb-3">
-                    <i className="fa-solid fa-star text-warning me-2" />
-                    4.2 (220 Reviews)
-                  </p>
-                  <div className="d-flex align-items-center justify-content-between">
-                    <h5 className="text-secondary mb-0">$200</h5>
-                    <Link
-                      to={all_routes.courseDetails}
-                      className="btn btn-dark btn-sm d-inline-flex align-items-center"
-                    >
-                      View Course
-                      <i className="isax isax-arrow-right-3 ms-1" />
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-xl-4 col-md-6">
-              <div className="course-item-two course-item mx-0">
-                <div className="course-img">
-                  <Link to={all_routes.courseDetails}>
-                    <ImageWithBasePath
-                      src="assets/img/course/course-05.jpg"
-                      alt="img"
-                      className="img-fluid"
-                    />
-                  </Link>
-                  <div className="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-3">
-                    <Link to="#" className="fav-icon ms-auto">
-                      <i className="isax isax-heart" />
-                    </Link>
-                  </div>
-                </div>
-                <div className="course-content">
-                  <div className="d-flex justify-content-between mb-2">
-                    <div className="d-flex align-items-center">
-                      <Link
-                        to={all_routes.instructorDetails}
-                        className="avatar avatar-sm"
-                      >
-                        <ImageWithBasePath
-                          src="assets/img/user/user-32.jpg"
-                          alt="img"
-                          className="img-fluid avatar avatar-sm rounded-circle"
-                        />
-                      </Link>
-                      <div className="ms-2">
-                        <Link
-                          to={all_routes.instructorDetails}
-                          className="link-default fs-14"
-                        >
-                          Justin Gregory
-                        </Link>
-                      </div>
-                    </div>
-                    <span className="badge badge-light rounded-pill bg-light d-inline-flex align-items-center fs-13 fw-medium mb-0">
-                      Programming
-                    </span>
-                  </div>
-                  <h6 className="title mb-2">
-                    <Link to={all_routes.courseDetails}>
-                      Learn JavaScript and Express to become a Expert
-                    </Link>
-                  </h6>
-                  <p className="d-flex align-items-center mb-3">
-                    <i className="fa-solid fa-star text-warning me-2" />
-                    4.4 (180 Reviews)
-                  </p>
-                  <div className="d-flex align-items-center justify-content-between">
-                    <h5 className="text-secondary mb-0">$130</h5>
-                    <Link
-                      to={all_routes.courseDetails}
-                      className="btn btn-dark btn-sm d-inline-flex align-items-center"
-                    >
-                      View Course
-                      <i className="isax isax-arrow-right-3 ms-1" />
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-xl-4 col-md-6">
-              <div className="course-item-two course-item mx-0">
-                <div className="course-img">
-                  <Link to={all_routes.courseDetails}>
-                    <ImageWithBasePath
-                      src="assets/img/course/course-06.jpg"
-                      alt="img"
-                      className="img-fluid"
-                    />
-                  </Link>
-                  <div className="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-3">
-                    <Link to="#" className="fav-icon ms-auto">
-                      <i className="isax isax-heart" />
-                    </Link>
-                  </div>
-                </div>
-                <div className="course-content">
-                  <div className="d-flex justify-content-between mb-2">
-                    <div className="d-flex align-items-center">
-                      <Link
-                        to={all_routes.instructorDetails}
-                        className="avatar avatar-sm"
-                      >
-                        <ImageWithBasePath
-                          src="assets/img/user/user-33.jpg"
-                          alt="img"
-                          className="img-fluid avatar avatar-sm rounded-circle"
-                        />
-                      </Link>
-                      <div className="ms-2">
-                        <Link
-                          to={all_routes.instructorDetails}
-                          className="link-default fs-14"
-                        >
-                          Carolyn Hines
-                        </Link>
-                      </div>
-                    </div>
-                    <span className="badge badge-light rounded-pill bg-light d-inline-flex align-items-center fs-13 fw-medium mb-0">
-                      Programming
-                    </span>
-                  </div>
-                  <h6 className="title mb-2">
-                    <Link to={all_routes.courseDetails}>
-                      Introduction to Python Programming
-                    </Link>
-                  </h6>
-                  <p className="d-flex align-items-center mb-3">
-                    <i className="fa-solid fa-star text-warning me-2" />
-                    4.4 (180 Reviews)
-                  </p>
-                  <div className="d-flex align-items-center justify-content-between">
-                    <h5 className="text-secondary mb-0">$130</h5>
-                    <Link
-                      to={all_routes.courseDetails}
-                      className="btn btn-dark btn-sm d-inline-flex align-items-center"
-                    >
-                      View Course
-                      <i className="isax isax-arrow-right-3 ms-1" />
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-xl-4 col-md-6">
-              <div className="course-item-two course-item mx-0">
-                <div className="course-img">
-                  <Link to={all_routes.courseDetails}>
-                    <ImageWithBasePath
-                      src="assets/img/course/course-07.jpg"
-                      alt="img"
-                      className="img-fluid"
-                    />
-                  </Link>
-                  <div className="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-3">
-                    <Link to="#" className="fav-icon ms-auto">
-                      <i className="isax isax-heart" />
-                    </Link>
-                  </div>
-                </div>
-                <div className="course-content">
-                  <div className="d-flex justify-content-between mb-2">
-                    <div className="d-flex align-items-center">
-                      <Link
-                        to={all_routes.instructorDetails}
-                        className="avatar avatar-sm"
-                      >
-                        <ImageWithBasePath
-                          src="assets/img/user/user-34.jpg"
-                          alt="img"
-                          className="img-fluid avatar avatar-sm rounded-circle"
-                        />
-                      </Link>
-                      <div className="ms-2">
-                        <Link
-                          to={all_routes.instructorDetails}
-                          className="link-default fs-14"
-                        >
-                          Rafael Miller
-                        </Link>
-                      </div>
-                    </div>
-                    <span className="badge badge-light rounded-pill bg-light d-inline-flex align-items-center fs-13 fw-medium mb-0">
-                      Programming
-                    </span>
-                  </div>
-                  <h6 className="title mb-2">
-                    <Link to={all_routes.courseDetails}>
-                      Build Responsive Websites with HTML5 and CSS3
-                    </Link>
-                  </h6>
-                  <p className="d-flex align-items-center mb-3">
-                    <i className="fa-solid fa-star text-warning me-2" />
-                    4.4 (180 Reviews)
-                  </p>
-                  <div className="d-flex align-items-center justify-content-between">
-                    <h5 className="text-secondary mb-0">$170</h5>
-                    <Link
-                      to={all_routes.courseDetails}
-                      className="btn btn-dark btn-sm d-inline-flex align-items-center"
-                    >
-                      View Course
-                      <i className="isax isax-arrow-right-3 ms-1" />
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-xl-4 col-md-6">
-              <div className="course-item-two course-item mx-0">
-                <div className="course-img">
-                  <Link to={all_routes.courseDetails}>
-                    <ImageWithBasePath
-                      src="assets/img/course/course-08.jpg"
-                      alt="img"
-                      className="img-fluid"
-                    />
-                  </Link>
-                  <div className="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-3">
-                    <Link to="#" className="fav-icon ms-auto">
-                      <i className="isax isax-heart" />
-                    </Link>
-                  </div>
-                </div>
-                <div className="course-content">
-                  <div className="d-flex justify-content-between mb-2">
-                    <div className="d-flex align-items-center">
-                      <Link
-                        to={all_routes.instructorDetails}
-                        className="avatar avatar-sm"
-                      >
-                        <ImageWithBasePath
-                          src="assets/img/user/user-35.jpg"
-                          alt="img"
-                          className="img-fluid avatar avatar-sm rounded-circle"
-                        />
-                      </Link>
-                      <div className="ms-2">
-                        <Link
-                          to={all_routes.instructorDetails}
-                          className="link-default fs-14"
-                        >
-                          Nancy Duarte
-                        </Link>
-                      </div>
-                    </div>
-                    <span className="badge badge-light rounded-pill bg-light d-inline-flex align-items-center fs-13 fw-medium mb-0">
-                      Design
-                    </span>
-                  </div>
-                  <h6 className="title mb-2">
-                    <Link to={all_routes.courseDetails}>
-                      Information About Photoshop Design Degree
-                    </Link>
-                  </h6>
-                  <p className="d-flex align-items-center mb-3">
-                    <i className="fa-solid fa-star text-warning me-2" />
-                    4.4 (180 Reviews)
-                  </p>
-                  <div className="d-flex align-items-center justify-content-between">
-                    <h5 className="text-secondary mb-0">$170</h5>
-                    <Link
-                      to={all_routes.courseDetails}
-                      className="btn btn-dark btn-sm d-inline-flex align-items-center"
-                    >
-                      View Course
-                      <i className="isax isax-arrow-right-3 ms-1" />
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-xl-4 col-md-6">
-              <div className="course-item-two course-item mx-0">
-                <div className="course-img">
-                  <Link to={all_routes.courseDetails}>
-                    <ImageWithBasePath
-                      src="assets/img/course/course-09.jpg"
-                      alt="img"
-                      className="img-fluid"
-                    />
-                  </Link>
-                  <div className="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-3">
-                    <Link to="#" className="fav-icon ms-auto">
-                      <i className="isax isax-heart" />
-                    </Link>
-                  </div>
-                </div>
-                <div className="course-content">
-                  <div className="d-flex justify-content-between mb-2">
-                    <div className="d-flex align-items-center">
-                      <Link
-                        to={all_routes.instructorDetails}
-                        className="avatar avatar-sm"
-                      >
-                        <ImageWithBasePath
-                          src="assets/img/user/user-36.jpg"
-                          alt="img"
-                          className="img-fluid avatar avatar-sm rounded-circle"
-                        />
-                      </Link>
-                      <div className="ms-2">
-                        <Link
-                          to={all_routes.instructorDetails}
-                          className="link-default fs-14"
-                        >
-                          James Kagan
-                        </Link>
-                      </div>
-                    </div>
-                    <span className="badge badge-light rounded-pill bg-light d-inline-flex align-items-center fs-13 fw-medium mb-0">
-                      Design
-                    </span>
-                  </div>
-                  <h6 className="title mb-2">
-                    <Link to={all_routes.courseDetails}>
-                      C# Developers Double Your Coding with Visual Studio
-                    </Link>
-                  </h6>
-                  <p className="d-flex align-items-center mb-3">
-                    <i className="fa-solid fa-star text-warning me-2" />
-                    4.4 (180 Reviews)
-                  </p>
-                  <div className="d-flex align-items-center justify-content-between">
-                    <h5 className="text-secondary mb-0">$180</h5>
-                    <Link
-                      to={all_routes.courseDetails}
-                      className="btn btn-dark btn-sm d-inline-flex align-items-center"
-                    >
-                      View Course
-                      <i className="isax isax-arrow-right-3 ms-1" />
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
+                );
+              })
+            )}
           </div>
           {/* /pagination */}
           <div className="row align-items-center">

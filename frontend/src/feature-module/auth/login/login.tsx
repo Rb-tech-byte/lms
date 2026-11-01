@@ -42,11 +42,11 @@ const Login = () => {
     navigate(profile.dashboardUrl);
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    login(email || 'student@out.ac.tz', password);
+    await login(email || 'student@out.ac.tz', password);
     const trimmed = (email || '').toLowerCase();
-    if (trimmed.includes('admin')) {
+    if (trimmed.includes('admin') || trimmed === 'admin') {
       navigate('/admin/dashboard');
     } else if (trimmed.includes('instructor') || trimmed.includes('teacher')) {
       navigate(route.instructorDashboard);

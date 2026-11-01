@@ -1,69 +1,72 @@
-/**
- * Payment Service for OUT LMS
- * Initiates checkout orders with Pesapal and Selcom, and checks transaction status.
- */
+import { callMoodleWs } from './apiClient';
+import { MOODLE_ENDPOINTS } from './moodleEndpoints';
 
-export interface PaymentOrderRequest {
-  courseId: number;
-  courseTitle: string;
-  amount: number;
-  currency: 'TZS' | 'USD';
-  gateway: 'pesapal' | 'selcom';
-  phoneNumber?: string;
-  email: string;
-  studentName: string;
+export interface PesapalOrderRequest {
+  component?: string;     // Defaults to 'enrol_fee'
+  paymentarea?: string;   // Defaults to 'fee'
+  itemid: number;         // Enrolment instance ID or fee item ID
+  description?: string;   // Course or payment description
 }
 
-export interface PaymentOrderResponse {
-  orderId: string;
-  redirectUrl?: string;
-  status: 'PENDING' | 'COMPLETED' | 'FAILED';
-  gatewayReference?: string;
+export interface PesapalOrderResult {
+  order_tracking_id: string;
+  merchant_reference: string;
+  redirect_url: string;
+  amount: string;
+  currency: string;
 }
 
-const GATEWAY_URL = process.env.REACT_APP_GATEWAY_URL || 'http://localhost:5000/api';
+export interface PesapalStatusResult {
+  order_tracking_id: string;
+  status: 'PENDING' | 'COMPLETED' | 'FAILED' | string;
+  amount: string;
+  currency: string;
+  payment_method: string;
+  payment_account: string;
+  is_completed: boolean;
+  message: string;
+}
 
 export const paymentService = {
   /**
-   * Initiates payment order via the Gateway Bridge
+   * Creates an order with Pesapal via Moodle's native paygw_pesapal Web Service.
+   * Directly contacts Moodle 5.x REST backend and returns Pesapal tracking ID & redirect URL.
    */
-  async createOrder(order: PaymentOrderRequest): Promise<PaymentOrderResponse> {
+  async createPesapalOrder(request: PesapalOrderRequest): Promise<PesapalOrderResult> {
     try {
-      const response = await fetch(`${GATEWAY_URL}/payment/create-order`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(order),
-      });
-
-      if (response.ok) {
-        return await response.json();
-      }
-    } catch (e) {
-      console.warn('Gateway bridge not reachable, using mock response:', e);
+      const result = await callMoodleWs<PesapalOrderResult>(
+        MOODLE_ENDPOINTS.PESAPAL_CREATE_ORDER,
+        {
+          component: request.component || 'enrol_fee',
+          paymentarea: request.paymentarea || 'fee',
+          itemid: request.itemid,
+          description: request.description || 'Course Enrolment Fee',
+        }
+      );
+      return result;
+    } catch (error) {
+      console.error('Failed to create Pesapal order via Moodle WS:', error);
+      throw error;
     }
-
-    // Mock fallback for instant demo testing
-    return {
-      orderId: `OUT-ORD-${Date.now().toString().slice(-6)}`,
-      status: 'PENDING',
-      redirectUrl: order.gateway === 'pesapal' ? 'https://demo.pesapal.com' : undefined,
-    };
   },
 
   /**
-   * Polls or checks payment verification status
+   * Checks the status of an ongoing Pesapal transaction via Moodle Web Service.
+   * If COMPLETED, Moodle automatically triggers fee enrolment and marks the student enrolled.
    */
-  async checkStatus(orderId: string): Promise<'PENDING' | 'COMPLETED' | 'FAILED'> {
+  async checkPesapalStatus(orderTrackingId: string): Promise<PesapalStatusResult> {
     try {
-      const response = await fetch(`${GATEWAY_URL}/payment/status/${orderId}`);
-      if (response.ok) {
-        const data = await response.json();
-        return data.status;
-      }
-    } catch (e) {
-      console.warn('Status check fallback');
+      const result = await callMoodleWs<PesapalStatusResult>(
+        MOODLE_ENDPOINTS.PESAPAL_CHECK_STATUS,
+        {
+          order_tracking_id: orderTrackingId,
+        }
+      );
+      return result;
+    } catch (error) {
+      console.error('Failed to check Pesapal transaction status via Moodle WS:', error);
+      throw error;
     }
-
-    return 'COMPLETED';
   },
 };
+

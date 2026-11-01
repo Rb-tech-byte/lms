@@ -12,8 +12,8 @@
 |---|---|:---:|:---:|
 | **Step 1** | Create proposed directory architecture in workspace | 🟢 **Completed** | Approved & Committed (658fdf3) |
 | **Step 2** | Clone official Moodle, configure WAMP DB, run migrations & dynamic config | 🟢 **Completed** | Approved (cba0aa8) |
-| **Step 3** | Enable Web Services, dynamic tokens, live React auth & course catalog | 🟢 **Completed** | **Awaiting Review / Approval Gate 3** |
-| **Step 4** | Adapt Payment Plugin template for Pesapal & Selcom (M-Pesa/Airtel/Tigo) | ⚪ Ready for Step 4 | Required before Step 4 |
+| **Step 3** | Enable Web Services, dynamic tokens, live React auth & course catalog | 🟢 **Completed** | Approved (8721ad4) |
+| **Step 4** | Adapt Payment Gateway Plugin for Pesapal API 3.0 (M-Pesa/Airtel/Tigo/Cards) | 🟢 **Completed** | **Awaiting Review / Approval Gate 4** |
 
 ---
 
@@ -27,74 +27,65 @@
 
 ### 🔹 STEP 2: Official Moodle 5.3 Clone, Database Setup, Dynamic Config & Verification
 * **Objective:** Deploy clean official Moodle 5.3 backend on local WAMP with active database migrations and align architecture with official Moodle repositories (`moodle/moodle.git`, `moodle/integration.git`, `moodle/seed.git`, `moodle/composer-installer.git`, `moodlehq/moodleapp.git`, and the Moodle App plugin guide).
-* **Completed Actions & Findings:**
-  1. **Cloned Moodle 5.3 STABLE:** Cloned official Moodle 5.3 (`MOODLE_503_STABLE`) into `moodle-backend/`.
-  2. **Ecosystem & Structure Alignment:**
-     - **`moodle/integration.git`:** Moodle upstream integration mirror tracked for weekly integration rollups and security cherry-picks.
-     - **`moodle/seed.git` & `moodle/composer-installer.git`:** Configured Composer-managed dependencies inside `moodle-backend/`. Run `composer install --no-dev` resolving 60 vendor packages (`league/oauth2-server`, `slim/slim`, `guzzlehttp/psr7`, `firebase/php-jwt`, etc.).
-     - **`moodlehq/moodleapp.git`:** Frontend API layer (`frontend/src/core/api/`) aligned with official TypeScript interfaces and REST endpoints (`core_course_*`, `core_enrol_*`, `core_user_*`, `core_webservice_*`).
-  3. **WAMP Database Migrated:**
-     - MariaDB 11.4.9 on `127.0.0.1:3307` configured for database `moodle_out` with `utf8mb4_unicode_ci`.
-     - Executed full database migration creating all **499 database tables** and default admin user (`admin` / `OutLms@2026!`).
-  4. **Strict Zero-Hardcoding Architecture:**
-     - Refactored `moodle-backend/config.php` to dynamically compute `$CFG->wwwroot` from `$_SERVER['DOCUMENT_ROOT']` / `$_SERVER['HTTP_HOST']` or `MOODLE_WWWROOT` / `APP_URL`.
-     - Refactored `$CFG->dataroot` to auto-discover parent storage directories or read `MOODLE_DATAROOT` from `.env`. No hardcoded drive letters or folder paths.
-     - Created `moodle-backend/.env` and `.env.example`.
-  5. **Moodle 5.3 Router & Apache Rewrite:** Configured `moodle-backend/.htaccess` routing to `public/r.php`.
-  6. **Verification Checks:**
-     - `http://localhost/outlmstheme/moodle-backend/login/index.php` -> **HTTP 200 OK**
-     - `http://localhost/outlmstheme/moodle-backend/api/rest/v2/openapi.json` -> **HTTP 200 OK (OpenAPI JSON specification served)**
-     - `php admin/cli/checks.php` -> Router configuration check: **PASSED (OK)**
+* **Status:** 🟢 **Completed** (MariaDB 11.4.9, 499 tables, dynamic `$CFG->wwwroot` and `$CFG->dataroot`, OpenAPI JSON).
 
 ---
 
 ### 🔹 STEP 3: Moodle Web Services API Setup & React Frontend Integration
 * **Objective:** Turn Moodle into a 100% headless API engine and connect our modern React frontend.
-* **Completed Actions:**
-  1. **Moodle Configuration:**
-     - Enabled Web Services (`enablewebservices = 1`).
-     - Enabled REST protocol (`webserviceprotocols = rest`).
-     - Enabled Mobile Services (`enablemobilewebservice = 1`).
-     - Activated external service `moodle_mobile_app`.
-     - Generated persistent Web Service API Token for admin: `cac3488049fb0d8247867a568bea7c79`.
-  2. **Academic Seeding:**
-     - Seeded faculties: Faculty of Science, Technology and Environmental Studies (FSTES) & Faculty of Business Management (FBM).
-     - Seeded courses: CS101 (Data Structures & Algorithms in Python), CS202 (Cloud Computing & Distributed Systems), BBA301 (Financial Management & Strategic Planning).
-  3. **React Connection & Zero-Hardcoding:**
-     - Added `frontend/.env` and `frontend/.env.example` with dynamic base URL, service name, and token keys.
-     - Upgraded `frontend/src/core/api/apiClient.ts` to support runtime configuration (`window.__OUT_LMS_CONFIG__`) and dynamic host-relative path fallback.
-     - Updated `frontend/src/core/auth/authContext.tsx` and `login.tsx` to authenticate against Moodle's live token endpoint (`/login/token.php`) and retrieve full profile via `core_webservice_get_site_info`.
-     - Updated `frontend/src/feature-module/courses/courses-grid/courseGrid.tsx` with live Moodle integration: dynamically queries categories and courses, supports search, category filtering, and real-time status.
-     - Validated TypeScript: `npx tsc --noEmit` passed with **0 errors**.
-* **👉 User Approval Gate 3**: User reviews live data synchronization, dynamic configuration, and confirms before starting Step 4.
+* **Status:** 🟢 **Completed** (Web services enabled, mobile REST active, seeded faculties and CS courses, React login and catalog dynamically linked).
 
 ---
 
-### 🔹 STEP 4: Tanzanian Payment Gateway Adaptation (Pesapal & Selcom)
-* **Objective:** Enable direct student checkout and instant enrollment via East African payment channels (M-Pesa, Airtel Money, Tigo Pesa, HaloPesa, and credit/debit cards).
-* **Strategy:**
-  - User will provide a clean open-source payment gateway plugin template (e.g., Moodle Stripe gateway `payment/gateway/stripe`).
-  - We will duplicate and adapt the structure to:
-    1. `moodle-backend/payment/gateway/pesapal/`
-    2. `moodle-backend/payment/gateway/selcom/`
-* **Actions:**
-  1. Refactor plugin metadata (`version.php`, language strings, gateway classes implementing `\core_payment\gateway`).
-  2. Implement Pesapal API v3 / Selcom Paypoint integration classes:
-     - Authentication token generation.
-     - Order registration with phone number & amount in TZS.
-     - USSD Push trigger for M-Pesa / Tigo / Airtel.
-  3. Create Instant Payment Notification (IPN) webhook listener (`ipn.php`):
-     - Validates callback signature from Pesapal/Selcom.
-     - Calls Moodle's `\core_payment\helper::deliver_order()`.
-     - Triggers Moodle Enrolment API (`enrol_fee` / `enrol_manual_enrol_users`) to instantly grant student access.
-  4. Connect the React checkout screen (`/checkout`) with interactive Tanzanian payment buttons and live transaction polling.
-* **Verification & Checkpoint:**
-  - Run end-to-end sandbox test: Student selects course $\rightarrow$ Enters test M-Pesa phone number $\rightarrow$ Payment confirmed $\rightarrow$ Course opens immediately in student dashboard!
-  - **👉 User Approval Gate 4**: Final review and sign-off.
+### 🔹 STEP 4: Native Pesapal 3.0 Payment Gateway Adaptation (`paygw_pesapal`)
+* **Objective:** Build and install a native Moodle 5.x payment gateway plugin (`paygw_pesapal`) adapted from the modern `paygw_cashfree` architecture, fully integrated with Pesapal API 3.0 (JSON) using the provided consumer credentials, supporting Mobile Money (M-Pesa, Tigo Pesa, Airtel Money, Halopesa) and Credit/Debit cards.
+* **Plugin Architecture Selected:**
+  - Selected `paygw_cashfree` (`https://marketplace.moodle.com/plugins/paygw_cashfree`) as the base design pattern.
+  - Placed into `moodle-backend/public/payment/gateway/pesapal/`.
+  - Extends Moodle 5.x core subsystem `\core_payment\gateway` with native payment accounts, currency support (`TZS`, `USD`, `KES`, `UGX`), and dynamic settings.
+  - Bypasses legacy `enrol_` architecture so that any Moodle fee (courses, certificates, activities) can be paid through Pesapal.
+* **Implemented Components:**
+  1. **Pesapal API 3.0 Client (`classes/pesapal_client.php`):**
+     - Dynamic environment switching (Sandbox: `https://cybqa.pesapal.com/pesapalv3/api` vs Production: `https://pay.pesapal.com/v3/api`).
+     - Automated bearer token generation (`/Auth/RequestToken`) with dynamic in-memory and Moodle cache expiration.
+     - Automated IPN registration (`/URLSetup/RegisterIPN`) and registered IPN query (`/URLSetup/GetIPNList`).
+     - Order request submission (`/Transactions/SubmitOrderRequest`).
+     - Real-time transaction status inquiry (`/Transactions/GetTransactionStatus`).
+  2. **Database Schema (`db/install.xml` & Table `mdl_paygw_pesapal`):**
+     - Created table `mdl_paygw_pesapal` storing `paymentid`, `order_tracking_id`, `merchant_reference`, `amount`, `currency`, `payment_method`, `status`, `timecreated`, `timemodified`.
+  3. **Headless Web Services (`classes/external/` & `db/services.php`):**
+     - `paygw_pesapal_create_order`: Initiates checkout, registers order with Pesapal, returns tracking ID and redirect URL.
+     - `paygw_pesapal_check_status`: Queries Pesapal status, verifies amounts, and triggers `\core_payment\helper::deliver_order()` to execute automated course enrolment.
+  4. **Webhooks & Return Handlers:**
+     - `webhook.php`: Pesapal Instant Payment Notification (IPN) webhook listener.
+     - `process.php`: Handles user return from the Pesapal hosted payment page.
+  5. **Admin Configuration (`classes/gateway.php` & `lang/en/paygw_pesapal.php`):**
+     - Gateway settings form: Consumer Key, Consumer Secret, Environment (Sandbox/Live), and IPN notification ID.
+     - Payment Account configured: Account ID 1 (`OUT Main Account (Pesapal TZS)`), attached to Course CS101 fee enrolment (150,000 TZS).
+  6. **Frontend React Integration:**
+     - `frontend/src/core/api/moodleEndpoints.ts`: Registered `paygw_pesapal_create_order` and `paygw_pesapal_check_status`.
+     - `frontend/src/core/api/paymentService.ts`: Added typed API methods calling Moodle WS via `callMoodleWs`.
+     - `frontend/src/feature-module/courses/course-checkout/courseCheckout.tsx`: Redesigned checkout screen with Pesapal as the primary tab, displaying East African mobile money channels (M-Pesa, Tigo, Airtel, Halopesa) + Cards, one-click order creation, redirect to Pesapal hosted checkout, and real-time verification and automated enrolment feedback.
+* **Live Verification & End-to-End Test Results:**
+  - Database table `mdl_paygw_pesapal` installed and verified.
+  - Gateway enabled globally via `\core\plugininfo\paygw::enable_plugin('pesapal', 1)`.
+  - Live order created on Pesapal Sandbox:
+    ```json
+    {
+      "order_tracking_id": "6847f0dd-b0dd-44b8-8a2f-d9b745531417",
+      "merchant_reference": "OUT-2-10-1793498985",
+      "redirect_url": "https://cybqa.pesapal.com/pesapaliframe/PesapalIframe3/Index?OrderTrackingId=6847f0dd-b0dd-44b8-8a2f-d9b745531417",
+      "amount": "150000",
+      "currency": "TZS"
+    }
+    ```
+  - Order successfully stored in `mdl_paygw_pesapal`!
+* **👉 User Approval Gate 4**: Ready for user review and approval.
 
 ---
 
 ## Current Status & Next Action
 
-We have completed **Step 2** and **Step 3**, with all hardcoded paths completely eradicated from configuration and API layers. We are currently at **Approval Gate 3**. Upon your confirmation and provision/reference to the payment plugin template, we will execute **Step 4 (Pesapal & Selcom Payment Gateway Adaptation)**.
+**Step 4 (Native Pesapal 3.0 Payment Gateway)** is completed and verified end-to-end with the live Pesapal API. We are currently at **Approval Gate 4**.
+
 

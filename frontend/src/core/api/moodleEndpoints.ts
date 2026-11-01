@@ -42,6 +42,10 @@ export const MOODLE_ENDPOINTS = {
   SET_SITE_CONFIG: 'local_outlms_bridge_set_config',
   GET_ANALYTICS: 'local_outlms_bridge_get_analytics',
   PROCESS_PAYMENT_CALLBACK: 'local_outlms_bridge_payment_callback',
+
+  // Native Pesapal Payment Gateway (paygw_pesapal)
+  PESAPAL_CREATE_ORDER: 'paygw_pesapal_create_order',
+  PESAPAL_CHECK_STATUS: 'paygw_pesapal_check_status',
 } as const;
 
 export type MoodleFunction = typeof MOODLE_ENDPOINTS[keyof typeof MOODLE_ENDPOINTS];

@@ -451,4 +451,38 @@
     - **Dashboard Primary Navigation:** Verified `Dashboard`, `My courses`, and `Site administration` are displayed in the top navbar (`dashboard_top_1793550000755.png`).
     - **Site Administration Console:** Navigated to `/admin/search.php` and verified all administrative tabs (General, Users, Courses, Grades, Plugins, Appearance, Server, Reports, Development) render smoothly (`site_administration_page_1793550085465.png`).
   - Recorded browser verification session: `moodle_my_full_features_1793549721430.webp`.
-* **👉 Master Plan Status**: All Moodle Dashboard Features, Navigation, and Site Administration Consoles Successfully Enabled & Verified.
+* **👉 User Approval Gate 14**: Approved & Committed (`cf41521`).
+ 
+---
+
+### 🔹 STEP 15: Moodle LMS REST API v2 (OpenAPI 3.1) Architecture & Swagger UI Integration
+* **Objective:** Inspect, document, and connect the modern attribute-based Moodle REST API v2 (`api/rest/v2/openapi.json`) and interactive Swagger UI console (`admin/swagger`) for developer documentation, question banks, and headless API consumption.
+* **Architecture & Endpoint Breakdown:**
+  1. **OpenAPI 3.1 Specification Engine (`/api/rest/v2/openapi.json`):**
+     - Powered by Moodle 5.x modern `\core\router` architecture using PHP 8.x attributes (`#[route(path: '/...', method: ['...'])]`).
+     - Standard Server Definition: `http://localhost/outlmstheme/moodle-backend/api/rest/v2` (Open University of Tanzania LMS).
+     - Live OAS 3.1 Schemas for error stacktraces, request/response models, and OAuth2 security definitions.
+  2. **Core API Domain Collections:**
+     - **`core`**:
+       - `GET /core/templates/{themename}/{component}/{identifier}`: Dynamic runtime template fetcher.
+     - **`admin`**:
+       - OAuth2 Server Client lifecycle management (`/admin/oauth2/server/clients/{client}/secrets/create`, `secrets`, `secrets/revoke`, `disable`, `reactivate`, `delete`).
+     - **`question`**:
+       - `GET /question/counts`: Question bank metrics.
+       - `GET /question/banks`: Question bank entries.
+       - `GET /question/categories`: Categorized examination question hierarchy.
+     - **`user`**:
+       - `GET /user/{user}/preferences` & `GET /user/{user}/preferences/{preference}`: User preference retrieval.
+       - `POST /user/{user}/preferences` & `POST /user/{user}/preferences/{preference}`: User preference updates.
+  3. **Interactive Swagger UI Console (`admin/swagger`):**
+     - Live web UI running Swagger UI v5.32.14 with Hierarchical Tags plugin and PKCE OAuth2 authorization.
+     - "Try it out" interactive testing console directly connected to the local Moodle 5.x server.
+* **Live Verification & End-to-End Test Results:**
+  - Tested `/api/rest/v2/openapi.json` via HTTP: verified valid OpenAPI 3.1.0 document output.
+  - Browser verification conducted via `browser_subagent`:
+    - Navigated to `http://localhost/outlmstheme/moodle-backend/admin/swagger`.
+    - Verified OpenAPI 3.1 interface loaded with server URL, tags (`core`, `admin`, `question`, `user`).
+    - Expanded `/question/counts` and `/user/{user}/preferences` endpoints and verified parameter definitions.
+    - Captured full page screenshot: `swagger_ui_page_1793556351255.png` and expanded view: `swagger_ui_expanded_1793556374830.png`.
+  - Recorded browser verification session: `moodle_swagger_ui_1793556284344.webp`.
+* **👉 Master Plan Status**: Moodle LMS REST API v2 (OpenAPI 3.1) and Swagger UI Fully Verified & Documented.

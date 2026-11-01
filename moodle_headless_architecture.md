@@ -134,34 +134,49 @@ Here is the exact structural organization for the complete enterprise ecosystem,
 │   ├── config.php                        # Environment & Moodle credentials
 │   └── .env.example
 │
-└── 📂 moodle-backend/                     # Moodle 5.3 Core Engine
+└── 📂 moodle-backend/                     # Moodle 5.3 Core Engine (STABLE)
     ├── 📂 admin/                         # Native Moodle site administration & CLI scripts
-    │   └── 📂 cli/                       # purge_caches.php, upgrade.php, install_plugin.php
+    │   └── 📂 cli/                       # purge_caches.php, upgrade.php, install_plugin.php, checks.php
+    ├── 📂 public/                        # Split public webroot (served via Apache/Nginx)
+    │   ├── index.php                     # Moodle public homepage
+    │   ├── r.php                         # Core HTTP Router (Moodle 5.x modern REST/API routes)
+    │   ├── 📂 webservice/                # Native Moodle REST endpoint (/webservice/rest/server.php)
+    │   ├── 📂 payment/gateway/           # Core payment gateways
+    │   ├── 📂 local/                     # Local plugins
+    │   └── ... (mod, course, theme, user)
+    ├── 📂 vendor/                        # Composer dependencies (60 packages including League OAuth2, Slim, Guzzle)
+    ├── .htaccess                         # Apache rewrite rules routing requests to public/ and public/r.php
+    ├── composer.json                     # Composer definition (aligned with moodle/seed & composer-installer)
+    ├── config.php                        # Database connection, dataroot, & routerconfigured flag
     ├── 📂 local/
     │   └── 📂 outlms_bridge/             # [NEW] Custom OUT LMS Moodle Plugin
     │       ├── version.php               # Plugin version & Moodle requirements
     │       ├── db/
     │       │   ├── services.php          # Declares custom External Functions for Web Services
+    │       │   ├── mobile.php            # Headless app delegate & handler definitions
     │       │   └── access.php            # Defines custom capabilities
     │       ├── classes/
-    │       │   └── external/
-    │       │       ├── admin_api.php     # Exposes plugin management & site config to React
-    │       │       ├── payment_api.php   # Handles custom fee transactions
-    │       │       └── analytics_api.php # Generates aggregated university statistics
+    │       │   ├── external/
+    │       │   │   ├── admin_api.php     # Exposes plugin management & site config to React
+    │       │   │   ├── payment_api.php   # Handles custom fee transactions
+    │       │   │   └── analytics_api.php # Generates aggregated university statistics
+    │       │   └── output/
+    │       │       └── mobile.php        # Headless payloads for tool_mobile_get_content
     │       └── lang/en/local_outlms_bridge.php
-    ├── 📂 payment/
-    │   └── 📂 gateway/
-    │       ├── 📂 pesapal/               # [NEW] Moodle Native Pesapal Gateway Plugin
-    │       │   ├── version.php
-    │       │   ├── classes/gateway.php   # Implements \core_payment\gateway
-    │       │   └── ipn.php               # IPN listener endpoint
-    │       └── 📂 selcom/                # [NEW] Moodle Native Selcom Gateway Plugin
-    │           ├── version.php
-    │           ├── classes/gateway.php
-    │           └── webhook.php
-    ├── 📂 webservice/                    # Native Moodle REST endpoint (/webservice/rest/server.php)
-    ├── config.php                        # Database connection & filedir configuration
-    └── ... (Standard Moodle 5.3 core directories: course, mod, enrol, user, theme)
+    └── 📂 payment/
+        └── 📂 gateway/
+            ├── 📂 pesapal/               # [NEW] Moodle Native Pesapal Gateway Plugin
+            │   ├── version.php
+            │   ├── db/mobile.php         # Headless checkout declaration
+            │   ├── classes/gateway.php   # Implements \core_payment\gateway
+            │   ├── classes/output/mobile.php
+            │   └── ipn.php               # IPN listener endpoint
+            └── 📂 selcom/                # [NEW] Moodle Native Selcom Gateway Plugin
+                ├── version.php
+                ├── db/mobile.php
+                ├── classes/gateway.php
+                ├── classes/output/mobile.php
+                └── webhook.php
 ```
 
 ---

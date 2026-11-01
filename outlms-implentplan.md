@@ -11,8 +11,8 @@
 | Phase | Description | Status | Approval Gate |
 |---|---|:---:|:---:|
 | **Step 1** | Create proposed directory architecture in workspace | 🟢 **Completed** | Approved & Committed (658fdf3) |
-| **Step 2** | Clone official Moodle, configure WAMP DB, and run migrations | 🟡 **Ready to Start** | Awaiting User Approval |
-| **Step 3** | Enable Web Services, create Service User/Tokens & wire React API | ⚪ Pending Step 2 | Required before Step 3 |
+| **Step 2** | Clone official Moodle, configure WAMP DB, run migrations & align structure | 🟢 **Completed** | **Awaiting User Review / Approval Gate 2** |
+| **Step 3** | Enable Web Services, create Service User/Tokens & wire React API | ⚪ Ready for Step 3 | Required before Step 3 |
 | **Step 4** | Adapt Payment Plugin template for Pesapal & Selcom (M-Pesa/Airtel/Tigo) | ⚪ Pending Step 3 | Required before Step 4 |
 
 ---
@@ -21,42 +21,29 @@
 
 ### 🔹 STEP 1: Workspace Directory Structure Scaffolding
 * **Objective:** Establish clean structural boundaries for Frontend, Gateway Bridge, and Moodle Backend without disrupting the active React application.
-* **Actions:**
-  1. **Frontend API Layer:**
-     - Create `src/core/api/` with:
-       - `apiClient.ts` (Axios / Fetch client with Moodle token injection and environment switcher)
-       - `moodleEndpoints.ts` (centralized registry of Moodle external function names and paths)
-       - `courseService.ts`, `studentService.ts`, `instructorService.ts`, `adminService.ts`, `paymentService.ts`
-  2. **Gateway Bridge:**
-     - Create `gateway-bridge/` scaffold with PHP 8.3 (`index.php`, `config.php`, `MoodleClient.php`, and `PaymentController.php`) for token brokering, payments (Pesapal/Selcom), and IPN webhooks.
-  3. **Backend Root Preparation:**
-     - Create `/moodle-backend` mount point and `/moodledata` secure storage folder (`c:\wamp64\moodledata`).
-* **Verification & Checkpoint:**
-  - Verify folder structure with directory tree check.
-  - Run `npx tsc --noEmit` on React frontend to ensure zero compilation regressions.
-  - **👉 User Approval Gate 1**: User reviews and approves before starting Step 2.
+* **Status:** 🟢 **Completed** (Frontend isolated in `frontend/`, Gateway Bridge in PHP 8.3, `src/core/api/` TypeScript service layer).
 
 ---
 
-### 🔹 STEP 2: Official Moodle 5.x Clone, Database Setup & Verification
-* **Objective:** Deploy clean official Moodle 5.x backend on the local WAMP environment with active database migrations.
-* **Environment Detected:**
-  - PHP: **8.3.28** (Zend OPcache, Xdebug, CLI active)
-  - Database: **MariaDB 11.4.9** / **MySQL 8.4.7** in WAMP (`wampmariadb64` / `wampmysqld64`)
-  - Web Server: WAMP Apache (`wampapache64`) / PHP CLI server
-* **Actions:**
-  1. Clone official Moodle git repository (`https://github.com/moodle/moodle.git`) with standard plugins into `moodle-backend/`.
-  2. Start WAMP database service (`wampmariadb64` on port `3306`/`3307`).
-  3. Create dedicated database: `moodle_out` with character set `utf8mb4` and collation `utf8mb4_unicode_ci`.
-  4. Create `c:\wamp64\moodledata` directory with full read/write permissions.
-  5. Run non-interactive Moodle CLI installation:
-     ```powershell
-     php moodle-backend/admin/cli/install.php --lang=en --wwwroot="http://localhost:8080/moodle" --dataroot="c:/wamp64/moodledata" --dbtype="mariadb" --dbname="moodle_out" --dbuser="root" --dbpass="" --fullname="Open University of Tanzania LMS" --shortname="OUTLMS" --adminuser="admin" --adminpass="OutLms@2026!" --adminemail="ict@out.ac.tz" --non-interactive --agree-license
-     ```
-  6. Verify database tables (over 400+ Moodle tables created) and verify Moodle engine responds via CLI and HTTP.
-* **Verification & Checkpoint:**
-  - Verify `php admin/cli/checks.php` status is OK.
-  - **👉 User Approval Gate 2**: User reviews Moodle backend status and confirms before starting Step 3.
+### 🔹 STEP 2: Official Moodle 5.3 Clone, Database Setup, Ecosystem Alignment & Verification
+* **Objective:** Deploy clean official Moodle 5.3 backend on local WAMP with active database migrations and align architecture with official Moodle repositories (`moodle/moodle.git`, `moodle/integration.git`, `moodle/seed.git`, `moodle/composer-installer.git`, `moodlehq/moodleapp.git`, and the Moodle App plugin guide).
+* **Completed Actions & Findings:**
+  1. **Cloned Moodle 5.3 STABLE:** Cloned official Moodle 5.3 (`MOODLE_503_STABLE`) into `moodle-backend/`.
+  2. **Ecosystem & Structure Alignment:**
+     - **`moodle/integration.git`:** Moodle upstream integration mirror tracked for weekly integration rollups and security cherry-picks.
+     - **`moodle/seed.git` & `moodle/composer-installer.git`:** Configured Composer-managed dependencies inside `moodle-backend/`. Run `composer install --no-dev` resolving 60 vendor packages (`league/oauth2-server`, `slim/slim`, `guzzlehttp/psr7`, `firebase/php-jwt`, etc.). Moodle plugin types (`moodle-payment-gateway`, `moodle-local`) will be handled through Composer installers.
+     - **`moodlehq/moodleapp.git`:** Frontend API layer (`frontend/src/core/api/`) aligned with official TypeScript interfaces and REST endpoints (`core_course_*`, `core_enrol_*`, `core_user_*`, `core_webservice_*`).
+     - **Plugin Development Guide (`db/mobile.php` & `classes/output/mobile.php`):** Identified standard mechanism for plugins (e.g. Pesapal / Selcom payment gateways) to expose headless checkout data via `tool_mobile_get_content`.
+  3. **WAMP Database Migrated:**
+     - MariaDB 11.4.9 on `127.0.0.1:3307` configured for database `moodle_out` with `utf8mb4_unicode_ci`.
+     - Executed full database migration creating all **499 database tables** and default admin user (`admin` / `OutLms@2026!`).
+  4. **Data Directory:** Created secure dataroot `C:\wamp64\moodledata` outside public webroot.
+  5. **Moodle 5.3 Router & Apache Rewrite:** Configured `moodle-backend/.htaccess` routing to `public/r.php`.
+  6. **Verification Checks:**
+     - `http://localhost/outlmstheme/moodle-backend/login/index.php` -> **HTTP 200 OK**
+     - `http://localhost/outlmstheme/moodle-backend/api/rest/v2/openapi.json` -> **HTTP 200 OK (OpenAPI JSON specification served)**
+     - `php admin/cli/checks.php` -> Router configuration check: **PASSED (OK)**
+* **👉 User Approval Gate 2**: User reviews Moodle backend status and confirms before starting Step 3.
 
 ---
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ImageWithBasePath from "../imageWithBasePath";
-import { header } from "../data/json/header";
+import { getHeaderMenuByRole } from "../data/json/header";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/authContext";
 import { all_routes } from "../../../feature-module/router/all_routes";
@@ -8,17 +8,13 @@ import { setDataTheme } from "../../redux/themeSettingSlice";
 import { useDispatch, useSelector } from "react-redux";
 const Header = () => {
   const navigate = useNavigate();
-  const { user, role, isAuthenticated, logout, switchRole } = useAuth();
+  const { user, role, isAuthenticated, logout } = useAuth();
+  const navMenus = getHeaderMenuByRole(role);
   const handleLogout = () => {
     logout();
     navigate(all_routes.homeone);
   };
   const [scrolled, setScrolled] = useState(false);
-  const [isMegaMenu, setIsMegaMenu] = useState(false);
-  const [subOpen, setSubopen] = useState<any>("");
-  const [subsidebar, setSubsidebar] = useState("");
-  const [subsidebar2, setSubsidebar2] = useState("");
-  const [basePath, setBasePath] = useState('');
   const dispatch = useDispatch();
   const location = useLocation();
   const dataTheme = useSelector((state: any) => state.themeSetting.dataTheme);
@@ -34,28 +30,6 @@ const Header = () => {
     root.classList.remove("menu-opened");
   };
 
-  const toggleSidebar = (title: any) => {
-    localStorage.setItem("menuOpened", title);
-    if (title === subOpen) {
-      setSubopen("");
-    } else {
-      setSubopen(title);
-    }
-  };
-  const toggleSubsidebar = (subitem: any) => {
-    if (subitem === subsidebar) {
-      setSubsidebar("");
-    } else {
-      setSubsidebar(subitem);
-    }
-  };
-  const toggleSubsidebar2 = (subitem: any) => {
-    if (subitem === subsidebar2) {
-      setSubsidebar2("");
-    } else {
-      setSubsidebar2(subitem);
-    }
-  };
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 0) {
@@ -295,122 +269,14 @@ const Header = () => {
             </Link>
           </div>
           <ul className={`main-nav ${isMegaMenu ? 'active' : ''}`}>
-            {header.map((mainMenus:any, mainIndex) => (
-              <React.Fragment key={mainIndex}>
-                {mainMenus.isDirectLink ? (
-                  <li
-                    key={mainIndex}
-                    className={isHome ? "active" : ""}
-                  >
-                    <Link to={mainMenus.route}>{mainMenus.tittle}</Link>
-                  </li>
-                ) : mainMenus.separateRoute ? (
-                  <li
-                    key={mainIndex}
-                    className={
-                      `has-submenu megamenu ${location.pathname.includes('index')
-                        ? "active"
-                        : ""}`
-                    }
-                    onClick={()=>toggleSidebar(mainMenus.tittle)}
-                    onMouseOver={() => setIsMegaMenu(true)} onMouseLeave={() => setIsMegaMenu(false)}
-                  >
-                    <Link to='#'>{mainMenus.tittle}<i className={` ${basePath === 'instructor' || basePath === 'student' ? "isax isax-add" : "fas fa-chevron-down"}`} /></Link> 
-                    <ul className={`submenu mega-submenu ${subOpen === mainMenus.tittle ? "d-block" : ""}`} onMouseOver={() => setIsMegaMenu(true)} onMouseLeave={() => setIsMegaMenu(false)}>
-                <li>
-                  <div className="megamenu-wrapper">
-                    <div className="row">
-                    {mainMenus.menu.map((menu: any, idx: any) => (
-                        <div className="col-lg-2" key={idx}>
-                        <div className={`single-demo ${location.pathname === menu.route ? 'active' : ''}`}>
-                          <div className="demo-img">
-                            <Link to={menu.route} className="inner-demo-img">
-                              <ImageWithBasePath
-                                src={menu.img}
-                                className="img-fluid "
-                                alt="img"
-                              />
-                            </Link>
-                          </div>
-                          <div className="demo-info">
-                            <Link to={menu.route} className="inner-demo-img">
-                            {menu.menuValue}
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                       ))}
-                      
-                      
-                    </div>
-                  </div>
+            {navMenus.map((mainMenus: any, mainIndex: number) => {
+              const isActive = location.pathname === mainMenus.route;
+              return (
+                <li key={mainIndex} className={isActive ? "active" : ""}>
+                  <Link to={mainMenus.route}>{mainMenus.tittle}</Link>
                 </li>
-              </ul>
-                  </li>
-                ) : (
-                  <li
-                    className={`has-submenu ${mainMenus?.menu?.some((item:any) => item?.route?.includes(location.pathname)) || basePath === mainMenus.base || basePath === mainMenus.base2 ? "active" : ""}`}
-                  >
-                    <Link  to="#" onClick={()=>toggleSidebar(mainMenus.tittle)}>
-                      {mainMenus.tittle}{" "}
-                      <i className={` ${basePath === 'instructor' || basePath === 'student' ? "isax isax-add" : "fas fa-chevron-down"}`}></i>
-                    </Link>
-                    <ul
-                      className={`submenu ${subOpen === mainMenus.tittle ? "d-block" : ""}`}
-                    >
-                      {mainMenus.menu?.map((menu:any, menuIndex:any) => (
-                        <React.Fragment key={`${mainIndex}-${menuIndex}`}>
-                          {menu.hasSubRoute ? (
-                            <li
-                              key={`${mainIndex}-${menuIndex}`}
-                              className={`${menu.hasSubRoute ? "has-submenu" : ""} ${menu?.subMenus?.some((item:any) => item?.route?.includes(location.pathname)) || basePath === menu.base ? "active" : ""}`}
-                            >
-                              <Link to="#" className={`hideonmob`} onClick={()=>{toggleSubsidebar(menu.menuValue)}}>{menu.menuValue}</Link>
-                              <ul
-                                className={`submenu showonmob ${subsidebar === menu.menuValue  ? "d-block" : ""}`}
-                              >
-                                {menu.subMenus?.map((subMenu:any, subMenuIndex:any) => (
-                                  <React.Fragment key={`${mainIndex}-${menuIndex}-${subMenuIndex}`}>
-                                  {subMenu.hasSubRoute ? 
-                                    <li className={`${menu.hasSubRoute ? "has-submenu" : ""} ${subMenu?.subMenus?.some((item:any) => item?.route?.includes(location.pathname))  ? "active" : ""}`}>
-                                    <Link to="#" onClick={()=>{toggleSubsidebar2(subMenu.menuValue)}}>{subMenu.menuValue}</Link>
-                                    <ul className={`submenu ${subsidebar2 === subMenu.menuValue ? "d-block" : ""}`}>
-                                    {subMenu.subMenus?.map((menu:any, menuIndex2:any) => (
-                                      <li key={menuIndex2} className={location.pathname === menu.route ? 'active':''}><Link to={menu.route}>{menu.menuValue}</Link></li>
-                                      ))}
-                                    </ul>
-                                  </li>
-                                    : 
-                                    <li className={location.pathname === subMenu.route ? 'active':''}  key={`${mainIndex}-${menuIndex}-${subMenuIndex}`}>
-                                    <Link to={subMenu.route}>
-                                      {subMenu.menuValue}
-                                    </Link>
-                                  </li>
-                              }
-                                 </React.Fragment>
-                                ))}
-                              </ul>
-                            </li>
-                          ) : (
-                            <li
-                              key={`${mainIndex}-${menuIndex}`}
-                              className={
-                                location.pathname.includes(menu.route || "")
-                                  ? "active"
-                                  : ""
-                              }
-                            >
-                              <Link to={menu.route}>{menu.menuValue}</Link>
-                            </li>
-                          )}
-                        </React.Fragment>
-                      ))}
-                    </ul>
-                  </li>
-                )}
-              </React.Fragment>
-            ))}
-           
+              );
+            })}
           </ul>
         </div>
         {isAuthenticated && user ? (
@@ -443,62 +309,6 @@ const Header = () => {
                   <i className="isax isax-user-tag me-1 fs-14" /> Student
                 </span>
               )}
-            </div>
-
-            {/* Quick Demo Switcher Dropdown */}
-            <div className="dropdown me-2 d-none d-lg-block">
-              <button
-                type="button"
-                className="btn btn-sm btn-outline-secondary dropdown-toggle d-inline-flex align-items-center"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-                title="Switch demo role"
-              >
-                <i className="isax isax-user-cirlce-add me-1" />
-                <span className="text-capitalize">{role}</span>
-              </button>
-              <ul className="dropdown-menu dropdown-menu-end shadow p-2">
-                <li className="px-2 py-1 text-muted fs-11 fw-bold text-uppercase">Switch Demo Role</li>
-                <li>
-                  <button
-                    type="button"
-                    className={`dropdown-item rounded d-flex align-items-center py-2 ${role === 'student' ? 'active' : ''}`}
-                    onClick={() => { switchRole('student'); navigate('/student/student-dashboard'); }}
-                  >
-                    <span className="me-2 fs-14">🎓</span>
-                    <div>
-                      <div className="fw-semibold fs-13">Student</div>
-                      <small className="text-muted d-block fs-11">Baraka Mkwawa</small>
-                    </div>
-                  </button>
-                </li>
-                <li>
-                  <button
-                    type="button"
-                    className={`dropdown-item rounded d-flex align-items-center py-2 ${role === 'instructor' ? 'active' : ''}`}
-                    onClick={() => { switchRole('instructor'); navigate('/instructor/instructor-dashboard'); }}
-                  >
-                    <span className="me-2 fs-14">👨‍🏫</span>
-                    <div>
-                      <div className="fw-semibold fs-13">Instructor</div>
-                      <small className="text-muted d-block fs-11">Dr. Amina Kilindo</small>
-                    </div>
-                  </button>
-                </li>
-                <li>
-                  <button
-                    type="button"
-                    className={`dropdown-item rounded d-flex align-items-center py-2 ${role === 'admin' ? 'active' : ''}`}
-                    onClick={() => { switchRole('admin'); navigate('/admin/dashboard'); }}
-                  >
-                    <span className="me-2 fs-14">🛡️</span>
-                    <div>
-                      <div className="fw-semibold fs-13">Administrator</div>
-                      <small className="text-muted d-block fs-11">OUT LMS Admin</small>
-                    </div>
-                  </button>
-                </li>
-              </ul>
             </div>
 
             {/* User Profile Dropdown */}

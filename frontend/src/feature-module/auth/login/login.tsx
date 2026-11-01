@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import Slider from "react-slick";
 import { all_routes } from "../../router/all_routes";
 import ImageWithBasePath from "../../../core/common/imageWithBasePath";
@@ -31,27 +31,48 @@ const Login = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login, loginAs } = useAuth();
+  const [errorMessage, setErrorMessage] = useState("");
+  const { login } = useAuth();
   const route = all_routes;
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const handleDemoClick = (role: 'student' | 'instructor' | 'admin') => {
-    const profile = loginAs(role);
-    setEmail(DEMO_USERS[role].email);
-    setPassword(DEMO_USERS[role].password);
-    navigate(profile.dashboardUrl);
+  const handleDemoClick = async (roleKey: 'student' | 'instructor' | 'admin') => {
+    const creds = DEMO_USERS[roleKey];
+    setEmail(creds.email);
+    setPassword(creds.password);
+    setErrorMessage("");
+    const ok = await login(creds.email, creds.password);
+    if (ok) {
+      const from = (location.state as any)?.from?.pathname;
+      if (from) {
+        navigate(from, { replace: true });
+      } else {
+        navigate(creds.dashboardUrl);
+      }
+    }
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    await login(email || 'student@out.ac.tz', password);
-    const trimmed = (email || '').toLowerCase();
-    if (trimmed.includes('admin') || trimmed === 'admin') {
-      navigate('/admin/dashboard');
-    } else if (trimmed.includes('instructor') || trimmed.includes('teacher')) {
-      navigate(route.instructorDashboard);
+    setErrorMessage("");
+    const ok = await login(email || 'student@out.ac.tz', password);
+    if (ok) {
+      const from = (location.state as any)?.from?.pathname;
+      if (from) {
+        navigate(from, { replace: true });
+        return;
+      }
+      const trimmed = (email || '').toLowerCase();
+      if (trimmed.includes('admin') || trimmed === 'admin') {
+        navigate(route.adminDashboard);
+      } else if (trimmed.includes('instructor') || trimmed.includes('teacher')) {
+        navigate(route.instructorDashboard);
+      } else {
+        navigate(route.studentDashboard);
+      }
     } else {
-      navigate('/student/student-dashboard');
+      setErrorMessage("Authentication failed. Please check your username and password.");
     }
   };
   return (
@@ -195,6 +216,13 @@ const Login = () => {
                         </div>
                       </div>
                     </div>
+
+                    {errorMessage && (
+                      <div className="alert alert-danger py-2 fs-13 mb-3 d-flex align-items-center">
+                        <i className="isax isax-danger me-2 fs-16" />
+                        {errorMessage}
+                      </div>
+                    )}
 
                     <form onSubmit={handleSubmit} className="mb-3 pb-3">
                       <div className="mb-3 position-relative">

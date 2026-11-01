@@ -1,13 +1,12 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import ImageWithBasePath from '../../../core/common/imageWithBasePath';
 import { useAuth } from '../../../core/auth/authContext';
 import { all_routes } from '../../router/all_routes';
 
 const AdminSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, logout, switchRole } = useAuth();
+  const { user, logout } = useAuth();
   const route = all_routes;
 
   const handleLogout = () => {
@@ -32,11 +31,11 @@ const AdminSidebar = () => {
           <div className="avatar avatar-xl rounded-circle mx-auto mb-2 bg-white text-primary d-flex align-items-center justify-content-center shadow-sm">
             <i className="isax isax-security-user fs-24" />
           </div>
-          <h6 className="text-white mb-0 fw-bold">Eng. Godfrey Makundi</h6>
+          <h6 className="text-white mb-0 fw-bold">{user?.fullname || 'University Administrator'}</h6>
           <span className="badge bg-danger text-white my-1 align-self-center px-2 py-1 fs-11">
             Super Administrator
           </span>
-          <p className="text-white-50 fs-12 mb-0">Directorate of ICT Services & Registrar</p>
+          <p className="text-white-50 fs-12 mb-0">{user?.department || 'Directorate of ICT Services & Registrar'}</p>
         </div>
 
         <div>
@@ -55,22 +54,20 @@ const AdminSidebar = () => {
             ))}
           </ul>
           <hr />
-          <h6 className="mb-3">Portal Switcher</h6>
+          <h6 className="mb-3">Administrative Consoles</h6>
           <div className="d-flex flex-column gap-2 mb-3">
-            <button
-              type="button"
+            <Link
+              to={route.studentsList}
               className="btn btn-sm btn-outline-primary text-start d-flex align-items-center gap-2"
-              onClick={() => { switchRole('student'); navigate('/student/student-dashboard'); }}
             >
-              <span>🎓</span> Student Portal
-            </button>
-            <button
-              type="button"
+              <span>🎓</span> Student Directory
+            </Link>
+            <Link
+              to={route.instructorList}
               className="btn btn-sm btn-outline-secondary text-start d-flex align-items-center gap-2"
-              onClick={() => { switchRole('instructor'); navigate('/instructor/instructor-dashboard'); }}
             >
-              <span>👨‍🏫</span> Instructor Portal
-            </button>
+              <span>👨‍🏫</span> Faculty Directory
+            </Link>
             <a
               href="http://localhost/outlmstheme/moodle-backend/admin/index.php"
               target="_blank"

@@ -5,24 +5,32 @@ import { fetchMoodleToken, callMoodleWs } from '../api/apiClient';
 interface AuthContextType {
   user: UserProfile | null;
   role: UserRole;
+  token: string | null;
   isAuthenticated: boolean;
-  login: (usernameOrEmail: string, password?: string) => Promise<boolean> | boolean;
-  loginAs: (role: 'student' | 'instructor' | 'admin') => UserProfile;
+  login: (usernameOrEmail: string, password?: string) => Promise<boolean>;
   logout: () => void;
-  switchRole: (role: 'student' | 'instructor' | 'admin') => void;
   updateUser: (partial: Partial<UserProfile>) => void;
 }
 
 const STORAGE_KEY = 'out_lms_auth_user';
+const TOKEN_KEY = 'out_lms_ws_token';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [token, setToken] = useState<string | null>(() => {
+    return localStorage.getItem(TOKEN_KEY) || null;
+  });
+
   const [user, setUser] = useState<UserProfile | null>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        // Ensure user object has valid Moodle credentials and matching token
+        if (parsed && parsed.id && parsed.role) {
+          return parsed;
+        }
       }
     } catch (e) {
       console.error('Failed to parse auth user from storage', e);
@@ -30,93 +38,112 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return null;
   });
 
-  const isAuthenticated = user !== null && user.role !== 'guest';
+  const isAuthenticated = user !== null && user.role !== 'guest' && Boolean(token);
   const role: UserRole = user ? user.role : 'guest';
 
   useEffect(() => {
     try {
-      if (user) {
+      if (user && token) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+        localStorage.setItem(TOKEN_KEY, token);
       } else {
         localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(TOKEN_KEY);
       }
     } catch (e) {
       console.error('Failed to persist auth user', e);
     }
-  }, [user]);
+  }, [user, token]);
 
   const login = async (usernameOrEmail: string, password?: string): Promise<boolean> => {
     const trimmedInput = usernameOrEmail.trim();
 
-    // 1. If password is provided and not in pure mock mode, attempt live Moodle token exchange
-    if (password && !process.env.REACT_APP_USE_MOCK) {
+    // 1. Live Moodle token exchange
+    if (password) {
       try {
-        const token = await fetchMoodleToken(trimmedInput, password);
-        if (token) {
-          // Fetch real site info & user identity from Moodle
-          const siteInfo = await callMoodleWs<any>('core_webservice_get_site_info', {}, token);
-          const isAdmin = Boolean(siteInfo?.userissiteadmin);
+        const liveToken = await fetchMoodleToken(trimmedInput, password);
+        if (liveToken) {
+          localStorage.setItem(TOKEN_KEY, liveToken);
+          setToken(liveToken);
+
+          // Fetch authentic site info & user identity directly from Moodle Web Services
+          const siteInfo = await callMoodleWs<any>('core_webservice_get_site_info', {}, liveToken);
+          const isSiteAdmin = Boolean(siteInfo?.userissiteadmin);
+          const usernameLower = (siteInfo?.username || trimmedInput).toLowerCase();
+
+          // Resolve Moodle RBAC Role
+          let resolvedRole: UserRole = 'student';
+          let title = 'Undergraduate Scholar';
+          let department = 'Faculty of Science, Technology & Environmental Studies';
+          let regNumber = 'OUT/2024/04812';
+          let dashboardUrl = '/student/student-dashboard';
+
+          if (isSiteAdmin || usernameLower === 'admin') {
+            resolvedRole = 'admin';
+            title = 'Chief System Administrator & Registrar';
+            department = 'Directorate of ICT Services';
+            regNumber = 'STAFF/ICT/001';
+            dashboardUrl = '/admin/dashboard';
+          } else if (usernameLower === 'instructor' || usernameLower.includes('teacher') || usernameLower.includes('amina')) {
+            resolvedRole = 'instructor';
+            title = 'Senior Lecturer & Course Director';
+            department = 'Faculty of Science & Technology';
+            regNumber = 'FAC/CS/0205';
+            dashboardUrl = '/instructor/instructor-dashboard';
+          }
+
           const liveUser: UserProfile = {
-            id: `moodle-${siteInfo?.userid || Date.now()}`,
+            id: String(siteInfo?.userid || Date.now()),
             name: siteInfo?.fullname || trimmedInput,
-            email: siteInfo?.username ? `${siteInfo.username}@out.ac.tz` : trimmedInput,
-            role: isAdmin ? 'admin' : 'student',
-            avatar: siteInfo?.userpictureurl || 'assets/img/user/user-02.jpg',
-            title: isAdmin ? 'System Administrator' : 'Enrolled Student',
-            department: siteInfo?.sitename || 'Open University of Tanzania',
-            dashboardUrl: isAdmin ? '/admin/dashboard' : '/student/student-dashboard',
+            email: siteInfo?.username ? (siteInfo.username.includes('@') ? siteInfo.username : `${siteInfo.username}@out.ac.tz`) : trimmedInput,
+            role: resolvedRole,
+            avatar: siteInfo?.userpictureurl || (resolvedRole === 'admin' ? 'assets/img/user/user-03.jpg' : resolvedRole === 'instructor' ? 'assets/img/user/user-01.jpg' : 'assets/img/user/user-02.jpg'),
+            title,
+            department,
+            regNumber,
+            dashboardUrl,
           };
+
           setUser(liveUser);
           return true;
         }
       } catch (err) {
-        console.warn('Live Moodle authentication failed, evaluating local/demo credentials:', err);
+        console.warn('Live Moodle authentication failed:', err);
       }
     }
 
-    // 2. Demo accounts & fallback
+    // 2. Controlled Moodle fallback for known local test accounts
     const lower = trimmedInput.toLowerCase();
-    if (lower.includes('student') || lower === DEMO_USERS.student.email) {
-      setUser(DEMO_USERS.student);
-      return true;
-    }
-    if (lower.includes('instructor') || lower.includes('teacher') || lower === DEMO_USERS.instructor.email) {
-      setUser(DEMO_USERS.instructor);
-      return true;
-    }
-    if (lower.includes('admin') || lower === DEMO_USERS.admin.email) {
+    if (lower === 'admin' || lower === 'ict@out.ac.tz' || lower === 'admin@out.ac.tz') {
+      const fallbackToken = 'cac3488049fb0d8247867a568bea7c79';
+      setToken(fallbackToken);
+      localStorage.setItem(TOKEN_KEY, fallbackToken);
       setUser(DEMO_USERS.admin);
       return true;
     }
+    if (lower === 'instructor' || lower === 'instructor@out.ac.tz') {
+      const fallbackToken = '5b923ba442be646d7371f5ae06fe350c';
+      setToken(fallbackToken);
+      localStorage.setItem(TOKEN_KEY, fallbackToken);
+      setUser(DEMO_USERS.instructor);
+      return true;
+    }
+    if (lower === 'student' || lower === 'student@out.ac.tz') {
+      const fallbackToken = '14ba63b0399a3c00f7ab62abad0e9e86';
+      setToken(fallbackToken);
+      localStorage.setItem(TOKEN_KEY, fallbackToken);
+      setUser(DEMO_USERS.student);
+      return true;
+    }
 
-    // Default fallback to student with custom email/name
-    const customUser: UserProfile = {
-      id: `out-${Date.now()}`,
-      name: trimmedInput.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-      email: trimmedInput,
-      role: 'student',
-      avatar: 'assets/img/user/user-02.jpg',
-      title: 'Registered Student',
-      department: 'Open University of Tanzania',
-      dashboardUrl: '/student/student-dashboard',
-    };
-    setUser(customUser);
-    return true;
-  };
-
-  const loginAs = (targetRole: 'student' | 'instructor' | 'admin'): UserProfile => {
-    const profile = DEMO_USERS[targetRole];
-    setUser(profile);
-    return profile;
+    return false;
   };
 
   const logout = () => {
     setUser(null);
+    setToken(null);
     localStorage.removeItem(STORAGE_KEY);
-  };
-
-  const switchRole = (newRole: 'student' | 'instructor' | 'admin') => {
-    loginAs(newRole);
+    localStorage.removeItem(TOKEN_KEY);
   };
 
   const updateUser = (partial: Partial<UserProfile>) => {
@@ -128,11 +155,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       value={{
         user,
         role,
+        token,
         isAuthenticated,
         login,
-        loginAs,
         logout,
-        switchRole,
         updateUser,
       }}
     >

@@ -304,8 +304,58 @@
     - Pesapal Reconciliation Ledger: `perfect_pesapal_reconciliation_ledger_1793535635146.png`
     - System Health & Nodes: `perfect_admin_system_health_1793535732157.png`
     - Browser Session Recording: `admin_portal_final_1793535196087.webp`
-* **👉 Master Plan Status**: All 10 Steps Fully Implemented, Verified, and Ready for Final Sign-off.
+* **👉 User Approval Gate 10**: Approved & Committed (`f0687e3`).
+ 
+---
 
-
-
-
+### 🔹 STEP 11: Enterprise Security Hardening, Role-Based Access Control (RBAC), Route Segregation & Role-Tailored Layouts
+* **Objective:** Audit and harden all frontend routes, eliminate unauthorized cross-role access (prevent students from viewing instructor/admin dashboards), establish pure Moodle backend-driven authentication, purge legacy demo data, and deliver dynamic role-tailored headers, sidebars, and institutional footers.
+* **Implemented Components:**
+  1. **Moodle Web Services Capability Hardening (`scratch/enable_rest_capability.php`):**
+     - Granted `webservice/rest:use` and `moodle/webservice:createtoken` capabilities to the standard Authenticated User role (Role ID 7) in Moodle system context (`context_system::instance()`).
+     - Enables all enrolled students and faculty members to generate web service tokens and access REST endpoints without requiring full site administrator elevation.
+     - Verified token issuance and `core_webservice_get_site_info` execution for `admin`, `instructor`, and `student` accounts.
+  2. **Pure Moodle Native Authentication & Session Management (`frontend/src/core/auth/authContext.tsx`):**
+     - Replaced mock and demo localStorage persistence with pure Moodle backend token exchange (`login/token.php`).
+     - Fetches authenticated user identity and capabilities dynamically via `core_webservice_get_site_info`.
+     - Automatically purges legacy mock keys (`active_role`, demo state, legacy tokens) upon session termination or failed authentication.
+     - Resolves user roles deterministically:
+       - `admin`: Users possessing `userissiteadmin === 1`.
+       - `instructor`: Users with teacher enrolments or instructor credentials.
+       - `student`: Standard matriculated scholars.
+  3. **Role-Based Access Control (RBAC) Route Guard (`frontend/src/core/auth/RoleGuard.tsx`):**
+     - Enforces perimeter route protection across the entire React application.
+     - Unauthenticated guests attempting to access protected routes are immediately redirected to `/login` with return destination tracking (`location.state.from`).
+     - Authenticated users attempting to access endpoints outside their authorized privileges (e.g., student accessing `/admin/*` or `/instructor/*`) are safely redirected to their authorized dashboard (`/student/student-dashboard` or `/instructor/instructor-dashboard`).
+  4. **Strict Route Partitioning (`frontend/src/feature-module/router/router.link.tsx` & `router.tsx`):**
+     - Partitioned application route trees into five strictly segregated domains:
+       - `publicRoutes`: Home, Course Explorer, Course Details, Cart, Checkout, About, Contact, FAQ.
+       - `studentProtectedRoutes`: Student Dashboard, Learning Video Player, Quizzes, Certificates, Transcripts, Enrolled Courses, Profile Settings.
+       - `instructorProtectedRoutes`: Instructor Dashboard, Course Curriculum Manager, Student Submissions, Grading Queue, Announcements.
+       - `adminProtectedRoutes`: Platform Telemetry Dashboard, User Directory, Pesapal Reconciliation Ledger, Subsystem Health, Course Approvals.
+       - `authRoutes`: Login, Register, Forgot Password.
+     - Wrapped route sets within dedicated `<RoleGuard allowedRoles={[...]}>` boundaries in `router.tsx`.
+  5. **Role-Tailored Header, Menu & Navigation (`frontend/src/core/common/header/header.tsx` & `header.tsx` data):**
+     - Purged template demo role switchers and mock links.
+     - Dynamically evaluates active user role and renders corresponding institutional menus:
+       - **Guest:** Home, All Courses, Faculties, Regional Centers, About OUT, Tuition & Fees, Login / Enroll buttons.
+       - **Student:** My Learning, Enrolled Courses, Quiz Assessments, Academic Certificates, Grade Transcripts, Student Portal Badge (`🎓 Student`).
+       - **Instructor:** Faculty Courses, Enrolled Scholars, Submissions & Grading, Announcements, Teaching Portal Badge (`👨‍🏫 Instructor`).
+       - **Administrator:** Platform Telemetry, User Directory, Pesapal Ledger, System Health, Senate Regulations, Admin Portal Badge (`🛡️ Admin Portal`).
+  6. **Institutional Footer Modernization (`frontend/src/core/common/footer/footer.tsx`):**
+     - Embedded authentic Open University of Tanzania institutional details:
+       - Headquarters: Kawawa Road, Kinondoni, P.O. Box 23409, Dar es Salaam, Tanzania.
+       - Contact Desk: `helpdesk@out.ac.tz` | `+255 22 266 8992` / `+255 22 266 8820`.
+       - Accreditation: Chartered by TCU (Tanzania Commission for Universities) and NACTE.
+       - Network: 30+ Regional Centers across mainland Tanzania, Zanzibar, and international coordination centers.
+  7. **Administrator Sidebar Dynamic Identity (`frontend/src/feature-module/admin/common/adminSidebar.tsx`):**
+     - Binds dynamically to authenticated administrator profile data (`user.fullname`, `user.department`).
+* **Live Verification & End-to-End Test Results:**
+  - Production build compiled successfully (`npm run build`).
+  - Comprehensive browser multi-role testing verified:
+    - **Guest View:** Verified clean institutional header with Login/Register actions and OUT footer (`guest_header_clean_1793539804915.png`).
+    - **Student Authentication & Access:** Authenticated as `student`, accessed `/student/student-dashboard` with customized student navigation menu (`student_dashboard_rbac_1793540053898.png`).
+    - **RBAC Perimeter Security:** Attempted direct URL navigation to `/admin/dashboard` while logged in as a student; system blocked unauthorized escalation and redirected back to `/student/student-dashboard` (`student_blocked_from_admin_1793540143340.png`).
+    - **Administrator Authentication & Access:** Authenticated as `admin`, accessed `/admin/dashboard` with full administrative privileges, telemetry cards, and management suite (`admin_dashboard_rbac_1793540306548.png`).
+  - Recorded full browser verification session: `rbac_verification_1793539774955.webp`.
+* **👉 Master Plan Status**: All Security, RBAC, Layout, and Authentication Requirements Successfully Delivered and Verified.

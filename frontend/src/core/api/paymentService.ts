@@ -58,12 +58,20 @@ export const paymentService = {
    * Checks the status of an ongoing Pesapal transaction via Moodle Web Service.
    * If COMPLETED, Moodle automatically triggers fee enrolment and marks the student enrolled.
    */
-  async checkPesapalStatus(orderTrackingId: string): Promise<PesapalStatusResult> {
+  async checkPesapalStatus(
+    orderTrackingId: string,
+    component = 'enrol_fee',
+    paymentarea = 'fee',
+    itemid = 10
+  ): Promise<PesapalStatusResult> {
     try {
       const result = await callMoodleWs<PesapalStatusResult>(
         MOODLE_ENDPOINTS.PESAPAL_CHECK_STATUS,
         {
           order_tracking_id: orderTrackingId,
+          component,
+          paymentarea,
+          itemid,
         }
       );
       return result;

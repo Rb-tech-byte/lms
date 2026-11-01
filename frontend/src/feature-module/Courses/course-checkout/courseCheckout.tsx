@@ -23,6 +23,7 @@ const CourseCheckout = () => {
   const [loading, setLoading] = useState(false);
   const [pesapalOrder, setPesapalOrder] = useState<PesapalOrderResult | null>(null);
   const [checkingStatus, setCheckingStatus] = useState(false);
+  const [iframeLoading, setIframeLoading] = useState(true);
   const [statusResult, setStatusResult] = useState<PesapalStatusResult | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -65,7 +66,12 @@ const CourseCheckout = () => {
 
     const intervalId = setInterval(async () => {
       try {
-        const res = await paymentService.checkPesapalStatus(pesapalOrder.order_tracking_id);
+        const res = await paymentService.checkPesapalStatus(
+          pesapalOrder.order_tracking_id,
+          'enrol_fee',
+          'fee',
+          10
+        );
         if (res.is_completed) {
           setStatusResult(res);
           clearInterval(intervalId);
@@ -83,6 +89,7 @@ const CourseCheckout = () => {
    */
   const handleInitiatePesapal = async () => {
     setLoading(true);
+    setIframeLoading(true);
     setErrorMessage(null);
     setStatusResult(null);
 
@@ -382,6 +389,17 @@ const CourseCheckout = () => {
                             </div>
 
                             <div className="d-flex align-items-center gap-2">
+                              <a
+                                href={pesapalOrder.redirect_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn btn-outline-success btn-sm rounded-pill px-3"
+                                title="Open Pesapal in a dedicated secure tab"
+                              >
+                                <i className="isax isax-export-1 me-1"></i>
+                                Open in New Tab
+                              </a>
+
                               <button
                                 type="button"
                                 className="btn btn-outline-primary btn-sm rounded-pill px-3"
@@ -411,8 +429,11 @@ const CourseCheckout = () => {
                             </div>
                           </div>
 
-                          <div className="small text-muted mb-2">
-                            Select your preferred mobile money network or card inside the Pesapal window below:
+                          <div className="small text-muted mb-2 d-flex justify-content-between align-items-center">
+                            <span>Select your preferred mobile money network or card inside the Pesapal window below:</span>
+                            <span className="small text-muted">
+                              Blocked by browser? <a href={pesapalOrder.redirect_url} target="_blank" rel="noopener noreferrer" className="text-primary fw-semibold">Click here to pay in new window &rarr;</a>
+                            </span>
                           </div>
 
                           {/* DIRECT EMBEDDED IFRAME */}
@@ -420,6 +441,25 @@ const CourseCheckout = () => {
                             className="border rounded-3 overflow-hidden position-relative"
                             style={{ minHeight: '680px', background: '#fafafa' }}
                           >
+                            {iframeLoading && (
+                              <div
+                                className="d-flex flex-column align-items-center justify-content-center p-5 text-center position-absolute w-100 h-100"
+                                style={{ background: '#fdfdfd', zIndex: 2 }}
+                              >
+                                <div className="spinner-border text-primary mb-3" style={{ width: '3rem', height: '3rem' }} role="status"></div>
+                                <h6 className="fw-bold text-dark mb-1">Connecting to Pesapal Payment Gateway...</h6>
+                                <p className="text-muted small mb-3">Loading Bank of Tanzania regulated East African payment channels</p>
+                                <a
+                                  href={pesapalOrder.redirect_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="btn btn-primary btn-sm rounded-pill px-4"
+                                >
+                                  Open in Dedicated Window Now
+                                </a>
+                              </div>
+                            )}
+
                             <iframe
                               src={pesapalOrder.redirect_url}
                               title="Pesapal Checkout Interface"
@@ -427,6 +467,7 @@ const CourseCheckout = () => {
                               height="720px"
                               style={{ border: 'none', display: 'block' }}
                               allow="payment"
+                              onLoad={() => setIframeLoading(false)}
                             />
                           </div>
                         </div>

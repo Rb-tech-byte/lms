@@ -218,7 +218,7 @@ const CourseCheckout = () => {
                             src="assets/img/icons/pesapal.svg"
                             alt="Pesapal"
                             className="img-fluid me-2"
-                            style={{ maxHeight: '28px' }}
+                            height={28}
                           />
                           <div className="text-start">
                             <p className="fw-bold mb-0 text-dark">Pesapal</p>

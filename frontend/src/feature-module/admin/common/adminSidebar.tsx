@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../core/auth/authContext';
 import { all_routes } from '../../router/all_routes';
+import { adminService } from '../../../core/api/adminService';
 
 const AdminSidebar = () => {
   const location = useLocation();
@@ -16,6 +17,7 @@ const AdminSidebar = () => {
 
   const menuItems = [
     { title: 'Dashboard', path: '/admin/dashboard', icon: 'isax isax-element-4' },
+    { title: 'Site Administration (All 9 Areas)', path: '/admin/dashboard?tab=siteadmin', icon: 'isax isax-category-2' },
     { title: 'Course Models & Features', path: '/admin/dashboard?tab=courses', icon: 'isax isax-book' },
     { title: 'Plugin Management', path: '/admin/dashboard?tab=plugins', icon: 'isax isax-cpu' },
     { title: 'System & Gateway Settings', path: '/admin/dashboard?tab=settings', icon: 'isax isax-setting-2' },
@@ -77,12 +79,28 @@ const AdminSidebar = () => {
               <span>👨‍🏫</span> Faculty Directory
             </Link>
             <a
-              href="http://localhost/outlmstheme/moodle-backend/admin/index.php"
+              href={adminService.getMoodleSsoUrl('/admin/search.php')}
               target="_blank"
               rel="noreferrer"
               className="btn btn-sm btn-outline-warning text-dark text-start d-flex align-items-center gap-2 fw-medium"
             >
-              <span>⚙️</span> Moodle Site Admin
+              <span>⚙️</span> Moodle Site Admin (SSO)
+            </a>
+            <a
+              href={adminService.getMoodleSsoUrl('/course/management.php')}
+              target="_blank"
+              rel="noreferrer"
+              className="btn btn-sm btn-outline-info text-start d-flex align-items-center gap-2 fw-medium"
+            >
+              <span>📚</span> Course Management (SSO)
+            </a>
+            <a
+              href={adminService.getMoodleSsoUrl('/admin/swagger')}
+              target="_blank"
+              rel="noreferrer"
+              className="btn btn-sm btn-outline-dark text-start d-flex align-items-center gap-2 fw-medium"
+            >
+              <span>⚡</span> REST API Swagger (OAS 3.1)
             </a>
           </div>
           <hr />

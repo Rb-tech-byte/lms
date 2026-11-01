@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import AdminSidebar from './common/adminSidebar';
+import SiteAdminHub from './common/siteAdminHub';
 import {
   adminService,
   PlatformTelemetry,
@@ -12,23 +13,26 @@ import {
   AdminSettingsPayload,
   AdminCourseRecord,
   CourseCategoryRecord,
+  AdminCategoryNode,
+  AdminCourseCategory,
+  CourseDefaultSettings,
 } from '../../core/api/adminService';
 
 const AdminDashboard: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const urlTab = searchParams.get('tab') as 'users' | 'ledger' | 'health' | 'plugins' | 'settings' | 'courses' | null;
-  const [activeTab, setActiveTab] = useState<'users' | 'ledger' | 'health' | 'plugins' | 'settings' | 'courses'>(
-    urlTab && ['users', 'ledger', 'health', 'plugins', 'settings', 'courses'].includes(urlTab) ? urlTab : 'courses'
+  const urlTab = searchParams.get('tab') as 'siteadmin' | 'users' | 'ledger' | 'health' | 'plugins' | 'settings' | 'courses' | null;
+  const [activeTab, setActiveTab] = useState<'siteadmin' | 'users' | 'ledger' | 'health' | 'plugins' | 'settings' | 'courses'>(
+    urlTab && ['siteadmin', 'users', 'ledger', 'health', 'plugins', 'settings', 'courses'].includes(urlTab) ? urlTab : 'siteadmin'
   );
 
   // Sync tab with URL search parameter
   useEffect(() => {
-    if (urlTab && ['users', 'ledger', 'health', 'plugins', 'settings', 'courses'].includes(urlTab)) {
+    if (urlTab && ['siteadmin', 'users', 'ledger', 'health', 'plugins', 'settings', 'courses'].includes(urlTab)) {
       setActiveTab(urlTab);
     }
   }, [urlTab]);
 
-  const handleTabChange = (tab: 'users' | 'ledger' | 'health' | 'plugins' | 'settings' | 'courses') => {
+  const handleTabChange = (tab: 'siteadmin' | 'users' | 'ledger' | 'health' | 'plugins' | 'settings' | 'courses') => {
     setActiveTab(tab);
     setSearchParams({ tab });
   };
@@ -49,6 +53,9 @@ const AdminDashboard: React.FC = () => {
   const [settings, setSettings] = useState<AdminSettingsPayload | null>(null);
   const [courses, setCourses] = useState<AdminCourseRecord[]>([]);
   const [categories, setCategories] = useState<CourseCategoryRecord[]>([]);
+  const [adminTree, setAdminTree] = useState<Record<string, AdminCategoryNode>>({});
+  const [adminCategories, setAdminCategories] = useState<AdminCourseCategory[]>([]);
+  const [courseDefaults, setCourseDefaults] = useState<CourseDefaultSettings | null>(null);
 
   // UI state
   const [pluginFilter, setPluginFilter] = useState<string>('all');
@@ -95,14 +102,17 @@ const AdminDashboard: React.FC = () => {
   // Initial Data Fetching
   const loadAdminData = async () => {
     try {
-      const [tData, uData, lData, hData, cData, sData, pData] = await Promise.all([
+      const [tData, uData, lData, hData, cData, sData, pData, treeData, catsData, defsData] = await Promise.all([
         adminService.getPlatformStats().catch(() => telemetry),
         adminService.getUniversityUsers().catch(() => []),
         adminService.getAuditLedger().catch(() => []),
         adminService.getSystemHealth().catch(() => []),
         adminService.getCourses().catch(() => ({ courses: [], categories: [] })),
         adminService.getSettings().catch(() => null),
-        adminService.getPlugins().catch(() => ({})),
+        adminService.getPlugins().catch(() => ({ plugin_types: {} })),
+        adminService.getAdminTree().catch(() => ({})),
+        adminService.getCategories().catch(() => []),
+        adminService.getCourseDefaults().catch(() => null),
       ]);
 
       setTelemetry(tData);
@@ -112,7 +122,10 @@ const AdminDashboard: React.FC = () => {
       setCourses(cData.courses);
       setCategories(cData.categories);
       if (sData) setSettings(sData);
-      setPluginGroups(pData);
+      setPluginGroups(pData.plugin_types || pData);
+      setAdminTree(treeData);
+      setAdminCategories(catsData);
+      setCourseDefaults(defsData);
     } catch (err) {
       console.error("Failed to load admin data", err);
     }
@@ -250,6 +263,17 @@ const AdminDashboard: React.FC = () => {
       setCourses(cData.courses);
     } catch (err: any) {
       setActionAlert({ type: 'danger', message: err.message || 'Failed to add activity' });
+    }
+  };
+
+  const handleDeleteCourse = async (courseId: number, courseName: string) => {
+    if (!window.confirm(`Are you sure you want to delete course "${courseName}"?`)) return;
+    try {
+      await adminService.deleteCourse(courseId);
+      setActionAlert({ type: 'success', message: `Course "${courseName}" deleted.` });
+      await loadAdminData();
+    } catch (err: any) {
+      setActionAlert({ type: 'danger', message: err.message || 'Failed to delete course' });
     }
   };
 
@@ -391,6 +415,15 @@ const AdminDashboard: React.FC = () => {
                 <ul className="nav nav-pills gap-2 flex-wrap">
                   <li className="nav-item">
                     <button
+                      className={`btn btn-sm rounded-pill px-3 ${activeTab === 'siteadmin' ? 'btn-primary' : 'btn-light'}`}
+                      onClick={() => handleTabChange('siteadmin')}
+                    >
+                      <i className="isax isax-category-2 me-1" />
+                      Site Administration Suite (All 9 Areas)
+                    </button>
+                  </li>
+                  <li className="nav-item">
+                    <button
                       className={`btn btn-sm rounded-pill px-3 ${activeTab === 'courses' ? 'btn-primary' : 'btn-light'}`}
                       onClick={() => handleTabChange('courses')}
                     >
@@ -447,6 +480,21 @@ const AdminDashboard: React.FC = () => {
               </div>
 
               <div className="card-body p-3">
+                {/* ============================================================== */}
+                {/* 0. SITE ADMINISTRATION CONSOLE (ALL 9 AREAS & SSO ACTION HUB)  */}
+                {/* ============================================================== */}
+                {activeTab === 'siteadmin' && (
+                  <SiteAdminHub
+                    adminTree={adminTree}
+                    adminCategories={adminCategories}
+                    courses={courses}
+                    courseDefaults={courseDefaults}
+                    onRefresh={loadAdminData}
+                    onNotify={(type, message) => setActionAlert({ type, message })}
+                    onOpenCourseModal={() => setShowCourseModal(true)}
+                  />
+                )}
+
                 {/* ============================================================== */}
                 {/* 1. COURSE LEARNING MODELS & ACTIVITY FEATURES TAB              */}
                 {/* ============================================================== */}
@@ -561,6 +609,22 @@ const AdminDashboard: React.FC = () => {
                                   >
                                     <i className="isax isax-play-circle fs-14" />
                                   </Link>
+                                  <a
+                                    href={adminService.getMoodleSsoUrl(`/course/view.php?id=${c.id}`)}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="btn btn-sm btn-outline-info px-2 py-1"
+                                    title="Open in Moodle (SSO)"
+                                  >
+                                    <i className="isax isax-export-1 fs-14" />
+                                  </a>
+                                  <button
+                                    onClick={() => handleDeleteCourse(c.id, c.fullname)}
+                                    className="btn btn-sm btn-outline-danger px-2 py-1"
+                                    title="Delete Course"
+                                  >
+                                    <i className="isax isax-trash fs-14" />
+                                  </button>
                                 </div>
                               </td>
                             </tr>

@@ -442,7 +442,264 @@ export const adminService = {
     }
     return data;
   },
+
+  /**
+   * Generates seamless single-sign-on (SSO) URL for deep Moodle administrative tool
+   */
+  getMoodleSsoUrl(redirectPath: string): string {
+    const token = getAdminToken();
+    const apiBase = getAdminApiUrl().replace('/admin_api.php', '');
+    return `${apiBase}/sso.php?token=${encodeURIComponent(token)}&redirect=${encodeURIComponent(redirectPath)}`;
+  },
+
+  /**
+   * Retrieves complete Moodle 5.x Site Administration hierarchy across all 9 categories
+   */
+  async getAdminTree(): Promise<Record<string, AdminCategoryNode>> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl()}?action=get_admin_tree&token=${encodeURIComponent(token)}`;
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to fetch administration tree');
+    }
+    return data.tree || {};
+  },
+
+  /**
+   * Retrieves all course categories
+   */
+  async getCategories(): Promise<AdminCourseCategory[]> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl()}?action=get_categories&token=${encodeURIComponent(token)}`;
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to fetch categories');
+    }
+    return data.categories || [];
+  },
+
+  /**
+   * Creates a new course category
+   */
+  async addCategory(catData: {
+    name: string;
+    parent?: number;
+    idnumber?: string;
+    description?: string;
+  }): Promise<any> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl()}?action=add_category`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ ...catData, token })
+    });
+    const data = await res.json();
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to add category');
+    }
+    return data;
+  },
+
+  /**
+   * Deletes a category with optional destination for child courses
+   */
+  async deleteCategory(categoryId: number, moveToId?: number): Promise<any> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl()}?action=delete_category`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ category_id: categoryId, move_to_id: moveToId, token })
+    });
+    const data = await res.json();
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to delete category');
+    }
+    return data;
+  },
+
+  /**
+   * Deletes a course
+   */
+  async deleteCourse(courseId: number): Promise<any> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl()}?action=delete_course`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ course_id: courseId, token })
+    });
+    const data = await res.json();
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to delete course');
+    }
+    return data;
+  },
+
+  /**
+   * Retrieves course default settings
+   */
+  async getCourseDefaults(): Promise<CourseDefaultSettings> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl()}?action=get_course_defaults&token=${encodeURIComponent(token)}`;
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to fetch course defaults');
+    }
+    return data.defaults;
+  },
+
+  /**
+   * Updates course default settings
+   */
+  async updateCourseDefaults(settings: Partial<CourseDefaultSettings>): Promise<any> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl()}?action=update_course_defaults`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ ...settings, token })
+    });
+    const data = await res.json();
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to update course defaults');
+    }
+    return data;
+  },
+
+  /**
+   * Retrieves groups for a course
+   */
+  async getGroups(courseId: number): Promise<CourseGroupRecord[]> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl()}?action=get_groups&course_id=${encodeURIComponent(courseId)}&token=${encodeURIComponent(token)}`;
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to fetch groups');
+    }
+    return data.groups || [];
+  },
+
+  /**
+   * Creates a group for a course
+   */
+  async createGroup(grpData: {
+    course_id: number;
+    name: string;
+    description?: string;
+    enrolmentkey?: string;
+  }): Promise<any> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl()}?action=create_group`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ ...grpData, token })
+    });
+    const data = await res.json();
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to create group');
+    }
+    return data;
+  },
+
+  /**
+   * Deletes a group
+   */
+  async deleteGroup(groupId: number): Promise<any> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl()}?action=delete_group`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ group_id: groupId, token })
+    });
+    const data = await res.json();
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to delete group');
+    }
+    return data;
+  },
 };
+
+export interface AdminSectionItem {
+  name: string;
+  path: string;
+  sso_url: string;
+  description: string;
+}
+
+export interface AdminCategoryNode {
+  title: string;
+  icon: string;
+  anchor: string;
+  moodle_url: string;
+  description: string;
+  sections: AdminSectionItem[];
+}
+
+export interface AdminCourseCategory {
+  id: number;
+  name: string;
+  idnumber: string;
+  description: string;
+  parent: number;
+  coursecount: number;
+  visible: number;
+  depth: number;
+  path: string;
+}
+
+export interface CourseDefaultSettings {
+  format: string;
+  maxbytes: number;
+  showgrades: number;
+  showreports: number;
+  enablecompletion: number;
+  numsections: number;
+  hiddensections: number;
+  coursedisplay: number;
+}
+
+export interface CourseGroupRecord {
+  id: number;
+  name: string;
+  description: string;
+  courseid: number;
+  member_count: number;
+  timecreated: number;
+}
 
 export interface MoodlePluginRecord {
   component: string;

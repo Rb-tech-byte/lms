@@ -20,6 +20,7 @@ export const MOODLE_ENDPOINTS = {
   CREATE_CATEGORIES: 'core_course_create_categories',
 
   // Enrolment & Users
+  GET_USERS_COURSES: 'core_enrol_get_users_courses',
   GET_ENROLLED_COURSES_TIMELINE: 'core_course_get_enrolled_courses_by_timeline_classification',
   GET_ENROLLED_USERS: 'core_enrol_get_enrolled_users',
   ENROL_USERS: 'enrol_manual_enrol_users',

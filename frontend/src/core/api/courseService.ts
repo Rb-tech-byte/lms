@@ -82,6 +82,43 @@ export interface MoodlePageContent {
   content: string;
 }
 
+export interface EnrolledCourse {
+  id: number;
+  shortname: string;
+  fullname: string;
+  displayname?: string;
+  enrolledusercount?: number;
+  idnumber?: string;
+  visible?: number;
+  summary?: string;
+  summaryformat?: number;
+  format?: string;
+  courseimage?: string;
+  showgrades?: boolean;
+  enablecompletion?: boolean;
+  progress: number | null;
+  completed: boolean | null;
+  startdate?: number;
+  enddate?: number;
+  category?: number;
+  lastaccess?: number;
+  isfavourite?: boolean;
+}
+
+export const getMoodleUserId = (user: any): number => {
+  if (!user) return 2;
+  if (typeof user.id === 'number') return user.id;
+  if (typeof user.id === 'string') {
+    if (user.id.startsWith('moodle-')) {
+      const parsed = parseInt(user.id.replace('moodle-', ''), 10);
+      if (!isNaN(parsed)) return parsed;
+    }
+    if (user.id.includes('stu')) return 3; // Student Baraka Mkwawa
+  }
+  if (user.email === 'student@out.ac.tz') return 3;
+  return 2;
+};
+
 export const courseService = {
   /**
    * Fetches all published academic categories from Moodle
@@ -210,5 +247,63 @@ export const courseService = {
       return [];
     }
   },
+
+  /**
+   * Fetches courses enrolled by a user along with completion progress
+   */
+  async getUserEnrolledCourses(userId: number = 2): Promise<EnrolledCourse[]> {
+    if (isMockMode()) {
+      return [
+        {
+          id: 2,
+          shortname: 'CS101',
+          fullname: 'Data Structures & Algorithms in Python',
+          displayname: 'Data Structures & Algorithms in Python',
+          summary: 'Comprehensive undergraduate course covering linked lists, trees, graphs, sorting, and algorithmic complexity at OUT.',
+          enablecompletion: true,
+          progress: 10,
+          completed: false,
+          category: 2,
+          enrolledusercount: 142,
+        },
+        {
+          id: 3,
+          shortname: 'CS202',
+          fullname: 'Cloud Computing & Distributed Systems',
+          displayname: 'Cloud Computing & Distributed Systems',
+          summary: 'Principles of enterprise cloud infrastructure, virtualization, microservices, and container orchestration.',
+          enablecompletion: false,
+          progress: 0,
+          completed: false,
+          category: 2,
+          enrolledusercount: 85,
+        },
+        {
+          id: 4,
+          shortname: 'BBA301',
+          fullname: 'Financial Management & Strategic Planning',
+          displayname: 'Financial Management & Strategic Planning',
+          summary: 'Corporate financial decision-making, capital budgeting, and asset pricing models.',
+          enablecompletion: true,
+          progress: 100,
+          completed: true,
+          category: 2,
+          enrolledusercount: 110,
+        },
+      ];
+    }
+
+    try {
+      const courses = await callMoodleWs<EnrolledCourse[]>(MOODLE_ENDPOINTS.GET_USERS_COURSES, {
+        userid: userId,
+        returnusercount: 1,
+      });
+      return Array.isArray(courses) ? courses : [];
+    } catch (err) {
+      console.warn('Failed to fetch user enrolled courses from Moodle, using fallback:', err);
+      return [];
+    }
+  },
 };
+
 

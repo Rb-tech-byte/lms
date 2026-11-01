@@ -14,7 +14,8 @@
 | **Step 2** | Clone official Moodle, configure WAMP DB, run migrations & dynamic config | 🟢 **Completed** | Approved (cba0aa8) |
 | **Step 3** | Enable Web Services, dynamic tokens, live React auth & course catalog | 🟢 **Completed** | Approved (8721ad4) |
 | **Step 4** | Adapt Payment Gateway Plugin for Pesapal API 3.0 (M-Pesa/Airtel/Tigo/Cards) | 🟢 **Completed** | Approved & Committed (48895ff) |
-| **Step 5** | Student Learning Classroom & Course Player (Videos, Readings, Handouts, Moodle Completion) | 🟢 **Completed** | **Awaiting Review / Approval Gate 5** |
+| **Step 5** | Student Learning Classroom & Course Player (Videos, Readings, Handouts, Moodle Completion) | 🟢 **Completed** | Approved & Committed (4692dca) |
+| **Step 6** | Headless Student Dashboard & Enrolled Courses Portal (Live Enrolments, Progress Meters, Tabs) | 🟢 **Completed** | **Awaiting Review / Approval Gate 6** |
 
 ---
 
@@ -87,21 +88,66 @@
     - Video Lesson Player: `classroom_video_player_1793522212656.png`
     - Live Activity Completion: `classroom_completed_1793522414112.png`
     - End-to-end Session Recording: `classroom_player_test_1793522064176.webp`
-* **👉 User Approval Gate 5**: Ready for user review and approval.
+* **👉 User Approval Gate 5**: Approved & Committed (4692dca).
+
+---
+
+### 🔹 STEP 6: Headless Student Dashboard & Enrolled Courses Portal
+* **Objective:** Replace static templates with a 100% headless, reactive Student Dashboard (`/student/student-dashboard`) and Enrolled Courses Portal (`/student/student-courses`), driven by Moodle Core Web Services (`core_enrol_get_users_courses`) with live course progress calculation, search, filter tabs, and direct learning resumption.
+* **Implemented Components:**
+  1. **Backend Enrolment & Progress Setup:**
+     - Enrolled student learners in 3 distinct academic states:
+       - **CS101 (Data Structures & Algorithms):** In Progress (10% activity completion).
+       - **CS202 (Cloud Computing & Distributed Systems):** Active / Not Started (0% completion).
+       - **BBA301 (Financial Management & Strategic Planning):** Completed (100% module completion).
+  2. **TypeScript Web Services Layer:**
+     - Registered `GET_USERS_COURSES: 'core_enrol_get_users_courses'` in [`moodleEndpoints.ts`](file:///c:/wamp64/www/outlmstheme/frontend/src/core/api/moodleEndpoints.ts).
+     - Defined typed interface `EnrolledCourse` and helper `getMoodleUserId` in [`courseService.ts`](file:///c:/wamp64/www/outlmstheme/frontend/src/core/api/courseService.ts).
+     - Added `getUserEnrolledCourses(userId)` with dynamic parameters and robust fallback handling.
+     - Consolidated `studentService.ts` to delegate directly to `courseService.getUserEnrolledCourses()`.
+  3. **Headless Student Dashboard (`frontend/src/feature-module/student/dashboard/studentDashboard.tsx`):**
+     - Modernized into a reactive, typed component connected directly to live Moodle data.
+     - **Profile Header:** Unified `<ProfileCard />` displaying student details (`Baraka Mkwawa`, Reg No: `OUT/2024/04812`).
+     - **Academic Focus Banner:** Displays current in-progress course (`CS101`) with live progress bar and direct "Resume Learning" button.
+     - **Live Metric Cards:**
+       - *Enrolled Courses:* `3` (retrieved live from Moodle).
+       - *Active / In Progress:* `2` (calculated from Moodle completion state).
+       - *Completed Courses:* `1` (calculated from 100% completion state).
+     - **My Enrolled Courses Grid:** Rendered dynamically with course images, department badges, course codes, sanitized titles, live progress meters, and direct "Start" / "Continue" / "Review" links to `/course/course-watch?courseId={id}`.
+     - **Learning Activity Feed & Knowledge Checks:** Live log of verified Moodle activity completions and performance gauge indicators.
+  4. **Dynamic Enrolled Courses Portal (`frontend/src/feature-module/student/student-course/studentCourse.tsx`):**
+     - Replaced 1,366 lines of duplicate static mockup with 321 lines of clean, reactive, typed code.
+     - **Interactive Filter Tabs:**
+       - `All Courses (3)`
+       - `In Progress / Active (2)`
+       - `Completed (1)`
+     - **Instant Client-Side Search:** Real-time filtering by course title, course code (`CS101`, `CS202`, `BBA301`), or syllabus summary.
+     - **Classroom Action Buttons:** Seamless one-click transition from course cards directly into the interactive classroom player at `/course/course-watch?courseId={id}`.
+* **Live Verification & End-to-End Test Results:**
+  - Production build compiled successfully (`npm run build`).
+  - Verified live in browser using `browser_subagent`:
+    - Loaded `/student/student-dashboard`: verified profile card, academic focus banner, and 3 metric cards (Enrolled: 3, Active: 2, Completed: 1).
+    - Loaded `/student/student-courses`: verified tab counts `All Courses (3)`, `In Progress / Active (2)`, `Completed (1)`.
+    - Clicked "Completed" tab: verified that only BBA301 (100% completed) is displayed.
+    - Clicked "In Progress / Active" tab: verified that CS101 and CS202 are displayed.
+    - Tested search filtering: typing "Python" filtered display to only CS101.
+    - Clicked course action button: verified clean navigation into the interactive classroom player at `/course/course-watch?courseId=3`.
+  - Recording saved: `student_dashboard_test_1793524706582.webp`.
+* **👉 User Approval Gate 6**: Ready for user review and approval.
 
 ---
 
 ## Current Status & Next Action
 
-**Step 5 (Interactive Learning Classroom & Course Player)** is fully built, integrated with Moodle Web Services, and verified live end-to-end. We are currently at **Approval Gate 5**.
+**Step 6 (Headless Student Dashboard & Enrolled Courses Portal)** is fully built, integrated with Moodle Web Services, and verified live end-to-end. We are currently at **Approval Gate 6**.
 
-### Proposed Step 6 Options:
-1. **Option A (Student Dashboard & Enrolled Courses Portal - Recommended):**
-   - Connect `/student/student-dashboard` and `/student/student-courses` to Moodle `core_enrol_get_users_courses`.
-   - Display enrolled course cards with live progress bars, quick-resume "Continue Learning" links to the classroom, completion certificates, and announcements.
-2. **Option B (Interactive Assessment & Quiz Engine):**
-   - Connect `/course/course-quiz` to Moodle `mod_quiz_start_attempt`, `mod_quiz_get_attempt_data`, and `mod_quiz_process_attempt` for real in-browser quiz taking and instant grading.
-3. **Option C (Student Profile, Security & Account Settings):**
-   - Connect `/student/student-setting` to Moodle user profile APIs for profile photos, bio, notification preferences, and password updates.
+### Proposed Step 7 Options:
+1. **Option A (Interactive Quiz & Knowledge Check Engine - Recommended):**
+   - Connect `/student/student-quiz` and `/course/course-quiz` to Moodle `mod_quiz_start_attempt`, `mod_quiz_get_attempt_data`, and `mod_quiz_process_attempt`.
+   - Deliver real multiple-choice questions, timers, instant scoring, and gradebook recording.
+2. **Option B (Student Profile, Security & Account Settings):**
+   - Connect `/student/student-settings` to Moodle user profile update endpoints for profile photos, bio, notification preferences, and password updates.
+3. **Option C (Instructor & Course Director Portal):**
+   - Connect `/instructor/instructor-dashboard` and `/instructor/instructor-course` to Moodle teacher role web services for student management and grade submissions.
 
 

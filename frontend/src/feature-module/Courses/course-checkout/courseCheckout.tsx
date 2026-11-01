@@ -47,6 +47,7 @@ const CourseCheckout = () => {
         component: 'enrol_fee',
         paymentarea: 'fee',
         itemid: 10,
+        phone: formData.phone,
         description: 'CS101 - Introduction to Computer Science Enrolment Fee',
       });
 

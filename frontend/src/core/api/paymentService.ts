@@ -5,6 +5,7 @@ export interface PesapalOrderRequest {
   component?: string;     // Defaults to 'enrol_fee'
   paymentarea?: string;   // Defaults to 'fee'
   itemid: number;         // Enrolment instance ID or fee item ID
+  phone?: string;         // Customer mobile money phone number
   description?: string;   // Course or payment description
 }
 
@@ -40,6 +41,7 @@ export const paymentService = {
           component: request.component || 'enrol_fee',
           paymentarea: request.paymentarea || 'fee',
           itemid: request.itemid,
+          phone: request.phone || '',
           description: request.description || 'Course Enrolment Fee',
         }
       );

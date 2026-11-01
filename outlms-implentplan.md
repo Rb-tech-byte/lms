@@ -358,4 +358,41 @@
     - **RBAC Perimeter Security:** Attempted direct URL navigation to `/admin/dashboard` while logged in as a student; system blocked unauthorized escalation and redirected back to `/student/student-dashboard` (`student_blocked_from_admin_1793540143340.png`).
     - **Administrator Authentication & Access:** Authenticated as `admin`, accessed `/admin/dashboard` with full administrative privileges, telemetry cards, and management suite (`admin_dashboard_rbac_1793540306548.png`).
   - Recorded full browser verification session: `rbac_verification_1793539774955.webp`.
-* **👉 Master Plan Status**: All Security, RBAC, Layout, and Authentication Requirements Successfully Delivered and Verified.
+* **👉 User Approval Gate 11**: Approved & Committed (`4274bd8`).
+ 
+---
+
+### 🔹 STEP 12: Internal Administrative API, Moodle Plugins Management, System & Gateway Settings, and Course Models
+* **Objective:** Deliver native internal administrative capabilities directly inside the React frontend: Moodle plugin discovery, activation/deactivation, uninstallation, ZIP installation; university site configuration, Pesapal API 3.0 credentials, maintenance mode, live cache purging; course learning model creation, module sections management, and activity attachments (Quizzes, Assignments, Pages, Resources).
+* **Implemented Components:**
+  1. **Native Administrative API Gateway (`moodle-backend/admin_api.php`):**
+     - Native endpoint executing within Moodle 5.x environment with direct access to `$DB`, `$CFG`, `core_plugin_manager`, and administrative libraries.
+     - Strict token authentication & RBAC check: extracts bearer token, queries `mdl_external_tokens`, and verifies `is_siteadmin($user->id)` (returns 401/403 for unauthorized requests).
+     - **Actions Implemented:**
+       - `get_plugins`: Discovers and categorizes all 89 installed plugins (Activity Modules `mod`, Payment Gateways `paygw`, Enrolment `enrol`, Themes `theme`, Authentication `auth`, Blocks `block`) with disk versions, release metadata, enabled/disabled states, and uninstallation allowances.
+       - `toggle_plugin`: Toggles plugin activation state in `mdl_modules`, `core_payment` gateways, or `enrol_plugins_enabled`, followed by automated cache purging.
+       - `uninstall_plugin`: Deactivates plugin and removes configuration records from `mdl_config_plugins`.
+       - `install_plugin`: Unpacks uploaded ZIP archives into designated Moodle directories (`local/`, `mod/`, `payment/gateway/`, `enrol/`, `theme/`) and triggers schema checks.
+       - `get_settings` & `update_settings`: Reads and persists university site parameters (`fullname`, `shortname`, `summary`, `theme`, `maintenance_enabled`, `maintenance_message`, `registerauth`) and Pesapal credentials (`consumer_key`, `consumer_secret`, `environment`, `ipn_id`, `defaultcurrency`).
+       - `purge_cache`: Invokes `purge_all_caches()` across all compiled assets, theme templates, and class loaders.
+       - `get_courses`: Delivers all academic course models with faculty categories, sections count, module feature counts (quizzes, assignments, pages, resources), enrolled scholars, and tuition fees.
+       - `create_course`: Generates new course models in `mdl_course`, provisions module sections in `mdl_course_sections`, attaches standard syllabus pages, and creates manual + Pesapal fee enrolment instances.
+       - `add_activity`: Attaches new learning activity modules (`mod_page`, `mod_quiz`, `mod_assign`, `mod_resource`) directly to specified course sections.
+  2. **TypeScript Administrative Service Layer (`frontend/src/core/api/adminService.ts`):**
+     - Added comprehensive type declarations: `MoodlePluginRecord`, `PluginTypeGroup`, `AdminSettingsPayload`, `AdminCourseRecord`, `CourseCategoryRecord`.
+     - Exported methods: `getPlugins()`, `togglePlugin()`, `uninstallPlugin()`, `installPlugin()`, `getSettings()`, `updateSettings()`, `purgeCache()`, `getCourses()`, `createCourse()`, `addActivity()`, `toggleEnrol()`.
+  3. **Headless Administrative Dashboard (`frontend/src/feature-module/admin/adminDashboard.tsx`):**
+     - **Dynamic Tab Routing:** Seamlessly syncs with URL search parameters (`?tab=courses`, `?tab=plugins`, `?tab=settings`, `?tab=users`, `?tab=ledger`, `?tab=health`).
+     - **Course Models & Features Tab:** Live course inventory table displaying curriculum structure, activity feature breakdowns, tuition fees, and scholars count. Features interactive modals for **"+ Create Course Model"** and **"+ Add Learning Activity"**.
+     - **Moodle Plugins Manager Tab:** Categorized filter pills (`All`, `Payment Gateways`, `Activity Modules`, `Enrolment`, `Themes`, `Auth`), search filtering, live toggle switches, uninstall triggers, and **"Install Plugin (.zip)"** modal.
+     - **System & Gateway Settings Tab:** Site branding configuration, maintenance mode toggle, Pesapal API 3.0 gateway settings (Consumer Key, Environment, IPN ID, Currency TZS), subsystem node diagnostics, and instant **"Purge All Caches"** execution.
+  4. **Governance Navigation Sidebar (`frontend/src/feature-module/admin/common/adminSidebar.tsx`):**
+     - Updated menu links with URL tab parameters and active route highlighting for Course Models, Plugin Management, System Settings, User Directory, Financial Ledger, and Telemetry.
+* **Live Verification & End-to-End Test Results:**
+  - Production build compiled successfully (`npm run build`).
+  - Browser verification conducted via `browser_subagent`:
+    - **Course Models & Features:** Verified default tab loaded courses CS101, CS202, BBA301 with module sections and activity features (`course_models_tab_1793546922283.png`).
+    - **Moodle Plugins Management:** Verified 89 plugins listed with live toggle switches and filtered payment gateways (PayPal & Pesapal) (`moodle_plugins_tab_1793547020029.png`).
+    - **System & Gateway Settings:** Verified site configuration, Pesapal 3.0 parameters, server node telemetry, and executed cache purge with verified success notification (`system_settings_tab_1793547191998.png`).
+  - Recorded browser verification session: `admin_features_verification_1793546826579.webp`.
+* **👉 Master Plan Status**: All Administrative Features, Plugin Management, System Settings, and Course Learning Models Fully Implemented and Verified.

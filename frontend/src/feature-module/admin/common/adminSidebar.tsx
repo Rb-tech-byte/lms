@@ -16,12 +16,15 @@ const AdminSidebar = () => {
 
   const menuItems = [
     { title: 'Dashboard', path: '/admin/dashboard', icon: 'isax isax-element-4' },
-    { title: 'Course Approvals', path: '/admin/courses', icon: 'isax isax-book' },
-    { title: 'Student Management', path: route.studentsList, icon: 'isax isax-user-tag' },
-    { title: 'Instructor Management', path: route.instructorList, icon: 'isax isax-teacher' },
-    { title: 'Financial Reports', path: route.instructorStatements, icon: 'isax isax-dollar-circle' },
-    { title: 'Course Categories', path: route.courseCategory, icon: 'isax isax-category-2' },
+    { title: 'Course Models & Features', path: '/admin/dashboard?tab=courses', icon: 'isax isax-book' },
+    { title: 'Plugin Management', path: '/admin/dashboard?tab=plugins', icon: 'isax isax-cpu' },
+    { title: 'System & Gateway Settings', path: '/admin/dashboard?tab=settings', icon: 'isax isax-setting-2' },
+    { title: 'User Directory', path: '/admin/dashboard?tab=users', icon: 'isax isax-user-tag' },
+    { title: 'Financial & Pesapal Ledger', path: '/admin/dashboard?tab=ledger', icon: 'isax isax-dollar-circle' },
+    { title: 'System Health & Telemetry', path: '/admin/dashboard?tab=health', icon: 'isax isax-health' },
   ];
+
+  const currentPathWithSearch = location.pathname + location.search;
 
   return (
     <div className="col-lg-3">
@@ -31,7 +34,7 @@ const AdminSidebar = () => {
           <div className="avatar avatar-xl rounded-circle mx-auto mb-2 bg-white text-primary d-flex align-items-center justify-content-center shadow-sm">
             <i className="isax isax-security-user fs-24" />
           </div>
-          <h6 className="text-white mb-0 fw-bold">{user?.fullname || 'University Administrator'}</h6>
+          <h6 className="text-white mb-0 fw-bold">{user?.name || 'University Administrator'}</h6>
           <span className="badge bg-danger text-white my-1 align-self-center px-2 py-1 fs-11">
             Super Administrator
           </span>
@@ -41,17 +44,22 @@ const AdminSidebar = () => {
         <div>
           <h6 className="mb-3">Governance Menu</h6>
           <ul className="mb-3 pb-1">
-            {menuItems.map((menu, index) => (
-              <li key={index}>
-                <Link
-                  to={menu.path}
-                  className={`d-inline-flex align-items-center ${location.pathname === menu.path ? 'active' : ''}`}
-                >
-                  <i className={`${menu.icon} me-2`} />
-                  {menu.title}
-                </Link>
-              </li>
-            ))}
+            {menuItems.map((menu, index) => {
+              const isActive = menu.path.includes('?')
+                ? currentPathWithSearch === menu.path
+                : location.pathname === menu.path && (!location.search || location.search === '?tab=users');
+              return (
+                <li key={index}>
+                  <Link
+                    to={menu.path}
+                    className={`d-inline-flex align-items-center ${isActive ? 'active' : ''}`}
+                  >
+                    <i className={`${menu.icon} me-2`} />
+                    {menu.title}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
           <hr />
           <h6 className="mb-3">Administrative Consoles</h6>

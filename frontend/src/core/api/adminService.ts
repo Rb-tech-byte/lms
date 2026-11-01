@@ -202,4 +202,353 @@ export const adminService = {
       { component: 'Headless React Frontend Cluster', status: 'Operational', latency: '1ms', details: 'Vite / CRA production build active' },
     ];
   },
+
+  /**
+   * Fetches installed Moodle plugins categorized by type
+   */
+  async getPlugins(): Promise<Record<string, PluginTypeGroup>> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl()}?action=get_plugins&token=${encodeURIComponent(token)}`;
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to fetch Moodle plugins');
+    }
+    return data.plugin_types;
+  },
+
+  /**
+   * Toggles a Moodle plugin (enabled/disabled)
+   */
+  async togglePlugin(component: string, enable: boolean): Promise<any> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl()}?action=toggle_plugin`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ component, enable, token })
+    });
+    const data = await res.json();
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to toggle plugin');
+    }
+    return data;
+  },
+
+  /**
+   * Uninstalls/deactivates a Moodle plugin
+   */
+  async uninstallPlugin(component: string): Promise<any> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl()}?action=uninstall_plugin`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ component, token })
+    });
+    const data = await res.json();
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to uninstall plugin');
+    }
+    return data;
+  },
+
+  /**
+   * Installs a Moodle plugin from ZIP archive or component identifier
+   */
+  async installPlugin(file?: File, componentName?: string): Promise<any> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl()}?action=install_plugin`;
+    
+    let body: any;
+    const headers: Record<string, string> = { Authorization: `Bearer ${token}` };
+
+    if (file) {
+      const formData = new FormData();
+      formData.append('package', file);
+      formData.append('token', token);
+      body = formData;
+    } else {
+      headers['Content-Type'] = 'application/json';
+      body = JSON.stringify({ component_name: componentName, token });
+    }
+
+    const res = await fetch(url, { method: 'POST', headers, body });
+    const data = await res.json();
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to install plugin');
+    }
+    return data;
+  },
+
+  /**
+   * Retrieves site-wide settings and payment configurations
+   */
+  async getSettings(): Promise<AdminSettingsPayload> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl()}?action=get_settings&token=${encodeURIComponent(token)}`;
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to fetch settings');
+    }
+    return data.settings;
+  },
+
+  /**
+   * Updates site configuration and payment gateway credentials
+   */
+  async updateSettings(payload: { site?: any; payment?: any }): Promise<any> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl()}?action=update_settings`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ ...payload, token })
+    });
+    const data = await res.json();
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to update settings');
+    }
+    return data;
+  },
+
+  /**
+   * Purges all Moodle caches and compiled assets
+   */
+  async purgeCache(): Promise<any> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl()}?action=purge_cache`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ token })
+    });
+    const data = await res.json();
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to purge cache');
+    }
+    return data;
+  },
+
+  /**
+   * Retrieves all course learning models and module breakdowns
+   */
+  async getCourses(): Promise<{ courses: AdminCourseRecord[]; categories: CourseCategoryRecord[] }> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl()}?action=get_courses&token=${encodeURIComponent(token)}`;
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to fetch courses');
+    }
+    return {
+      courses: data.courses || [],
+      categories: data.categories || []
+    };
+  },
+
+  /**
+   * Creates a new course learning model
+   */
+  async createCourse(courseData: {
+    fullname: string;
+    shortname: string;
+    category_id: number;
+    summary?: string;
+    format?: string;
+    num_sections?: number;
+    tuition_fee?: number;
+  }): Promise<any> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl()}?action=create_course`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ ...courseData, token })
+    });
+    const data = await res.json();
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to create course model');
+    }
+    return data;
+  },
+
+  /**
+   * Adds a learning activity module (Quiz, Assignment, Page, Resource) to a course section
+   */
+  async addActivity(activityData: {
+    course_id: number;
+    section: number;
+    mod_type: 'page' | 'quiz' | 'assign' | 'resource';
+    name: string;
+    content?: string;
+  }): Promise<any> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl()}?action=add_activity`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ ...activityData, token })
+    });
+    const data = await res.json();
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to add activity');
+    }
+    return data;
+  },
+
+  /**
+   * Toggles enrolment method status on a course
+   */
+  async toggleEnrol(courseId: number, enrolId: number, status: number): Promise<any> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl()}?action=toggle_enrol`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ course_id: courseId, enrol_id: enrolId, status, token })
+    });
+    const data = await res.json();
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to toggle enrolment');
+    }
+    return data;
+  },
+};
+
+export interface MoodlePluginRecord {
+  component: string;
+  name: string;
+  type: string;
+  typeTitle: string;
+  displayname: string;
+  version: string | number;
+  release: string;
+  enabled: boolean;
+  uninstall_allowed: boolean;
+  status: string;
+  is_standard: boolean;
+  rootdir: string;
+}
+
+export interface PluginTypeGroup {
+  title: string;
+  count: number;
+  plugins: MoodlePluginRecord[];
+}
+
+export interface AdminSettingsPayload {
+  site: {
+    fullname: string;
+    shortname: string;
+    summary: string;
+    theme: string;
+    maintenance_enabled: boolean;
+    maintenance_message: string;
+    registerauth: boolean;
+    country: string;
+    timezone: string;
+  };
+  payment: {
+    defaultcurrency: string;
+    pesapal_consumer_key: string;
+    pesapal_consumer_secret: string;
+    pesapal_environment: string;
+    pesapal_ipn_id: string;
+    pesapal_enabled: boolean;
+    paypal_enabled: boolean;
+    selcom_vendor_id: string;
+    selcom_environment: string;
+  };
+  server: {
+    php_version: string;
+    moodle_release: string;
+    moodle_version: string;
+    db_type: string;
+    db_name: string;
+    db_server: string;
+    server_os: string;
+    memory_limit: string;
+    opcache_enabled: boolean;
+    timestamp: string;
+  };
+}
+
+export interface AdminCourseRecord {
+  id: number;
+  fullname: string;
+  shortname: string;
+  category_id: number;
+  category_name: string;
+  format: string;
+  visible: number;
+  startdate: string;
+  summary: string;
+  sections_count: number;
+  modules_count: number;
+  quizzes_count: number;
+  assignments_count: number;
+  pages_count: number;
+  resources_count: number;
+  enrolled_students: number;
+  tuition_fee: number;
+  enrol_methods: Array<{
+    id: number;
+    enrol: string;
+    status: number;
+    cost: number;
+    currency: string;
+  }>;
+}
+
+export interface CourseCategoryRecord {
+  id: number;
+  name: string;
+}
+
+const getAdminApiUrl = (): string => {
+  if (process.env.REACT_APP_MOODLE_URL) {
+    return `${process.env.REACT_APP_MOODLE_URL.replace(/\/+$/, '')}/admin_api.php`;
+  }
+  if (typeof window !== 'undefined') {
+    const pathParts = window.location.pathname.split('/').filter(Boolean);
+    const appBase = pathParts.length > 0 && pathParts[0] !== 'frontend' ? `/${pathParts[0]}` : '';
+    return `${window.location.protocol}//${window.location.host}${appBase}/moodle-backend/admin_api.php`;
+  }
+  return 'http://localhost/outlmstheme/moodle-backend/admin_api.php';
+};
+
+const getAdminToken = (): string => {
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem('out_lms_ws_token') || 'cac3488049fb0d8247867a568bea7c79';
+  }
+  return 'cac3488049fb0d8247867a568bea7c79';
 };

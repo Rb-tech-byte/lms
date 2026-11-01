@@ -49,12 +49,7 @@ const Header = () => {
   }, []);
   useEffect(() => {
     document.documentElement.setAttribute("class", dataTheme);
-  }, [dataTheme])
-  useEffect(() => {
-    const path = location.pathname;
-    const pathArray = path.split("/").filter(Boolean); // Removes empty strings from the split result
-    setBasePath(pathArray[0])
-  }, [location.pathname]);
+  }, [dataTheme]);
 
   const isHome = location.pathname === '/' || location.pathname === '/index' || location.pathname === '/index-6';
 
@@ -254,7 +249,7 @@ const Header = () => {
             </Link>
           </div>
         </div>
-        <div className={`main-menu-wrapper ${isMegaMenu ? 'active' : ''}`}>
+        <div className="main-menu-wrapper">
           <div className="menu-header">
             <Link to={all_routes.homeone} className="menu-logo">
               <ImageWithBasePath src="assets/img/logo.svg" className="img-fluid" alt="Logo" />
@@ -268,7 +263,7 @@ const Header = () => {
               <i className="fas fa-times" />
             </Link>
           </div>
-          <ul className={`main-nav ${isMegaMenu ? 'active' : ''}`}>
+          <ul className="main-nav">
             {navMenus.map((mainMenus: any, mainIndex: number) => {
               const isActive = location.pathname === mainMenus.route;
               return (

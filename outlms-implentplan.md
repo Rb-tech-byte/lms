@@ -394,5 +394,28 @@
     - **Course Models & Features:** Verified default tab loaded courses CS101, CS202, BBA301 with module sections and activity features (`course_models_tab_1793546922283.png`).
     - **Moodle Plugins Management:** Verified 89 plugins listed with live toggle switches and filtered payment gateways (PayPal & Pesapal) (`moodle_plugins_tab_1793547020029.png`).
     - **System & Gateway Settings:** Verified site configuration, Pesapal 3.0 parameters, server node telemetry, and executed cache purge with verified success notification (`system_settings_tab_1793547191998.png`).
-  - Recorded browser verification session: `admin_features_verification_1793546826579.webp`.
-* **👉 Master Plan Status**: All Administrative Features, Plugin Management, System Settings, and Course Learning Models Fully Implemented and Verified.
+* **👉 User Approval Gate 12**: Approved & Committed (`cff6f58`).
+ 
+---
+
+### 🔹 STEP 13: Moodle Direct Login CSS Routing & Slash Arguments Fix
+* **Objective:** Resolve unstyled raw HTML and CSS 404 errors on direct Moodle authentication URLs (`http://localhost/outlmstheme/moodle-backend/login`).
+* **Root Cause Analysis:**
+  - In modern Moodle 5.x, all public endpoints, themes, and stylesheets reside within the `public/` directory (e.g. `public/theme/styles.php`, `public/lib/javascript.php`).
+  - When Moodle serves stylesheets using slash arguments (e.g. `theme/styles.php/boost/1793498630_1793498702/all`), Apache's standard rewrite condition (`-f` and `-d`) failed because the trailing path info (`/boost/...`) does not exist as a physical file on disk.
+  - As a result, Apache redirected the stylesheet request to `public/r.php`, which returned HTTP 404, causing the login page to render as unstyled raw HTML.
+* **Implemented Solution (`moodle-backend/.htaccess`):**
+  - Enabled `AcceptPathInfo On` to instruct Apache to accept trailing path info for PHP handlers.
+  - Added specialized rewrite rule for PHP scripts with slash arguments:
+    ```apache
+    RewriteCond %{DOCUMENT_ROOT}/outlmstheme/moodle-backend/public/$1 -f
+    RewriteRule ^(.*\.php)(/.*)?$ public/$1$2 [QSA,L]
+    ```
+  - Preserved direct execution for `public/` and `admin_api.php`.
+* **Live Verification & End-to-End Test Results:**
+  - Tested `theme/styles.php/boost/...` directly via HTTP: verified **HTTP 200 OK** response.
+  - Tested `lib/javascript.php/...` directly via HTTP: verified **HTTP 200 OK** response.
+  - Tested `http://localhost/outlmstheme/moodle-backend/login` with `browser_subagent`:
+    - Verified modern Bootstrap card styling, form inputs, branding logo, login button, and background imagery render with 0 console/network errors.
+    - Captured full page screenshot: `moodle_login_styled_1793548305220.png`.
+* **👉 Master Plan Status**: Direct Moodle Login CSS and Routing Completely Fixed & Verified.

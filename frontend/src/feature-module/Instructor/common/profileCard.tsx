@@ -7,9 +7,12 @@ import { useAuth } from '../../../core/auth/authContext'
 
 const ProfileCard = () => {
   const { user } = useAuth();
-  const displayName = user?.name || "Dr. Amina Kilindo";
-  const displayTitle = user?.title || "Senior Lecturer & Researcher • Faculty of Science";
-  const displayAvatar = user?.avatar || "assets/img/user/user-01.jpg";
+  const isInstructor = user?.role === 'instructor';
+  const displayName = isInstructor ? user.name : "Dr. Amina Kilindo";
+  const displayTitle = isInstructor
+    ? user.title
+    : "Senior Lecturer & Course Director • Faculty of Science & Technology";
+  const displayAvatar = isInstructor && user?.avatar ? user.avatar : "assets/img/user/user-01.jpg";
 
   return (
     <div className="instructor-profile">

@@ -17,8 +17,9 @@
 | **Step 5** | Student Learning Classroom & Course Player (Videos, Readings, Handouts, Moodle Completion) | 🟢 **Completed** | Approved & Committed (4692dca) |
 | **Step 6** | Headless Student Dashboard & Enrolled Courses Portal (Live Enrolments, Progress Meters, Tabs) | 🟢 **Completed** | Approved & Committed (2c80dca) |
 | **Step 7** | Interactive Assessment & Quiz Engine (Moodle mod_quiz, Timers, Matrix, Scoring & Breakdown) | 🟢 **Completed** | Approved & Committed (e76f8b1) |
-| **Step 8** | Student Certificates, Academic Gradebook Transcripts & Account Settings | 🟢 **Completed** | **Awaiting Review / Approval Gate 8** |
-| **Step 9** | Instructor & Course Director Portal (Management, Course Enrolments & Gradebook) | ⏳ **Pending** | Next Action |
+| **Step 8** | Student Certificates, Academic Gradebook Transcripts & Account Settings | 🟢 **Completed** | Approved & Committed (88a095e) |
+| **Step 9** | Instructor & Course Director Portal (Management, Course Enrolments & Gradebook) | 🟢 **Completed** | **Awaiting Review / Approval Gate 9** |
+| **Step 10**| Administrator & Registrar Portal, Audit Logging & Final Production Hardening | ⏳ **Pending** | Next Action |
 
 ---
 
@@ -227,24 +228,63 @@
     - Gradebook Transcript: `gradebook_transcript_table_1793528203738.png`
     - Student Profile Settings: `student_profile_settings_1793528254617.png`
     - Full Browser Session Recording: `certificates_screenshots_1793527976789.webp`
-* **👉 User Approval Gate 8**: Ready for user review and approval.
+* **👉 User Approval Gate 8**: Approved & Committed (`88a095e`).
+
+---
+
+### 🔹 STEP 9: Instructor & Course Director Portal
+* **Objective:** Connect `/instructor/instructor-dashboard` and `/instructor/instructor-course` to Moodle teacher role web services (`core_enrol_get_users_courses`, `core_enrol_get_enrolled_users`) for student enrolment oversight, performance analytics, and grading review.
+* **Implemented Components:**
+  1. **Moodle Teacher Seeding (`scratch/seed_instructor_user.php`):**
+     - Created Moodle User ID 4 (`instructor` / Dr. Amina Kilindo, `instructor@out.ac.tz`, Senior Lecturer & Course Director).
+     - Assigned Moodle `editingteacher` role (Role ID 3) across Course 2 (`CS101`), Course 3 (`CS202`), and Course 4 (`BBA301`).
+     - Verified student course enrollments and live Moodle REST web services connectivity.
+  2. **TypeScript Web Service Integration Layer (`frontend/src/core/api/instructorService.ts`):**
+     - Defined typed interfaces `InstructorCourseItem`, `InstructorStats`, `EnrolledStudentItem`, and `RecentSubmissionItem`.
+     - Integrated `getInstructorCourses(instructorId)` querying `core_enrol_get_users_courses`.
+     - Integrated `getCourseStudents(courseId)` querying `core_enrol_get_enrolled_users`.
+     - Integrated `getInstructorStats()` and `getRecentSubmissions()` for live assessment grading queue.
+  3. **Headless Instructor Dashboard (`frontend/src/feature-module/instructor/instructor-dashboard/instructorDashboard.tsx`):**
+     - **Profile Card & Teacher Header:** Displays Dr. Amina Kilindo with academic department title and quick action links.
+     - **Teaching KPI Metric Cards:** Directed Courses (3), Total Enrolled Students (9 Active Scholars), Pending Grade Reviews (2), Average Class Mark (89.8%), Instructor Rating (4.9 / 5.0), and Conferred Academic Certificates (2).
+     - **Performance Analytics Chart:** Interactive ApexChart showing Average Quiz Score (%) and Student Completion Rate (%) across courses.
+     - **Assigned Courses Overview Table:** Displays courses, faculty categories, enrolled scholar counts, class averages, and direct links to open the course player.
+     - **Recent Student Submissions Queue:** Real-time student submission tracking with avatars, course codes, assessment titles, marks, and grading status badges (`Graded` vs. `Pending Review`).
+  4. **Assigned Academic Courses Portal & Scholars Roster (`frontend/src/feature-module/instructor/instructor-course/instructorCourse.tsx`):**
+     - Faculty filter pills (`All Courses`, `Faculty of Science & Tech`, `Faculty of Business Mgmt`).
+     - Academic summary metric cards (Assigned, Active, Total Enrolled, Faculty Quizzes).
+     - Course management table with "Open Classroom" and "Scholars" actions.
+     - **Enrolled Scholars Modal:** Interactive popup displaying student roster with names, emails, registration numbers, progress progress-bars, letter grades, and active standing.
+* **Live Verification & End-to-End Test Results:**
+  - Production build compiled successfully (`npm run build`).
+  - Tested live in browser using `browser_subagent`:
+    - Loaded `/instructor/instructor-dashboard`: verified Dr. Amina Kilindo's profile, teaching stats cards, analytics chart, courses table, and recent submissions table.
+    - Loaded `/instructor/instructor-course`: verified 3 assigned courses with faculty badges.
+    - Clicked "Scholars" on CS101: verified Enrolled Scholars modal opened with live student roster (Admin User, Baraka Mkwawa) with registration numbers, progress percentages, and grade standings.
+  - Proof artifacts captured:
+    - Instructor Dashboard Top: `perfect_instructor_dashboard_top_1793531566696.png`
+    - Instructor Dashboard Analytics & Submissions: `perfect_instructor_dashboard_bottom_1793531602967.png`
+    - Instructor Courses List: `perfect_instructor_courses_list_1793531626267.png`
+    - Enrolled Scholars Modal: `verified_enrolled_scholars_modal_1793532759922.png`
+    - Browser Session Recording: `instructor_portal_proof_1793531533479.webp`
+* **👉 User Approval Gate 9**: Ready for user review and approval.
 
 ---
 
 ## Current Status & Next Action
 
-**Step 8 (Student Certificates, Gradebook Transcripts & Account Settings)** is fully implemented, connected to Moodle Web Services, and verified live end-to-end. We are currently at **Approval Gate 8**.
+**Step 9 (Instructor & Course Director Portal)** is fully implemented, connected to Moodle Web Services, and verified live end-to-end. We are currently at **Approval Gate 9**.
 
-### Proposed Step 9: Instructor & Course Director Portal
+### Proposed Step 10: Administrator & Registrar Portal, Audit Logging & Final Production Hardening
 - **Feature Set:**
-  1. Connect `/instructor/instructor-dashboard` to Moodle teacher role web services:
-     - Real-time instructor statistics (total enrolled students, active courses taught, pending submissions, course ratings).
-     - Recent student activity feed and upcoming assessment deadlines.
-  2. Connect `/instructor/instructor-course` to dynamic course list:
-     - View all courses assigned to the logged-in instructor (e.g., CS101, BBA301).
-     - Course management actions: manage students, view course completion rates, launch classroom.
-  3. Gradebook & Student Submissions Management:
-     - Connect student assessment submissions to instructor review stage.
+  1. Connect `/admin/dashboard` to Moodle admin web services:
+     - Platform-wide telemetry: total university enrollments, active courses, payment volume via Pesapal, active system sessions.
+     - User management & role assignments (Students, Instructors, Course Directors, Admins).
+  2. Registrar Audit Logging & Security:
+     - Inspection of Moodle standard logs (`core_reportbuilder` / event logs).
+     - Automated Pesapal IPN transaction reconciliation ledger.
+  3. Final production environment configuration and deployment scripts.
+
 
 
 

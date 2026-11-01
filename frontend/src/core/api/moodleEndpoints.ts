@@ -13,6 +13,8 @@ export const MOODLE_ENDPOINTS = {
   GET_COURSES: 'core_course_get_courses',
   GET_COURSES_BY_FIELD: 'core_course_get_courses_by_field',
   GET_COURSE_CONTENTS: 'core_course_get_contents',
+  UPDATE_ACTIVITY_COMPLETION: 'core_completion_update_activity_completion_status_manually',
+  GET_PAGES_BY_COURSES: 'mod_page_get_pages_by_courses',
   CREATE_COURSES: 'core_course_create_courses',
   UPDATE_COURSES: 'core_course_update_courses',
   CREATE_CATEGORIES: 'core_course_create_categories',

@@ -491,13 +491,22 @@ const CourseGrid = () => {
                         </p>
                         <div className="d-flex align-items-center justify-content-between pt-2 border-top">
                           <h6 className="text-success mb-0 fw-bold">TZS 150,000</h6>
-                          <Link
-                            to={all_routes.courseDetails}
-                            className="btn btn-dark btn-sm d-inline-flex align-items-center"
-                          >
-                            View Course
-                            <i className="isax isax-arrow-right-3 ms-1" />
-                          </Link>
+                          <div className="d-flex gap-2">
+                            <Link
+                              to={`${all_routes.courseWatch}?courseId=${course.id}`}
+                              className="btn btn-primary btn-sm d-inline-flex align-items-center"
+                              title="Enter Learning Classroom"
+                            >
+                              <i className="isax isax-play-circle me-1" />
+                              Classroom
+                            </Link>
+                            <Link
+                              to={all_routes.courseDetails}
+                              className="btn btn-outline-dark btn-sm d-inline-flex align-items-center"
+                            >
+                              Details
+                            </Link>
+                          </div>
                         </div>
                       </div>
                     </div>

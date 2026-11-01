@@ -27,6 +27,61 @@ export interface MoodleCourse {
   enrolledusercount?: number;
 }
 
+export interface CourseModuleContent {
+  type: string;
+  filename: string;
+  filepath?: string;
+  filesize?: number;
+  fileurl?: string;
+  timecreated?: number;
+  timemodified?: number;
+  mimetype?: string;
+  content?: string;
+}
+
+export interface CourseModule {
+  id: number;
+  url?: string;
+  name: string;
+  instance: number;
+  contextid?: number;
+  visible: number;
+  uservisible?: boolean;
+  modicon?: string;
+  modname: 'url' | 'page' | 'resource' | 'quiz' | 'assign' | 'forum' | string;
+  purpose?: string;
+  completion: number; // 0 = none, 1 = manual, 2 = automatic
+  completiondata?: {
+    state: number; // 0 = incomplete, 1 = complete, 2 = complete pass, 3 = complete fail
+    timecompleted?: number;
+    overrideby?: number | null;
+    valueused?: boolean;
+  };
+  contents?: CourseModuleContent[];
+  description?: string;
+}
+
+export interface CourseSection {
+  id: number;
+  name: string;
+  visible: number;
+  summary: string;
+  summaryformat: number;
+  section: number;
+  hiddenbynumsections?: number;
+  uservisible: boolean;
+  modules: CourseModule[];
+}
+
+export interface MoodlePageContent {
+  id: number;
+  coursemodule: number;
+  course: number;
+  name: string;
+  intro: string;
+  content: string;
+}
+
 export const courseService = {
   /**
    * Fetches all published academic categories from Moodle
@@ -90,31 +145,70 @@ export const courseService = {
   /**
    * Fetches detailed syllabus, sections, and activities for a specific course
    */
-  async getCourseContents(courseId: number): Promise<any[]> {
+  async getCourseContents(courseId: number): Promise<CourseSection[]> {
     if (isMockMode()) {
       return [
         {
           id: 1,
           name: 'Module 1: Introduction to Headless Architecture',
+          visible: 1,
           summary: 'Overview of modern decoupled learning systems and API standards.',
+          summaryformat: 1,
+          section: 0,
+          uservisible: true,
           modules: [
-            { id: 11, name: 'Lecture 1.1: Why Decouple the LMS?', modname: 'page' },
-            { id: 12, name: 'Reading: Moodle 5.3 Web Services Guide', modname: 'resource' },
-            { id: 13, name: 'Quiz 1: Architecture Checkpoint', modname: 'quiz' },
+            { id: 11, name: 'Lecture 1.1: Why Decouple the LMS?', instance: 1, visible: 1, completion: 1, modname: 'page' },
+            { id: 12, name: 'Reading: Moodle 5.3 Web Services Guide', instance: 2, visible: 1, completion: 1, modname: 'resource' },
+            { id: 13, name: 'Quiz 1: Architecture Checkpoint', instance: 3, visible: 1, completion: 1, modname: 'quiz' },
           ],
         },
         {
           id: 2,
           name: 'Module 2: API Gateway and Tanzanian Payment Systems',
+          visible: 1,
           summary: 'Integrating Pesapal & Selcom with automated student enrollment.',
+          summaryformat: 1,
+          section: 1,
+          uservisible: true,
           modules: [
-            { id: 21, name: 'Lecture 2.1: Payment Webhook Architecture', modname: 'page' },
-            { id: 22, name: 'Assignment 1: Payment Flow Diagram', modname: 'assign' },
+            { id: 21, name: 'Lecture 2.1: Payment Webhook Architecture', instance: 4, visible: 1, completion: 1, modname: 'page' },
+            { id: 22, name: 'Assignment 1: Payment Flow Diagram', instance: 5, visible: 1, completion: 1, modname: 'assign' },
           ],
         },
       ];
     }
 
-    return callMoodleWs<any[]>(MOODLE_ENDPOINTS.GET_COURSE_CONTENTS, { courseid: courseId });
+    return callMoodleWs<CourseSection[]>(MOODLE_ENDPOINTS.GET_COURSE_CONTENTS, { courseid: courseId });
+  },
+
+  /**
+   * Updates an activity completion status in real-time on Moodle backend
+   */
+  async updateActivityCompletion(cmid: number, completed: boolean): Promise<{ status: boolean }> {
+    if (isMockMode()) {
+      return { status: true };
+    }
+    return callMoodleWs<{ status: boolean }>(MOODLE_ENDPOINTS.UPDATE_ACTIVITY_COMPLETION, {
+      cmid,
+      completed: completed ? 1 : 0,
+    });
+  },
+
+  /**
+   * Fetches full HTML pages and lecture readings for a course
+   */
+  async getPagesByCourse(courseId: number): Promise<MoodlePageContent[]> {
+    if (isMockMode()) {
+      return [];
+    }
+    try {
+      const res = await callMoodleWs<{ pages: MoodlePageContent[] }>(MOODLE_ENDPOINTS.GET_PAGES_BY_COURSES, {
+        courseids: [courseId],
+      });
+      return res.pages || [];
+    } catch {
+      return [];
+    }
   },
 };
+

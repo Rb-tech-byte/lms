@@ -190,8 +190,8 @@ const CourseCheckout = () => {
                     </div>
 
                     <div className="d-flex justify-content-center gap-3">
-                      <Link to={route.courseDetails} className="btn btn-primary rounded-pill px-5 py-2 fw-semibold">
-                        Go to Course Dashboard &rarr;
+                      <Link to={`${route.courseWatch}?courseId=2`} className="btn btn-primary rounded-pill px-5 py-2 fw-semibold">
+                        <i className="isax isax-play-circle me-2"></i> Enter Classroom &amp; Start Learning
                       </Link>
                       <button
                         type="button"

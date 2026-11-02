@@ -309,7 +309,6 @@ export const AdminDashboard: React.FC = () => {
       className="corporate-lms-admin-app d-flex"
       style={{
         backgroundColor: '#f4f6fa',
-        backgroundImage: `linear-gradient(to right, #0b1727 ${sidebarCollapsed ? '64px' : '220px'}, #f4f6fa ${sidebarCollapsed ? '64px' : '220px'})`,
         minHeight: '100vh',
       }}
     >
@@ -331,8 +330,8 @@ export const AdminDashboard: React.FC = () => {
       <div
         className="corporate-main-content flex-grow-1 d-flex flex-column"
         style={{
-          marginLeft: sidebarCollapsed ? '64px' : '220px',
-          width: sidebarCollapsed ? 'calc(100% - 64px)' : 'calc(100% - 220px)',
+          marginLeft: sidebarCollapsed ? '48px' : '130px',
+          width: sidebarCollapsed ? 'calc(100% - 48px)' : 'calc(100% - 130px)',
           minHeight: '100vh',
           minWidth: 0,
           backgroundColor: '#f4f6fa',
@@ -879,79 +878,95 @@ export const AdminDashboard: React.FC = () => {
 
                       {/* Responsive Line Chart SVG */}
                       <div className="w-100 overflow-x-auto">
-                        <svg viewBox="0 0 740 260" className="w-100" style={{ minWidth: '600px', height: '240px' }}>
+                        <svg viewBox="0 0 740 230" className="w-100" style={{ minWidth: '600px', height: '220px' }}>
+                          <defs>
+                            <linearGradient id="tuitionGrad" x1="0" y1="0" x2="0" y2="1">
+                              <stop offset="0%" stopColor="#16a34a" stopOpacity="0.22" />
+                              <stop offset="100%" stopColor="#16a34a" stopOpacity="0.0" />
+                            </linearGradient>
+                          </defs>
+
                           {/* Y-Axis Labels & Horizontal Gridlines */}
                           {[
-                            { y: 20, label: '1.0' },
-                            { y: 42, label: '0.8' },
-                            { y: 64, label: '0.6' },
-                            { y: 86, label: '0.4' },
-                            { y: 108, label: '0.2' },
-                            { y: 130, label: '0' },
-                            { y: 152, label: '-0.2' },
-                            { y: 174, label: '-0.4' },
-                            { y: 196, label: '-0.6' },
-                            { y: 218, label: '-0.8' },
-                            { y: 240, label: '-1.0' },
+                            { y: 25, label: '30M' },
+                            { y: 60, label: '25M' },
+                            { y: 95, label: '20M' },
+                            { y: 130, label: '15M' },
+                            { y: 165, label: '10M' },
+                            { y: 200, label: '0' },
                           ].map((grid, idx) => (
                             <g key={idx}>
-                              <text x="35" y={grid.y + 4} textAnchor="end" fontSize="10" fill="#94a3b8">
+                              <text x="40" y={grid.y + 4} textAnchor="end" fontSize="10" fill="#94a3b8">
                                 {grid.label}
                               </text>
                               <line
-                                x1="45"
+                                x1="50"
                                 y1={grid.y}
                                 x2="720"
                                 y2={grid.y}
-                                stroke={grid.label === '0' ? '#16a34a' : '#f1f5f9'}
-                                strokeDasharray={grid.label === '0' ? '4 2' : 'none'}
+                                stroke="#f1f5f9"
+                                strokeDasharray={grid.label === '0' ? 'none' : '4 2'}
                                 strokeWidth="1"
                               />
                             </g>
                           ))}
 
-                          {/* Data Points Line */}
-                          <polyline
-                            fill="none"
-                            stroke="#16a34a"
-                            strokeWidth="2"
+                          {/* Gradient Fill under Curve */}
+                          <polygon
+                            fill="url(#tuitionGrad)"
                             points="
-                              55,130 77,130 99,130 121,130 143,130 165,130 187,130 209,130 231,130 253,130
-                              275,130 297,130 319,130 341,130 363,130 385,130 407,130 429,130 451,130 473,130
-                              495,130 517,130 539,130 561,130 583,130 605,130 627,130 649,130 671,130 693,130
+                              65,170 160,150 260,120 360,110 460,80 560,65 660,45 700,40
+                              700,200 65,200
                             "
                           />
 
-                          {/* Data point dots */}
+                          {/* Smooth Trending Polyline */}
+                          <polyline
+                            fill="none"
+                            stroke="#16a34a"
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            points="65,170 160,150 260,120 360,110 460,80 560,65 660,45 700,40"
+                          />
+
+                          {/* Data points */}
                           {[
-                            55, 77, 99, 121, 143, 165, 187, 209, 231, 253,
-                            275, 297, 319, 341, 363, 385, 407, 429, 451, 473,
-                            495, 517, 539, 561, 583, 605, 627, 649, 671, 693
-                          ].map((cx, idx) => (
-                            <circle key={idx} cx={cx} cy="130" r="3.5" fill="#16a34a" stroke="#ffffff" strokeWidth="1.5" />
+                            { cx: 65, cy: 170 },
+                            { cx: 160, cy: 150 },
+                            { cx: 260, cy: 120 },
+                            { cx: 360, cy: 110 },
+                            { cx: 460, cy: 80 },
+                            { cx: 560, cy: 65 },
+                            { cx: 660, cy: 45 },
+                            { cx: 700, cy: 40 },
+                          ].map((pt, idx) => (
+                            <circle key={idx} cx={pt.cx} cy={pt.cy} r="4" fill="#16a34a" stroke="#ffffff" strokeWidth="2" />
                           ))}
 
-                          {/* X-Axis Slanted Date Labels */}
+                          {/* X-Axis Clean Date Labels */}
                           {[
-                            '04 Oct', '05 Oct', '06 Oct', '07 Oct', '08 Oct', '09 Oct', '10 Oct', '11 Oct', '12 Oct', '13 Oct',
-                            '14 Oct', '15 Oct', '16 Oct', '17 Oct', '18 Oct', '19 Oct', '20 Oct', '21 Oct', '22 Oct', '23 Oct',
-                            '24 Oct', '25 Oct', '26 Oct', '27 Oct', '28 Oct', '29 Oct', '30 Oct', '31 Oct', '01 Nov', '02 Nov'
-                          ].map((d, idx) => {
-                            const x = 55 + idx * 22;
-                            return (
-                              <text
-                                key={idx}
-                                x={x}
-                                y="252"
-                                textAnchor="end"
-                                fontSize="8"
-                                fill="#94a3b8"
-                                transform={`rotate(-45 ${x} 252)`}
-                              >
-                                {d}
-                              </text>
-                            );
-                          })}
+                            { x: 65, label: '05 Oct' },
+                            { x: 160, label: '10 Oct' },
+                            { x: 260, label: '15 Oct' },
+                            { x: 360, label: '20 Oct' },
+                            { x: 460, label: '25 Oct' },
+                            { x: 560, label: '30 Oct' },
+                            { x: 660, label: '01 Nov' },
+                            { x: 700, label: '02 Nov' },
+                          ].map((d, idx) => (
+                            <text
+                              key={idx}
+                              x={d.x}
+                              y="218"
+                              textAnchor="middle"
+                              fontSize="10"
+                              fill="#64748b"
+                              fontWeight="500"
+                            >
+                              {d.label}
+                            </text>
+                          ))}
                         </svg>
                       </div>
                     </div>
@@ -1171,7 +1186,7 @@ export const AdminDashboard: React.FC = () => {
                           className="badge rounded-pill fw-bold"
                           style={{ backgroundColor: '#e0f2fe', color: '#0369a1', fontSize: '10px' }}
                         >
-                          1 Ranked
+                          Top 3 Ranked
                         </span>
                       </div>
                       <p className="text-muted small mb-3">
@@ -1231,38 +1246,102 @@ export const AdminDashboard: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="card-body p-3">
-                      {/* Ranked Course Card */}
+                    <div className="card-body p-3 d-flex flex-column gap-2">
+                      {/* Course #1 */}
                       <div
-                        className="p-3 border rounded-3 d-flex align-items-center gap-3 bg-light-subtle cursor-pointer hover-shadow"
+                        className="p-2.5 border rounded-3 d-flex align-items-center gap-2.5 bg-light-subtle cursor-pointer hover-shadow"
                         onClick={() => handleOpenStudio(4)}
-                        title="Click to open Course #4 Settings Studio"
+                        title="Click to open BBA301 in Course Studio"
                         style={{ cursor: 'pointer' }}
                       >
                         <div
-                          className="fw-bold fs-16 text-muted d-flex align-items-center justify-content-center"
-                          style={{ width: '20px' }}
+                          className="fw-bold fs-14 text-primary d-flex align-items-center justify-content-center rounded-circle bg-white border"
+                          style={{ width: '24px', height: '24px' }}
                         >
                           1
                         </div>
                         <div
-                          className="rounded-3 bg-white p-2 border d-flex align-items-center justify-content-center flex-shrink-0"
-                          style={{ width: '45px', height: '45px' }}
+                          className="rounded-2 bg-white p-1 border d-flex align-items-center justify-content-center flex-shrink-0"
+                          style={{ width: '34px', height: '34px' }}
                         >
                           🎓
                         </div>
                         <div className="overflow-hidden flex-grow-1">
-                          <h6 className="fw-bold mb-1 text-dark text-truncate" style={{ fontSize: '12px' }}>
-                            Financial Management & Strategic Planning (BBA301)
+                          <h6 className="fw-bold mb-0 text-dark text-truncate" style={{ fontSize: '11.5px' }}>
+                            Financial Management (BBA301)
                           </h6>
-                          <div className="d-flex align-items-center gap-3 small text-muted" style={{ fontSize: '11px' }}>
-                            <span className="text-primary d-flex align-items-center gap-1">
-                              <i className="feather-users fs-12" /> 14,820
+                          <div className="d-flex align-items-center gap-2 small text-muted" style={{ fontSize: '10px' }}>
+                            <span className="text-primary d-flex align-items-center gap-0.5">
+                              <i className="feather-users fs-10" /> 14,820
                             </span>
-                            <span className="text-warning d-flex align-items-center gap-1">
-                              ★ 4.9
+                            <span className="text-warning">★ 4.9</span>
+                            <span className="text-secondary text-truncate">TZS 184.5M</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Course #2 */}
+                      <div
+                        className="p-2.5 border rounded-3 d-flex align-items-center gap-2.5 bg-light-subtle cursor-pointer hover-shadow"
+                        onClick={() => handleOpenStudio(2)}
+                        title="Click to open CS204 in Course Studio"
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <div
+                          className="fw-bold fs-14 text-dark d-flex align-items-center justify-content-center rounded-circle bg-white border"
+                          style={{ width: '24px', height: '24px' }}
+                        >
+                          2
+                        </div>
+                        <div
+                          className="rounded-2 bg-white p-1 border d-flex align-items-center justify-content-center flex-shrink-0"
+                          style={{ width: '34px', height: '34px' }}
+                        >
+                          💻
+                        </div>
+                        <div className="overflow-hidden flex-grow-1">
+                          <h6 className="fw-bold mb-0 text-dark text-truncate" style={{ fontSize: '11.5px' }}>
+                            Database & Cloud Systems (CS204)
+                          </h6>
+                          <div className="d-flex align-items-center gap-2 small text-muted" style={{ fontSize: '10px' }}>
+                            <span className="text-primary d-flex align-items-center gap-0.5">
+                              <i className="feather-users fs-10" /> 11,400
                             </span>
-                            <span className="text-secondary">TZS 184,500,000</span>
+                            <span className="text-warning">★ 4.8</span>
+                            <span className="text-secondary text-truncate">TZS 142.0M</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Course #3 */}
+                      <div
+                        className="p-2.5 border rounded-3 d-flex align-items-center gap-2.5 bg-light-subtle cursor-pointer hover-shadow"
+                        onClick={() => handleOpenStudio(3)}
+                        title="Click to open ED401 in Course Studio"
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <div
+                          className="fw-bold fs-14 text-muted d-flex align-items-center justify-content-center rounded-circle bg-white border"
+                          style={{ width: '24px', height: '24px' }}
+                        >
+                          3
+                        </div>
+                        <div
+                          className="rounded-2 bg-white p-1 border d-flex align-items-center justify-content-center flex-shrink-0"
+                          style={{ width: '34px', height: '34px' }}
+                        >
+                          📚
+                        </div>
+                        <div className="overflow-hidden flex-grow-1">
+                          <h6 className="fw-bold mb-0 text-dark text-truncate" style={{ fontSize: '11.5px' }}>
+                            Educational Pedagogy (ED401)
+                          </h6>
+                          <div className="d-flex align-items-center gap-2 small text-muted" style={{ fontSize: '10px' }}>
+                            <span className="text-primary d-flex align-items-center gap-0.5">
+                              <i className="feather-users fs-10" /> 8,950
+                            </span>
+                            <span className="text-warning">★ 4.7</span>
+                            <span className="text-secondary text-truncate">TZS 111.8M</span>
                           </div>
                         </div>
                       </div>

@@ -12,24 +12,33 @@ export const CorporateAdminHeader: React.FC<CorporateAdminHeaderProps> = ({
 }) => {
   return (
     <header
-      className="corporate-admin-header bg-white border-bottom px-4 d-flex align-items-center justify-content-between sticky-top"
+      className="corporate-admin-header bg-white border-bottom px-3 px-md-4 d-flex align-items-center justify-content-between sticky-top flex-shrink-0"
       style={{
-        height: '56px',
+        height: '50px',
         zIndex: 990,
         borderColor: '#e2e8f0',
       }}
     >
-      {/* Left: Hamburger menu toggle */}
-      <div className="d-flex align-items-center gap-3">
+      {/* Left: Hamburger menu toggle + Console title */}
+      <div className="d-flex align-items-center gap-2.5">
         <button
           type="button"
           onClick={onToggleSidebar}
-          className="btn btn-sm btn-light border-0 p-2 d-flex align-items-center justify-content-center rounded-2"
-          style={{ width: '36px', height: '36px', color: '#334155' }}
+          className="btn btn-sm btn-light border-0 p-1.5 d-flex align-items-center justify-content-center rounded-2"
+          style={{ width: '30px', height: '30px', color: '#334155', backgroundColor: '#f1f5f9' }}
           title="Toggle Navigation Menu"
         >
-          <i className="feather-menu fs-18" />
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
         </button>
+        <div className="d-none d-sm-flex align-items-center gap-2 small text-muted" style={{ fontSize: '12px' }}>
+          <span className="fw-bold text-dark">Executive Governance</span>
+          <span className="text-muted">•</span>
+          <span>OUT LMS Console</span>
+        </div>
       </div>
 
       {/* Right: Visit Website link & quick indicators */}

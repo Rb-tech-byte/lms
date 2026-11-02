@@ -575,3 +575,52 @@
     - Recorded session: `course_settings_studio_test_1793561457822.webp`.
 * **👉 Master Plan Status**: Complete and Verified.
 
+---
+
+### 🔹 STEP 18: Corporate LMS Academy Dashboard Layout & Dark Navy Sidebar Architecture
+* **Objective:** Completely replicate the exact look, layout, theme, and sidebar arrangements from the reference corporate LMS administration dashboard (PBZ Corporate LMS Academy / OUT LMS).
+* **Architecture & Layout Components (`frontend/src/feature-module/admin/`):**
+  1. **Full-Viewport Dedicated Admin Layout (`feature.tsx`):**
+     - Bypasses public site mega-menu and public footer for all `/admin/*` routes, rendering a dedicated full-screen corporate application shell with `#f4f6fa` background.
+  2. **Corporate Fixed Dark Navy Sidebar (`corporateAdminSidebar.tsx`):**
+     - Dark navy styling (`#0b1727`), width `260px` with collapsible compact mode (`70px`).
+     - Dual-crest brand header: Institution Emblem + Corporate LMS Academy branding.
+     - Exact hierarchical navigation groupings:
+       - **`CORE OVERVIEW`**: `Dashboard` (active cyan highlight `#0284c7`), `Reports & Analytics`.
+       - **`ACADEMIC & LEARNING`**: `Courses & Curriculum` (with submenu & Course #4 Studio shortcut), `Assessments & Activity`, `Events & Classes`.
+       - **`COMPLIANCE & BOT AUDIT`**: `Branch Oversight Matrix`, `BOT Compliance Engine`.
+       - **`USERS & ENROLLMENT`**: `Enrollments`, `Bank Staff & Officers`, `Instructors`, `Account Deletions`.
+       - **`ENGAGEMENT & MARKETING`**: `Reviews & Ratings`, `Blogs & News`, `Communications`.
+       - **`SYSTEM & PLATFORM`**: `Frontend Manager`, `Language Manager`, `Settings & Config` (Site Administration Suite), `System Maintenance` (Purge Caches).
+  3. **Corporate Top Header Bar (`corporateAdminHeader.tsx`):**
+     - White header bar (`#ffffff`), height `56px`, subtle border `#e2e8f0`.
+     - Left: Hamburger toggle button for smooth sidebar collapse/expansion.
+     - Right: `🌐 Visit Website` link (to public university portal) and quick Purge Caches tool.
+  4. **Top Filter Toolbar Card:**
+     - White rounded card with blue solid `⚡ FILTERS` button (`#0284c7`), select inputs for `COURSE`, `DEPARTMENT / CATEGORY`, `MODULE / STATUS`, and `Reset` button.
+  5. **6 Metric Stat Cards (Accent Left Borders):**
+     - `TOTAL LEARNERS` (blue `#0ea5e9`), `TOTAL COURSES` (purple `#a855f7`), `ENROLLMENT COMPLETION` (teal `#10b981`), `MANDATORY ENROLLMENTS PENDING` (amber `#f59e0b`), `ACTIVE (LAST 7 DAYS)` (green `#22c55e`), `NOT ACTIVE (7 DAYS)` (red `#ef4444`).
+  6. **`COURSE OUTCOME KPIS` (7 Vibrant Solid Cards):**
+     - Total Learners (Cyan Blue `#0284c7`), Resigned Midway (Orange `#f97316`), Course Enrollments (Sky Blue `#0284c7`), Pending Verification (Coral Red `#ef4444`), Passed (Forest Green `#059669`), Certificates Issued (Violet Purple `#8b5cf6`), BOT Compliance (Midnight Navy `#0b1727`, 100% Audit).
+  7. **2-Column Middle Grid (col-lg-8 & col-lg-4):**
+     - **Left Column**:
+       - *Department Readiness & Analytics Trend*: Responsive SVG line chart with 30-day date progression, baseline dots, and 30 Days / Yearly / 12 Months switches.
+       - *Recent Staff Enrollments & Mandate Progress*: Audited corporate table with dates, course mandate, staff name, branch, and green `APPROVED` badges.
+       - *Enrollment Distribution Overview*: Monthly bar chart with October peak and 12-month selector.
+     - **Right Column**:
+       - *Overall Course Leaders*: Ranked badge, Top Courses / Participants switch, percentage pills (70%+, 40-69%, Below 40%), and clickable course card.
+       - *Learner Engagement Score*: Progress bars for Active Learners (83.3%), Completed Modules, and At Risk.
+       - *Recent Activity Stream*: 5 real-time activity stream cards with blue avatar circles and timestamps.
+  8. **Footer:**
+     - `Copyright © 2026 • People's Bank of Zanzibar (PBZ) / OUT LMS Corporate Academy • All Rights Reserved.`
+* **Live Verification & End-to-End Test Results:**
+  - Production build compiled successfully (`npm run build`, exit code 0).
+  - Browser verification executed via `browser_subagent`:
+    - Navigated to `http://localhost:3000/admin/dashboard`.
+    - Tested sidebar collapse and expansion via hamburger menu.
+    - Verified all components, filter toolbar, metrics, KPIs, charts, tables, and engagement widgets render identically to the user reference.
+    - Viewport screenshot saved: `admin_dashboard_viewport_1793613419420.png`.
+    - Collapsed sidebar screenshot: `admin_dashboard_collapsed_1793613457923.png`.
+    - Recorded session: `corporate_dashboard_verify_1793613363075.webp`.
+* **👉 Master Plan Status**: Complete and Verified.
+

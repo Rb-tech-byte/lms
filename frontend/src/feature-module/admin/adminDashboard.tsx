@@ -305,7 +305,14 @@ export const AdminDashboard: React.FC = () => {
   });
 
   return (
-    <div className="corporate-lms-admin-app d-flex" style={{ backgroundColor: '#f4f6fa', minHeight: '100vh' }}>
+    <div
+      className="corporate-lms-admin-app d-flex"
+      style={{
+        backgroundColor: '#f4f6fa',
+        backgroundImage: `linear-gradient(to right, #0b1727 ${sidebarCollapsed ? '64px' : '220px'}, #f4f6fa ${sidebarCollapsed ? '64px' : '220px'})`,
+        minHeight: '100vh',
+      }}
+    >
       {/* ============================================================== */}
       {/* 1. LEFT FIXED CORPORATE SIDEBAR (MATCHING SCREENSHOT LAYOUT)   */}
       {/* ============================================================== */}
@@ -321,7 +328,17 @@ export const AdminDashboard: React.FC = () => {
       {/* ============================================================== */}
       {/* 2. MAIN CONTENT WRAPPER (TOP NAV + CANVAS BODY)                */}
       {/* ============================================================== */}
-      <div className="corporate-main-content flex-grow-1 d-flex flex-column" style={{ minWidth: 0 }}>
+      <div
+        className="corporate-main-content flex-grow-1 d-flex flex-column"
+        style={{
+          marginLeft: sidebarCollapsed ? '64px' : '220px',
+          width: sidebarCollapsed ? 'calc(100% - 64px)' : 'calc(100% - 220px)',
+          minHeight: '100vh',
+          minWidth: 0,
+          backgroundColor: '#f4f6fa',
+          transition: 'margin-left 0.2s ease, width 0.2s ease',
+        }}
+      >
         {/* TOP SLIM HEADER BAR */}
         <CorporateAdminHeader
           onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
@@ -344,15 +361,15 @@ export const AdminDashboard: React.FC = () => {
         {/* ============================================================== */}
         {/* 3. CANVAS BODY                                                 */}
         {/* ============================================================== */}
-        <div className="p-4 flex-grow-1">
+        <div className="p-3 p-md-4 flex-grow-1">
           {/* ============================================================== */}
           {/* VIEW A: EXACT CORPORATE DASHBOARD (WITH OUT LMS PROJECT DATA)  */}
           {/* ============================================================== */}
           {activeView === 'dashboard' && (
             <div>
               {/* 3.1 TOP FILTER BAR CARD */}
-              <div className="card border-0 shadow-sm rounded-3 mb-4 bg-white" style={{ borderColor: '#e2e8f0' }}>
-                <div className="card-body p-3">
+              <div className="card border-0 shadow-sm rounded-3 mb-3 bg-white" style={{ borderColor: '#e2e8f0' }}>
+                <div className="card-body py-2.5 px-3">
                   <div className="row g-3 align-items-end">
                     <div className="col-auto">
                       <button
@@ -440,378 +457,364 @@ export const AdminDashboard: React.FC = () => {
                 </div>
               </div>
 
-              {/* 3.2 ROW OF 6 METRIC CARDS (ACCENT BORDERS & ICON BADGES) */}
-              <div className="row g-3 mb-4">
+              {/* 3.2 ROW OF 6 METRIC CARDS (COMPACT 6-COLUMN GRID) */}
+              <div className="admin-metrics-grid mb-3">
                 {/* 1. TOTAL SCHOLARS */}
-                <div className="col-xl-2 col-md-4 col-sm-6">
-                  <div
-                    className="card h-100 border-0 shadow-sm p-3 bg-white rounded-3"
-                    style={{ borderLeft: '4px solid #0ea5e9', minHeight: '85px' }}
-                  >
-                    <div className="d-flex align-items-center gap-3">
+                <div
+                  className="card h-100 border-0 shadow-sm p-2.5 bg-white rounded-3"
+                  style={{ borderLeft: '3.5px solid #0ea5e9', minHeight: '70px' }}
+                >
+                  <div className="d-flex align-items-center gap-2.5">
+                    <div
+                      className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                      style={{ width: '36px', height: '36px', backgroundColor: '#e0f2fe', color: '#0284c7' }}
+                    >
+                      <i className="feather-users fs-16" />
+                    </div>
+                    <div className="overflow-hidden">
+                      <h5 className="fw-bold mb-0 text-dark" style={{ fontSize: '18px', lineHeight: 1.1 }}>
+                        {telemetry.totalStudents.toLocaleString()}
+                      </h5>
                       <div
-                        className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
-                        style={{ width: '40px', height: '40px', backgroundColor: '#e0f2fe', color: '#0284c7' }}
+                        className="text-uppercase fw-bold text-muted text-truncate"
+                        style={{ fontSize: '9px', letterSpacing: '0.4px', marginTop: '2px' }}
                       >
-                        <i className="feather-users fs-18" />
-                      </div>
-                      <div>
-                        <h4 className="fw-bold mb-0 text-dark">{telemetry.totalStudents.toLocaleString()}</h4>
-                        <div
-                          className="text-uppercase fw-bold text-muted"
-                          style={{ fontSize: '10px', letterSpacing: '0.4px' }}
-                        >
-                          TOTAL SCHOLARS
-                        </div>
+                        TOTAL SCHOLARS
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* 2. TOTAL COURSES */}
-                <div className="col-xl-2 col-md-4 col-sm-6">
-                  <div
-                    className="card h-100 border-0 shadow-sm p-3 bg-white rounded-3"
-                    style={{ borderLeft: '4px solid #a855f7', minHeight: '85px' }}
-                  >
-                    <div className="d-flex align-items-center gap-3">
+                <div
+                  className="card h-100 border-0 shadow-sm p-2.5 bg-white rounded-3"
+                  style={{ borderLeft: '3.5px solid #a855f7', minHeight: '70px' }}
+                >
+                  <div className="d-flex align-items-center gap-2.5">
+                    <div
+                      className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                      style={{ width: '36px', height: '36px', backgroundColor: '#f3e8ff', color: '#9333ea' }}
+                    >
+                      <i className="feather-book fs-16" />
+                    </div>
+                    <div className="overflow-hidden">
+                      <h5 className="fw-bold mb-0 text-dark" style={{ fontSize: '18px', lineHeight: 1.1 }}>
+                        {courses.length || telemetry.publishedCourses}
+                      </h5>
                       <div
-                        className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
-                        style={{ width: '40px', height: '40px', backgroundColor: '#f3e8ff', color: '#9333ea' }}
+                        className="text-uppercase fw-bold text-muted text-truncate"
+                        style={{ fontSize: '9px', letterSpacing: '0.4px', marginTop: '2px' }}
                       >
-                        <i className="feather-book fs-18" />
-                      </div>
-                      <div>
-                        <h4 className="fw-bold mb-0 text-dark">{courses.length || telemetry.publishedCourses}</h4>
-                        <div
-                          className="text-uppercase fw-bold text-muted"
-                          style={{ fontSize: '10px', letterSpacing: '0.4px' }}
-                        >
-                          TOTAL COURSES
-                        </div>
+                        TOTAL COURSES
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* 3. ENROLLMENT COMPLETION */}
-                <div className="col-xl-2 col-md-4 col-sm-6">
-                  <div
-                    className="card h-100 border-0 shadow-sm p-3 bg-white rounded-3"
-                    style={{ borderLeft: '4px solid #10b981', minHeight: '85px' }}
-                  >
-                    <div className="d-flex align-items-center gap-3">
+                <div
+                  className="card h-100 border-0 shadow-sm p-2.5 bg-white rounded-3"
+                  style={{ borderLeft: '3.5px solid #10b981', minHeight: '70px' }}
+                >
+                  <div className="d-flex align-items-center gap-2.5">
+                    <div
+                      className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                      style={{ width: '36px', height: '36px', backgroundColor: '#dcfce7', color: '#16a34a' }}
+                    >
+                      <i className="feather-check-circle fs-16" />
+                    </div>
+                    <div className="overflow-hidden">
+                      <h5 className="fw-bold mb-0 text-dark" style={{ fontSize: '18px', lineHeight: 1.1 }}>
+                        94.2%
+                      </h5>
                       <div
-                        className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
-                        style={{ width: '40px', height: '40px', backgroundColor: '#dcfce7', color: '#16a34a' }}
+                        className="text-uppercase fw-bold text-muted text-truncate"
+                        style={{ fontSize: '9px', letterSpacing: '0.4px', marginTop: '2px' }}
                       >
-                        <i className="feather-check-circle fs-18" />
-                      </div>
-                      <div>
-                        <h4 className="fw-bold mb-0 text-dark">94.2%</h4>
-                        <div
-                          className="text-uppercase fw-bold text-muted"
-                          style={{ fontSize: '10px', letterSpacing: '0.4px' }}
-                        >
-                          ENROLLMENT COMPLETION
-                        </div>
+                        ENROLLMENT COMPLETION
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* 4. MANDATORY ENROLLMENTS PENDING */}
-                <div className="col-xl-2 col-md-4 col-sm-6">
-                  <div
-                    className="card h-100 border-0 shadow-sm p-3 bg-white rounded-3"
-                    style={{ borderLeft: '4px solid #f59e0b', minHeight: '85px' }}
-                  >
-                    <div className="d-flex align-items-center gap-3">
+                <div
+                  className="card h-100 border-0 shadow-sm p-2.5 bg-white rounded-3"
+                  style={{ borderLeft: '3.5px solid #f59e0b', minHeight: '70px' }}
+                >
+                  <div className="d-flex align-items-center gap-2.5">
+                    <div
+                      className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                      style={{ width: '36px', height: '36px', backgroundColor: '#fef3c7', color: '#d97706' }}
+                    >
+                      <i className="feather-clock fs-16" />
+                    </div>
+                    <div className="overflow-hidden">
+                      <h5 className="fw-bold mb-0 text-dark" style={{ fontSize: '18px', lineHeight: 1.1 }}>
+                        28
+                      </h5>
                       <div
-                        className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
-                        style={{ width: '40px', height: '40px', backgroundColor: '#fef3c7', color: '#d97706' }}
+                        className="text-uppercase fw-bold text-muted text-truncate"
+                        style={{ fontSize: '9px', letterSpacing: '0.4px', marginTop: '2px' }}
                       >
-                        <i className="feather-clock fs-18" />
-                      </div>
-                      <div>
-                        <h4 className="fw-bold mb-0 text-dark">28</h4>
-                        <div
-                          className="text-uppercase fw-bold text-muted"
-                          style={{ fontSize: '10px', letterSpacing: '0.4px' }}
-                        >
-                          PENDING VERIFICATIONS
-                        </div>
+                        PENDING VERIFICATIONS
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* 5. ACTIVE SCHOLARS (LAST 7 DAYS) */}
-                <div className="col-xl-2 col-md-4 col-sm-6">
-                  <div
-                    className="card h-100 border-0 shadow-sm p-3 bg-white rounded-3"
-                    style={{ borderLeft: '4px solid #22c55e', minHeight: '85px' }}
-                  >
-                    <div className="d-flex align-items-center gap-3">
+                <div
+                  className="card h-100 border-0 shadow-sm p-2.5 bg-white rounded-3"
+                  style={{ borderLeft: '3.5px solid #22c55e', minHeight: '70px' }}
+                >
+                  <div className="d-flex align-items-center gap-2.5">
+                    <div
+                      className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                      style={{ width: '36px', height: '36px', backgroundColor: '#dcfce7', color: '#15803d' }}
+                    >
+                      <i className="feather-zap fs-16" />
+                    </div>
+                    <div className="overflow-hidden">
+                      <h5 className="fw-bold mb-0 text-dark" style={{ fontSize: '18px', lineHeight: 1.1 }}>
+                        3,420
+                      </h5>
                       <div
-                        className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
-                        style={{ width: '40px', height: '40px', backgroundColor: '#dcfce7', color: '#15803d' }}
+                        className="text-uppercase fw-bold text-muted text-truncate"
+                        style={{ fontSize: '9px', letterSpacing: '0.4px', marginTop: '2px' }}
                       >
-                        <i className="feather-zap fs-18" />
-                      </div>
-                      <div>
-                        <h4 className="fw-bold mb-0 text-dark">3,420</h4>
-                        <div
-                          className="text-uppercase fw-bold text-muted"
-                          style={{ fontSize: '10px', letterSpacing: '0.4px' }}
-                        >
-                          ACTIVE (LAST 7 DAYS)
-                        </div>
+                        ACTIVE (LAST 7 DAYS)
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* 6. NOT ACTIVE (7 DAYS) */}
-                <div className="col-xl-2 col-md-4 col-sm-6">
-                  <div
-                    className="card h-100 border-0 shadow-sm p-3 bg-white rounded-3"
-                    style={{ borderLeft: '4px solid #ef4444', minHeight: '85px' }}
-                  >
-                    <div className="d-flex align-items-center gap-3">
+                <div
+                  className="card h-100 border-0 shadow-sm p-2.5 bg-white rounded-3"
+                  style={{ borderLeft: '3.5px solid #ef4444', minHeight: '70px' }}
+                >
+                  <div className="d-flex align-items-center gap-2.5">
+                    <div
+                      className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                      style={{ width: '36px', height: '36px', backgroundColor: '#fee2e2', color: '#dc2626' }}
+                    >
+                      <i className="feather-pause fs-16" />
+                    </div>
+                    <div className="overflow-hidden">
+                      <h5 className="fw-bold mb-0 text-dark" style={{ fontSize: '18px', lineHeight: 1.1 }}>
+                        142
+                      </h5>
                       <div
-                        className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
-                        style={{ width: '40px', height: '40px', backgroundColor: '#fee2e2', color: '#dc2626' }}
+                        className="text-uppercase fw-bold text-muted text-truncate"
+                        style={{ fontSize: '9px', letterSpacing: '0.4px', marginTop: '2px' }}
                       >
-                        <i className="feather-pause fs-18" />
-                      </div>
-                      <div>
-                        <h4 className="fw-bold mb-0 text-dark">142</h4>
-                        <div
-                          className="text-uppercase fw-bold text-muted"
-                          style={{ fontSize: '10px', letterSpacing: '0.4px' }}
-                        >
-                          NOT ACTIVE (7 DAYS)
-                        </div>
+                        NOT ACTIVE (7 DAYS)
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* 3.3 COURSE OUTCOME KPIS (7 VIBRANT SOLID CARDS) */}
-              <div className="mb-4">
+              {/* 3.3 COURSE OUTCOME KPIS (COMPACT 7-COLUMN GRID) */}
+              <div className="mb-3">
                 <div
                   className="text-uppercase fw-bold mb-2 text-dark"
-                  style={{ fontSize: '12px', letterSpacing: '0.6px', color: '#334155' }}
+                  style={{ fontSize: '11px', letterSpacing: '0.6px', color: '#334155' }}
                 >
                   COURSE OUTCOME KPIS
                 </div>
-                <div className="row g-2">
+                <div className="admin-kpi-grid">
                   {/* KPI 1: TOTAL SCHOLARS (Solid Cyan Blue) */}
-                  <div className="col-xl col-md-4 col-sm-6">
-                    <div
-                      className="card border-0 shadow-sm rounded-3 text-white p-3 h-100 d-flex flex-column justify-content-between"
-                      style={{ backgroundColor: '#0284c7' }}
-                    >
-                      <div className="d-flex justify-content-between align-items-start mb-2">
-                        <span className="text-uppercase fw-bold" style={{ fontSize: '11px', letterSpacing: '0.3px' }}>
-                          TOTAL SCHOLARS
-                        </span>
-                        <div
-                          className="rounded-circle bg-white-20 d-flex align-items-center justify-content-center"
-                          style={{ width: '26px', height: '26px', backgroundColor: 'rgba(255,255,255,0.2)' }}
-                        >
-                          <i className="feather-users fs-13" />
-                        </div>
-                      </div>
-                      <div className="fw-bold mb-2" style={{ fontSize: '26px' }}>
-                        14,820
-                      </div>
+                  <div
+                    className="card border-0 shadow-sm rounded-3 text-white p-2.5 h-100 d-flex flex-column justify-content-between"
+                    style={{ backgroundColor: '#0284c7', minHeight: '92px' }}
+                  >
+                    <div className="d-flex justify-content-between align-items-start mb-1">
+                      <span className="text-uppercase fw-bold text-truncate" style={{ fontSize: '9.5px', letterSpacing: '0.3px' }}>
+                        TOTAL SCHOLARS
+                      </span>
                       <div
-                        className="badge bg-white-20 text-white fw-normal text-start d-inline-flex align-items-center gap-1"
-                        style={{ backgroundColor: 'rgba(255,255,255,0.2)', fontSize: '10px', padding: '4px 8px' }}
+                        className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                        style={{ width: '22px', height: '22px', backgroundColor: 'rgba(255,255,255,0.2)' }}
                       >
-                        <span>➔</span> 100% vs previous semester
+                        <i className="feather-users fs-11" />
                       </div>
+                    </div>
+                    <div className="fw-bold mb-1" style={{ fontSize: '20px', lineHeight: 1.1 }}>
+                      14,820
+                    </div>
+                    <div
+                      className="badge bg-white-20 text-white fw-normal text-start d-inline-flex align-items-center gap-1 text-truncate"
+                      style={{ backgroundColor: 'rgba(255,255,255,0.2)', fontSize: '9px', padding: '3px 6px' }}
+                    >
+                      <span>➔</span> 100% vs prev sem
                     </div>
                   </div>
 
                   {/* KPI 2: POSTPONED / DEFERRED (Solid Orange) */}
-                  <div className="col-xl col-md-4 col-sm-6">
-                    <div
-                      className="card border-0 shadow-sm rounded-3 text-white p-3 h-100 d-flex flex-column justify-content-between"
-                      style={{ backgroundColor: '#f97316' }}
-                    >
-                      <div className="d-flex justify-content-between align-items-start mb-2">
-                        <span className="text-uppercase fw-bold" style={{ fontSize: '11px', letterSpacing: '0.3px' }}>
-                          POSTPONED / DEFERRED
-                        </span>
-                        <div
-                          className="rounded-circle bg-white-20 d-flex align-items-center justify-content-center"
-                          style={{ width: '26px', height: '26px', backgroundColor: 'rgba(255,255,255,0.2)' }}
-                        >
-                          <i className="feather-user-minus fs-13" />
-                        </div>
+                  <div
+                    className="card border-0 shadow-sm rounded-3 text-white p-2.5 h-100 d-flex flex-column justify-content-between"
+                    style={{ backgroundColor: '#f97316', minHeight: '92px' }}
+                  >
+                    <div className="d-flex justify-content-between align-items-start mb-1">
+                      <span className="text-uppercase fw-bold text-truncate" style={{ fontSize: '9.5px', letterSpacing: '0.3px' }}>
+                        POSTPONED
+                      </span>
+                      <div
+                        className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                        style={{ width: '22px', height: '22px', backgroundColor: 'rgba(255,255,255,0.2)' }}
+                      >
+                        <i className="feather-user-minus fs-11" />
                       </div>
-                      <div className="fw-bold mb-2" style={{ fontSize: '26px' }}>
-                        12
-                      </div>
-                      <div className="text-white-50 small" style={{ fontSize: '11px' }}>
-                        0.1% of scholars
-                      </div>
+                    </div>
+                    <div className="fw-bold mb-1" style={{ fontSize: '20px', lineHeight: 1.1 }}>
+                      12
+                    </div>
+                    <div className="text-white-50 text-truncate" style={{ fontSize: '9px' }}>
+                      0.1% deferred
                     </div>
                   </div>
 
                   {/* KPI 3: COURSE ENROLLMENTS (Solid Sky Blue) */}
-                  <div className="col-xl col-md-4 col-sm-6">
-                    <div
-                      className="card border-0 shadow-sm rounded-3 text-white p-3 h-100 d-flex flex-column justify-content-between"
-                      style={{ backgroundColor: '#0284c7' }}
-                    >
-                      <div className="d-flex justify-content-between align-items-start mb-2">
-                        <span className="text-uppercase fw-bold" style={{ fontSize: '11px', letterSpacing: '0.3px' }}>
-                          COURSE ENROLMENTS
-                        </span>
-                        <div
-                          className="rounded-circle bg-white-20 d-flex align-items-center justify-content-center"
-                          style={{ width: '26px', height: '26px', backgroundColor: 'rgba(255,255,255,0.2)' }}
-                        >
-                          <i className="feather-book fs-13" />
-                        </div>
+                  <div
+                    className="card border-0 shadow-sm rounded-3 text-white p-2.5 h-100 d-flex flex-column justify-content-between"
+                    style={{ backgroundColor: '#0284c7', minHeight: '92px' }}
+                  >
+                    <div className="d-flex justify-content-between align-items-start mb-1">
+                      <span className="text-uppercase fw-bold text-truncate" style={{ fontSize: '9.5px', letterSpacing: '0.3px' }}>
+                        ENROLMENTS
+                      </span>
+                      <div
+                        className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                        style={{ width: '22px', height: '22px', backgroundColor: 'rgba(255,255,255,0.2)' }}
+                      >
+                        <i className="feather-book fs-11" />
                       </div>
-                      <div className="fw-bold mb-2" style={{ fontSize: '26px' }}>
-                        18,450
-                      </div>
-                      <div className="text-white-50 small" style={{ fontSize: '11px' }}>
-                        1,248 new this month
-                      </div>
+                    </div>
+                    <div className="fw-bold mb-1" style={{ fontSize: '20px', lineHeight: 1.1 }}>
+                      18,450
+                    </div>
+                    <div className="text-white-50 text-truncate" style={{ fontSize: '9px' }}>
+                      1,248 new monthly
                     </div>
                   </div>
 
                   {/* KPI 4: PENDING VERIFICATION (Solid Red/Coral) */}
-                  <div className="col-xl col-md-4 col-sm-6">
-                    <div
-                      className="card border-0 shadow-sm rounded-3 text-white p-3 h-100 d-flex flex-column justify-content-between"
-                      style={{ backgroundColor: '#ef4444' }}
-                    >
-                      <div className="d-flex justify-content-between align-items-start mb-2">
-                        <span className="text-uppercase fw-bold" style={{ fontSize: '11px', letterSpacing: '0.3px' }}>
-                          PENDING TUITION REVIEW
-                        </span>
-                        <div
-                          className="rounded-circle bg-white-20 d-flex align-items-center justify-content-center"
-                          style={{ width: '26px', height: '26px', backgroundColor: 'rgba(255,255,255,0.2)' }}
-                        >
-                          <i className="feather-alert-triangle fs-13" />
-                        </div>
-                      </div>
-                      <div className="fw-bold mb-2" style={{ fontSize: '26px' }}>
-                        28
-                      </div>
+                  <div
+                    className="card border-0 shadow-sm rounded-3 text-white p-2.5 h-100 d-flex flex-column justify-content-between"
+                    style={{ backgroundColor: '#ef4444', minHeight: '92px' }}
+                  >
+                    <div className="d-flex justify-content-between align-items-start mb-1">
+                      <span className="text-uppercase fw-bold text-truncate" style={{ fontSize: '9.5px', letterSpacing: '0.3px' }}>
+                        TUITION REVIEW
+                      </span>
                       <div
-                        className="badge bg-white-20 text-white fw-normal text-start d-inline-flex align-items-center gap-1"
-                        style={{ backgroundColor: 'rgba(255,255,255,0.2)', fontSize: '10px', padding: '4px 8px' }}
+                        className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                        style={{ width: '22px', height: '22px', backgroundColor: 'rgba(255,255,255,0.2)' }}
                       >
-                        <span>➔</span> Active Pesapal ledger
+                        <i className="feather-alert-triangle fs-11" />
                       </div>
+                    </div>
+                    <div className="fw-bold mb-1" style={{ fontSize: '20px', lineHeight: 1.1 }}>
+                      28
+                    </div>
+                    <div
+                      className="badge bg-white-20 text-white fw-normal text-start d-inline-flex align-items-center gap-1 text-truncate"
+                      style={{ backgroundColor: 'rgba(255,255,255,0.2)', fontSize: '9px', padding: '3px 6px' }}
+                    >
+                      <span>➔</span> Active Pesapal
                     </div>
                   </div>
 
                   {/* KPI 5: PASSED & GRADUATING (Solid Forest Green) */}
-                  <div className="col-xl col-md-4 col-sm-6">
-                    <div
-                      className="card border-0 shadow-sm rounded-3 text-white p-3 h-100 d-flex flex-column justify-content-between"
-                      style={{ backgroundColor: '#059669' }}
-                    >
-                      <div className="d-flex justify-content-between align-items-start mb-2">
-                        <span className="text-uppercase fw-bold" style={{ fontSize: '11px', letterSpacing: '0.3px' }}>
-                          PASSED & GRADUATING
-                        </span>
-                        <div
-                          className="rounded-circle bg-white-20 d-flex align-items-center justify-content-center"
-                          style={{ width: '26px', height: '26px', backgroundColor: 'rgba(255,255,255,0.2)' }}
-                        >
-                          <i className="feather-check-circle fs-13" />
-                        </div>
-                      </div>
-                      <div className="fw-bold mb-2" style={{ fontSize: '26px' }}>
-                        12,980
-                      </div>
+                  <div
+                    className="card border-0 shadow-sm rounded-3 text-white p-2.5 h-100 d-flex flex-column justify-content-between"
+                    style={{ backgroundColor: '#059669', minHeight: '92px' }}
+                  >
+                    <div className="d-flex justify-content-between align-items-start mb-1">
+                      <span className="text-uppercase fw-bold text-truncate" style={{ fontSize: '9.5px', letterSpacing: '0.3px' }}>
+                        GRADUATING
+                      </span>
                       <div
-                        className="badge bg-white-20 text-white fw-normal text-start d-inline-flex align-items-center gap-1"
-                        style={{ backgroundColor: 'rgba(255,255,255,0.2)', fontSize: '10px', padding: '4px 8px' }}
+                        className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                        style={{ width: '22px', height: '22px', backgroundColor: 'rgba(255,255,255,0.2)' }}
                       >
-                        <span>➔</span> 88.5% course completion
+                        <i className="feather-check-circle fs-11" />
                       </div>
+                    </div>
+                    <div className="fw-bold mb-1" style={{ fontSize: '20px', lineHeight: 1.1 }}>
+                      12,980
+                    </div>
+                    <div
+                      className="badge bg-white-20 text-white fw-normal text-start d-inline-flex align-items-center gap-1 text-truncate"
+                      style={{ backgroundColor: 'rgba(255,255,255,0.2)', fontSize: '9px', padding: '3px 6px' }}
+                    >
+                      <span>➔</span> 88.5% completion
                     </div>
                   </div>
 
                   {/* KPI 6: CERTIFICATES ISSUED (Solid Violet Purple) */}
-                  <div className="col-xl col-md-4 col-sm-6">
-                    <div
-                      className="card border-0 shadow-sm rounded-3 text-white p-3 h-100 d-flex flex-column justify-content-between"
-                      style={{ backgroundColor: '#8b5cf6' }}
-                    >
-                      <div className="d-flex justify-content-between align-items-start mb-2">
-                        <span className="text-uppercase fw-bold" style={{ fontSize: '11px', letterSpacing: '0.3px' }}>
-                          CERTIFICATES ISSUED
-                        </span>
-                        <div
-                          className="rounded-circle bg-white-20 d-flex align-items-center justify-content-center"
-                          style={{ width: '26px', height: '26px', backgroundColor: 'rgba(255,255,255,0.2)' }}
-                        >
-                          <i className="feather-award fs-13" />
-                        </div>
-                      </div>
-                      <div className="fw-bold mb-2" style={{ fontSize: '26px' }}>
-                        11,400
-                      </div>
+                  <div
+                    className="card border-0 shadow-sm rounded-3 text-white p-2.5 h-100 d-flex flex-column justify-content-between"
+                    style={{ backgroundColor: '#8b5cf6', minHeight: '92px' }}
+                  >
+                    <div className="d-flex justify-content-between align-items-start mb-1">
+                      <span className="text-uppercase fw-bold text-truncate" style={{ fontSize: '9.5px', letterSpacing: '0.3px' }}>
+                        CERTIFICATES
+                      </span>
                       <div
-                        className="badge bg-white-20 text-white fw-normal text-start d-inline-flex align-items-center gap-1"
-                        style={{ backgroundColor: 'rgba(255,255,255,0.2)', fontSize: '10px', padding: '4px 8px' }}
+                        className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                        style={{ width: '22px', height: '22px', backgroundColor: 'rgba(255,255,255,0.2)' }}
                       >
-                        <span>➔</span> Avg 4.6/5.0 GPA score
+                        <i className="feather-award fs-11" />
                       </div>
+                    </div>
+                    <div className="fw-bold mb-1" style={{ fontSize: '20px', lineHeight: 1.1 }}>
+                      11,400
+                    </div>
+                    <div
+                      className="badge bg-white-20 text-white fw-normal text-start d-inline-flex align-items-center gap-1 text-truncate"
+                      style={{ backgroundColor: 'rgba(255,255,255,0.2)', fontSize: '9px', padding: '3px 6px' }}
+                    >
+                      <span>➔</span> 4.6/5.0 GPA
                     </div>
                   </div>
 
                   {/* KPI 7: SENATE ACCREDITATION (Solid Midnight Navy) */}
-                  <div className="col-xl col-md-4 col-sm-6">
-                    <div
-                      className="card border-0 shadow-sm rounded-3 text-white p-3 h-100 d-flex flex-column justify-content-between"
-                      style={{ backgroundColor: '#0b1727' }}
-                    >
-                      <div className="d-flex justify-content-between align-items-start mb-2">
-                        <span className="text-uppercase fw-bold d-flex align-items-center gap-1" style={{ fontSize: '11px', letterSpacing: '0.3px' }}>
-                          SENATE ACCREDIT <span className="rounded-circle bg-success d-inline-block" style={{ width: '6px', height: '6px' }} />
-                        </span>
-                        <div
-                          className="rounded-circle bg-white-20 d-flex align-items-center justify-content-center"
-                          style={{ width: '26px', height: '26px', backgroundColor: 'rgba(255,255,255,0.15)' }}
-                        >
-                          <i className="feather-shield fs-13 text-info" />
-                        </div>
+                  <div
+                    className="card border-0 shadow-sm rounded-3 text-white p-2.5 h-100 d-flex flex-column justify-content-between"
+                    style={{ backgroundColor: '#0b1727', minHeight: '92px' }}
+                  >
+                    <div className="d-flex justify-content-between align-items-start mb-1">
+                      <span className="text-uppercase fw-bold d-flex align-items-center gap-1 text-truncate" style={{ fontSize: '9.5px', letterSpacing: '0.3px' }}>
+                        SENATE ACCREDIT <span className="rounded-circle bg-success d-inline-block flex-shrink-0" style={{ width: '5px', height: '5px' }} />
+                      </span>
+                      <div
+                        className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                        style={{ width: '22px', height: '22px', backgroundColor: 'rgba(255,255,255,0.15)' }}
+                      >
+                        <i className="feather-shield fs-11 text-info" />
                       </div>
-                      <div className="fw-bold text-white mb-2" style={{ fontSize: '20px' }}>
-                        100% AUDIT
-                      </div>
-                      <div className="text-white-50 small" style={{ fontSize: '11px' }}>
-                        TCU Compliance Passed
-                      </div>
+                    </div>
+                    <div className="fw-bold text-white mb-1" style={{ fontSize: '18px', lineHeight: 1.1 }}>
+                      100% AUDIT
+                    </div>
+                    <div className="text-white-50 small text-truncate" style={{ fontSize: '9px' }}>
+                      TCU Compliance
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* 3.4 MIDDLE 2-COLUMN SECTION (LEFT 8 COLS, RIGHT 4 COLS) */}
-              <div className="row g-4 mb-4">
+              <div className="row g-3 mb-3">
                 {/* ============================================================== */}
                 {/* LEFT COLUMN (8 COLS)                                           */}
                 {/* ============================================================== */}
                 <div className="col-lg-8">
                   {/* CARD A: FACULTY READINESS & TUITION ANALYTICS TREND (LINE CHART) */}
-                  <div className="card border-0 shadow-sm rounded-3 mb-4 bg-white">
+                  <div className="card border-0 shadow-sm rounded-3 mb-3 bg-white">
                     <div className="card-header bg-white border-bottom p-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
                       <div>
                         <h6 className="fw-bold mb-1 text-dark" style={{ fontSize: '15px' }}>
@@ -955,7 +958,7 @@ export const AdminDashboard: React.FC = () => {
                   </div>
 
                   {/* CARD B: RECENT SCHOLAR ENROLLMENTS & TUITION MANDATE (TABLE) */}
-                  <div className="card border-0 shadow-sm rounded-3 mb-4 bg-white">
+                  <div className="card border-0 shadow-sm rounded-3 mb-3 bg-white">
                     <div className="card-header bg-white border-bottom p-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
                       <div>
                         <h6 className="fw-bold mb-1 text-dark" style={{ fontSize: '15px' }}>
@@ -1158,7 +1161,7 @@ export const AdminDashboard: React.FC = () => {
                 {/* ============================================================== */}
                 <div className="col-lg-4">
                   {/* CARD D: OVERALL COURSE LEADERS */}
-                  <div className="card border-0 shadow-sm rounded-3 mb-4 bg-white">
+                  <div className="card border-0 shadow-sm rounded-3 mb-3 bg-white">
                     <div className="card-header bg-white border-bottom p-3">
                       <div className="d-flex justify-content-between align-items-center mb-1">
                         <h6 className="fw-bold mb-0 text-dark" style={{ fontSize: '15px' }}>
@@ -1267,7 +1270,7 @@ export const AdminDashboard: React.FC = () => {
                   </div>
 
                   {/* CARD E: SCHOLAR ENGAGEMENT SCORE */}
-                  <div className="card border-0 shadow-sm rounded-3 mb-4 bg-white">
+                  <div className="card border-0 shadow-sm rounded-3 mb-3 bg-white">
                     <div className="card-header bg-white border-bottom p-3">
                       <h6 className="fw-bold mb-1 text-dark" style={{ fontSize: '15px' }}>
                         Scholar Engagement Score
@@ -2118,8 +2121,9 @@ export const AdminDashboard: React.FC = () => {
         {/* ============================================================== */}
         {/* 4. FOOTER: OPEN UNIVERSITY OF TANZANIA (OUT LMS)               */}
         {/* ============================================================== */}
-        <footer className="px-4 py-3 bg-white border-top text-muted small">
+        <footer className="px-4 py-2.5 bg-white border-top text-muted small d-flex justify-content-between align-items-center flex-wrap gap-2">
           <div>Copyright © 2026 • Open University of Tanzania (OUT LMS) • All Rights Reserved.</div>
+          <div className="text-muted" style={{ fontSize: '11px' }}>SARIS & TCU Verified • Directorate of ICT Services</div>
         </footer>
       </div>
 

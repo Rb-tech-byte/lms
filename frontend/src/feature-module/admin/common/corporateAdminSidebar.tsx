@@ -89,19 +89,8 @@ export const CorporateAdminSidebar: React.FC<CorporateAdminSidebarProps> = ({
               <div
                 className="fw-bold text-white text-truncate"
                 style={{
-                  fontSize: '11px',
-                  letterSpacing: '0.4px',
-                  lineHeight: '1.2',
-                }}
-              >
-                OPEN UNIVERSITY OF TANZANIA
-              </div>
-              <div
-                className="fw-bold text-truncate"
-                style={{
-                  fontSize: '10px',
-                  color: '#38bdf8',
-                  letterSpacing: '0.5px',
+                  fontSize: '15px',
+                  letterSpacing: '0.6px',
                   lineHeight: '1.2',
                 }}
               >

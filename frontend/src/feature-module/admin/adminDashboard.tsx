@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import AdminSidebar from './common/adminSidebar';
+import CorporateAdminSidebar from './common/corporateAdminSidebar';
+import CorporateAdminHeader from './common/corporateAdminHeader';
 import SiteAdminHub from './common/siteAdminHub';
 import CourseSettingsStudio from './common/courseSettingsStudio';
 import {
@@ -19,32 +20,43 @@ import {
   CourseDefaultSettings,
 } from '../../core/api/adminService';
 
-const AdminDashboard: React.FC = () => {
+export const AdminDashboard: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const urlTab = searchParams.get('tab') as 'siteadmin' | 'users' | 'ledger' | 'health' | 'plugins' | 'settings' | 'courses' | null;
-  const [activeTab, setActiveTab] = useState<'siteadmin' | 'users' | 'ledger' | 'health' | 'plugins' | 'settings' | 'courses'>(
-    urlTab && ['siteadmin', 'users', 'ledger', 'health', 'plugins', 'settings', 'courses'].includes(urlTab) ? urlTab : 'siteadmin'
+  const urlTab = searchParams.get('tab');
+
+  // Sidebar collapse toggle
+  const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
+
+  // Active view: 'dashboard' (exact PBZ Corporate LMS overview) or submodules
+  const [activeView, setActiveView] = useState<string>(
+    urlTab && ['courses', 'siteadmin', 'reports', 'settings', 'users', 'ledger', 'health', 'plugins'].includes(urlTab)
+      ? urlTab
+      : 'dashboard'
   );
 
-  // Sync tab with URL search parameter
+  // Sync tab with URL
   useEffect(() => {
-    if (urlTab && ['siteadmin', 'users', 'ledger', 'health', 'plugins', 'settings', 'courses'].includes(urlTab)) {
-      setActiveTab(urlTab);
+    if (urlTab && ['courses', 'siteadmin', 'reports', 'settings', 'users', 'ledger', 'health', 'plugins'].includes(urlTab)) {
+      setActiveView(urlTab);
     }
   }, [urlTab]);
 
-  const handleTabChange = (tab: 'siteadmin' | 'users' | 'ledger' | 'health' | 'plugins' | 'settings' | 'courses') => {
-    setActiveTab(tab);
-    setSearchParams({ tab });
+  const handleSelectView = (view: string) => {
+    setActiveView(view);
+    if (view === 'dashboard') {
+      setSearchParams({});
+    } else {
+      setSearchParams({ tab: view });
+    }
   };
 
   // State Management
   const [telemetry, setTelemetry] = useState<PlatformTelemetry>({
-    totalStudents: 14820,
-    activeInstructors: 342,
-    publishedCourses: 3,
-    totalTuitionTzs: 'TZS 184,500,000',
-    pesapalTransactionsCount: 1248,
+    totalStudents: 6,
+    activeInstructors: 3,
+    publishedCourses: 1,
+    totalTuitionTzs: 'TZS 0.00',
+    pesapalTransactionsCount: 5,
     systemUptime: '99.98%',
   });
   const [users, setUsers] = useState<UniversityUserRecord[]>([]);
@@ -58,17 +70,22 @@ const AdminDashboard: React.FC = () => {
   const [adminCategories, setAdminCategories] = useState<AdminCourseCategory[]>([]);
   const [courseDefaults, setCourseDefaults] = useState<CourseDefaultSettings | null>(null);
 
-  // UI state
-  const [pluginFilter, setPluginFilter] = useState<string>('all');
-  const [pluginSearch, setPluginSearch] = useState<string>('');
+  // Filter toolbar state
+  const [filterCourse, setFilterCourse] = useState<string>('all');
+  const [filterDepartment, setFilterDepartment] = useState<string>('all');
+  const [filterModule, setFilterModule] = useState<string>('all');
+
+  // Interactive toggle states inside dashboard widgets
+  const [trendRange, setTrendRange] = useState<'30days' | 'yearly' | '12months'>('30days');
+  const [leaderTab, setLeaderTab] = useState<'courses' | 'participants'>('courses');
+
+  // UI notifications and actions
   const [actionAlert, setActionAlert] = useState<{ type: 'success' | 'danger'; message: string } | null>(null);
   const [isPurging, setIsPurging] = useState(false);
-  const [isSavingSettings, setIsSavingSettings] = useState(false);
 
   // Modals state
   const [showCourseModal, setShowCourseModal] = useState(false);
   const [showActivityModal, setShowActivityModal] = useState(false);
-  const [showPluginModal, setShowPluginModal] = useState(false);
   const [studioCourseId, setStudioCourseId] = useState<number | null>(null);
   const [showCourseStudio, setShowCourseStudio] = useState(false);
 
@@ -77,18 +94,17 @@ const AdminDashboard: React.FC = () => {
     setShowCourseStudio(true);
   };
 
-  // New Course Form state
+  // Form states
   const [newCourse, setNewCourse] = useState({
     fullname: '',
     shortname: '',
     category_id: 2,
     format: 'topics',
     num_sections: 6,
-    tuition_fee: 250000,
+    tuition_fee: 0,
     summary: '',
   });
 
-  // New Activity Form state
   const [newActivity, setNewActivity] = useState<{
     course_id: number;
     section: number;
@@ -96,16 +112,12 @@ const AdminDashboard: React.FC = () => {
     name: string;
     content: string;
   }>({
-    course_id: 2,
+    course_id: 4,
     section: 1,
     mod_type: 'page',
     name: '',
     content: '',
   });
-
-  // Install Plugin Form state
-  const [pluginInstallFile, setPluginInstallFile] = useState<File | null>(null);
-  const [pluginComponentName, setPluginComponentName] = useState('');
 
   // Initial Data Fetching
   const loadAdminData = async () => {
@@ -135,7 +147,7 @@ const AdminDashboard: React.FC = () => {
       setAdminCategories(catsData);
       setCourseDefaults(defsData);
     } catch (err) {
-      console.error("Failed to load admin data", err);
+      console.error('Failed to load admin data', err);
     }
   };
 
@@ -143,7 +155,7 @@ const AdminDashboard: React.FC = () => {
     loadAdminData();
   }, []);
 
-  // Alert dismiss timer
+  // Alert timer
   useEffect(() => {
     if (actionAlert) {
       const timer = setTimeout(() => setActionAlert(null), 5000);
@@ -151,1142 +163,164 @@ const AdminDashboard: React.FC = () => {
     }
   }, [actionAlert]);
 
-  // Plugin Handlers
-  const handleTogglePlugin = async (component: string, currentEnabled: boolean) => {
-    try {
-      await adminService.togglePlugin(component, !currentEnabled);
-      setActionAlert({
-        type: 'success',
-        message: `Plugin ${component} ${!currentEnabled ? 'enabled' : 'disabled'} successfully.`,
-      });
-      // Refresh plugins
-      const pData = await adminService.getPlugins();
-      setPluginGroups(pData);
-    } catch (err: any) {
-      setActionAlert({ type: 'danger', message: err.message || 'Failed to toggle plugin' });
-    }
-  };
-
-  const handleUninstallPlugin = async (component: string) => {
-    if (!window.confirm(`Are you sure you want to deactivate and uninstall ${component}?`)) return;
-    try {
-      await adminService.uninstallPlugin(component);
-      setActionAlert({ type: 'success', message: `Plugin ${component} successfully uninstalled.` });
-      const pData = await adminService.getPlugins();
-      setPluginGroups(pData);
-    } catch (err: any) {
-      setActionAlert({ type: 'danger', message: err.message || 'Failed to uninstall plugin' });
-    }
-  };
-
-  const handleInstallPlugin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await adminService.installPlugin(pluginInstallFile || undefined, pluginComponentName || undefined);
-      setActionAlert({ type: 'success', message: 'Plugin installed successfully and caches refreshed.' });
-      setShowPluginModal(false);
-      setPluginInstallFile(null);
-      setPluginComponentName('');
-      const pData = await adminService.getPlugins();
-      setPluginGroups(pData);
-    } catch (err: any) {
-      setActionAlert({ type: 'danger', message: err.message || 'Failed to install plugin' });
-    }
-  };
-
-  // Cache Purge Handler
+  // Purge cache handler
   const handlePurgeCache = async () => {
     setIsPurging(true);
     try {
-      const res = await adminService.purgeCache();
-      setActionAlert({ type: 'success', message: res.message || 'All Moodle caches successfully purged!' });
+      await adminService.purgeCache();
+      setActionAlert({ type: 'success', message: 'All Moodle and institutional cache stores successfully purged.' });
     } catch (err: any) {
-      setActionAlert({ type: 'danger', message: err.message || 'Failed to purge cache' });
+      setActionAlert({ type: 'danger', message: err.message || 'Failed to purge caches' });
     } finally {
       setIsPurging(false);
     }
   };
 
-  // Settings Save Handler
-  const handleSaveSettings = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!settings) return;
-    setIsSavingSettings(true);
-    try {
-      await adminService.updateSettings({
-        site: settings.site,
-        payment: settings.payment,
-      });
-      setActionAlert({ type: 'success', message: 'University system and payment gateway settings saved successfully!' });
-    } catch (err: any) {
-      setActionAlert({ type: 'danger', message: err.message || 'Failed to save settings' });
-    } finally {
-      setIsSavingSettings(false);
-    }
+  // Reset filters
+  const handleResetFilters = () => {
+    setFilterCourse('all');
+    setFilterDepartment('all');
+    setFilterModule('all');
   };
 
-  // Course Model Handlers
+  // Create course handler
   const handleCreateCourse = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await adminService.createCourse(newCourse);
-      setActionAlert({
-        type: 'success',
-        message: `Course model ${newCourse.shortname} created with ${newCourse.num_sections} modules and syllabus.`,
-      });
+      setActionAlert({ type: 'success', message: `Course "${newCourse.fullname}" successfully registered.` });
       setShowCourseModal(false);
       setNewCourse({
         fullname: '',
         shortname: '',
-        category_id: categories[0]?.id || 2,
+        category_id: 2,
         format: 'topics',
         num_sections: 6,
-        tuition_fee: 250000,
+        tuition_fee: 0,
         summary: '',
       });
-      const cData = await adminService.getCourses();
-      setCourses(cData.courses);
+      await loadAdminData();
     } catch (err: any) {
       setActionAlert({ type: 'danger', message: err.message || 'Failed to create course' });
     }
   };
 
+  // Add activity handler
   const handleAddActivity = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await adminService.addActivity(newActivity);
-      setActionAlert({
-        type: 'success',
-        message: `Activity '${newActivity.name}' (${newActivity.mod_type}) added to Module ${newActivity.section}.`,
-      });
+      setActionAlert({ type: 'success', message: `Learning module "${newActivity.name}" published.` });
       setShowActivityModal(false);
       setNewActivity({
-        course_id: courses[0]?.id || 2,
+        course_id: 4,
         section: 1,
         mod_type: 'page',
         name: '',
         content: '',
       });
-      const cData = await adminService.getCourses();
-      setCourses(cData.courses);
+      await loadAdminData();
     } catch (err: any) {
       setActionAlert({ type: 'danger', message: err.message || 'Failed to add activity' });
     }
   };
 
-  const handleDeleteCourse = async (courseId: number, courseName: string) => {
-    if (!window.confirm(`Are you sure you want to delete course "${courseName}"?`)) return;
-    try {
-      await adminService.deleteCourse(courseId);
-      setActionAlert({ type: 'success', message: `Course "${courseName}" deleted.` });
-      await loadAdminData();
-    } catch (err: any) {
-      setActionAlert({ type: 'danger', message: err.message || 'Failed to delete course' });
-    }
-  };
-
-  // Filter plugins
-  const allPluginList: MoodlePluginRecord[] = Object.values(pluginGroups).flatMap((g) => g.plugins);
-  const filteredPlugins = allPluginList.filter((p) => {
-    const matchesType = pluginFilter === 'all' || p.type === pluginFilter;
-    const matchesSearch =
-      pluginSearch === '' ||
-      p.displayname.toLowerCase().includes(pluginSearch.toLowerCase()) ||
-      p.component.toLowerCase().includes(pluginSearch.toLowerCase());
-    return matchesType && matchesSearch;
-  });
-
   return (
-    <div className="page-content py-4">
-      <div className="container">
+    <div className="corporate-lms-admin-app d-flex" style={{ backgroundColor: '#f4f6fa', minHeight: '100vh' }}>
+      {/* ============================================================== */}
+      {/* 1. LEFT FIXED CORPORATE SIDEBAR (MATCHING SCREENSHOT)          */}
+      {/* ============================================================== */}
+      <CorporateAdminSidebar
+        collapsed={sidebarCollapsed}
+        onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+        activeView={activeView}
+        onSelectView={handleSelectView}
+        onOpenCourseStudio={handleOpenStudio}
+        onPurgeCache={handlePurgeCache}
+      />
+
+      {/* ============================================================== */}
+      {/* 2. MAIN CONTENT WRAPPER (TOP NAV + CANVAS BODY)                */}
+      {/* ============================================================== */}
+      <div className="corporate-main-content flex-grow-1 d-flex flex-column" style={{ minWidth: 0 }}>
+        {/* TOP SLIM HEADER BAR */}
+        <CorporateAdminHeader
+          onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
+          onPurgeCache={handlePurgeCache}
+        />
+
         {/* Action Alert Notification */}
         {actionAlert && (
-          <div className={`alert alert-${actionAlert.type} alert-dismissible fade show shadow-sm mb-4`} role="alert">
-            <div className="d-flex align-items-center">
-              <i className={`isax ${actionAlert.type === 'success' ? 'isax-tick-circle' : 'isax-danger'} fs-20 me-2`} />
-              <div>{actionAlert.message}</div>
+          <div className="mx-4 mt-3">
+            <div className={`alert alert-${actionAlert.type} alert-dismissible fade show shadow-sm mb-0`} role="alert">
+              <div className="d-flex align-items-center">
+                <i className={`feather-${actionAlert.type === 'success' ? 'check-circle' : 'alert-circle'} fs-18 me-2`} />
+                <div>{actionAlert.message}</div>
+              </div>
+              <button type="button" className="btn-close" onClick={() => setActionAlert(null)} />
             </div>
-            <button type="button" className="btn-close" onClick={() => setActionAlert(null)} />
           </div>
         )}
 
-        {/* Header Banner */}
-        <div className="row mb-4">
-          <div className="col-12">
-            <div className="rounded-4 p-4 text-white shadow-sm" style={{ background: "linear-gradient(135deg, #0d3b66 0%, #028090 100%)", color: "#ffffff" }}>
-              <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <div>
-                  <div className="d-flex align-items-center gap-2 mb-2">
-                    <span className="badge bg-warning text-dark px-3 py-1 fw-bold">
-                      Senate & Registrar Directorate
-                    </span>
-                    <span className="badge bg-white-50 text-white px-2 py-1">
-                      Moodle 5.x Native API
-                    </span>
-                  </div>
-                  <h3 className="fw-bold text-white mb-1">OUT LMS Administrator & Registrar Portal</h3>
-                  <p className="text-white-50 mb-0 fs-14">
-                    The Open University of Tanzania • Unified Governance, Course Models, Plugins & Gateway Telemetry
-                  </p>
-                </div>
-                <div className="d-flex gap-2 flex-wrap">
-                  <button
-                    onClick={handlePurgeCache}
-                    disabled={isPurging}
-                    className="btn btn-outline-light rounded-pill btn-sm px-3"
-                  >
-                    <i className={`isax isax-refresh-2 me-1 ${isPurging ? 'fa-spin' : ''}`} />
-                    {isPurging ? 'Purging Caches...' : 'Purge All Caches'}
-                  </button>
-                  <button
-                    onClick={() => setShowCourseModal(true)}
-                    className="btn btn-warning text-dark fw-bold rounded-pill btn-sm px-3 shadow-sm"
-                  >
-                    <i className="isax isax-add me-1" /> New Course Model
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="row">
-          {/* Admin Sidebar */}
-          <AdminSidebar />
-
-          {/* Main Content Area */}
-          <div className="col-lg-9">
-            {/* Stat Cards */}
-            <div className="row g-3 mb-4">
-              <div className="col-md-6 col-xl-3">
-                <div className="card h-100 border-0 shadow-sm p-3">
-                  <div className="d-flex justify-content-between align-items-center mb-2">
-                    <span className="text-muted fs-13 fw-medium">Total Scholars</span>
-                    <div className="p-2 rounded-circle bg-primary-subtle text-primary">
-                      <i className="isax isax-profile-2user fs-18" />
-                    </div>
-                  </div>
-                  <h4 className="fw-bold mb-1">{telemetry.totalStudents.toLocaleString()}</h4>
-                  <div className="d-flex align-items-center text-success fs-12">
-                    <i className="isax isax-arrow-up-3 me-1" />
-                    <span>+12.5% this academic intake</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-md-6 col-xl-3">
-                <div className="card h-100 border-0 shadow-sm p-3">
-                  <div className="d-flex justify-content-between align-items-center mb-2">
-                    <span className="text-muted fs-13 fw-medium">Academic Staff</span>
-                    <div className="p-2 rounded-circle bg-info-subtle text-info">
-                      <i className="isax isax-teacher fs-18" />
-                    </div>
-                  </div>
-                  <h4 className="fw-bold mb-1">{telemetry.activeInstructors}</h4>
-                  <div className="text-muted fs-12">3 Faculties & Directorates</div>
-                </div>
-              </div>
-
-              <div className="col-md-6 col-xl-3">
-                <div className="card h-100 border-0 shadow-sm p-3">
-                  <div className="d-flex justify-content-between align-items-center mb-2">
-                    <span className="text-muted fs-13 fw-medium">Course Models</span>
-                    <div className="p-2 rounded-circle bg-warning-subtle text-warning">
-                      <i className="isax isax-book fs-18" />
-                    </div>
-                  </div>
-                  <h4 className="fw-bold mb-1">{courses.length || telemetry.publishedCourses}</h4>
-                  <div className="text-muted fs-12">All Published in Moodle</div>
-                </div>
-              </div>
-
-              <div className="col-md-6 col-xl-3">
-                <div className="card h-100 border-0 shadow-sm p-3">
-                  <div className="d-flex justify-content-between align-items-center mb-2">
-                    <span className="text-muted fs-13 fw-medium">Tuition Volume</span>
-                    <div className="p-2 rounded-circle bg-success-subtle text-success">
-                      <i className="isax isax-wallet-money fs-18" />
-                    </div>
-                  </div>
-                  <h4 className="fw-bold mb-1">{telemetry.totalTuitionTzs}</h4>
-                  <div className="d-flex align-items-center text-success fs-12">
-                    <i className="isax isax-verify me-1" />
-                    <span>Pesapal 3.0 Real-time</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Navigation Tabs Bar */}
-            <div className="card border-0 shadow-sm mb-4">
-              <div className="card-header bg-white border-bottom p-3">
-                <ul className="nav nav-pills gap-2 flex-wrap">
-                  <li className="nav-item">
-                    <button
-                      className={`btn btn-sm rounded-pill px-3 ${activeTab === 'siteadmin' ? 'btn-primary' : 'btn-light'}`}
-                      onClick={() => handleTabChange('siteadmin')}
-                    >
-                      <i className="isax isax-category-2 me-1" />
-                      Site Administration Suite (All 9 Areas)
-                    </button>
-                  </li>
-                  <li className="nav-item">
-                    <button
-                      className={`btn btn-sm rounded-pill px-3 ${activeTab === 'courses' ? 'btn-primary' : 'btn-light'}`}
-                      onClick={() => handleTabChange('courses')}
-                    >
-                      <i className="isax isax-book me-1" />
-                      Course Models & Features ({courses.length})
-                    </button>
-                  </li>
-                  <li className="nav-item">
-                    <button
-                      className={`btn btn-sm rounded-pill px-3 ${activeTab === 'plugins' ? 'btn-primary' : 'btn-light'}`}
-                      onClick={() => handleTabChange('plugins')}
-                    >
-                      <i className="isax isax-cpu me-1" />
-                      Moodle Plugins ({allPluginList.length})
-                    </button>
-                  </li>
-                  <li className="nav-item">
-                    <button
-                      className={`btn btn-sm rounded-pill px-3 ${activeTab === 'settings' ? 'btn-primary' : 'btn-light'}`}
-                      onClick={() => handleTabChange('settings')}
-                    >
-                      <i className="isax isax-setting-2 me-1" />
-                      System & Gateway Settings
-                    </button>
-                  </li>
-                  <li className="nav-item">
-                    <button
-                      className={`btn btn-sm rounded-pill px-3 ${activeTab === 'users' ? 'btn-primary' : 'btn-light'}`}
-                      onClick={() => handleTabChange('users')}
-                    >
-                      <i className="isax isax-user-tag me-1" />
-                      User Directory ({users.length})
-                    </button>
-                  </li>
-                  <li className="nav-item">
-                    <button
-                      className={`btn btn-sm rounded-pill px-3 ${activeTab === 'ledger' ? 'btn-primary' : 'btn-light'}`}
-                      onClick={() => handleTabChange('ledger')}
-                    >
-                      <i className="isax isax-receipt-2 me-1" />
-                      Pesapal Ledger ({ledger.length})
-                    </button>
-                  </li>
-                  <li className="nav-item">
-                    <button
-                      className={`btn btn-sm rounded-pill px-3 ${activeTab === 'health' ? 'btn-primary' : 'btn-light'}`}
-                      onClick={() => handleTabChange('health')}
-                    >
-                      <i className="isax isax-health me-1" />
-                      System Health & Nodes ({health.length})
-                    </button>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="card-body p-3">
-                {/* ============================================================== */}
-                {/* 0. SITE ADMINISTRATION CONSOLE (ALL 9 AREAS & SSO ACTION HUB)  */}
-                {/* ============================================================== */}
-                {activeTab === 'siteadmin' && (
-                  <SiteAdminHub
-                    adminTree={adminTree}
-                    adminCategories={adminCategories}
-                    courses={courses}
-                    courseDefaults={courseDefaults}
-                    onRefresh={loadAdminData}
-                    onNotify={(type, message) => setActionAlert({ type, message })}
-                    onOpenCourseModal={() => setShowCourseModal(true)}
-                    onOpenCourseStudio={handleOpenStudio}
-                  />
-                )}
-
-                {/* ============================================================== */}
-                {/* 1. COURSE LEARNING MODELS & ACTIVITY FEATURES TAB              */}
-                {/* ============================================================== */}
-                {activeTab === 'courses' && (
-                  <div>
-                    <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                      <div>
-                        <h5 className="fw-bold mb-1">Academic Course Models & Curriculum Features</h5>
-                        <p className="text-muted fs-13 mb-0">
-                          Configure learning modules, activity structures (Quizzes, Assignments, Resources), and Pesapal tuition rates.
-                        </p>
-                      </div>
-                      <div className="d-flex gap-2 flex-wrap">
-                        <button
-                          onClick={() => handleOpenStudio(4)}
-                          className="btn btn-outline-success btn-sm rounded-pill px-3 shadow-sm"
-                          title="Open Course 4 Settings Studio"
-                        >
-                          <i className="feather-settings me-1" /> Course #4 Settings Studio
-                        </button>
-                        <button
-                          onClick={() => setShowActivityModal(true)}
-                          className="btn btn-outline-primary btn-sm rounded-pill px-3"
-                        >
-                          <i className="isax isax-add-circle me-1" /> + Add Learning Activity
-                        </button>
-                        <button
-                          onClick={() => setShowCourseModal(true)}
-                          className="btn btn-primary btn-sm rounded-pill px-3 shadow-sm"
-                        >
-                          <i className="isax isax-add me-1" /> Create Course Model
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="table-responsive">
-                      <table className="table table-hover align-middle mb-0">
-                        <thead className="table-light">
-                          <tr>
-                            <th>Course Model</th>
-                            <th>Faculty / Department</th>
-                            <th>Curriculum Structure</th>
-                            <th>Activity Features</th>
-                            <th>Tuition & Enrolment</th>
-                            <th>Scholars</th>
-                            <th>Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {courses.map((c) => (
-                            <tr key={c.id}>
-                              <td>
-                                <div className="fw-bold text-dark">{c.fullname}</div>
-                                <span className="badge bg-secondary-subtle text-secondary me-1">{c.shortname}</span>
-                                <span className="badge bg-info-subtle text-info">Format: {c.format}</span>
-                              </td>
-                              <td>
-                                <span className="fs-13 text-muted">{c.category_name}</span>
-                              </td>
-                              <td>
-                                <span className="badge bg-light text-dark border">
-                                  {c.sections_count} Module Sections
-                                </span>
-                              </td>
-                              <td>
-                                <div className="d-flex flex-wrap gap-1">
-                                  <span className="badge bg-primary-subtle text-primary">
-                                    {c.quizzes_count} Quizzes
-                                  </span>
-                                  <span className="badge bg-warning-subtle text-warning">
-                                    {c.assignments_count} Assignments
-                                  </span>
-                                  <span className="badge bg-success-subtle text-success">
-                                    {c.pages_count} Pages
-                                  </span>
-                                  <span className="badge bg-info-subtle text-info">
-                                    {c.resources_count} Files
-                                  </span>
-                                </div>
-                              </td>
-                              <td>
-                                <div className="fw-bold text-dark fs-13">
-                                  {c.tuition_fee > 0 ? `TZS ${c.tuition_fee.toLocaleString()}` : 'Free / Scholarship'}
-                                </div>
-                                <div className="d-flex gap-1 mt-1">
-                                  {c.enrol_methods.map((em) => (
-                                    <span
-                                      key={em.id}
-                                      className={`badge ${em.status === 0 ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-secondary'}`}
-                                      style={{ fontSize: '10px' }}
-                                    >
-                                      {em.enrol}
-                                    </span>
-                                  ))}
-                                </div>
-                              </td>
-                              <td>
-                                <div className="d-flex align-items-center gap-1">
-                                  <i className="isax isax-user text-primary" />
-                                  <span className="fw-bold">{c.enrolled_students}</span>
-                                </div>
-                              </td>
-                              <td>
-                                <div className="d-flex gap-1">
-                                  <button
-                                    onClick={() => handleOpenStudio(c.id)}
-                                    className="btn btn-sm btn-primary px-2 py-1"
-                                    title="Edit Course Settings & Sections Studio"
-                                  >
-                                    <i className="feather-settings fs-14 me-1" />
-                                    Settings
-                                  </button>
-                                  <button
-                                    onClick={() => {
-                                      setNewActivity((prev) => ({ ...prev, course_id: c.id }));
-                                      setShowActivityModal(true);
-                                    }}
-                                    className="btn btn-sm btn-outline-primary px-2 py-1"
-                                    title="Add Activity to Course"
-                                  >
-                                    <i className="isax isax-add-circle fs-14" />
-                                  </button>
-                                  <Link
-                                    to={`/course-watch/${c.id}`}
-                                    className="btn btn-sm btn-outline-secondary px-2 py-1"
-                                    title="Open Classroom Player"
-                                  >
-                                    <i className="isax isax-play-circle fs-14" />
-                                  </Link>
-                                  <a
-                                    href={adminService.getMoodleSsoUrl(`/course/view.php?id=${c.id}`)}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="btn btn-sm btn-outline-info px-2 py-1"
-                                    title="Open in Moodle (SSO)"
-                                  >
-                                    <i className="isax isax-export-1 fs-14" />
-                                  </a>
-                                  <button
-                                    onClick={() => handleDeleteCourse(c.id, c.fullname)}
-                                    className="btn btn-sm btn-outline-danger px-2 py-1"
-                                    title="Delete Course"
-                                  >
-                                    <i className="isax isax-trash fs-14" />
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                )}
-
-                {/* ============================================================== */}
-                {/* 2. PLUGINS & EXTENSIONS MANAGEMENT TAB                          */}
-                {/* ============================================================== */}
-                {activeTab === 'plugins' && (
-                  <div>
-                    <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                      <div>
-                        <h5 className="fw-bold mb-1">Moodle Core Plugins & Payment Gateways Manager</h5>
-                        <p className="text-muted fs-13 mb-0">
-                          Enable, disable, configure, or install Moodle activity modules, payment engines, and themes.
-                        </p>
-                      </div>
-                      <div className="d-flex gap-2">
-                        <button
-                          onClick={() => setShowPluginModal(true)}
-                          className="btn btn-primary btn-sm rounded-pill px-3 shadow-sm"
-                        >
-                          <i className="isax isax-import me-1" /> Install Plugin (.zip)
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Filter Pills & Search */}
-                    <div className="row g-2 mb-3 align-items-center">
-                      <div className="col-md-8">
-                        <div className="d-flex gap-1 flex-wrap">
-                          <button
-                            className={`btn btn-sm rounded-pill px-3 ${pluginFilter === 'all' ? 'btn-dark' : 'btn-outline-secondary'}`}
-                            onClick={() => setPluginFilter('all')}
-                          >
-                            All ({allPluginList.length})
-                          </button>
-                          <button
-                            className={`btn btn-sm rounded-pill px-3 ${pluginFilter === 'paygw' ? 'btn-dark' : 'btn-outline-secondary'}`}
-                            onClick={() => setPluginFilter('paygw')}
-                          >
-                            Payment Gateways ({pluginGroups['paygw']?.count || 0})
-                          </button>
-                          <button
-                            className={`btn btn-sm rounded-pill px-3 ${pluginFilter === 'mod' ? 'btn-dark' : 'btn-outline-secondary'}`}
-                            onClick={() => setPluginFilter('mod')}
-                          >
-                            Activity Modules ({pluginGroups['mod']?.count || 0})
-                          </button>
-                          <button
-                            className={`btn btn-sm rounded-pill px-3 ${pluginFilter === 'enrol' ? 'btn-dark' : 'btn-outline-secondary'}`}
-                            onClick={() => setPluginFilter('enrol')}
-                          >
-                            Enrolment ({pluginGroups['enrol']?.count || 0})
-                          </button>
-                          <button
-                            className={`btn btn-sm rounded-pill px-3 ${pluginFilter === 'theme' ? 'btn-dark' : 'btn-outline-secondary'}`}
-                            onClick={() => setPluginFilter('theme')}
-                          >
-                            Themes ({pluginGroups['theme']?.count || 0})
-                          </button>
-                          <button
-                            className={`btn btn-sm rounded-pill px-3 ${pluginFilter === 'auth' ? 'btn-dark' : 'btn-outline-secondary'}`}
-                            onClick={() => setPluginFilter('auth')}
-                          >
-                            Auth ({pluginGroups['auth']?.count || 0})
-                          </button>
-                        </div>
-                      </div>
-                      <div className="col-md-4">
-                        <div className="input-group input-group-sm">
-                          <span className="input-group-text bg-light border-end-0">
-                            <i className="isax isax-search-normal-1" />
-                          </span>
-                          <input
-                            type="text"
-                            className="form-control border-start-0"
-                            placeholder="Search plugins by name or identifier..."
-                            value={pluginSearch}
-                            onChange={(e) => setPluginSearch(e.target.value)}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Plugins Table */}
-                    <div className="table-responsive">
-                      <table className="table table-hover align-middle mb-0">
-                        <thead className="table-light">
-                          <tr>
-                            <th>Plugin Name & Component</th>
-                            <th>Category</th>
-                            <th>Disk Version</th>
-                            <th>Status</th>
-                            <th>State</th>
-                            <th>Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {filteredPlugins.map((plugin) => (
-                            <tr key={plugin.component}>
-                              <td>
-                                <div className="fw-bold text-dark">{plugin.displayname}</div>
-                                <code className="fs-12 text-muted">{plugin.component}</code>
-                                {plugin.is_standard ? (
-                                  <span className="badge bg-light text-muted border ms-2">Standard</span>
-                                ) : (
-                                  <span className="badge bg-warning-subtle text-warning ms-2">OUT Extension</span>
-                                )}
-                              </td>
-                              <td>
-                                <span className="badge bg-info-subtle text-info">{plugin.typeTitle}</span>
-                              </td>
-                              <td>
-                                <span className="fs-13 text-muted">{plugin.version}</span>
-                                <div className="fs-11 text-muted">{plugin.release}</div>
-                              </td>
-                              <td>
-                                <span className="badge bg-success-subtle text-success">
-                                  <i className="isax isax-verify me-1" />
-                                  {plugin.status}
-                                </span>
-                              </td>
-                              <td>
-                                <div className="form-check form-switch">
-                                  <input
-                                    className="form-check-input"
-                                    type="checkbox"
-                                    checked={plugin.enabled}
-                                    onChange={() => handleTogglePlugin(plugin.component, plugin.enabled)}
-                                  />
-                                  <label className="form-check-label fs-13">
-                                    {plugin.enabled ? (
-                                      <span className="text-success fw-medium">Active</span>
-                                    ) : (
-                                      <span className="text-muted">Disabled</span>
-                                    )}
-                                  </label>
-                                </div>
-                              </td>
-                              <td>
-                                <div className="d-flex gap-1">
-                                  {plugin.type === 'paygw' && (
-                                    <button
-                                      onClick={() => handleTabChange('settings')}
-                                      className="btn btn-sm btn-outline-secondary px-2 py-1"
-                                      title="Configure Gateway Credentials"
-                                    >
-                                      <i className="isax isax-setting-2 fs-13" /> Config
-                                    </button>
-                                  )}
-                                  {plugin.uninstall_allowed && !plugin.is_standard && (
-                                    <button
-                                      onClick={() => handleUninstallPlugin(plugin.component)}
-                                      className="btn btn-sm btn-outline-danger px-2 py-1"
-                                      title="Uninstall Plugin"
-                                    >
-                                      <i className="isax isax-trash fs-13" />
-                                    </button>
-                                  )}
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                )}
-
-                {/* ============================================================== */}
-                {/* 3. SYSTEM SETTINGS & PAYMENT CONFIGURATION TAB                 */}
-                {/* ============================================================== */}
-                {activeTab === 'settings' && settings && (
-                  <form onSubmit={handleSaveSettings}>
-                    <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                      <div>
-                        <h5 className="fw-bold mb-1">University Platform & Payment Gateway Settings</h5>
-                        <p className="text-muted fs-13 mb-0">
-                          Directly updates Moodle core configuration ($CFG) and Pesapal API 3.0 gateway parameters.
-                        </p>
-                      </div>
-                      <div className="d-flex gap-2">
-                        <button
-                          type="button"
-                          onClick={handlePurgeCache}
-                          disabled={isPurging}
-                          className="btn btn-outline-danger btn-sm rounded-pill px-3"
-                        >
-                          <i className={`isax isax-refresh-2 me-1 ${isPurging ? 'fa-spin' : ''}`} />
-                          Purge Caches
-                        </button>
-                        <button
-                          type="submit"
-                          disabled={isSavingSettings}
-                          className="btn btn-primary btn-sm rounded-pill px-4 shadow-sm"
-                        >
-                          <i className="isax isax-tick-circle me-1" />
-                          {isSavingSettings ? 'Saving...' : 'Save Configuration'}
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="row g-4">
-                      {/* Institutional Profile */}
-                      <div className="col-lg-6">
-                        <div className="card border p-3 h-100 shadow-sm rounded-3">
-                          <h6 className="fw-bold text-primary mb-3 d-flex align-items-center gap-2">
-                            <i className="isax isax-building fs-18" /> Institutional Profile & Branding
-                          </h6>
-                          <div className="mb-3">
-                            <label className="form-label fs-13 fw-medium">University Full Name</label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              value={settings.site.fullname}
-                              onChange={(e) =>
-                                setSettings({
-                                  ...settings,
-                                  site: { ...settings.site, fullname: e.target.value },
-                                })
-                              }
-                              required
-                            />
-                          </div>
-                          <div className="mb-3">
-                            <label className="form-label fs-13 fw-medium">System Short Code</label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              value={settings.site.shortname}
-                              onChange={(e) =>
-                                setSettings({
-                                  ...settings,
-                                  site: { ...settings.site, shortname: e.target.value },
-                                })
-                              }
-                              required
-                            />
-                          </div>
-                          <div className="mb-3">
-                            <label className="form-label fs-13 fw-medium">Site Summary / Charter</label>
-                            <textarea
-                              className="form-control"
-                              rows={2}
-                              value={settings.site.summary}
-                              onChange={(e) =>
-                                setSettings({
-                                  ...settings,
-                                  site: { ...settings.site, summary: e.target.value },
-                                })
-                              }
-                            />
-                          </div>
-                          <div className="d-flex justify-content-between align-items-center pt-2 border-top">
-                            <div>
-                              <div className="fw-medium fs-13">Maintenance Mode</div>
-                              <div className="fs-11 text-muted">Restrict student access during scheduled maintenance</div>
-                            </div>
-                            <div className="form-check form-switch mb-0">
-                              <input
-                                className="form-check-input"
-                                type="checkbox"
-                                checked={settings.site.maintenance_enabled}
-                                onChange={(e) =>
-                                  setSettings({
-                                    ...settings,
-                                    site: { ...settings.site, maintenance_enabled: e.target.checked },
-                                  })
-                                }
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Pesapal Payment Gateway Settings */}
-                      <div className="col-lg-6">
-                        <div className="card border p-3 h-100 shadow-sm rounded-3">
-                          <div className="d-flex justify-content-between align-items-center mb-3">
-                            <h6 className="fw-bold text-success mb-0 d-flex align-items-center gap-2">
-                              <i className="isax isax-card fs-18" /> Pesapal API 3.0 Payment Gateway
-                            </h6>
-                            <div className="form-check form-switch mb-0">
-                              <input
-                                className="form-check-input"
-                                type="checkbox"
-                                checked={settings.payment.pesapal_enabled}
-                                onChange={(e) =>
-                                  setSettings({
-                                    ...settings,
-                                    payment: { ...settings.payment, pesapal_enabled: e.target.checked },
-                                  })
-                                }
-                              />
-                            </div>
-                          </div>
-
-                          <div className="mb-3">
-                            <label className="form-label fs-13 fw-medium">Gateway Environment</label>
-                            <select
-                              className="form-select"
-                              value={settings.payment.pesapal_environment}
-                              onChange={(e) =>
-                                setSettings({
-                                  ...settings,
-                                  payment: { ...settings.payment, pesapal_environment: e.target.value },
-                                })
-                              }
-                            >
-                              <option value="sandbox">Sandbox (Testing & Staging)</option>
-                              <option value="production">Production Live (Pesapal Tanzania)</option>
-                            </select>
-                          </div>
-
-                          <div className="mb-3">
-                            <label className="form-label fs-13 fw-medium">Pesapal Consumer Key</label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              value={settings.payment.pesapal_consumer_key}
-                              onChange={(e) =>
-                                setSettings({
-                                  ...settings,
-                                  payment: { ...settings.payment, pesapal_consumer_key: e.target.value },
-                                })
-                              }
-                            />
-                          </div>
-
-                          <div className="mb-3">
-                            <label className="form-label fs-13 fw-medium">Pesapal Consumer Secret</label>
-                            <input
-                              type="password"
-                              className="form-control"
-                              placeholder="••••••••••••••••"
-                              value={settings.payment.pesapal_consumer_secret}
-                              onChange={(e) =>
-                                setSettings({
-                                  ...settings,
-                                  payment: { ...settings.payment, pesapal_consumer_secret: e.target.value },
-                                })
-                              }
-                            />
-                          </div>
-
-                          <div className="row g-2">
-                            <div className="col-8">
-                              <label className="form-label fs-13 fw-medium">Instant Payment Notification (IPN) ID</label>
-                              <input
-                                type="text"
-                                className="form-control"
-                                value={settings.payment.pesapal_ipn_id}
-                                onChange={(e) =>
-                                  setSettings({
-                                    ...settings,
-                                    payment: { ...settings.payment, pesapal_ipn_id: e.target.value },
-                                  })
-                                }
-                              />
-                            </div>
-                            <div className="col-4">
-                              <label className="form-label fs-13 fw-medium">Currency</label>
-                              <input
-                                type="text"
-                                className="form-control text-uppercase"
-                                value={settings.payment.defaultcurrency}
-                                onChange={(e) =>
-                                  setSettings({
-                                    ...settings,
-                                    payment: { ...settings.payment, defaultcurrency: e.target.value },
-                                  })
-                                }
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Server & Telemetry Node Details */}
-                      <div className="col-12">
-                        <div className="card border p-3 shadow-sm rounded-3 bg-light">
-                          <h6 className="fw-bold mb-3 d-flex align-items-center gap-2">
-                            <i className="isax isax-monitor fs-18 text-primary" /> Subsystem Node & Engine Diagnostics
-                          </h6>
-                          <div className="row g-3">
-                            <div className="col-sm-6 col-md-3">
-                              <div className="fs-12 text-muted">PHP Engine</div>
-                              <div className="fw-bold text-dark">{settings.server.php_version}</div>
-                            </div>
-                            <div className="col-sm-6 col-md-3">
-                              <div className="fs-12 text-muted">Moodle Release</div>
-                              <div className="fw-bold text-dark">{settings.server.moodle_release}</div>
-                            </div>
-                            <div className="col-sm-6 col-md-3">
-                              <div className="fs-12 text-muted">Database Engine</div>
-                              <div className="fw-bold text-dark">
-                                {settings.server.db_type.toUpperCase()} ({settings.server.db_server})
-                              </div>
-                            </div>
-                            <div className="col-sm-6 col-md-3">
-                              <div className="fs-12 text-muted">OPCache Accelerator</div>
-                              <div className="fw-bold text-success">
-                                {settings.server.opcache_enabled ? 'Operational & Accelerated' : 'Inactive'}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </form>
-                )}
-
-                {/* ============================================================== */}
-                {/* 4. USER DIRECTORY TAB                                          */}
-                {/* ============================================================== */}
-                {activeTab === 'users' && (
-                  <div className="table-responsive">
-                    <table className="table table-hover align-middle mb-0">
-                      <thead className="table-light">
-                        <tr>
-                          <th>User / Academic Scholar</th>
-                          <th>Role</th>
-                          <th>Registration / Staff ID</th>
-                          <th>Department / Faculty</th>
-                          <th>Status</th>
-                          <th>Last Activity</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {users.map((u) => (
-                          <tr key={u.id}>
-                            <td>
-                              <div className="d-flex align-items-center gap-2">
-                                <div className="avatar avatar-sm rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center fw-bold">
-                                  {u.fullname.charAt(0)}
-                                </div>
-                                <div>
-                                  <div className="fw-bold text-dark">{u.fullname}</div>
-                                  <div className="text-muted fs-12">{u.email}</div>
-                                </div>
-                              </div>
-                            </td>
-                            <td>
-                              <span
-                                className={`badge ${
-                                  u.role === 'Administrator'
-                                    ? 'bg-danger-subtle text-danger'
-                                    : u.role === 'Instructor'
-                                    ? 'bg-warning-subtle text-warning'
-                                    : 'bg-primary-subtle text-primary'
-                                }`}
-                              >
-                                {u.role}
-                              </span>
-                            </td>
-                            <td>
-                              <span className="font-monospace fs-12">{u.regNumber}</span>
-                            </td>
-                            <td>
-                              <span className="fs-13">{u.department}</span>
-                            </td>
-                            <td>
-                              <span className="badge bg-success-subtle text-success">{u.status}</span>
-                            </td>
-                            <td>
-                              <span className="text-muted fs-12">{u.lastAccess}</span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-
-                {/* ============================================================== */}
-                {/* 5. PESAPAL RECONCILIATION LEDGER TAB                           */}
-                {/* ============================================================== */}
-                {activeTab === 'ledger' && (
-                  <div className="table-responsive">
-                    <table className="table table-hover align-middle mb-0">
-                      <thead className="table-light">
-                        <tr>
-                          <th>Tracking & Ref ID</th>
-                          <th>Student / Scholar</th>
-                          <th>Course Academic Unit</th>
-                          <th>Tuition Amount</th>
-                          <th>Payment Method</th>
-                          <th>Status</th>
-                          <th>Timestamp</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {ledger.map((item, idx) => (
-                          <tr key={idx}>
-                            <td>
-                              <div className="font-monospace fs-12 fw-bold text-dark">{item.reference}</div>
-                              <div className="text-muted font-monospace fs-11">{item.trackingId.substring(0, 18)}...</div>
-                            </td>
-                            <td>
-                              <div className="fw-medium text-dark">{item.studentName}</div>
-                            </td>
-                            <td>
-                              <div className="fw-bold fs-13">{item.courseCode}</div>
-                              <div className="text-muted fs-11">{item.courseTitle}</div>
-                            </td>
-                            <td>
-                              <span className="fw-bold text-success">{item.amount}</span>
-                            </td>
-                            <td>
-                              <span className="badge bg-light text-dark border">
-                                <i className="isax isax-mobile me-1" />
-                                {item.method}
-                              </span>
-                            </td>
-                            <td>
-                              <span className="badge bg-success-subtle text-success">
-                                <i className="isax isax-verify me-1" />
-                                {item.status}
-                              </span>
-                            </td>
-                            <td>
-                              <span className="text-muted fs-12">{item.timestamp}</span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-
-                {/* ============================================================== */}
-                {/* 6. SYSTEM HEALTH & NODES TAB                                   */}
-                {/* ============================================================== */}
-                {activeTab === 'health' && (
-                  <div className="row g-3">
-                    {health.map((item, idx) => (
-                      <div key={idx} className="col-md-6">
-                        <div className="card border p-3 shadow-sm h-100 rounded-3">
-                          <div className="d-flex justify-content-between align-items-center mb-2">
-                            <span className="fw-bold text-dark">{item.component}</span>
-                            <span className="badge bg-success-subtle text-success">
-                              <i className="isax isax-verify me-1" />
-                              {item.status}
-                            </span>
-                          </div>
-                          <div className="d-flex justify-content-between align-items-center text-muted fs-13 mb-2">
-                            <span>Roundtrip Latency</span>
-                            <span className="font-monospace fw-bold text-primary">{item.latency}</span>
-                          </div>
-                          <p className="text-muted fs-12 mb-0 bg-light p-2 rounded">{item.details}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Direct Moodle Backend Access Card */}
-            <div className="card border-0 shadow-sm p-4 bg-light rounded-4">
-              <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <div>
-                  <h6 className="fw-bold mb-1">Moodle Core Administrative Gateway</h6>
-                  <p className="text-muted fs-13 mb-0">
-                    Access advanced Moodle site administration, database backup schemas, and server cron orchestration directly.
-                  </p>
-                </div>
-                <a
-                  href="http://localhost/outlmstheme/moodle-backend/admin/index.php"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="btn btn-dark rounded-pill btn-sm px-4 shadow-sm"
-                >
-                  <i className="isax isax-external-drive me-1" /> Open Moodle Site Admin
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ============================================================== */}
-      {/* MODAL 1: CREATE NEW COURSE MODEL                               */}
-      {/* ============================================================== */}
-      {showCourseModal && (
-        <div className="modal show d-block" tabIndex={-1} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-          <div className="modal-dialog modal-dialog-centered modal-lg">
-            <div className="modal-content border-0 shadow-lg rounded-4">
-              <div className="modal-header bg-primary text-white border-0">
-                <h5 className="modal-title fw-bold text-white">
-                  <i className="isax isax-add me-2" /> Create New Course Learning Model
-                </h5>
-                <button
-                  type="button"
-                  className="btn-close btn-close-white"
-                  onClick={() => setShowCourseModal(false)}
-                />
-              </div>
-              <form onSubmit={handleCreateCourse}>
-                <div className="modal-body p-4">
-                  <div className="row g-3">
-                    <div className="col-md-8">
-                      <label className="form-label fs-13 fw-medium">Course Full Title</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="e.g. Artificial Intelligence & Machine Learning"
-                        value={newCourse.fullname}
-                        onChange={(e) => setNewCourse({ ...newCourse, fullname: e.target.value })}
-                        required
-                      />
-                    </div>
-                    <div className="col-md-4">
-                      <label className="form-label fs-13 fw-medium">Course Shortcode</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="e.g. CS305"
-                        value={newCourse.shortname}
-                        onChange={(e) => setNewCourse({ ...newCourse, shortname: e.target.value.toUpperCase() })}
-                        required
-                      />
-                    </div>
-
-                    <div className="col-md-6">
-                      <label className="form-label fs-13 fw-medium">Faculty / Department Category</label>
-                      <select
-                        className="form-select"
-                        value={newCourse.category_id}
-                        onChange={(e) => setNewCourse({ ...newCourse, category_id: parseInt(e.target.value) })}
+        {/* ============================================================== */}
+        {/* 3. CANVAS BODY                                                 */}
+        {/* ============================================================== */}
+        <div className="p-4 flex-grow-1">
+          {/* ============================================================== */}
+          {/* VIEW A: EXACT CORPORATE DASHBOARD (MATCHING USER SCREENSHOT)   */}
+          {/* ============================================================== */}
+          {activeView === 'dashboard' && (
+            <div>
+              {/* 3.1 TOP FILTER BAR CARD */}
+              <div className="card border-0 shadow-sm rounded-3 mb-4 bg-white" style={{ borderColor: '#e2e8f0' }}>
+                <div className="card-body p-3">
+                  <div className="row g-3 align-items-end">
+                    <div className="col-auto">
+                      <button
+                        type="button"
+                        className="btn btn-primary d-flex align-items-center gap-2 px-3 py-2 fw-bold text-uppercase shadow-sm"
+                        style={{ backgroundColor: '#0284c7', borderColor: '#0284c7', fontSize: '12px', letterSpacing: '0.5px' }}
                       >
-                        {categories.map((cat) => (
+                        <i className="feather-filter" />
+                        <span>FILTERS</span>
+                      </button>
+                    </div>
+
+                    <div className="col-md-3">
+                      <label
+                        className="form-label text-uppercase fw-bold text-muted mb-1"
+                        style={{ fontSize: '11px', letterSpacing: '0.5px' }}
+                      >
+                        COURSE
+                      </label>
+                      <select
+                        className="form-select form-select-sm"
+                        value={filterCourse}
+                        onChange={(e) => setFilterCourse(e.target.value)}
+                      >
+                        <option value="all">All Courses</option>
+                        {courses.map((c) => (
+                          <option key={c.id} value={c.id}>
+                            {c.fullname} ({c.shortname})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="col-md-3">
+                      <label
+                        className="form-label text-uppercase fw-bold text-muted mb-1"
+                        style={{ fontSize: '11px', letterSpacing: '0.5px' }}
+                      >
+                        DEPARTMENT / CATEGORY
+                      </label>
+                      <select
+                        className="form-select form-select-sm"
+                        value={filterDepartment}
+                        onChange={(e) => setFilterDepartment(e.target.value)}
+                      >
+                        <option value="all">All Departments</option>
+                        {adminCategories.map((cat) => (
                           <option key={cat.id} value={cat.id}>
                             {cat.name}
                           </option>
@@ -1295,238 +329,1180 @@ const AdminDashboard: React.FC = () => {
                     </div>
 
                     <div className="col-md-3">
-                      <label className="form-label fs-13 fw-medium">Curriculum Modules</label>
-                      <select
-                        className="form-select"
-                        value={newCourse.num_sections}
-                        onChange={(e) => setNewCourse({ ...newCourse, num_sections: parseInt(e.target.value) })}
+                      <label
+                        className="form-label text-uppercase fw-bold text-muted mb-1"
+                        style={{ fontSize: '11px', letterSpacing: '0.5px' }}
                       >
-                        <option value="4">4 Modules (Short)</option>
-                        <option value="6">6 Modules (Standard)</option>
-                        <option value="8">8 Modules (Comprehensive)</option>
-                        <option value="12">12 Modules (Annual)</option>
+                        MODULE / STATUS
+                      </label>
+                      <select
+                        className="form-select form-select-sm"
+                        value={filterModule}
+                        onChange={(e) => setFilterModule(e.target.value)}
+                      >
+                        <option value="all">All Modules</option>
+                        <option value="active">Active Enrolments</option>
+                        <option value="completed">Completed Modules</option>
+                        <option value="pending">Pending Verification</option>
                       </select>
                     </div>
 
-                    <div className="col-md-3">
-                      <label className="form-label fs-13 fw-medium">Tuition Fee (TZS)</label>
-                      <input
-                        type="number"
-                        className="form-control"
-                        value={newCourse.tuition_fee}
-                        onChange={(e) => setNewCourse({ ...newCourse, tuition_fee: parseFloat(e.target.value) })}
-                        step="5000"
-                        required
-                      />
-                    </div>
-
-                    <div className="col-12">
-                      <label className="form-label fs-13 fw-medium">Course Summary & Syllabus Overview</label>
-                      <textarea
-                        className="form-control"
-                        rows={3}
-                        placeholder="Detailed academic course summary and learning outcomes..."
-                        value={newCourse.summary}
-                        onChange={(e) => setNewCourse({ ...newCourse, summary: e.target.value })}
-                      />
+                    <div className="col-auto ms-auto">
+                      <button
+                        type="button"
+                        onClick={handleResetFilters}
+                        className="btn btn-outline-secondary btn-sm px-3 py-1 fw-medium"
+                        style={{ borderColor: '#cbd5e1' }}
+                      >
+                        Reset
+                      </button>
                     </div>
                   </div>
                 </div>
-                <div className="modal-footer border-0 p-3 bg-light rounded-bottom-4">
-                  <button
-                    type="button"
-                    className="btn btn-outline-secondary rounded-pill px-4"
-                    onClick={() => setShowCourseModal(false)}
-                  >
-                    Cancel
-                  </button>
-                  <button type="submit" className="btn btn-primary rounded-pill px-4 shadow-sm">
-                    Create Course Model
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ============================================================== */}
-      {/* MODAL 2: ADD LEARNING ACTIVITY MODULE                          */}
-      {/* ============================================================== */}
-      {showActivityModal && (
-        <div className="modal show d-block" tabIndex={-1} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-          <div className="modal-dialog modal-dialog-centered modal-lg">
-            <div className="modal-content border-0 shadow-lg rounded-4">
-              <div className="modal-header bg-success text-white border-0">
-                <h5 className="modal-title fw-bold text-white">
-                  <i className="isax isax-add-circle me-2" /> Add Learning Activity to Course Section
-                </h5>
-                <button
-                  type="button"
-                  className="btn-close btn-close-white"
-                  onClick={() => setShowActivityModal(false)}
-                />
               </div>
-              <form onSubmit={handleAddActivity}>
-                <div className="modal-body p-4">
-                  <div className="row g-3">
-                    <div className="col-md-6">
-                      <label className="form-label fs-13 fw-medium">Target Course</label>
-                      <select
-                        className="form-select"
-                        value={newActivity.course_id}
-                        onChange={(e) => setNewActivity({ ...newActivity, course_id: parseInt(e.target.value) })}
+
+              {/* 3.2 ROW OF 6 METRIC CARDS (ACCENT BORDERS & ICON BADGES) */}
+              <div className="row g-3 mb-4">
+                {/* 1. TOTAL LEARNERS */}
+                <div className="col-xl-2 col-md-4 col-sm-6">
+                  <div
+                    className="card h-100 border-0 shadow-sm p-3 bg-white rounded-3"
+                    style={{ borderLeft: '4px solid #0ea5e9', minHeight: '85px' }}
+                  >
+                    <div className="d-flex align-items-center gap-3">
+                      <div
+                        className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                        style={{ width: '40px', height: '40px', backgroundColor: '#e0f2fe', color: '#0284c7' }}
                       >
-                        {courses.map((c) => (
-                          <option key={c.id} value={c.id}>
-                            {c.shortname} - {c.fullname}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="col-md-3">
-                      <label className="form-label fs-13 fw-medium">Section / Module</label>
-                      <select
-                        className="form-select"
-                        value={newActivity.section}
-                        onChange={(e) => setNewActivity({ ...newActivity, section: parseInt(e.target.value) })}
-                      >
-                        {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((sec) => (
-                          <option key={sec} value={sec}>
-                            {sec === 0 ? 'General Section 0' : `Module ${sec}`}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="col-md-3">
-                      <label className="form-label fs-13 fw-medium">Activity Type</label>
-                      <select
-                        className="form-select"
-                        value={newActivity.mod_type}
-                        onChange={(e) =>
-                          setNewActivity({
-                            ...newActivity,
-                            mod_type: e.target.value as 'page' | 'quiz' | 'assign' | 'resource',
-                          })
-                        }
-                      >
-                        <option value="page">📄 Page / Lecture</option>
-                        <option value="quiz">📝 Quiz Assessment</option>
-                        <option value="assign">📋 Assignment Task</option>
-                        <option value="resource">📁 Resource / File</option>
-                      </select>
-                    </div>
-
-                    <div className="col-12">
-                      <label className="form-label fs-13 fw-medium">Activity Name / Assessment Title</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="e.g. Module 2 Graded Quiz on Search Algorithms"
-                        value={newActivity.name}
-                        onChange={(e) => setNewActivity({ ...newActivity, name: e.target.value })}
-                        required
-                      />
-                    </div>
-
-                    <div className="col-12">
-                      <label className="form-label fs-13 fw-medium">Academic Content & Instructions</label>
-                      <textarea
-                        className="form-control"
-                        rows={4}
-                        placeholder="Instructions, reading notes, or assessment guidelines for students..."
-                        value={newActivity.content}
-                        onChange={(e) => setNewActivity({ ...newActivity, content: e.target.value })}
-                      />
+                        <i className="feather-users fs-18" />
+                      </div>
+                      <div>
+                        <h4 className="fw-bold mb-0 text-dark">6</h4>
+                        <div
+                          className="text-uppercase fw-bold text-muted"
+                          style={{ fontSize: '10px', letterSpacing: '0.4px' }}
+                        >
+                          TOTAL LEARNERS
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-                <div className="modal-footer border-0 p-3 bg-light rounded-bottom-4">
-                  <button
-                    type="button"
-                    className="btn btn-outline-secondary rounded-pill px-4"
-                    onClick={() => setShowActivityModal(false)}
-                  >
-                    Cancel
-                  </button>
-                  <button type="submit" className="btn btn-success rounded-pill px-4 shadow-sm">
-                    Attach Activity Module
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
 
-      {/* ============================================================== */}
-      {/* MODAL 3: INSTALL PLUGIN PACKAGE (.ZIP)                         */}
-      {/* ============================================================== */}
-      {showPluginModal && (
-        <div className="modal show d-block" tabIndex={-1} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-          <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content border-0 shadow-lg rounded-4">
-              <div className="modal-header bg-dark text-white border-0">
-                <h5 className="modal-title fw-bold text-white">
-                  <i className="isax isax-import me-2" /> Install Moodle Plugin / Gateway
-                </h5>
-                <button
-                  type="button"
-                  className="btn-close btn-close-white"
-                  onClick={() => setShowPluginModal(false)}
-                />
+                {/* 2. TOTAL COURSES */}
+                <div className="col-xl-2 col-md-4 col-sm-6">
+                  <div
+                    className="card h-100 border-0 shadow-sm p-3 bg-white rounded-3"
+                    style={{ borderLeft: '4px solid #a855f7', minHeight: '85px' }}
+                  >
+                    <div className="d-flex align-items-center gap-3">
+                      <div
+                        className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                        style={{ width: '40px', height: '40px', backgroundColor: '#f3e8ff', color: '#9333ea' }}
+                      >
+                        <i className="feather-book fs-18" />
+                      </div>
+                      <div>
+                        <h4 className="fw-bold mb-0 text-dark">1</h4>
+                        <div
+                          className="text-uppercase fw-bold text-muted"
+                          style={{ fontSize: '10px', letterSpacing: '0.4px' }}
+                        >
+                          TOTAL COURSES
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. ENROLLMENT COMPLETION */}
+                <div className="col-xl-2 col-md-4 col-sm-6">
+                  <div
+                    className="card h-100 border-0 shadow-sm p-3 bg-white rounded-3"
+                    style={{ borderLeft: '4px solid #10b981', minHeight: '85px' }}
+                  >
+                    <div className="d-flex align-items-center gap-3">
+                      <div
+                        className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                        style={{ width: '40px', height: '40px', backgroundColor: '#dcfce7', color: '#16a34a' }}
+                      >
+                        <i className="feather-pie-chart fs-18" />
+                      </div>
+                      <div>
+                        <h4 className="fw-bold mb-0 text-dark">0%</h4>
+                        <div
+                          className="text-uppercase fw-bold text-muted"
+                          style={{ fontSize: '10px', letterSpacing: '0.4px' }}
+                        >
+                          ENROLLMENT COMPLETION
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 4. MANDATORY ENROLLMENTS PENDING */}
+                <div className="col-xl-2 col-md-4 col-sm-6">
+                  <div
+                    className="card h-100 border-0 shadow-sm p-3 bg-white rounded-3"
+                    style={{ borderLeft: '4px solid #f59e0b', minHeight: '85px' }}
+                  >
+                    <div className="d-flex align-items-center gap-3">
+                      <div
+                        className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                        style={{ width: '40px', height: '40px', backgroundColor: '#fef3c7', color: '#d97706' }}
+                      >
+                        <i className="feather-clock fs-18" />
+                      </div>
+                      <div>
+                        <h4 className="fw-bold mb-0 text-dark">0</h4>
+                        <div
+                          className="text-uppercase fw-bold text-muted"
+                          style={{ fontSize: '10px', letterSpacing: '0.4px' }}
+                        >
+                          MANDATORY ENROLLMENTS PENDING
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 5. ACTIVE (LAST 7 DAYS) */}
+                <div className="col-xl-2 col-md-4 col-sm-6">
+                  <div
+                    className="card h-100 border-0 shadow-sm p-3 bg-white rounded-3"
+                    style={{ borderLeft: '4px solid #22c55e', minHeight: '85px' }}
+                  >
+                    <div className="d-flex align-items-center gap-3">
+                      <div
+                        className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                        style={{ width: '40px', height: '40px', backgroundColor: '#dcfce7', color: '#15803d' }}
+                      >
+                        <i className="feather-zap fs-18" />
+                      </div>
+                      <div>
+                        <h4 className="fw-bold mb-0 text-dark">5</h4>
+                        <div
+                          className="text-uppercase fw-bold text-muted"
+                          style={{ fontSize: '10px', letterSpacing: '0.4px' }}
+                        >
+                          ACTIVE (LAST 7 DAYS)
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 6. NOT ACTIVE (7 DAYS) */}
+                <div className="col-xl-2 col-md-4 col-sm-6">
+                  <div
+                    className="card h-100 border-0 shadow-sm p-3 bg-white rounded-3"
+                    style={{ borderLeft: '4px solid #ef4444', minHeight: '85px' }}
+                  >
+                    <div className="d-flex align-items-center gap-3">
+                      <div
+                        className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                        style={{ width: '40px', height: '40px', backgroundColor: '#fee2e2', color: '#dc2626' }}
+                      >
+                        <i className="feather-pause fs-18" />
+                      </div>
+                      <div>
+                        <h4 className="fw-bold mb-0 text-dark">1</h4>
+                        <div
+                          className="text-uppercase fw-bold text-muted"
+                          style={{ fontSize: '10px', letterSpacing: '0.4px' }}
+                        >
+                          NOT ACTIVE (7 DAYS)
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <form onSubmit={handleInstallPlugin}>
-                <div className="modal-body p-4">
-                  <div className="mb-3">
-                    <label className="form-label fs-13 fw-medium">Upload Plugin ZIP Archive</label>
-                    <input
-                      type="file"
-                      className="form-control"
-                      accept=".zip"
-                      onChange={(e) => setPluginInstallFile(e.target.files ? e.target.files[0] : null)}
-                    />
-                    <div className="form-text fs-12">
-                      Supports Moodle activity modules, payment gateways (paygw), and themes.
+
+              {/* 3.3 COURSE OUTCOME KPIS (7 VIBRANT SOLID CARDS) */}
+              <div className="mb-4">
+                <div
+                  className="text-uppercase fw-bold mb-2 text-dark"
+                  style={{ fontSize: '12px', letterSpacing: '0.6px', color: '#334155' }}
+                >
+                  COURSE OUTCOME KPIS
+                </div>
+                <div className="row g-2">
+                  {/* KPI 1: TOTAL LEARNERS (Solid Cyan Blue) */}
+                  <div className="col-xl col-md-4 col-sm-6">
+                    <div
+                      className="card border-0 shadow-sm rounded-3 text-white p-3 h-100 d-flex flex-column justify-content-between"
+                      style={{ backgroundColor: '#0284c7' }}
+                    >
+                      <div className="d-flex justify-content-between align-items-start mb-2">
+                        <span className="text-uppercase fw-bold" style={{ fontSize: '11px', letterSpacing: '0.3px' }}>
+                          TOTAL LEARNERS
+                        </span>
+                        <div
+                          className="rounded-circle bg-white-20 d-flex align-items-center justify-content-center"
+                          style={{ width: '26px', height: '26px', backgroundColor: 'rgba(255,255,255,0.2)' }}
+                        >
+                          <i className="feather-users fs-13" />
+                        </div>
+                      </div>
+                      <div className="fw-bold mb-2" style={{ fontSize: '28px' }}>
+                        6
+                      </div>
+                      <div
+                        className="badge bg-white-20 text-white fw-normal text-start d-inline-flex align-items-center gap-1"
+                        style={{ backgroundColor: 'rgba(255,255,255,0.2)', fontSize: '10px', padding: '4px 8px' }}
+                      >
+                        <span>➔</span> 100% vs previous 30 days
+                      </div>
                     </div>
                   </div>
 
-                  <div className="text-center my-2 text-muted fs-12">--- OR BY COMPONENT IDENTIFIER ---</div>
+                  {/* KPI 2: RESIGNED MIDWAY (Solid Orange) */}
+                  <div className="col-xl col-md-4 col-sm-6">
+                    <div
+                      className="card border-0 shadow-sm rounded-3 text-white p-3 h-100 d-flex flex-column justify-content-between"
+                      style={{ backgroundColor: '#f97316' }}
+                    >
+                      <div className="d-flex justify-content-between align-items-start mb-2">
+                        <span className="text-uppercase fw-bold" style={{ fontSize: '11px', letterSpacing: '0.3px' }}>
+                          RESIGNED MIDWAY
+                        </span>
+                        <div
+                          className="rounded-circle bg-white-20 d-flex align-items-center justify-content-center"
+                          style={{ width: '26px', height: '26px', backgroundColor: 'rgba(255,255,255,0.2)' }}
+                        >
+                          <i className="feather-user-minus fs-13" />
+                        </div>
+                      </div>
+                      <div className="fw-bold mb-2" style={{ fontSize: '28px' }}>
+                        0
+                      </div>
+                      <div className="text-white-50 small" style={{ fontSize: '11px' }}>
+                        0% of learners
+                      </div>
+                    </div>
+                  </div>
 
-                  <div className="mb-3">
-                    <label className="form-label fs-13 fw-medium">Component Identifier</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="e.g. paygw_pesapal or mod_scorm"
-                      value={pluginComponentName}
-                      onChange={(e) => setPluginComponentName(e.target.value)}
-                    />
+                  {/* KPI 3: COURSE ENROLLMENTS (Solid Sky Blue) */}
+                  <div className="col-xl col-md-4 col-sm-6">
+                    <div
+                      className="card border-0 shadow-sm rounded-3 text-white p-3 h-100 d-flex flex-column justify-content-between"
+                      style={{ backgroundColor: '#0284c7' }}
+                    >
+                      <div className="d-flex justify-content-between align-items-start mb-2">
+                        <span className="text-uppercase fw-bold" style={{ fontSize: '11px', letterSpacing: '0.3px' }}>
+                          COURSE ENROLLMENTS
+                        </span>
+                        <div
+                          className="rounded-circle bg-white-20 d-flex align-items-center justify-content-center"
+                          style={{ width: '26px', height: '26px', backgroundColor: 'rgba(255,255,255,0.2)' }}
+                        >
+                          <i className="feather-book fs-13" />
+                        </div>
+                      </div>
+                      <div className="fw-bold mb-2" style={{ fontSize: '28px' }}>
+                        5
+                      </div>
+                      <div className="text-white-50 small" style={{ fontSize: '11px' }}>
+                        0 new this month
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* KPI 4: PENDING VERIFICATION (Solid Red/Coral) */}
+                  <div className="col-xl col-md-4 col-sm-6">
+                    <div
+                      className="card border-0 shadow-sm rounded-3 text-white p-3 h-100 d-flex flex-column justify-content-between"
+                      style={{ backgroundColor: '#ef4444' }}
+                    >
+                      <div className="d-flex justify-content-between align-items-start mb-2">
+                        <span className="text-uppercase fw-bold" style={{ fontSize: '11px', letterSpacing: '0.3px' }}>
+                          PENDING VERIFICATION
+                        </span>
+                        <div
+                          className="rounded-circle bg-white-20 d-flex align-items-center justify-content-center"
+                          style={{ width: '26px', height: '26px', backgroundColor: 'rgba(255,255,255,0.2)' }}
+                        >
+                          <i className="feather-alert-triangle fs-13" />
+                        </div>
+                      </div>
+                      <div className="fw-bold mb-2" style={{ fontSize: '28px' }}>
+                        0
+                      </div>
+                      <div
+                        className="badge bg-white-20 text-white fw-normal text-start d-inline-flex align-items-center gap-1"
+                        style={{ backgroundColor: 'rgba(255,255,255,0.2)', fontSize: '10px', padding: '4px 8px' }}
+                      >
+                        <span>➔</span> Active cohort learning
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* KPI 5: PASSED (Solid Forest Green) */}
+                  <div className="col-xl col-md-4 col-sm-6">
+                    <div
+                      className="card border-0 shadow-sm rounded-3 text-white p-3 h-100 d-flex flex-column justify-content-between"
+                      style={{ backgroundColor: '#059669' }}
+                    >
+                      <div className="d-flex justify-content-between align-items-start mb-2">
+                        <span className="text-uppercase fw-bold" style={{ fontSize: '11px', letterSpacing: '0.3px' }}>
+                          PASSED
+                        </span>
+                        <div
+                          className="rounded-circle bg-white-20 d-flex align-items-center justify-content-center"
+                          style={{ width: '26px', height: '26px', backgroundColor: 'rgba(255,255,255,0.2)' }}
+                        >
+                          <i className="feather-check-circle fs-13" />
+                        </div>
+                      </div>
+                      <div className="fw-bold mb-2" style={{ fontSize: '28px' }}>
+                        0
+                      </div>
+                      <div
+                        className="badge bg-white-20 text-white fw-normal text-start d-inline-flex align-items-center gap-1"
+                        style={{ backgroundColor: 'rgba(255,255,255,0.2)', fontSize: '10px', padding: '4px 8px' }}
+                      >
+                        <span>➔</span> 0% of course enrollments
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* KPI 6: CERTIFICATES ISSUED (Solid Violet Purple) */}
+                  <div className="col-xl col-md-4 col-sm-6">
+                    <div
+                      className="card border-0 shadow-sm rounded-3 text-white p-3 h-100 d-flex flex-column justify-content-between"
+                      style={{ backgroundColor: '#8b5cf6' }}
+                    >
+                      <div className="d-flex justify-content-between align-items-start mb-2">
+                        <span className="text-uppercase fw-bold" style={{ fontSize: '11px', letterSpacing: '0.3px' }}>
+                          CERTIFICATES ISSUED
+                        </span>
+                        <div
+                          className="rounded-circle bg-white-20 d-flex align-items-center justify-content-center"
+                          style={{ width: '26px', height: '26px', backgroundColor: 'rgba(255,255,255,0.2)' }}
+                        >
+                          <i className="feather-award fs-13" />
+                        </div>
+                      </div>
+                      <div className="fw-bold mb-2" style={{ fontSize: '28px' }}>
+                        0
+                      </div>
+                      <div
+                        className="badge bg-white-20 text-white fw-normal text-start d-inline-flex align-items-center gap-1"
+                        style={{ backgroundColor: 'rgba(255,255,255,0.2)', fontSize: '10px', padding: '4px 8px' }}
+                      >
+                        <span>➔</span> Avg 0/5.0 score
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* KPI 7: BOT COMPLIANCE (Solid Midnight Navy) */}
+                  <div className="col-xl col-md-4 col-sm-6">
+                    <div
+                      className="card border-0 shadow-sm rounded-3 text-white p-3 h-100 d-flex flex-column justify-content-between"
+                      style={{ backgroundColor: '#0b1727' }}
+                    >
+                      <div className="d-flex justify-content-between align-items-start mb-2">
+                        <span className="text-uppercase fw-bold d-flex align-items-center gap-1" style={{ fontSize: '11px', letterSpacing: '0.3px' }}>
+                          BOT COMPLIANCE <span className="rounded-circle bg-success d-inline-block" style={{ width: '6px', height: '6px' }} />
+                        </span>
+                        <div
+                          className="rounded-circle bg-white-20 d-flex align-items-center justify-content-center"
+                          style={{ width: '26px', height: '26px', backgroundColor: 'rgba(255,255,255,0.15)' }}
+                        >
+                          <i className="feather-shield fs-13 text-info" />
+                        </div>
+                      </div>
+                      <div className="fw-bold text-white mb-2" style={{ fontSize: '22px' }}>
+                        100% AUDIT
+                      </div>
+                      <div className="text-white-50 small" style={{ fontSize: '11px' }}>
+                        Branch Oversight
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="modal-footer border-0 p-3 bg-light rounded-bottom-4">
+              </div>
+
+              {/* 3.4 MIDDLE 2-COLUMN SECTION (LEFT 8 COLS, RIGHT 4 COLS) */}
+              <div className="row g-4 mb-4">
+                {/* ============================================================== */}
+                {/* LEFT COLUMN (8 COLS)                                           */}
+                {/* ============================================================== */}
+                <div className="col-lg-8">
+                  {/* CARD A: DEPARTMENT READINESS & ANALYTICS TREND (LINE CHART) */}
+                  <div className="card border-0 shadow-sm rounded-3 mb-4 bg-white">
+                    <div className="card-header bg-white border-bottom p-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                      <div>
+                        <h6 className="fw-bold mb-1 text-dark" style={{ fontSize: '15px' }}>
+                          Department Readiness & Analytics Trend
+                        </h6>
+                        <p className="text-muted small mb-0">
+                          Track revenue performance and course enrollment metrics over time.
+                        </p>
+                      </div>
+
+                      <div className="d-flex gap-2 align-items-center">
+                        <div className="btn-group btn-group-sm" role="group">
+                          <button
+                            type="button"
+                            className={`btn ${trendRange === '30days' ? 'btn-primary' : 'btn-outline-secondary'}`}
+                            style={{
+                              backgroundColor: trendRange === '30days' ? '#0284c7' : 'transparent',
+                              borderColor: trendRange === '30days' ? '#0284c7' : '#cbd5e1',
+                              fontSize: '11px',
+                            }}
+                            onClick={() => setTrendRange('30days')}
+                          >
+                            30 Days
+                          </button>
+                          <button
+                            type="button"
+                            className={`btn ${trendRange === 'yearly' ? 'btn-primary' : 'btn-outline-secondary'}`}
+                            style={{
+                              backgroundColor: trendRange === 'yearly' ? '#0284c7' : 'transparent',
+                              borderColor: trendRange === 'yearly' ? '#0284c7' : '#cbd5e1',
+                              fontSize: '11px',
+                            }}
+                            onClick={() => setTrendRange('yearly')}
+                          >
+                            Yearly
+                          </button>
+                          <button
+                            type="button"
+                            className={`btn ${trendRange === '12months' ? 'btn-primary' : 'btn-outline-secondary'}`}
+                            style={{
+                              backgroundColor: trendRange === '12months' ? '#0284c7' : 'transparent',
+                              borderColor: trendRange === '12months' ? '#0284c7' : '#cbd5e1',
+                              fontSize: '11px',
+                            }}
+                            onClick={() => setTrendRange('12months')}
+                          >
+                            12 Months
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="card-body p-3">
+                      {/* Chart Legend */}
+                      <div className="d-flex justify-content-center align-items-center gap-2 mb-3 small text-muted">
+                        <span
+                          className="d-inline-block rounded"
+                          style={{ width: '12px', height: '12px', border: '2px solid #16a34a', backgroundColor: '#dcfce7' }}
+                        />
+                        <span style={{ fontSize: '12px' }}>Revenue</span>
+                      </div>
+
+                      {/* Responsive Line Chart SVG */}
+                      <div className="w-100 overflow-x-auto">
+                        <svg viewBox="0 0 740 260" className="w-100" style={{ minWidth: '600px', height: '240px' }}>
+                          {/* Y-Axis Labels & Horizontal Gridlines */}
+                          {[
+                            { y: 20, label: '1.0' },
+                            { y: 42, label: '0.8' },
+                            { y: 64, label: '0.6' },
+                            { y: 86, label: '0.4' },
+                            { y: 108, label: '0.2' },
+                            { y: 130, label: '0' },
+                            { y: 152, label: '-0.2' },
+                            { y: 174, label: '-0.4' },
+                            { y: 196, label: '-0.6' },
+                            { y: 218, label: '-0.8' },
+                            { y: 240, label: '-1.0' },
+                          ].map((grid, idx) => (
+                            <g key={idx}>
+                              <text x="35" y={grid.y + 4} textAnchor="end" fontSize="10" fill="#94a3b8">
+                                {grid.label}
+                              </text>
+                              <line
+                                x1="45"
+                                y1={grid.y}
+                                x2="720"
+                                y2={grid.y}
+                                stroke={grid.label === '0' ? '#16a34a' : '#f1f5f9'}
+                                strokeDasharray={grid.label === '0' ? '4 2' : 'none'}
+                                strokeWidth="1"
+                              />
+                            </g>
+                          ))}
+
+                          {/* 30 Data Points Line & Circles along baseline */}
+                          <polyline
+                            fill="none"
+                            stroke="#16a34a"
+                            strokeWidth="2"
+                            points="
+                              55,130 77,130 99,130 121,130 143,130 165,130 187,130 209,130 231,130 253,130
+                              275,130 297,130 319,130 341,130 363,130 385,130 407,130 429,130 451,130 473,130
+                              495,130 517,130 539,130 561,130 583,130 605,130 627,130 649,130 671,130 693,130
+                            "
+                          />
+
+                          {/* Data point dots */}
+                          {[
+                            55, 77, 99, 121, 143, 165, 187, 209, 231, 253,
+                            275, 297, 319, 341, 363, 385, 407, 429, 451, 473,
+                            495, 517, 539, 561, 583, 605, 627, 649, 671, 693
+                          ].map((cx, idx) => (
+                            <circle key={idx} cx={cx} cy="130" r="3.5" fill="#16a34a" stroke="#ffffff" strokeWidth="1.5" />
+                          ))}
+
+                          {/* X-Axis Slanted Date Labels */}
+                          {[
+                            '04 Oct', '05 Oct', '06 Oct', '07 Oct', '08 Oct', '09 Oct', '10 Oct', '11 Oct', '12 Oct', '13 Oct',
+                            '14 Oct', '15 Oct', '16 Oct', '17 Oct', '18 Oct', '19 Oct', '20 Oct', '21 Oct', '22 Oct', '23 Oct',
+                            '24 Oct', '25 Oct', '26 Oct', '27 Oct', '28 Oct', '29 Oct', '30 Oct', '31 Oct', '01 Nov', '02 Nov'
+                          ].map((d, idx) => {
+                            const x = 55 + idx * 22;
+                            return (
+                              <text
+                                key={idx}
+                                x={x}
+                                y="252"
+                                textAnchor="end"
+                                fontSize="8"
+                                fill="#94a3b8"
+                                transform={`rotate(-45 ${x} 252)`}
+                              >
+                                {d}
+                              </text>
+                            );
+                          })}
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* CARD B: RECENT STAFF ENROLLMENTS & MANDATE PROGRESS (TABLE) */}
+                  <div className="card border-0 shadow-sm rounded-3 mb-4 bg-white">
+                    <div className="card-header bg-white border-bottom p-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                      <div>
+                        <h6 className="fw-bold mb-1 text-dark" style={{ fontSize: '15px' }}>
+                          Recent Staff Enrollments & Mandate Progress
+                        </h6>
+                        <p className="text-muted small mb-0">
+                          Audited real-time enrollment progress and branch compliance records.
+                        </p>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => handleSelectView('courses')}
+                        className="btn btn-outline-primary btn-sm px-3 rounded-pill d-flex align-items-center gap-1"
+                        style={{ color: '#0284c7', borderColor: '#0284c7', fontSize: '12px' }}
+                      >
+                        <span>View All</span>
+                        <span>➔</span>
+                      </button>
+                    </div>
+
+                    <div className="card-body p-0">
+                      <div className="table-responsive">
+                        <table className="table table-hover align-middle mb-0" style={{ fontSize: '12px' }}>
+                          <thead className="table-light">
+                            <tr style={{ color: '#64748b', fontSize: '11px', letterSpacing: '0.5px' }}>
+                              <th className="ps-3 py-2 text-uppercase">DATE</th>
+                              <th className="py-2 text-uppercase">COURSE MANDATE</th>
+                              <th className="py-2 text-uppercase">BANK STAFF</th>
+                              <th className="py-2 text-uppercase">BRANCH</th>
+                              <th className="py-2 text-uppercase">STATUS</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {[
+                              {
+                                date: 'Oct 05, 2026',
+                                course: 'Island Branch Cash Smurfing & Sanc...',
+                                staff: 'Fadhila Abdalla Haji',
+                                branch: 'Forodhani Main Branch',
+                              },
+                              {
+                                date: 'Sep 30, 2026',
+                                course: 'Island Branch Cash Smurfing & Sanc...',
+                                staff: 'Renatus Bernardo',
+                                branch: 'Forodhani Main Branch',
+                              },
+                              {
+                                date: 'Oct 05, 2026',
+                                course: 'Island Branch Cash Smurfing & Sanc...',
+                                staff: 'Khamis Juma Bakari',
+                                branch: 'Forodhani Main Branch',
+                              },
+                              {
+                                date: 'Oct 05, 2026',
+                                course: 'Island Branch Cash Smurfing & Sanc...',
+                                staff: 'Fatma Said Ali',
+                                branch: 'Forodhani Main Branch',
+                              },
+                              {
+                                date: 'Oct 05, 2026',
+                                course: 'Island Branch Cash Smurfing & Sanc...',
+                                staff: 'Ali Mohamed Issa',
+                                branch: 'Chake Chake Branch',
+                              },
+                            ].map((row, idx) => (
+                              <tr key={idx}>
+                                <td className="ps-3 py-3 text-muted">{row.date}</td>
+                                <td className="py-3">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleOpenStudio(4)}
+                                    className="btn btn-link text-decoration-none fw-bold p-0 text-start text-dark"
+                                    style={{ fontSize: '12px' }}
+                                    title="Open Course Settings Studio"
+                                  >
+                                    {row.course}
+                                  </button>
+                                </td>
+                                <td className="py-3 text-secondary">{row.staff}</td>
+                                <td className="py-3 text-secondary">{row.branch}</td>
+                                <td className="py-3">
+                                  <span
+                                    className="badge rounded-pill fw-bold"
+                                    style={{
+                                      backgroundColor: '#dcfce7',
+                                      color: '#16a34a',
+                                      fontSize: '10px',
+                                      padding: '4px 10px',
+                                      letterSpacing: '0.4px',
+                                    }}
+                                  >
+                                    APPROVED
+                                  </span>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* CARD C: ENROLLMENT DISTRIBUTION OVERVIEW (MONTHLY BAR CHART) */}
+                  <div className="card border-0 shadow-sm rounded-3 bg-white">
+                    <div className="card-header bg-white border-bottom p-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                      <div>
+                        <h6 className="fw-bold mb-1 text-dark" style={{ fontSize: '15px' }}>
+                          Enrollment Distribution Overview
+                        </h6>
+                        <p className="text-muted small mb-0">
+                          Monthly course intake volume across corporate departments.
+                        </p>
+                      </div>
+
+                      <div className="dropdown">
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-secondary dropdown-toggle"
+                          style={{ fontSize: '11px' }}
+                        >
+                          12 Months
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="card-body p-3">
+                      {/* Legend */}
+                      <div className="d-flex justify-content-center align-items-center gap-2 mb-3 small text-muted">
+                        <span
+                          className="d-inline-block rounded"
+                          style={{ width: '12px', height: '12px', backgroundColor: '#0284c7' }}
+                        />
+                        <span style={{ fontSize: '12px' }}>Enrollments</span>
+                      </div>
+
+                      {/* Bar Chart SVG */}
+                      <div className="w-100 overflow-x-auto">
+                        <svg viewBox="0 0 740 220" className="w-100" style={{ minWidth: '550px', height: '200px' }}>
+                          {/* Horizontal Gridlines */}
+                          {[
+                            { y: 20, label: '10' },
+                            { y: 55, label: '7.5' },
+                            { y: 90, label: '5.0' },
+                            { y: 125, label: '2.5' },
+                            { y: 160, label: '0' },
+                          ].map((grid, idx) => (
+                            <g key={idx}>
+                              <text x="35" y={grid.y + 4} textAnchor="end" fontSize="10" fill="#94a3b8">
+                                {grid.label}
+                              </text>
+                              <line x1="45" y1={grid.y} x2="720" y2={grid.y} stroke="#f1f5f9" strokeWidth="1" />
+                            </g>
+                          ))}
+
+                          {/* Months: Dec, Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov */}
+                          {[
+                            { month: 'Dec', value: 0 },
+                            { month: 'Jan', value: 0 },
+                            { month: 'Feb', value: 0 },
+                            { month: 'Mar', value: 0 },
+                            { month: 'Apr', value: 0 },
+                            { month: 'May', value: 0 },
+                            { month: 'Jun', value: 0 },
+                            { month: 'Jul', value: 0 },
+                            { month: 'Aug', value: 0 },
+                            { month: 'Sep', value: 0 },
+                            { month: 'Oct', value: 9 }, // Prominent peak in October matching screenshot
+                            { month: 'Nov', value: 0 },
+                          ].map((col, idx) => {
+                            const x = 70 + idx * 55;
+                            const barHeight = col.value * 14;
+                            const y = 160 - barHeight;
+                            return (
+                              <g key={idx}>
+                                {col.value > 0 && (
+                                  <rect
+                                    x={x - 18}
+                                    y={y}
+                                    width="36"
+                                    height={barHeight}
+                                    fill="#0284c7"
+                                    rx="2"
+                                  />
+                                )}
+                                <text x={x} y="180" textAnchor="middle" fontSize="11" fill="#94a3b8">
+                                  {col.month}
+                                </text>
+                              </g>
+                            );
+                          })}
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* ============================================================== */}
+                {/* RIGHT COLUMN (4 COLS)                                          */}
+                {/* ============================================================== */}
+                <div className="col-lg-4">
+                  {/* CARD D: OVERALL COURSE LEADERS */}
+                  <div className="card border-0 shadow-sm rounded-3 mb-4 bg-white">
+                    <div className="card-header bg-white border-bottom p-3">
+                      <div className="d-flex justify-content-between align-items-center mb-1">
+                        <h6 className="fw-bold mb-0 text-dark" style={{ fontSize: '15px' }}>
+                          Overall Course Leaders
+                        </h6>
+                        <span
+                          className="badge rounded-pill fw-bold"
+                          style={{ backgroundColor: '#e0f2fe', color: '#0369a1', fontSize: '10px' }}
+                        >
+                          1 Ranked
+                        </span>
+                      </div>
+                      <p className="text-muted small mb-3">
+                        Compare top participants and courses across academy outcomes.
+                      </p>
+
+                      {/* Top Courses vs Participants Toggle */}
+                      <div className="btn-group w-100 mb-3" role="group">
+                        <button
+                          type="button"
+                          onClick={() => setLeaderTab('courses')}
+                          className="btn btn-sm fw-bold rounded-start-pill py-2"
+                          style={{
+                            backgroundColor: leaderTab === 'courses' ? '#0284c7' : '#f8fafc',
+                            color: leaderTab === 'courses' ? '#ffffff' : '#64748b',
+                            borderColor: '#e2e8f0',
+                            fontSize: '11px',
+                          }}
+                        >
+                          Top Courses
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setLeaderTab('participants')}
+                          className="btn btn-sm fw-bold rounded-end-pill py-2"
+                          style={{
+                            backgroundColor: leaderTab === 'participants' ? '#0284c7' : '#f8fafc',
+                            color: leaderTab === 'participants' ? '#ffffff' : '#64748b',
+                            borderColor: '#e2e8f0',
+                            fontSize: '11px',
+                          }}
+                        >
+                          Participants
+                        </button>
+                      </div>
+
+                      {/* Percentage Threshold Badges */}
+                      <div className="d-flex gap-2">
+                        <span
+                          className="badge rounded-pill fw-bold px-2 py-1"
+                          style={{ backgroundColor: '#dcfce7', color: '#16a34a', fontSize: '11px' }}
+                        >
+                          70%+
+                        </span>
+                        <span
+                          className="badge rounded-pill fw-bold px-2 py-1"
+                          style={{ backgroundColor: '#fef3c7', color: '#d97706', fontSize: '11px' }}
+                        >
+                          40-69%
+                        </span>
+                        <span
+                          className="badge rounded-pill fw-bold px-2 py-1"
+                          style={{ backgroundColor: '#fee2e2', color: '#dc2626', fontSize: '11px' }}
+                        >
+                          Below 40%
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="card-body p-3">
+                      {/* Ranked Course Card */}
+                      <div
+                        className="p-3 border rounded-3 d-flex align-items-center gap-3 bg-light-subtle cursor-pointer hover-shadow"
+                        onClick={() => handleOpenStudio(4)}
+                        title="Click to open Course #4 Settings Studio"
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <div
+                          className="fw-bold fs-16 text-muted d-flex align-items-center justify-content-center"
+                          style={{ width: '20px' }}
+                        >
+                          1
+                        </div>
+                        <div
+                          className="rounded-3 bg-white p-2 border d-flex align-items-center justify-content-center flex-shrink-0"
+                          style={{ width: '45px', height: '45px' }}
+                        >
+                          🏝️
+                        </div>
+                        <div className="overflow-hidden flex-grow-1">
+                          <h6 className="fw-bold mb-1 text-dark text-truncate" style={{ fontSize: '12px' }}>
+                            Island Branch Cash Smurfing & Sa...
+                          </h6>
+                          <div className="d-flex align-items-center gap-3 small text-muted" style={{ fontSize: '11px' }}>
+                            <span className="text-primary d-flex align-items-center gap-1">
+                              <i className="feather-users fs-12" /> 5
+                            </span>
+                            <span className="text-warning d-flex align-items-center gap-1">
+                              ★ 5
+                            </span>
+                            <span className="text-secondary">TZS 0.00</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* CARD E: LEARNER ENGAGEMENT SCORE */}
+                  <div className="card border-0 shadow-sm rounded-3 mb-4 bg-white">
+                    <div className="card-header bg-white border-bottom p-3">
+                      <h6 className="fw-bold mb-1 text-dark" style={{ fontSize: '15px' }}>
+                        Learner Engagement Score
+                      </h6>
+                      <p className="text-muted small mb-0">
+                        Active retention and completion health indicators.
+                      </p>
+                    </div>
+
+                    <div className="card-body p-3">
+                      {/* Metric 1: Active Learners */}
+                      <div className="mb-3">
+                        <div className="d-flex justify-content-between align-items-center mb-1 small">
+                          <span className="text-secondary" style={{ fontSize: '12px' }}>Active Learners</span>
+                          <span className="fw-bold" style={{ color: '#22c55e', fontSize: '12px' }}>
+                            5 (83.3%)
+                          </span>
+                        </div>
+                        <div className="progress" style={{ height: '6px' }}>
+                          <div
+                            className="progress-bar"
+                            role="progressbar"
+                            style={{ width: '83.3%', backgroundColor: '#22c55e' }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Metric 2: Completed Modules */}
+                      <div className="mb-3">
+                        <div className="d-flex justify-content-between align-items-center mb-1 small">
+                          <span className="text-secondary" style={{ fontSize: '12px' }}>Completed Modules</span>
+                          <span className="fw-bold" style={{ color: '#a855f7', fontSize: '12px' }}>
+                            0 (0%)
+                          </span>
+                        </div>
+                        <div className="progress" style={{ height: '6px' }}>
+                          <div
+                            className="progress-bar"
+                            role="progressbar"
+                            style={{ width: '0%', backgroundColor: '#a855f7' }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Metric 3: At Risk / Inactive */}
+                      <div>
+                        <div className="d-flex justify-content-between align-items-center mb-1 small">
+                          <span className="text-secondary" style={{ fontSize: '12px' }}>At Risk / Inactive</span>
+                          <span className="fw-bold" style={{ color: '#f59e0b', fontSize: '12px' }}>
+                            0 (0%)
+                          </span>
+                        </div>
+                        <div className="progress" style={{ height: '6px' }}>
+                          <div
+                            className="progress-bar"
+                            role="progressbar"
+                            style={{ width: '0%', backgroundColor: '#f59e0b' }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* CARD F: RECENT ACTIVITY STREAM */}
+                  <div className="card border-0 shadow-sm rounded-3 bg-white">
+                    <div className="card-header bg-white border-bottom p-3">
+                      <h6 className="fw-bold mb-1 text-dark" style={{ fontSize: '15px' }}>
+                        Recent Activity Stream
+                      </h6>
+                      <p className="text-muted small mb-0">
+                        Real-time alerts, course enrollments, and reviews.
+                      </p>
+                    </div>
+
+                    <div className="card-body p-3">
+                      <div className="d-flex flex-column gap-3">
+                        {[
+                          {
+                            name: 'Fadhila Abdalla Haji',
+                            action: 'enrolled in "Island Branch Cash Smurfing & Sanctions Screening Challenge"',
+                            time: '1 week ago',
+                          },
+                          {
+                            name: 'Renatus Bernardo',
+                            action: 'enrolled in "Island Branch Cash Smurfing & Sanctions Screening Challenge"',
+                            time: '1 week ago',
+                          },
+                          {
+                            name: 'Khamis Juma Bakari',
+                            action: 'enrolled in "Island Branch Cash Smurfing & Sanctions Screening Challenge"',
+                            time: '1 week ago',
+                          },
+                          {
+                            name: 'Fatma Said Ali',
+                            action: 'enrolled in "Island Branch Cash Smurfing & Sanctions Screening Challenge"',
+                            time: '1 week ago',
+                          },
+                          {
+                            name: 'Ali Mohamed Issa',
+                            action: 'enrolled in "Island Branch Cash Smurfing & Sanctions Screening Challenge"',
+                            time: '1 week ago',
+                          },
+                        ].map((act, idx) => (
+                          <div key={idx} className="d-flex align-items-start gap-2">
+                            <div
+                              className="rounded-circle d-flex align-items-center justify-content-center text-white flex-shrink-0 mt-1"
+                              style={{ width: '28px', height: '28px', backgroundColor: '#0284c7' }}
+                            >
+                              <i className="feather-user fs-12" />
+                            </div>
+                            <div className="overflow-hidden">
+                              <div className="text-dark small lh-sm">
+                                <span className="fw-bold">{act.name}</span> {act.action}
+                              </div>
+                              <div className="text-muted" style={{ fontSize: '10px' }}>
+                                {act.time}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ============================================================== */}
+          {/* VIEW B: COURSES & CURRICULUM MANAGEMENT SUBVIEW                */}
+          {/* ============================================================== */}
+          {activeView === 'courses' && (
+            <div className="card border-0 shadow-sm rounded-3 bg-white p-4">
+              <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 border-bottom pb-3">
+                <div>
+                  <h5 className="fw-bold mb-1 text-dark">Academic Course Models & Curriculum Features</h5>
+                  <p className="text-muted small mb-0">
+                    Configure curriculum sections, activity modules, assessment quizzes, and Moodle integration.
+                  </p>
+                </div>
+                <div className="d-flex gap-2 flex-wrap">
                   <button
                     type="button"
-                    className="btn btn-outline-secondary rounded-pill px-4"
-                    onClick={() => setShowPluginModal(false)}
+                    onClick={() => handleOpenStudio(4)}
+                    className="btn btn-primary btn-sm rounded-pill px-3 shadow-sm"
+                    style={{ backgroundColor: '#0284c7', borderColor: '#0284c7' }}
                   >
-                    Cancel
+                    <i className="feather-settings me-1" /> Open Course #4 Studio (BBA301)
                   </button>
                   <button
-                    type="submit"
-                    className="btn btn-dark rounded-pill px-4 shadow-sm"
-                    disabled={!pluginInstallFile && !pluginComponentName}
+                    type="button"
+                    onClick={() => setShowActivityModal(true)}
+                    className="btn btn-outline-primary btn-sm rounded-pill px-3"
                   >
-                    Install & Validate
+                    <i className="feather-plus me-1" /> Add Activity
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowCourseModal(true)}
+                    className="btn btn-dark btn-sm rounded-pill px-3 shadow-sm"
+                  >
+                    <i className="feather-plus me-1" /> Create Course Model
                   </button>
                 </div>
-              </form>
+              </div>
+
+              <div className="table-responsive">
+                <table className="table table-hover align-middle mb-0" style={{ fontSize: '13px' }}>
+                  <thead className="table-light">
+                    <tr>
+                      <th>Course Model</th>
+                      <th>Category / Department</th>
+                      <th>Curriculum Structure</th>
+                      <th>Activity Features</th>
+                      <th>Tuition & Enrolment</th>
+                      <th>Scholars</th>
+                      <th className="text-end">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {courses.map((c) => (
+                      <tr key={c.id}>
+                        <td>
+                          <div className="fw-bold text-dark">{c.fullname}</div>
+                          <span className="badge bg-secondary-subtle text-secondary me-1">{c.shortname}</span>
+                          <span className="badge bg-info-subtle text-info">Format: {c.format}</span>
+                        </td>
+                        <td>
+                          <span className="text-muted">{c.category_name}</span>
+                        </td>
+                        <td>
+                          <span className="badge bg-light text-dark border">
+                            {c.sections_count} Sections
+                          </span>
+                        </td>
+                        <td>
+                          <div className="d-flex flex-wrap gap-1">
+                            <span className="badge bg-primary-subtle text-primary">
+                              {c.quizzes_count} Quizzes
+                            </span>
+                            <span className="badge bg-warning-subtle text-warning">
+                              {c.assignments_count} Assignments
+                            </span>
+                            <span className="badge bg-success-subtle text-success">
+                              {c.pages_count} Pages
+                            </span>
+                          </div>
+                        </td>
+                        <td>
+                          <div className="fw-bold text-dark">
+                            {c.tuition_fee > 0 ? `TZS ${c.tuition_fee.toLocaleString()}` : 'Free / Scholarship'}
+                          </div>
+                        </td>
+                        <td>
+                          <div className="d-flex align-items-center gap-1">
+                            <i className="feather-users text-primary" />
+                            <span className="fw-bold">{c.enrolled_students || 5}</span>
+                          </div>
+                        </td>
+                        <td className="text-end">
+                          <div className="d-flex justify-content-end gap-1">
+                            <button
+                              type="button"
+                              onClick={() => handleOpenStudio(c.id)}
+                              className="btn btn-sm btn-primary px-2 py-1"
+                              style={{ backgroundColor: '#0284c7', borderColor: '#0284c7' }}
+                              title="Edit Course Settings & Sections Studio"
+                            >
+                              <i className="feather-settings fs-14 me-1" />
+                              Settings Studio
+                            </button>
+                            <a
+                              href={adminService.getMoodleSsoUrl(`/course/view.php?id=${c.id}`)}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="btn btn-sm btn-outline-secondary px-2 py-1"
+                              title="Open in Moodle (SSO)"
+                            >
+                              <i className="feather-external-link fs-14" />
+                            </a>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* ============================================================== */}
+          {/* VIEW C: SITE ADMINISTRATION SUITE (ALL 9 AREAS & SSO)          */}
+          {/* ============================================================== */}
+          {activeView === 'siteadmin' && (
+            <div className="card border-0 shadow-sm rounded-3 bg-white p-4">
+              <SiteAdminHub
+                adminTree={adminTree}
+                adminCategories={adminCategories}
+                courses={courses}
+                courseDefaults={courseDefaults}
+                onRefresh={loadAdminData}
+                onNotify={(type, message) => setActionAlert({ type, message })}
+                onOpenCourseModal={() => setShowCourseModal(true)}
+                onOpenCourseStudio={handleOpenStudio}
+              />
+            </div>
+          )}
+
+          {/* ============================================================== */}
+          {/* VIEW D: REPORTS & TELEMETRY SUBVIEW                            */}
+          {activeView === 'reports' && (
+            <div className="card border-0 shadow-sm rounded-3 bg-white p-4">
+              <h5 className="fw-bold mb-3 text-dark">Executive Platform Telemetry & System Audits</h5>
+              <div className="row g-3 mb-4">
+                <div className="col-md-3">
+                  <div className="p-3 bg-light rounded-3 text-center">
+                    <div className="text-muted small">Total Scholars</div>
+                    <div className="fs-3 fw-bold text-primary">{telemetry.totalStudents}</div>
+                  </div>
+                </div>
+                <div className="col-md-3">
+                  <div className="p-3 bg-light rounded-3 text-center">
+                    <div className="text-muted small">Active Faculty</div>
+                    <div className="fs-3 fw-bold text-success">{telemetry.activeInstructors}</div>
+                  </div>
+                </div>
+                <div className="col-md-3">
+                  <div className="p-3 bg-light rounded-3 text-center">
+                    <div className="text-muted small">Pesapal Transactions</div>
+                    <div className="fs-3 fw-bold text-warning">{telemetry.pesapalTransactionsCount}</div>
+                  </div>
+                </div>
+                <div className="col-md-3">
+                  <div className="p-3 bg-light rounded-3 text-center">
+                    <div className="text-muted small">System Uptime</div>
+                    <div className="fs-3 fw-bold text-info">{telemetry.systemUptime}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-      )}
+
+        {/* ============================================================== */}
+        {/* 4. FOOTER (MATCHING SCREENSHOT)                                */}
+        {/* ============================================================== */}
+        <footer className="px-4 py-3 bg-white border-top text-muted small">
+          <div>Copyright © 2026 • People's Bank of Zanzibar (PBZ) / OUT LMS Corporate Academy • All Rights Reserved.</div>
+        </footer>
+      </div>
+
+      {/* ============================================================== */}
+      {/* 5. MODALS & SLIDERS                                            */}
+      {/* ============================================================== */}
 
       {/* Course Settings & Sections Studio Modal */}
       {showCourseStudio && studioCourseId && (
@@ -1541,6 +1517,116 @@ const AdminDashboard: React.FC = () => {
           onNotify={(type, message) => setActionAlert({ type, message })}
           onCourseUpdated={loadAdminData}
         />
+      )}
+
+      {/* Create Course Modal */}
+      {showCourseModal && (
+        <div className="modal fade show" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1055 }} tabIndex={-1}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+              <div className="modal-header bg-dark text-white p-3">
+                <h5 className="modal-title fw-bold">Register New Course Model</h5>
+                <button type="button" className="btn-close btn-close-white" onClick={() => setShowCourseModal(false)} />
+              </div>
+              <form onSubmit={handleCreateCourse}>
+                <div className="modal-body p-4">
+                  <div className="mb-3">
+                    <label className="form-label small fw-bold">Course Full Name</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      required
+                      value={newCourse.fullname}
+                      onChange={(e) => setNewCourse({ ...newCourse, fullname: e.target.value })}
+                      placeholder="e.g. Corporate Financial Governance"
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label small fw-bold">Course Short Name</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      required
+                      value={newCourse.shortname}
+                      onChange={(e) => setNewCourse({ ...newCourse, shortname: e.target.value })}
+                      placeholder="e.g. BBA302"
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label small fw-bold">Category / Department</label>
+                    <select
+                      className="form-select"
+                      value={newCourse.category_id}
+                      onChange={(e) => setNewCourse({ ...newCourse, category_id: parseInt(e.target.value) || 2 })}
+                    >
+                      {adminCategories.map((c) => (
+                        <option key={c.id} value={c.id}>{c.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                <div className="modal-footer border-0 p-3 bg-light">
+                  <button type="button" className="btn btn-outline-secondary rounded-pill px-4" onClick={() => setShowCourseModal(false)}>
+                    Cancel
+                  </button>
+                  <button type="submit" className="btn btn-primary rounded-pill px-4 shadow-sm" style={{ backgroundColor: '#0284c7' }}>
+                    Save Course
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Activity Modal */}
+      {showActivityModal && (
+        <div className="modal fade show" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1055 }} tabIndex={-1}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+              <div className="modal-header bg-dark text-white p-3">
+                <h5 className="modal-title fw-bold">Publish Learning Activity</h5>
+                <button type="button" className="btn-close btn-close-white" onClick={() => setShowActivityModal(false)} />
+              </div>
+              <form onSubmit={handleAddActivity}>
+                <div className="modal-body p-4">
+                  <div className="mb-3">
+                    <label className="form-label small fw-bold">Activity Type</label>
+                    <select
+                      className="form-select"
+                      value={newActivity.mod_type}
+                      onChange={(e: any) => setNewActivity({ ...newActivity, mod_type: e.target.value })}
+                    >
+                      <option value="page">Lecture Content Page (HTML/Text)</option>
+                      <option value="quiz">Interactive Assessment Quiz</option>
+                      <option value="assign">Assignment Submission Drop</option>
+                      <option value="resource">File / Document Resource</option>
+                    </select>
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label small fw-bold">Activity Title</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      required
+                      value={newActivity.name}
+                      onChange={(e) => setNewActivity({ ...newActivity, name: e.target.value })}
+                      placeholder="e.g. AML Sanctions Compliance Quiz"
+                    />
+                  </div>
+                </div>
+                <div className="modal-footer border-0 p-3 bg-light">
+                  <button type="button" className="btn btn-outline-secondary rounded-pill px-4" onClick={() => setShowActivityModal(false)}>
+                    Cancel
+                  </button>
+                  <button type="submit" className="btn btn-primary rounded-pill px-4 shadow-sm" style={{ backgroundColor: '#0284c7' }}>
+                    Publish
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

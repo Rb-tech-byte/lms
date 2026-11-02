@@ -12,6 +12,15 @@ const Feature = () => {
   }, [location.pathname]);
 
   const isHome = location.pathname === '/' || location.pathname === '/index' || location.pathname === '/index-6';
+  const isAdmin = location.pathname.startsWith('/admin');
+
+  if (isAdmin) {
+    return (
+      <div className="admin-root-container" style={{ background: '#f4f6fa', minHeight: '100vh', margin: 0, padding: 0 }}>
+        <Outlet />
+      </div>
+    );
+  }
 
   return (
     <>

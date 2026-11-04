@@ -469,29 +469,32 @@ export const CourseCategory: React.FC<CourseCategoryProps> = ({
                       {coverImg && (
                         <div
                           className="position-relative overflow-hidden"
-                          style={{ height: '100px', background: '#091424' }}
+                          style={{
+                            height: '115px',
+                            background: `${accent}15`,
+                            borderBottom: '3px solid #FFD200',
+                          }}
                         >
                           <img
                             src={coverImg}
                             alt={cat.name}
                             className="w-100 h-100 object-fit-cover"
-                            style={{ opacity: 0.94 }}
+                            style={{ opacity: 1 }}
                             onError={(e) => {
-                              (e.currentTarget as HTMLElement).style.display = 'none';
-                            }}
-                          />
-                          <div
-                            className="position-absolute top-0 start-0 w-100 h-100"
-                            style={{
-                              background: 'linear-gradient(180deg, rgba(9,20,36,0.1) 0%, rgba(9,20,36,0.65) 100%)',
+                              const target = e.currentTarget as HTMLImageElement;
+                              const fallback = `/assets/img/category/covers/cat-cover-${cat.id}-fstes.svg`;
+                              if (target.src !== fallback && !target.src.endsWith(fallback)) {
+                                target.src = fallback;
+                              }
                             }}
                           />
                           <span
-                            className="badge position-absolute top-2 start-2 px-2 py-0.5 rounded-pill fw-bold"
+                            className="badge position-absolute top-2 start-2 px-2.5 py-1 rounded-pill fw-bold shadow-sm"
                             style={{
                               backgroundColor: accent,
                               color: '#ffffff',
-                              fontSize: '0.66rem',
+                              border: '1px solid #FFD200',
+                              fontSize: '0.68rem',
                             }}
                           >
                             {cat.badgeText || cat.idnumber || `FAC-0${cat.id}`}
@@ -510,8 +513,8 @@ export const CourseCategory: React.FC<CourseCategoryProps> = ({
                                 style={{
                                   width: 42,
                                   height: 42,
-                                  padding: 2,
-                                  backgroundColor: '#091424',
+                                  padding: 3,
+                                  backgroundColor: `${accent}15`,
                                   border: `1.5px solid ${accent}`,
                                 }}
                                 onError={(e) => {
@@ -724,9 +727,23 @@ export const CourseCategory: React.FC<CourseCategoryProps> = ({
               <div className="row g-3">
                 {(visibleCourses.length > 0 ? visibleCourses : courses).map((course) => (
                   <div className="col-lg-4 col-md-6 d-flex" key={course.id}>
-                    <div className="card border-0 shadow-sm rounded-3 w-100 d-flex flex-column justify-content-between bg-white overflow-hidden" style={{ border: '1px solid #e2e8f0' }}>
+                    <div
+                      className="card border-0 shadow-sm rounded-3 w-100 d-flex flex-column justify-content-between bg-white overflow-hidden"
+                      style={{
+                        border: '1.5px solid #e2e8f0',
+                        borderTop: `3.5px solid ${course.accentColor || '#0171BB'}`,
+                        borderBottom: '3px solid #FFD200',
+                      }}
+                    >
                       {/* Course Thumbnail */}
-                      <div className="position-relative overflow-hidden" style={{ height: 130, background: '#0b1727' }}>
+                      <div
+                        className="position-relative overflow-hidden"
+                        style={{
+                          height: 140,
+                          background: `${course.accentColor || '#0171BB'}15`,
+                          borderBottom: '3px solid #FFD200',
+                        }}
+                      >
                         <Link to={`${routes.courseDetails}?id=${course.id}`}>
                           <img
                             src={course.courseImage || course.image || `/assets/img/course/thumbnails/course-${course.id}-${(course.shortname || `course-${course.id}`).toLowerCase().replace(/[^a-z0-9]/g, '-')}.svg`}
@@ -743,21 +760,22 @@ export const CourseCategory: React.FC<CourseCategoryProps> = ({
                           />
                         </Link>
                         <span
-                          className="badge position-absolute top-2 start-2 px-2 py-0.5 rounded-pill fw-bold"
+                          className="badge position-absolute top-2 start-2 px-2.5 py-1 rounded-pill fw-bold"
                           style={{
                             backgroundColor: course.accentColor || '#0171BB',
                             color: '#ffffff',
-                            fontSize: '0.66rem',
+                            border: '1px solid #FFD200',
+                            fontSize: '0.68rem',
                           }}
                         >
                           {course.shortname}
                         </span>
                         <span
-                          className="badge position-absolute top-2 end-2 px-2 py-0.5 rounded-pill fw-bold"
+                          className="badge position-absolute top-2 end-2 px-2.5 py-1 rounded-pill fw-bold"
                           style={{
-                            background: 'rgba(15,23,42,0.85)',
-                            color: '#ffffff',
-                            fontSize: '0.68rem',
+                            background: '#FFD200',
+                            color: '#003B66',
+                            fontSize: '0.72rem',
                           }}
                         >
                           {course.priceFormatted}

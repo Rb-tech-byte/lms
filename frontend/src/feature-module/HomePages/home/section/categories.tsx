@@ -89,7 +89,13 @@ const Categories: React.FC = () => {
                         className="w-100 h-100 object-fit-cover"
                         style={{ opacity: 1 }}
                         onError={(e) => {
-                          (e.currentTarget as HTMLElement).style.display = 'none';
+                          const target = e.currentTarget as HTMLImageElement;
+                          const fallback = `/assets/img/category/covers/cat-cover-${cat.id}-fstes.svg`;
+                          if (target.src !== fallback && !target.src.endsWith(fallback)) {
+                            target.src = fallback;
+                          } else {
+                            target.src = '/assets/img/category/covers/cat-cover-2-fstes.svg';
+                          }
                         }}
                       />
                       <span

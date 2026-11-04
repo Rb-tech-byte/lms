@@ -12,13 +12,14 @@ const PAGE_SIZE = 6;
 const CourseList: React.FC = () => {
   const route = all_routes;
   const [searchParams] = useSearchParams();
-  const initialCategoryId = Number(searchParams.get('category') || 0);
+  const rawCatParam = searchParams.get('category') || searchParams.get('id') || '';
+  const initialCategoryId = !isNaN(Number(rawCatParam)) && Number(rawCatParam) > 0 ? Number(rawCatParam) : 0;
 
   const [courses, setCourses] = useState<PublicCatalogCourse[]>([]);
   const [categories, setCategories] = useState<PublicCatalogCategory[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<number>(initialCategoryId);
   const [programFilter, setProgramFilter] = useState<'all' | 'psc' | 'mooc'>('all');
-  const [searchQuery, setSearchQuery] = useState<string>(searchParams.get('q') || '');
+  const [searchQuery, setSearchQuery] = useState<string>(searchParams.get('q') || searchParams.get('search') || '');
   const [sortBy, setSortBy] = useState<'popular' | 'title' | 'fee_asc'>('popular');
   const [loading, setLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -41,6 +42,30 @@ const CourseList: React.FC = () => {
       mounted = false;
     };
   }, []);
+
+  // Sync category filter if URL param is either numeric ID or faculty name string
+  useEffect(() => {
+    const catParam = searchParams.get('category') || searchParams.get('id');
+    if (catParam) {
+      const num = Number(catParam);
+      if (!isNaN(num) && num > 0) {
+        setSelectedCategory(num);
+      } else if (categories.length > 0) {
+        const decoded = decodeURIComponent(catParam).toLowerCase().trim();
+        const found = categories.find(
+          (c) =>
+            c.name.toLowerCase() === decoded ||
+            c.name.toLowerCase().includes(decoded) ||
+            decoded.includes(c.name.toLowerCase()) ||
+            (c.idnumber && c.idnumber.toLowerCase() === decoded) ||
+            (c.badgeText && c.badgeText.toLowerCase() === decoded)
+        );
+        if (found) {
+          setSelectedCategory(found.id);
+        }
+      }
+    }
+  }, [searchParams, categories]);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -114,7 +139,7 @@ const CourseList: React.FC = () => {
               <h1 className="fw-bold text-white mb-1" style={{ fontSize: 'clamp(1.3rem, 2vw, 1.7rem)' }}>
                 University Course Directory
               </h1>
-              <p className="mb-0" style={{ color: '#cbd5e1', fontSize: '0.84rem' }}>
+              <p className="mb-0 text-white-50" style={{ fontSize: '0.84rem' }}>
                 Showing {totalItems} accredited university courses with structured learning units.
               </p>
             </div>
@@ -138,17 +163,17 @@ const CourseList: React.FC = () => {
                     </button>
                   )}
                 </div>
-                <Link to={route.courseGrid} className="btn btn-sm btn-outline-light rounded-pill px-2.5">
+                <Link to={route.courseGrid} className="btn btn-sm btn-outline-light rounded-pill px-2.5" title="Grid View">
                   <i className="feather-grid" />
                 </Link>
-                <Link to={route.courseList} className="btn btn-sm btn-warning rounded-pill px-2.5">
+                <Link to={route.courseList} className="btn btn-sm btn-warning rounded-pill px-2.5 fw-semibold" title="List View">
                   <i className="feather-list" />
                 </Link>
               </div>
             </div>
           </div>
 
-          {/* Faculty Filter Pills */}
+          {/* Faculty Filter Pills with Authentic Icons and Active Colors */}
           <div className="d-flex align-items-center gap-1.5 flex-wrap mt-3 pt-2" style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
             <button
               type="button"
@@ -156,29 +181,43 @@ const CourseList: React.FC = () => {
               className="btn btn-sm rounded-pill px-3 py-1 fw-semibold"
               style={{
                 fontSize: '0.74rem',
-                background: selectedCategory === 0 ? '#FFD200' : 'rgba(255,255,255,0.1)',
-                color: selectedCategory === 0 ? '#0f172a' : '#e2e8f0',
-                border: 'none',
+                background: selectedCategory === 0 ? '#FFD200' : 'rgba(255,255,255,0.12)',
+                color: selectedCategory === 0 ? '#0f172a' : '#ffffff',
+                border: selectedCategory === 0 ? '1px solid #FFD200' : '1px solid rgba(255,255,255,0.2)',
               }}
             >
               All Faculties ({courses.length})
             </button>
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                type="button"
-                onClick={() => setSelectedCategory(selectedCategory === cat.id ? 0 : cat.id)}
-                className="btn btn-sm rounded-pill px-3 py-1 fw-medium"
-                style={{
-                  fontSize: '0.74rem',
-                  background: selectedCategory === cat.id ? '#FFD200' : 'rgba(255,255,255,0.08)',
-                  color: selectedCategory === cat.id ? '#0f172a' : '#cbd5e1',
-                  border: 'none',
-                }}
-              >
-                {cat.name}
-              </button>
-            ))}
+            {categories.map((cat) => {
+              const active = selectedCategory === cat.id;
+              const accent = cat.accentColor || '#0171BB';
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setSelectedCategory(active ? 0 : cat.id)}
+                  className="btn btn-sm rounded-pill px-3 py-1 fw-medium d-flex align-items-center gap-1.5"
+                  style={{
+                    fontSize: '0.74rem',
+                    background: active ? '#FFD200' : 'rgba(255,255,255,0.1)',
+                    color: active ? '#0f172a' : '#ffffff',
+                    border: active ? '1px solid #FFD200' : `1px solid ${accent}60`,
+                  }}
+                >
+                  {cat.icon && (
+                    <img
+                      src={cat.icon}
+                      alt=""
+                      style={{ width: 14, height: 14, objectFit: 'contain' }}
+                      onError={(e) => {
+                        (e.target as HTMLElement).style.display = 'none';
+                      }}
+                    />
+                  )}
+                  <span>{cat.name}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -191,8 +230,9 @@ const CourseList: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setProgramFilter('all')}
-                className={`btn btn-sm rounded-pill px-2.5 py-1 fw-semibold ${programFilter === 'all' ? 'btn-primary' : 'btn-light text-dark'
-                  }`}
+                className={`btn btn-sm rounded-pill px-2.5 py-1 fw-semibold ${
+                  programFilter === 'all' ? 'btn-primary' : 'btn-light text-dark'
+                }`}
                 style={{ fontSize: '0.74rem' }}
               >
                 All
@@ -200,8 +240,9 @@ const CourseList: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setProgramFilter('psc')}
-                className={`btn btn-sm rounded-pill px-2.5 py-1 fw-semibold ${programFilter === 'psc' ? 'btn-warning text-dark' : 'btn-light text-dark'
-                  }`}
+                className={`btn btn-sm rounded-pill px-2.5 py-1 fw-semibold ${
+                  programFilter === 'psc' ? 'btn-warning text-dark' : 'btn-light text-dark'
+                }`}
                 style={{ fontSize: '0.74rem' }}
               >
                 🎯 Professional Short Courses
@@ -209,8 +250,9 @@ const CourseList: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setProgramFilter('mooc')}
-                className={`btn btn-sm rounded-pill px-2.5 py-1 fw-semibold ${programFilter === 'mooc' ? 'btn-success text-white' : 'btn-light text-dark'
-                  }`}
+                className={`btn btn-sm rounded-pill px-2.5 py-1 fw-semibold ${
+                  programFilter === 'mooc' ? 'btn-success text-white' : 'btn-light text-dark'
+                }`}
                 style={{ fontSize: '0.74rem' }}
               >
                 🌐 MOOCs • Free
@@ -251,116 +293,140 @@ const CourseList: React.FC = () => {
             </div>
           ) : (
             <div className="d-flex flex-column gap-3">
-              {paginatedCourses.map((c) => (
-                <div
-                  className="card border-0 shadow-sm rounded-3 bg-white overflow-hidden p-3"
-                  key={c.id}
-                  style={{
-                    border: '1.5px solid #E2E8F0',
-                    borderLeft: `4.5px solid ${c.accentColor || '#0171BB'}`,
-                    borderBottom: '2.5px solid #FFD200',
-                  }}
-                >
-                  <div className="row align-items-center g-3">
-                    <div className="col-md-3">
-                      <div className="position-relative rounded-3 overflow-hidden" style={{ border: '1px solid #E2E8F0', background: c.accentColor ? `${c.accentColor}12` : '#F0F8FF' }}>
-                        <Link to={`${route.courseDetails}?id=${c.id}`}>
-                          <img
-                            src={c.courseImage}
-                            alt={c.fullname}
-                            className="w-100"
-                            style={{ height: 130, objectFit: 'cover' }}
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              const ownSlug = (c.shortname || `course-${c.id}`).toLowerCase().replace(/[^a-z0-9]/g, '-');
-                              const ownThumbnail = `/assets/img/course/thumbnails/course-${c.id}-${ownSlug}.svg`;
-                              if (target.src !== ownThumbnail && !target.src.endsWith(ownThumbnail)) {
-                                target.src = ownThumbnail;
-                              }
+              {paginatedCourses.map((c) => {
+                const accent = c.accentColor || '#0171BB';
+                const courseSlug = (c.shortname || `course-${c.id}`).toLowerCase().replace(/[^a-z0-9]/g, '-');
+                const thumbUrl = c.courseImage || c.image || `/assets/img/course/thumbnails/course-${c.id}-${courseSlug}.svg`;
+
+                return (
+                  <div
+                    className="card border-0 shadow-sm rounded-3 bg-white overflow-hidden p-3"
+                    key={c.id}
+                    style={{
+                      border: '1.5px solid #E2E8F0',
+                      borderLeft: `5px solid ${accent}`,
+                      borderBottom: '2.5px solid #FFD200',
+                    }}
+                  >
+                    <div className="row align-items-center g-3">
+                      <div className="col-md-3">
+                        {/* Guaranteed Height Course Cover Banner */}
+                        <div
+                          className="position-relative rounded-3 overflow-hidden w-100"
+                          style={{
+                            height: 140,
+                            border: '1px solid #E2E8F0',
+                            background: `linear-gradient(135deg, ${accent}22 0%, ${accent}44 100%)`,
+                          }}
+                        >
+                          <Link to={`${route.courseDetails}?id=${c.id}`} className="d-block w-100 h-100">
+                            <img
+                              src={thumbUrl}
+                              alt={c.fullname}
+                              className="w-100 h-100 d-block"
+                              style={{ objectFit: 'cover' }}
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                const fallback = `/assets/img/course/thumbnails/course-${c.id}-${courseSlug}.svg`;
+                                if (target.src !== fallback && !target.src.endsWith(fallback)) {
+                                  target.src = fallback;
+                                } else {
+                                  target.src = '/assets/img/course/thumbnails/course-2-cs101.svg';
+                                }
+                              }}
+                            />
+                          </Link>
+                          <span
+                            className="badge rounded-pill position-absolute top-0 start-0 m-2 px-2.5 py-1 fw-bold"
+                            style={{
+                              background: accent,
+                              color: '#ffffff',
+                              border: '1px solid #FFD200',
+                              fontSize: '0.68rem',
+                              boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
                             }}
-                          />
-                        </Link>
-                        <span
-                          className="badge rounded-pill position-absolute top-0 start-0 m-2 px-2.5 py-1 fw-bold"
-                          style={{ background: c.accentColor || '#0171BB', color: '#ffffff', border: '1px solid #FFD200', fontSize: '0.68rem', boxShadow: '0 2px 6px rgba(0,0,0,0.18)' }}
-                        >
-                          {c.shortname}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="col-md-6">
-                      <div className="d-flex align-items-center gap-2 mb-1">
-                        <span className="badge bg-primary-subtle text-primary" style={{ fontSize: '0.68rem' }}>
-                          {c.categoryName}
-                        </span>
-                        {c.isPSC && (
-                          <span className="badge bg-warning-subtle text-dark border border-warning" style={{ fontSize: '0.64rem' }}>
-                            PSC • {c.cpdCredits || 20} CPD
+                          >
+                            {c.shortname}
                           </span>
-                        )}
-                        {c.isMOOC && (
-                          <span className="badge bg-success-subtle text-success border border-success" style={{ fontSize: '0.64rem' }}>
-                            MOOC • Free
-                          </span>
-                        )}
+                        </div>
                       </div>
-                      <h5 className="fw-bold mb-1.5" style={{ fontSize: '0.96rem' }}>
-                        <Link to={`${route.courseDetails}?id=${c.id}`} className="text-dark text-decoration-none">
-                          {c.fullname}
-                        </Link>
-                      </h5>
-                      <p className="text-muted small mb-2 text-truncate" style={{ maxWidth: 540, fontSize: '0.78rem' }}>
-                        {c.summary || 'Structured university study units and academic assessment.'}
-                      </p>
-                      <div className="d-flex align-items-center gap-3 text-muted small" style={{ fontSize: '0.74rem' }}>
-                        <span>
-                          <i className="isax isax-book-1 text-primary me-1" />
-                          {c.sectionsCount} Units
-                        </span>
-                        <span>
-                          <i className="isax isax-profile-2user text-secondary me-1" />
-                          {c.enrolledCount} Scholars
-                        </span>
-                        <span>
-                          <i className="fas fa-star text-warning me-1" />
-                          {c.rating}
-                        </span>
-                      </div>
-                    </div>
 
-                    <div className="col-md-3 text-md-end border-start-md">
-                      <div className="fw-bold text-dark fs-5 mb-2">{c.priceFormatted}</div>
-                      <div className="d-flex flex-column gap-1.5">
-                        {c.isMOOC ? (
+                      <div className="col-md-6">
+                        <div className="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                          <span
+                            className="badge fw-semibold"
+                            style={{ background: `${accent}18`, color: accent, fontSize: '0.68rem' }}
+                          >
+                            {c.categoryName}
+                          </span>
+                          {c.isPSC && (
+                            <span className="badge bg-warning-subtle text-dark border border-warning" style={{ fontSize: '0.64rem' }}>
+                              PSC • {c.cpdCredits || 20} CPD
+                            </span>
+                          )}
+                          {c.isMOOC && (
+                            <span className="badge bg-success-subtle text-success border border-success" style={{ fontSize: '0.64rem' }}>
+                              MOOC • Free
+                            </span>
+                          )}
+                        </div>
+                        <h5 className="fw-bold mb-1.5" style={{ fontSize: '0.96rem' }}>
+                          <Link to={`${route.courseDetails}?id=${c.id}`} className="text-dark text-decoration-none">
+                            {c.fullname}
+                          </Link>
+                        </h5>
+                        <p className="text-muted small mb-2 text-truncate" style={{ maxWidth: 540, fontSize: '0.78rem' }}>
+                          {c.summary || 'Structured university study units and academic assessment.'}
+                        </p>
+                        <div className="d-flex align-items-center gap-3 text-muted small" style={{ fontSize: '0.74rem' }}>
+                          <span>
+                            <i className="feather-book-open text-primary me-1" />
+                            {c.sectionsCount} Units
+                          </span>
+                          <span>
+                            <i className="feather-users text-secondary me-1" />
+                            {c.enrolledCount} Scholars
+                          </span>
+                          <span>
+                            <i className="fas fa-star text-warning me-1" />
+                            {c.rating}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="col-md-3 text-md-end border-start-md">
+                        <div className="fw-bold text-dark fs-5 mb-2">{c.priceFormatted}</div>
+                        <div className="d-flex flex-column gap-1.5">
+                          {c.isMOOC ? (
+                            <Link
+                              to={`/course/course-watch?courseId=${c.id}`}
+                              className="btn btn-sm btn-success rounded-pill fw-semibold text-white"
+                              style={{ fontSize: '0.76rem' }}
+                            >
+                              Enrol Free
+                            </Link>
+                          ) : (
+                            <Link
+                              to={`/course/course-checkout?courseId=${c.id}`}
+                              className="btn btn-sm btn-warning rounded-pill fw-semibold text-dark"
+                              style={{ fontSize: '0.76rem' }}
+                            >
+                              Enrol Now
+                            </Link>
+                          )}
                           <Link
-                            to={`/course/course-watch?courseId=${c.id}`}
-                            className="btn btn-sm btn-success rounded-pill fw-semibold"
+                            to={`${route.courseDetails}?id=${c.id}`}
+                            className="btn btn-sm btn-outline-primary rounded-pill fw-semibold"
                             style={{ fontSize: '0.76rem' }}
                           >
-                            Enrol Free
+                            View Details
                           </Link>
-                        ) : (
-                          <Link
-                            to={`/course/course-checkout?courseId=${c.id}`}
-                            className="btn btn-sm btn-warning rounded-pill fw-semibold text-dark"
-                            style={{ fontSize: '0.76rem' }}
-                          >
-                            Enrol Now
-                          </Link>
-                        )}
-                        <Link
-                          to={`${route.courseDetails}?id=${c.id}`}
-                          className="btn btn-sm btn-outline-primary rounded-pill fw-semibold"
-                          style={{ fontSize: '0.76rem' }}
-                        >
-                          View Details
-                        </Link>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
 
@@ -382,16 +448,17 @@ const CourseList: React.FC = () => {
                     Prev
                   </button>
                 </li>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-                  <li key={pageNum} className={`page-item ${currentPage === pageNum ? 'active' : ''}`}>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                  <li key={p} className={`page-item ${currentPage === p ? 'active' : ''}`}>
                     <button
                       type="button"
-                      className={`page-link rounded-2 px-3 py-1 fw-semibold ${currentPage === pageNum ? 'bg-primary text-white border-primary' : ''
-                        }`}
-                      onClick={() => handlePageChange(pageNum)}
+                      className={`page-link rounded-2 px-3 py-1 fw-semibold ${
+                        currentPage === p ? 'bg-primary text-white border-primary' : ''
+                      }`}
+                      onClick={() => handlePageChange(p)}
                       style={{ fontSize: '0.78rem' }}
                     >
-                      {pageNum}
+                      {p}
                     </button>
                   </li>
                 ))}

@@ -84,18 +84,24 @@ const Featuredcourse: React.FC = () => {
               >
                 {/* Authentic Thematic Course Thumbnail Banner with Badges */}
                 <div
-                  className="position-relative overflow-hidden"
+                  className="position-relative overflow-hidden w-100"
                   style={{
                     height: '140px',
-                    background: course.accentColor ? `${course.accentColor}12` : '#F0F8FF',
+                    background: course.accentColor
+                      ? `linear-gradient(135deg, ${course.accentColor}20 0%, ${course.accentColor}38 100%)`
+                      : 'linear-gradient(135deg, #0171BB20 0%, #0171BB38 100%)',
                     borderBottom: '3px solid #FFD200',
                   }}
                 >
-                  <Link to={`${all_routes.courseDetails}?id=${course.id}`}>
+                  <Link to={`${all_routes.courseDetails}?id=${course.id}`} className="d-block w-100 h-100">
                     <img
-                      src={course.courseImage}
+                      src={
+                        course.courseImage ||
+                        course.image ||
+                        `/assets/img/course/thumbnails/course-${course.id}-${(course.shortname || 'course').toLowerCase().replace(/[^a-z0-9]/g, '-')}.svg`
+                      }
                       alt={course.fullname}
-                      className="w-100 h-100"
+                      className="w-100 h-100 d-block"
                       style={{ objectFit: 'cover', transition: 'transform 0.3s ease' }}
                       onError={(e) => {
                         const target = e.currentTarget as HTMLImageElement;
@@ -103,6 +109,8 @@ const Featuredcourse: React.FC = () => {
                         const ownThumbnail = `/assets/img/course/thumbnails/course-${course.id}-${ownSlug}.svg`;
                         if (target.src !== ownThumbnail && !target.src.endsWith(ownThumbnail)) {
                           target.src = ownThumbnail;
+                        } else {
+                          target.src = '/assets/img/course/thumbnails/course-2-cs101.svg';
                         }
                       }}
                     />

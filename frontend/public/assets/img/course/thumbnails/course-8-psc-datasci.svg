@@ -68,14 +68,14 @@
   <!-- Course Title (Multline wrapped) -->
   <g transform="translate(48, 200)">
     <text font-family="'Segoe UI', Inter, sans-serif" font-size="28" font-weight="800" fill="#ffffff" letter-spacing="-0.5">
-      <tspan x="0" dy="0">Data Science & Applied</tspan><tspan x="0" dy="34">Machine Learning with Python</tspan>
+      <tspan x="0" dy="0">Data Science &amp; Applied</tspan><tspan x="0" dy="34">Machine Learning with Python</tspan>
     </text>
   </g>
 
   <!-- Key Syllabus Bullets / Subtitle -->
   <g transform="translate(48, 355)">
     <rect width="440" height="48" rx="8" fill="#000000" fill-opacity="0.3" stroke="#ffffff" stroke-opacity="0.15" stroke-width="1.2" />
-    <text x="18" y="28" font-family="'Segoe UI', Inter, sans-serif" font-size="12" font-weight="500" fill="#e2e8f0">TensorFlow, Pandas, Supervised Models & Feature Engineering</text>
+    <text x="18" y="28" font-family="'Segoe UI', Inter, sans-serif" font-size="12" font-weight="500" fill="#e2e8f0">TensorFlow, Pandas, Supervised Models &amp; Feature Engineering</text>
   </g>
 
   <!-- Right Visual Feature Showcase Card -->
@@ -86,7 +86,7 @@
     <!-- Topic Thematic Graphic -->
     <g transform="translate(-5, 20)">
       
-      <!-- Neural Net Synapses & Data Clusters -->
+      <!-- Neural Net Synapses &amp; Data Clusters -->
       <g stroke="#a855f7" stroke-width="1.8" opacity="0.75">
         <line x1="50" y1="70" x2="120" y2="50" />
         <line x1="50" y1="70" x2="120" y2="110" />

@@ -27,6 +27,6 @@
   <rect x="124" y="30" width="126" height="24" rx="12" fill="#FFD200"/>
   <text x="187" y="46" text-anchor="middle" font-family="'Segoe UI', Inter, sans-serif" font-size="10.5" font-weight="800" fill="#003B66">ADMISSIONS</text>
   <text x="124" y="82" font-family="'Segoe UI', Inter, sans-serif" font-size="16" font-weight="800" fill="#ffffff">Semester I Registration</text>
-  <text x="124" y="104" font-family="'Segoe UI', Inter, sans-serif" font-size="12" font-weight="500" fill="#FFFDE7">Self-service course & module enrolment</text>
+  <text x="124" y="104" font-family="'Segoe UI', Inter, sans-serif" font-size="12" font-weight="500" fill="#FFFDE7">Self-service course &amp; module enrolment</text>
   <text x="124" y="132" font-family="'Segoe UI', Inter, sans-serif" font-size="12" font-weight="800" fill="#FEF207">Official Admissions Circular →</text>
 </svg>

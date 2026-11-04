@@ -68,14 +68,14 @@
   <!-- Course Title (Multline wrapped) -->
   <g transform="translate(48, 200)">
     <text font-family="'Segoe UI', Inter, sans-serif" font-size="28" font-weight="800" fill="#ffffff" letter-spacing="-0.5">
-      <tspan x="0" dy="0">Information Security Awareness</tspan><tspan x="0" dy="34">for Public & Private Institutions</tspan>
+      <tspan x="0" dy="0">Information Security Awareness</tspan><tspan x="0" dy="34">for Public &amp; Private Institutions</tspan>
     </text>
   </g>
 
   <!-- Key Syllabus Bullets / Subtitle -->
   <g transform="translate(48, 355)">
     <rect width="440" height="48" rx="8" fill="#000000" fill-opacity="0.3" stroke="#ffffff" stroke-opacity="0.15" stroke-width="1.2" />
-    <text x="18" y="28" font-family="'Segoe UI', Inter, sans-serif" font-size="12" font-weight="500" fill="#e2e8f0">Data Protection, Phishing Prevention, Social Engineering & Compliance</text>
+    <text x="18" y="28" font-family="'Segoe UI', Inter, sans-serif" font-size="12" font-weight="500" fill="#e2e8f0">Data Protection, Phishing Prevention, Social Engineering &amp; Compliance</text>
   </g>
 
   <!-- Right Visual Feature Showcase Card -->
@@ -86,7 +86,7 @@
     <!-- Topic Thematic Graphic -->
     <g transform="translate(-5, 20)">
       
-      <!-- Biometric Scanner & Firewall Key -->
+      <!-- Biometric Scanner &amp; Firewall Key -->
       <circle cx="120" cy="95" r="50" fill="#4c0519" stroke="#fb7185" stroke-width="2.5" />
       <path d="M100,95 C100,84 109,75 120,75 C131,75 140,84 140,95 C140,105 131,115 120,115"
             fill="none" stroke="#f43f5e" stroke-width="2.5" stroke-linecap="round" />

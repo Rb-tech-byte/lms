@@ -42,7 +42,7 @@
   <!-- Title -->
   <g transform="translate(48, 175)">
     <text font-family="'Segoe UI', Inter, sans-serif" font-size="30" font-weight="800" fill="#ffffff" letter-spacing="-0.5">
-      <tspan x="0" dy="0">IEMT Professional Short</tspan><tspan x="0" dy="34">Courses & Executive Certs</tspan>
+      <tspan x="0" dy="0">IEMT Professional Short</tspan><tspan x="0" dy="34">Courses &amp; Executive Certs</tspan>
     </text>
   </g>
 

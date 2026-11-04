@@ -27,6 +27,6 @@
   <rect x="124" y="30" width="126" height="24" rx="12" fill="#FFD200"/>
   <text x="187" y="46" text-anchor="middle" font-family="'Segoe UI', Inter, sans-serif" font-size="10.5" font-weight="800" fill="#003B66">DIGITAL CAMPUS</text>
   <text x="124" y="82" font-family="'Segoe UI', Inter, sans-serif" font-size="16" font-weight="800" fill="#ffffff">Digital Campus Upgrade</text>
-  <text x="124" y="104" font-family="'Segoe UI', Inter, sans-serif" font-size="12" font-weight="500" fill="#FFFDE7">Instant tuition receipts & study portal</text>
+  <text x="124" y="104" font-family="'Segoe UI', Inter, sans-serif" font-size="12" font-weight="500" fill="#FFFDE7">Instant tuition receipts &amp; study portal</text>
   <text x="124" y="132" font-family="'Segoe UI', Inter, sans-serif" font-size="12" font-weight="800" fill="#FEF207">Explore Upgrade Details →</text>
 </svg>

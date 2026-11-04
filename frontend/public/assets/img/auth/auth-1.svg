@@ -150,7 +150,7 @@
     </text>
   </g>
 
-  <!-- Floating Top-Right Card: Security & SSO Shield -->
+  <!-- Floating Top-Right Card: Security &amp; SSO Shield -->
   <g filter="url(#floatShadow)">
     <rect x="448" y="34" width="142" height="78" rx="16" fill="url(#navyCard)" stroke="#334155" stroke-width="1.2" />
     <circle cx="478" cy="73" r="18" fill="#f59e0b" fill-opacity="0.18" />
@@ -165,7 +165,7 @@
     </text>
   </g>
 
-  <!-- Floating Bottom-Right Card: Certificate & Transcript Achievement -->
+  <!-- Floating Bottom-Right Card: Certificate &amp; Transcript Achievement -->
   <g filter="url(#floatShadow)">
     <rect x="436" y="352" width="154" height="86" rx="16" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
     <circle cx="468" cy="395" r="20" fill="#f0f9ff" />

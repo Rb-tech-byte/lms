@@ -68,14 +68,14 @@
   <!-- Course Title (Multline wrapped) -->
   <g transform="translate(48, 200)">
     <text font-family="'Segoe UI', Inter, sans-serif" font-size="28" font-weight="800" fill="#ffffff" letter-spacing="-0.5">
-      <tspan x="0" dy="0">Cybersecurity & Network</tspan><tspan x="0" dy="34">Defense Fundamentals</tspan>
+      <tspan x="0" dy="0">Cybersecurity &amp; Network</tspan><tspan x="0" dy="34">Defense Fundamentals</tspan>
     </text>
   </g>
 
   <!-- Key Syllabus Bullets / Subtitle -->
   <g transform="translate(48, 355)">
     <rect width="440" height="48" rx="8" fill="#000000" fill-opacity="0.3" stroke="#ffffff" stroke-opacity="0.15" stroke-width="1.2" />
-    <text x="18" y="28" font-family="'Segoe UI', Inter, sans-serif" font-size="12" font-weight="500" fill="#e2e8f0">Zero-Trust Architecture, Network Firewalls, Cryptography & SIEM</text>
+    <text x="18" y="28" font-family="'Segoe UI', Inter, sans-serif" font-size="12" font-weight="500" fill="#e2e8f0">Zero-Trust Architecture, Network Firewalls, Cryptography &amp; SIEM</text>
   </g>
 
   <!-- Right Visual Feature Showcase Card -->
@@ -86,7 +86,7 @@
     <!-- Topic Thematic Graphic -->
     <g transform="translate(-5, 20)">
       
-      <!-- Cyber Defense Shield & Zero-Trust Padlock -->
+      <!-- Cyber Defense Shield &amp; Zero-Trust Padlock -->
       <path d="M120,30 L195,65 C195,140 160,190 120,215 C80,190 45,140 45,65 Z"
             fill="#dc2626" fill-opacity="0.22" stroke="#ef4444" stroke-width="3.5" stroke-linejoin="round" />
       <path d="M120,55 L175,82 C175,135 150,172 120,192 C90,172 65,135 65,82 Z"

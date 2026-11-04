@@ -67,6 +67,7 @@ export interface EnrolledStudentItem {
   email: string;
   regNumber: string;
   courseName: string;
+  courseCode?: string;
   courseId: number;
   enrolDate: string;
   progressPercent: number;
@@ -84,6 +85,7 @@ export type EnrolledStudentRecord = EnrolledStudentItem;
 export interface InstructorAnnouncementItem {
   id: number;
   courseId: number;
+  courseCode?: string;
   courseName: string;
   title: string;
   content: string;
@@ -99,6 +101,121 @@ export interface InstructorAssignmentItem {
   title: string;
   dueDate: string;
   totalSubmissions: number;
+  maxGrade?: number;
+  pendingReview?: number;
+  status?: string;
+}
+
+export interface InstructorQuizItem {
+  id: number;
+  courseId: number;
+  courseCode: string;
+  courseName: string;
+  title: string;
+  questionsCount: number;
+  durationMinutes: number;
+  passPercentage: number;
+  totalAttempts: number;
+  averageScore: number;
+  status: string;
+}
+
+export interface InstructorQuizResultItem {
+  id: number;
+  quizId: number;
+  quizTitle: string;
+  studentId: number;
+  studentName: string;
+  regNumber: string;
+  score: number;
+  totalMarks: number;
+  status: string;
+  attemptDate: string;
+  remarks: string;
+}
+
+export interface InstructorCertificateItem {
+  id: number;
+  certificateCode: string;
+  studentId: number;
+  studentName: string;
+  courseId: number;
+  courseCode: string;
+  courseName: string;
+  grade: string;
+  honors: string;
+  issuedAt: string;
+  status: string;
+  verificationUrl: string;
+}
+
+export interface InstructorEarningsData {
+  grossRevenue: number;
+  facultySharePercent: number;
+  netHonorarium: number;
+  paidOut: number;
+  availableBalance: number;
+  currency: string;
+  monthly: { month: string; gross: number; facultyShare: number }[];
+  byCourse: { course: string; enrolled: number; gross: number; facultyNet: number }[];
+}
+
+export interface InstructorPayoutItem {
+  id: string;
+  date: string;
+  amount: number;
+  method: string;
+  account: string;
+  status: string;
+  reference: string;
+  note: string;
+}
+
+export interface InstructorStatementItem {
+  id: string;
+  period: string;
+  issuedDate: string;
+  grossEarned: number;
+  facultyShare: number;
+  taxWithholding: number;
+  netDisbursed: number;
+  status: string;
+  payoutRef: string;
+}
+
+export interface InstructorMessageItem {
+  id: number;
+  sender: string;
+  isMe: boolean;
+  text: string;
+  time: string;
+}
+
+export interface InstructorMessageThread {
+  id: string;
+  participantId: number;
+  participantName: string;
+  participantAvatar: string;
+  participantRole: string;
+  courseCode: string;
+  lastMessage: string;
+  lastMessageTime: string;
+  unread: number;
+  messages: InstructorMessageItem[];
+}
+
+export interface InstructorTicketItem {
+  id: string;
+  subject: string;
+  studentName: string;
+  regNumber: string;
+  courseCode: string;
+  category: string;
+  priority: string;
+  status: string;
+  date: string;
+  description: string;
+  replies: { sender: string; role: string; text: string; time: string }[];
 }
 
 export interface RecentSubmissionItem {
@@ -719,5 +836,341 @@ export const instructorService = {
         status: 'Active',
       },
     ];
+  },
+
+  /* ---------------- CUD Web Services API Integration ---------------- */
+
+  async callApi(action: string, subaction: string = 'list', payload: any = {}): Promise<any> {
+    const token = localStorage.getItem('out_lms_ws_token') || '';
+    const apiBase =
+      typeof window !== 'undefined' && window.location.port === '3000'
+        ? `${window.location.origin}/admin_api.php`
+        : '/outlmstheme/moodle-backend/admin_api.php';
+    const isPost = subaction !== 'list' && subaction !== 'get';
+    const url = `${apiBase}?action=${encodeURIComponent(action)}${subaction ? `&subaction=${encodeURIComponent(subaction)}` : ''}`;
+
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
+
+    const res = await fetch(url, {
+      method: isPost ? 'POST' : 'GET',
+      headers,
+      ...(isPost ? { body: JSON.stringify({ subaction, token, ...payload }) } : {}),
+    });
+
+    if (!res.ok) {
+      throw new Error(`API error ${res.status}`);
+    }
+    return await res.json();
+  },
+
+  // Courses
+  async fetchCourses(): Promise<InstructorCourseItem[]> {
+    try {
+      const res = await this.callApi('manage_instructor_courses', 'list');
+      if (res && res.success && Array.isArray(res.courses)) return res.courses;
+    } catch (e) {
+      console.warn('Using fallback courses', e);
+    }
+    return this.getFallbackCourses();
+  },
+
+  async createCourse(course: Partial<InstructorCourseItem>): Promise<{ success: boolean; course?: InstructorCourseItem; message: string }> {
+    try {
+      const res = await this.callApi('manage_instructor_courses', 'create', course);
+      return { success: !!res.success, course: res.course, message: res.message || 'Course created' };
+    } catch (e: any) {
+      return { success: false, message: e.message || 'Failed to create course' };
+    }
+  },
+
+  async updateCourse(course: Partial<InstructorCourseItem>): Promise<{ success: boolean; message: string }> {
+    try {
+      const res = await this.callApi('manage_instructor_courses', 'update', course);
+      return { success: !!res.success, message: res.message || 'Course updated' };
+    } catch (e: any) {
+      return { success: false, message: e.message || 'Failed to update course' };
+    }
+  },
+
+  async deleteCourse(id: number): Promise<{ success: boolean; message: string }> {
+    try {
+      const res = await this.callApi('manage_instructor_courses', 'delete', { id });
+      return { success: !!res.success, message: res.message || 'Course deleted' };
+    } catch (e: any) {
+      return { success: false, message: e.message || 'Failed to delete course' };
+    }
+  },
+
+  // Announcements
+  async fetchAnnouncements(): Promise<InstructorAnnouncementItem[]> {
+    try {
+      const res = await this.callApi('manage_instructor_announcements', 'list');
+      if (res && res.success && Array.isArray(res.announcements)) return res.announcements;
+    } catch (e) {
+      console.warn('Using fallback announcements', e);
+    }
+    return this.getInstructorAnnouncements();
+  },
+
+  async deleteAnnouncement(id: number): Promise<{ success: boolean; message: string }> {
+    try {
+      const res = await this.callApi('manage_instructor_announcements', 'delete', { id });
+      return { success: !!res.success, message: res.message || 'Announcement removed' };
+    } catch (e: any) {
+      return { success: false, message: e.message || 'Failed to delete announcement' };
+    }
+  },
+
+  // Assignments & Submissions
+  async fetchAssignmentsAndSubmissions(): Promise<{ assignments: InstructorAssignmentItem[]; submissions: RecentSubmissionItem[] }> {
+    try {
+      const res = await this.callApi('manage_instructor_assignments', 'list');
+      if (res && res.success) {
+        return {
+          assignments: Array.isArray(res.assignments) ? res.assignments : [],
+          submissions: Array.isArray(res.submissions) ? res.submissions : [],
+        };
+      }
+    } catch (e) {
+      console.warn('Using fallback assignments', e);
+    }
+    const [assignments, submissions] = await Promise.all([
+      this.getInstructorAssignments(),
+      this.getRecentSubmissions(),
+    ]);
+    return { assignments, submissions };
+  },
+
+  async createAssignment(assignment: Partial<InstructorAssignmentItem>): Promise<{ success: boolean; assignment?: InstructorAssignmentItem; message: string }> {
+    try {
+      const res = await this.callApi('manage_instructor_assignments', 'create', assignment);
+      return { success: !!res.success, assignment: res.assignment, message: res.message || 'Assignment created' };
+    } catch (e: any) {
+      return { success: false, message: e.message || 'Failed to create assignment' };
+    }
+  },
+
+  async gradeAssignmentSubmission(submissionId: string, score: number, feedback: string): Promise<{ success: boolean; message: string }> {
+    try {
+      const res = await this.callApi('manage_instructor_assignments', 'grade', { submissionId, score, feedback });
+      return { success: !!res.success, message: res.message || 'Grade saved' };
+    } catch (e: any) {
+      return { success: false, message: e.message || 'Failed to grade submission' };
+    }
+  },
+
+  // Students
+  async fetchEnrolledStudents(): Promise<EnrolledStudentItem[]> {
+    try {
+      const res = await this.callApi('manage_instructor_students', 'list');
+      if (res && res.success && Array.isArray(res.students)) return res.students;
+    } catch (e) {
+      console.warn('Using fallback students', e);
+    }
+    return this.getCourseStudents(2);
+  },
+
+  async enrolStudent(student: Partial<EnrolledStudentItem>): Promise<{ success: boolean; student?: EnrolledStudentItem; message: string }> {
+    try {
+      const res = await this.callApi('manage_instructor_students', 'enrol', student);
+      return { success: !!res.success, student: res.student, message: res.message || 'Student enrolled' };
+    } catch (e: any) {
+      return { success: false, message: e.message || 'Failed to enrol student' };
+    }
+  },
+
+  async updateStudentStatus(id: number, status: string, grade?: string, progressPercent?: number): Promise<{ success: boolean; message: string }> {
+    try {
+      const res = await this.callApi('manage_instructor_students', 'update_status', { id, status, grade, progressPercent });
+      return { success: !!res.success, message: res.message || 'Status updated' };
+    } catch (e: any) {
+      return { success: false, message: e.message || 'Failed to update student' };
+    }
+  },
+
+  async unenrolStudent(id: number): Promise<{ success: boolean; message: string }> {
+    try {
+      const res = await this.callApi('manage_instructor_students', 'unenrol', { id });
+      return { success: !!res.success, message: res.message || 'Student unenrolled' };
+    } catch (e: any) {
+      return { success: false, message: e.message || 'Failed to unenrol student' };
+    }
+  },
+
+  // Quizzes
+  async fetchQuizzes(): Promise<InstructorQuizItem[]> {
+    try {
+      const res = await this.callApi('manage_instructor_quizzes', 'list');
+      if (res && res.success && Array.isArray(res.quizzes)) return res.quizzes;
+    } catch (e) {
+      console.warn('Using fallback quizzes', e);
+    }
+    return [];
+  },
+
+  async createQuiz(quiz: Partial<InstructorQuizItem>): Promise<{ success: boolean; quiz?: InstructorQuizItem; message: string }> {
+    try {
+      const res = await this.callApi('manage_instructor_quizzes', 'create', quiz);
+      return { success: !!res.success, quiz: res.quiz, message: res.message || 'Quiz created' };
+    } catch (e: any) {
+      return { success: false, message: e.message || 'Failed to create quiz' };
+    }
+  },
+
+  async deleteQuiz(id: number): Promise<{ success: boolean; message: string }> {
+    try {
+      const res = await this.callApi('manage_instructor_quizzes', 'delete', { id });
+      return { success: !!res.success, message: res.message || 'Quiz deleted' };
+    } catch (e: any) {
+      return { success: false, message: e.message || 'Failed to delete quiz' };
+    }
+  },
+
+  // Quiz Results
+  async fetchQuizResults(): Promise<InstructorQuizResultItem[]> {
+    try {
+      const res = await this.callApi('manage_instructor_quiz_results', 'list');
+      if (res && res.success && Array.isArray(res.results)) return res.results;
+    } catch (e) {
+      console.warn('Using fallback results', e);
+    }
+    return [];
+  },
+
+  async adjustQuizMark(id: number, score: number, remarks: string): Promise<{ success: boolean; message: string }> {
+    try {
+      const res = await this.callApi('manage_instructor_quiz_results', 'adjust_mark', { id, score, remarks });
+      return { success: !!res.success, message: res.message || 'Mark adjusted' };
+    } catch (e: any) {
+      return { success: false, message: e.message || 'Failed to adjust mark' };
+    }
+  },
+
+  // Certificates
+  async fetchCertificates(): Promise<InstructorCertificateItem[]> {
+    try {
+      const res = await this.callApi('manage_instructor_certificates', 'list');
+      if (res && res.success && Array.isArray(res.certificates)) return res.certificates;
+    } catch (e) {
+      console.warn('Using fallback certificates', e);
+    }
+    return [];
+  },
+
+  async issueCertificate(cert: Partial<InstructorCertificateItem>): Promise<{ success: boolean; certificate?: InstructorCertificateItem; message: string }> {
+    try {
+      const res = await this.callApi('manage_instructor_certificates', 'issue', cert);
+      return { success: !!res.success, certificate: res.certificate, message: res.message || 'Certificate issued' };
+    } catch (e: any) {
+      return { success: false, message: e.message || 'Failed to issue certificate' };
+    }
+  },
+
+  async revokeCertificate(id: number): Promise<{ success: boolean; message: string }> {
+    try {
+      const res = await this.callApi('manage_instructor_certificates', 'revoke', { id });
+      return { success: !!res.success, message: res.message || 'Certificate revoked' };
+    } catch (e: any) {
+      return { success: false, message: e.message || 'Failed to revoke certificate' };
+    }
+  },
+
+  // Earnings
+  async fetchEarnings(): Promise<InstructorEarningsData | null> {
+    try {
+      const res = await this.callApi('manage_instructor_earnings', 'get');
+      if (res && res.success && res.earnings) return res.earnings;
+    } catch (e) {
+      console.warn('Using fallback earnings', e);
+    }
+    return null;
+  },
+
+  // Payouts
+  async fetchPayouts(): Promise<{ payouts: InstructorPayoutItem[]; availableBalance: number }> {
+    try {
+      const res = await this.callApi('manage_instructor_payouts', 'list');
+      if (res && res.success) {
+        return {
+          payouts: Array.isArray(res.payouts) ? res.payouts : [],
+          availableBalance: Number(res.availableBalance || 2895000),
+        };
+      }
+    } catch (e) {
+      console.warn('Using fallback payouts', e);
+    }
+    return { payouts: [], availableBalance: 2895000 };
+  },
+
+  async requestPayout(amount: number, method: string, account: string, note: string): Promise<{ success: boolean; payout?: InstructorPayoutItem; message: string }> {
+    try {
+      const res = await this.callApi('manage_instructor_payouts', 'request', { amount, method, account, note });
+      return { success: !!res.success, payout: res.payout, message: res.message || 'Payout requested' };
+    } catch (e: any) {
+      return { success: false, message: e.message || 'Failed to request payout' };
+    }
+  },
+
+  // Statements
+  async fetchStatements(): Promise<InstructorStatementItem[]> {
+    try {
+      const res = await this.callApi('manage_instructor_statements', 'list');
+      if (res && res.success && Array.isArray(res.statements)) return res.statements;
+    } catch (e) {
+      console.warn('Using fallback statements', e);
+    }
+    return [];
+  },
+
+  // Messages
+  async fetchMessageThreads(): Promise<InstructorMessageThread[]> {
+    try {
+      const res = await this.callApi('manage_instructor_messages', 'list');
+      if (res && res.success && Array.isArray(res.threads)) return res.threads;
+    } catch (e) {
+      console.warn('Using fallback threads', e);
+    }
+    return [];
+  },
+
+  async sendMessage(threadId: string, text: string): Promise<{ success: boolean; message: string }> {
+    try {
+      const res = await this.callApi('manage_instructor_messages', 'send', { threadId, text });
+      return { success: !!res.success, message: res.message || 'Message sent' };
+    } catch (e: any) {
+      return { success: false, message: e.message || 'Failed to send message' };
+    }
+  },
+
+  // Tickets
+  async fetchTickets(): Promise<InstructorTicketItem[]> {
+    try {
+      const res = await this.callApi('manage_instructor_tickets', 'list');
+      if (res && res.success && Array.isArray(res.tickets)) return res.tickets;
+    } catch (e) {
+      console.warn('Using fallback tickets', e);
+    }
+    return [];
+  },
+
+  async createTicket(ticket: Partial<InstructorTicketItem>): Promise<{ success: boolean; ticket?: InstructorTicketItem; message: string }> {
+    try {
+      const res = await this.callApi('manage_instructor_tickets', 'create', ticket);
+      return { success: !!res.success, ticket: res.ticket, message: res.message || 'Ticket created' };
+    } catch (e: any) {
+      return { success: false, message: e.message || 'Failed to create ticket' };
+    }
+  },
+
+  async replyTicket(ticketId: string, text: string, status?: string): Promise<{ success: boolean; message: string }> {
+    try {
+      const res = await this.callApi('manage_instructor_tickets', 'reply', { ticketId, text, status });
+      return { success: !!res.success, message: res.message || 'Ticket updated' };
+    } catch (e: any) {
+      return { success: false, message: e.message || 'Failed to update ticket' };
+    }
   },
 };

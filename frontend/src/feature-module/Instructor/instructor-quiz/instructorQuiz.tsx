@@ -288,7 +288,7 @@ const InstructorQuiz: React.FC = () => {
                         </Link>
                         <button
                           type="button"
-                          className="ins-btn ins-btn-ghost text-danger px-2 py-1"
+                          className="ins-action-btn is-delete"
                           onClick={() => setDeleteTarget(qz)}
                           title="Delete Quiz"
                         >

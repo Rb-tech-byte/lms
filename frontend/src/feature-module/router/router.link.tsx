@@ -27,6 +27,14 @@ import InstructorPayout from "../Instructor/instructor-payout/instructorPayout";
 import InstructorStatement from "../Instructor/instructor-statement/instructorStatement";
 import InstructorMessage from "../Instructor/instructor-message/instructorMessage";
 import InstructorTickets from "../Instructor/instructor-tickets/instructorTickets";
+import InstructorProfile from "../Instructor/instructor-settings/instructor-profile-settings/instructorProfile";
+import InstructorChangePassword from "../Instructor/instructor-settings/instructor-change-password/instructorChangePassoword";
+import InstructorSocialprofileSettings from "../Instructor/instructor-settings/instructor-socialprofile-settings/instructorSocialprofileSettings";
+import InstructorLinkedAccounts from "../Instructor/instructor-settings/instructor-linked-accounts/instructorLinkedAccounts";
+import InstructorNotification from "../Instructor/instructor-settings/instructor-notification/instructorNotification";
+import InstructorIntegrations from "../Instructor/instructor-settings/instructor-integrations/instructorIntegrations";
+import InstructorWithdraw from "../Instructor/instructor-settings/instructor-withdraw/instructorWithdraw";
+import InstructorPlanSettings from "../Instructor/instructor-settings/instructor-plans-settings/instructorPlanSettings";
 
 // Admin Components
 import AdminDashboard from "../admin/adminDashboard";
@@ -436,17 +444,17 @@ export const instructorProtectedRoutes = [
   },
   {
     path: routes.instructorProfile,
-    element: <Navigate to="/instructor/instructor-dashboard" replace />,
+    element: <InstructorProfile />,
     route: Route,
   },
   {
     path: routes.instructorsettings,
-    element: <Navigate to="/instructor/instructor-dashboard" replace />,
+    element: <InstructorProfile />,
     route: Route,
   },
   {
     path: routes.instructorChangePassword,
-    element: <Navigate to="/instructor/instructor-dashboard" replace />,
+    element: <InstructorChangePassword />,
     route: Route,
   },
   {
@@ -521,32 +529,32 @@ export const instructorProtectedRoutes = [
   },
   {
     path: routes.instructorPlan,
-    element: <Navigate to="/instructor/instructor-dashboard?tab=settings" replace />,
+    element: <InstructorPlanSettings />,
     route: Route,
   },
   {
     path: routes.instructorSocialProfiles,
-    element: <Navigate to="/instructor/instructor-dashboard?tab=settings" replace />,
+    element: <InstructorSocialprofileSettings />,
     route: Route,
   },
   {
     path: routes.instructorLinkedAccounts,
-    element: <Navigate to="/instructor/instructor-dashboard?tab=settings" replace />,
+    element: <InstructorLinkedAccounts />,
     route: Route,
   },
   {
     path: routes.instructorNotification,
-    element: <Navigate to="/instructor/instructor-dashboard?tab=settings" replace />,
+    element: <InstructorNotification />,
     route: Route,
   },
   {
     path: routes.instructorIntegrations,
-    element: <Navigate to="/instructor/instructor-dashboard?tab=settings" replace />,
+    element: <InstructorIntegrations />,
     route: Route,
   },
   {
     path: routes.instructorWithdraw,
-    element: <Navigate to="/instructor/instructor-dashboard?tab=payout" replace />,
+    element: <InstructorWithdraw />,
     route: Route,
   },
 ];

@@ -372,14 +372,14 @@ const InstructorCourse: React.FC = () => {
                       <div className="d-inline-flex gap-1">
                         <Link
                           to={all_routes.courseWatch}
-                          className="ins-btn ins-btn-ghost px-2 py-1"
+                          className="ins-action-btn is-view"
                           title="Open in Classroom"
                         >
                           <i className="feather-play-circle" />
                         </Link>
                         <button
                           type="button"
-                          className="ins-btn ins-btn-ghost px-2 py-1"
+                          className="ins-action-btn is-edit"
                           onClick={() => openEdit(c)}
                           title="Edit Course"
                         >
@@ -387,7 +387,7 @@ const InstructorCourse: React.FC = () => {
                         </button>
                         <button
                           type="button"
-                          className="ins-btn ins-btn-ghost text-danger px-2 py-1"
+                          className="ins-action-btn is-delete"
                           onClick={() => setDeleteTarget(c)}
                           title="Archive Course"
                         >
@@ -446,15 +446,17 @@ const InstructorCourse: React.FC = () => {
                       <div className="d-flex gap-1">
                         <button
                           type="button"
-                          className="ins-btn ins-btn-ghost px-2 py-1"
+                          className="ins-action-btn is-edit"
                           onClick={() => openEdit(c)}
+                          title="Edit Course"
                         >
                           <i className="feather-edit-2" />
                         </button>
                         <button
                           type="button"
-                          className="ins-btn ins-btn-ghost text-danger px-2 py-1"
+                          className="ins-action-btn is-delete"
                           onClick={() => setDeleteTarget(c)}
+                          title="Archive Course"
                         >
                           <i className="feather-trash-2" />
                         </button>

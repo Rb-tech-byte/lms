@@ -246,7 +246,7 @@ const InstructorAnnouncements: React.FC = () => {
                   </div>
                   <button
                     type="button"
-                    className="ins-btn ins-btn-ghost text-danger px-2 py-1"
+                    className="ins-action-btn is-delete"
                     onClick={() => setDeleteTarget(ann)}
                     title="Remove announcement"
                   >

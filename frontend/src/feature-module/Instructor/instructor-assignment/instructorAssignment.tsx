@@ -354,11 +354,10 @@ const InstructorAssignment: React.FC = () => {
                       </td>
                       <td>
                         <span
-                          className={`badge ${
-                            s.status === 'Graded'
-                              ? 'bg-success-subtle text-success'
-                              : 'bg-warning-subtle text-warning'
-                          } fw-bold px-2 py-1`}
+                          className={`badge ${s.status === 'Graded'
+                            ? 'bg-success-subtle text-success'
+                            : 'bg-warning-subtle text-warning'
+                            } fw-bold px-2 py-1`}
                         >
                           {s.status}
                         </span>
@@ -366,9 +365,8 @@ const InstructorAssignment: React.FC = () => {
                       <td className="text-end">
                         <button
                           type="button"
-                          className={`ins-btn ${
-                            s.status === 'Pending Review' ? 'ins-btn-primary' : 'ins-btn-ghost'
-                          } px-2.5 py-1`}
+                          className={`ins-btn ${s.status === 'Pending Review' ? 'ins-btn-primary' : 'ins-btn-ghost'
+                            } px-2.5 py-1`}
                           onClick={() => handleOpenGrade(s)}
                         >
                           <i className="feather-check-square me-1" />
@@ -498,12 +496,12 @@ const InstructorAssignment: React.FC = () => {
               {gradeScore >= 80
                 ? 'Grade A (First Class Honours)'
                 : gradeScore >= 70
-                ? 'Grade B+ (Upper Second)'
-                : gradeScore >= 60
-                ? 'Grade B (Pass)'
-                : gradeScore >= 50
-                ? 'Grade C (Marginal)'
-                : 'Grade F (Fail / Remedial)'}
+                  ? 'Grade B+ (Upper Second)'
+                  : gradeScore >= 60
+                    ? 'Grade B (Pass)'
+                    : gradeScore >= 50
+                      ? 'Grade C (Marginal)'
+                      : 'Grade F (Fail / Remedial)'}
             </div>
           </div>
           <div className="col-12">

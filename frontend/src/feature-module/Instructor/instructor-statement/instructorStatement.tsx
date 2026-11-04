@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { instructorService, InstructorStatementItem } from '../../../core/api/instructorService';
-import { useInstructorShell } from '../common/instructorLayout';
 import {
   KpiCard,
   KpiGrid,
@@ -18,7 +17,6 @@ import {
 const PAGE_SIZE = 5;
 
 const InstructorStatement: React.FC = () => {
-  const shell = useInstructorShell();
   const [statements, setStatements] = useState<InstructorStatementItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');

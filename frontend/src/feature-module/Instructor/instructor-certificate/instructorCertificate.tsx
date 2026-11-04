@@ -32,7 +32,7 @@ const InstructorCertificate: React.FC = () => {
 
   // Form states
   const [formStudent, setFormStudent] = useState('Baraka Mkwawa');
-  const [formStudentId, setFormStudentId] = useState(3);
+  const [formStudentId] = useState(3);
   const [formCourseId, setFormCourseId] = useState(2);
   const [formGrade, setFormGrade] = useState('85.0% (Grade B+)');
   const [formHonors, setFormHonors] = useState('First Class Distinction');

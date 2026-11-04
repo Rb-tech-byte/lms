@@ -105,6 +105,14 @@ const PAGE_TITLES: Record<string, string> = {
   [all_routes.instructorStatements]: 'Statements',
   [all_routes.instructorMessage]: 'Messages',
   [all_routes.instructorTickets]: 'Support Tickets',
+  [all_routes.instructorsettings]: 'Faculty Settings',
+  [all_routes.instructorChangePassword]: 'Security & Password',
+  [all_routes.instructorPlan]: 'Faculty Appointment & Workload',
+  [all_routes.instructorSocialProfiles]: 'Scholarly Profiles',
+  [all_routes.instructorLinkedAccounts]: 'Linked Accounts',
+  [all_routes.instructorNotification]: 'Notification Preferences',
+  [all_routes.instructorIntegrations]: 'Moodle Integrations',
+  [all_routes.instructorWithdraw]: 'Bursar & Payout Accounts',
 };
 
 const DEFAULT_IDENTITY: InstructorIdentity = {

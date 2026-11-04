@@ -372,7 +372,7 @@ const StudentList: React.FC = () => {
                       <div className="d-inline-flex gap-1">
                         <button
                           type="button"
-                          className="ins-btn ins-btn-ghost px-2 py-1"
+                          className="ins-action-btn is-edit"
                           onClick={() => openEdit(s)}
                           title="Update Standing"
                         >
@@ -380,7 +380,7 @@ const StudentList: React.FC = () => {
                         </button>
                         <button
                           type="button"
-                          className="ins-btn ins-btn-ghost text-danger px-2 py-1"
+                          className="ins-action-btn is-delete"
                           onClick={() => setDeleteTarget(s)}
                           title="Unenrol Scholar"
                         >

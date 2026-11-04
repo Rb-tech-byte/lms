@@ -273,11 +273,10 @@ const InstructorTickets: React.FC = () => {
                     </td>
                     <td>
                       <span
-                        className={`badge ${
-                          t.priority === 'High'
-                            ? 'bg-danger-subtle text-danger'
-                            : 'bg-primary-subtle text-primary'
-                        } fw-bold px-2 py-0.5`}
+                        className={`badge ${t.priority === 'High'
+                          ? 'bg-danger-subtle text-danger'
+                          : 'bg-primary-subtle text-primary'
+                          } fw-bold px-2 py-0.5`}
                         style={{ fontSize: 11 }}
                       >
                         {t.priority}
@@ -290,13 +289,12 @@ const InstructorTickets: React.FC = () => {
                     </td>
                     <td>
                       <span
-                        className={`badge ${
-                          t.status === 'Resolved'
-                            ? 'bg-success-subtle text-success'
-                            : t.status === 'In Progress'
+                        className={`badge ${t.status === 'Resolved'
+                          ? 'bg-success-subtle text-success'
+                          : t.status === 'In Progress'
                             ? 'bg-warning-subtle text-warning'
                             : 'bg-danger-subtle text-danger'
-                        } fw-bold px-2 py-1`}
+                          } fw-bold px-2 py-1`}
                       >
                         {t.status}
                       </span>

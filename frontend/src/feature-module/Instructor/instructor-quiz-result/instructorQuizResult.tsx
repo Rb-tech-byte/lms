@@ -218,11 +218,10 @@ const InstructorQuizResult: React.FC = () => {
                     </td>
                     <td>
                       <span
-                        className={`badge ${
-                          r.status === 'Passed'
-                            ? 'bg-success-subtle text-success'
-                            : 'bg-danger-subtle text-danger'
-                        } fw-bold px-2 py-1`}
+                        className={`badge ${r.status === 'Passed'
+                          ? 'bg-success-subtle text-success'
+                          : 'bg-danger-subtle text-danger'
+                          } fw-bold px-2 py-1`}
                         style={{ fontSize: 13 }}
                       >
                         {r.score}%
@@ -240,11 +239,10 @@ const InstructorQuizResult: React.FC = () => {
                     </td>
                     <td>
                       <span
-                        className={`badge ${
-                          r.status === 'Passed'
-                            ? 'bg-success-subtle text-success'
-                            : 'bg-danger-subtle text-danger'
-                        } fw-bold px-2 py-1`}
+                        className={`badge ${r.status === 'Passed'
+                          ? 'bg-success-subtle text-success'
+                          : 'bg-danger-subtle text-danger'
+                          } fw-bold px-2 py-1`}
                       >
                         {r.status}
                       </span>

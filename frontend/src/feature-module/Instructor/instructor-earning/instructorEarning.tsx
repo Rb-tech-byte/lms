@@ -1,20 +1,17 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { all_routes } from '../../router/all_routes';
 import { instructorService, InstructorEarningsData } from '../../../core/api/instructorService';
-import { useInstructorShell } from '../common/instructorLayout';
 import {
   KpiCard,
   KpiGrid,
   SectionCard,
-  SearchInput,
   FilterPills,
   LoadingState,
   exportToCsv,
 } from '../common/instructorUi';
 
 const InstructorEarning: React.FC = () => {
-  const shell = useInstructorShell();
   const [earnings, setEarnings] = useState<InstructorEarningsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [periodFilter, setPeriodFilter] = useState('all');

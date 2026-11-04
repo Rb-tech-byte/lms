@@ -219,6 +219,77 @@ export const publicRoutes = [
     element: <InstructorDetails />,
     route: Route,
   },
+  // Route aliases to prevent 404s on legacy/alternative URLs
+  {
+    path: "/home",
+    element: <Home />,
+    route: Route,
+  },
+  {
+    path: "/course",
+    element: <CourseGrid />,
+    route: Route,
+  },
+  {
+    path: "/courses",
+    element: <CourseGrid />,
+    route: Route,
+  },
+  {
+    path: "/courses/course-grid",
+    element: <CourseGrid />,
+    route: Route,
+  },
+  {
+    path: "/courses/course-list",
+    element: <CourseList />,
+    route: Route,
+  },
+  {
+    path: "/courses/course-category",
+    element: <CourseCategory />,
+    route: Route,
+  },
+  {
+    path: "/courses/course-details",
+    element: <CourseDetails />,
+    route: Route,
+  },
+  {
+    path: "/course-grid",
+    element: <CourseGrid />,
+    route: Route,
+  },
+  {
+    path: "/course-list",
+    element: <CourseList />,
+    route: Route,
+  },
+  {
+    path: "/course-category",
+    element: <CourseCategory />,
+    route: Route,
+  },
+  {
+    path: "/pages/coming-soon",
+    element: <Navigate to="/index" replace />,
+    route: Route,
+  },
+  {
+    path: "/pages/under-construction",
+    element: <Navigate to="/index" replace />,
+    route: Route,
+  },
+  {
+    path: "/pages/terms-conditions",
+    element: <TermsCondition />,
+    route: Route,
+  },
+  {
+    path: "/pages/verify-certificate",
+    element: <VerifyCertificate />,
+    route: Route,
+  },
 ];
 
 /**

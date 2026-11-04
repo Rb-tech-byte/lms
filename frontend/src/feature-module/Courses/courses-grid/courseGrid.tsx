@@ -395,15 +395,15 @@ const CourseGrid: React.FC = () => {
                     difficultyFilter !== 'all' ||
                     priceFilter !== 'all' ||
                     searchQuery) && (
-                      <button
-                        type="button"
-                        onClick={clearFilters}
-                        className="btn btn-link btn-sm p-0 text-danger text-decoration-none"
-                        style={{ fontSize: '0.74rem' }}
-                      >
-                        Reset All
-                      </button>
-                    )}
+                    <button
+                      type="button"
+                      onClick={clearFilters}
+                      className="btn btn-link btn-sm p-0 text-danger text-decoration-none"
+                      style={{ fontSize: '0.74rem' }}
+                    >
+                      Reset All
+                    </button>
+                  )}
                 </div>
 
                 {/* Real-time Search Within Filters */}
@@ -435,8 +435,9 @@ const CourseGrid: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setPriceFilter('all')}
-                      className={`btn btn-sm flex-fill rounded-2 py-1 ${priceFilter === 'all' ? 'btn-primary fw-semibold' : 'btn-light text-dark'
-                        }`}
+                      className={`btn btn-sm flex-fill rounded-2 py-1 ${
+                        priceFilter === 'all' ? 'btn-primary fw-semibold' : 'btn-light text-dark'
+                      }`}
                       style={{ fontSize: '0.74rem' }}
                     >
                       All
@@ -444,8 +445,9 @@ const CourseGrid: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setPriceFilter('free')}
-                      className={`btn btn-sm flex-fill rounded-2 py-1 ${priceFilter === 'free' ? 'btn-success text-white fw-semibold' : 'btn-light text-dark'
-                        }`}
+                      className={`btn btn-sm flex-fill rounded-2 py-1 ${
+                        priceFilter === 'free' ? 'btn-success text-white fw-semibold' : 'btn-light text-dark'
+                      }`}
                       style={{ fontSize: '0.74rem' }}
                     >
                       Free
@@ -453,8 +455,9 @@ const CourseGrid: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setPriceFilter('paid')}
-                      className={`btn btn-sm flex-fill rounded-2 py-1 ${priceFilter === 'paid' ? 'btn-warning text-dark fw-semibold' : 'btn-light text-dark'
-                        }`}
+                      className={`btn btn-sm flex-fill rounded-2 py-1 ${
+                        priceFilter === 'paid' ? 'btn-warning text-dark fw-semibold' : 'btn-light text-dark'
+                      }`}
                       style={{ fontSize: '0.74rem' }}
                     >
                       Paid
@@ -473,8 +476,9 @@ const CourseGrid: React.FC = () => {
                         key={lvl}
                         type="button"
                         onClick={() => setDifficultyFilter(lvl)}
-                        className={`btn btn-sm rounded-pill px-2.5 py-0.5 ${difficultyFilter === lvl ? 'btn-dark fw-semibold' : 'btn-light text-muted'
-                          }`}
+                        className={`btn btn-sm rounded-pill px-2.5 py-0.5 ${
+                          difficultyFilter === lvl ? 'btn-dark fw-semibold' : 'btn-light text-muted'
+                        }`}
                         style={{ fontSize: '0.72rem' }}
                       >
                         {lvl === 'all' ? 'All Levels' : lvl}
@@ -492,8 +496,9 @@ const CourseGrid: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setSelectedCategory(0)}
-                      className={`btn btn-sm text-start rounded-2 d-flex align-items-center justify-content-between px-2.5 py-1.5 transition-all ${selectedCategory === 0 ? 'text-white fw-bold shadow-sm' : 'btn-light text-dark'
-                        }`}
+                      className={`btn btn-sm text-start rounded-2 d-flex align-items-center justify-content-between px-2.5 py-1.5 transition-all ${
+                        selectedCategory === 0 ? 'text-white fw-bold shadow-sm' : 'btn-light text-dark'
+                      }`}
                       style={{
                         fontSize: '0.76rem',
                         background: selectedCategory === 0 ? '#0171BB' : '#f8fafc',
@@ -523,8 +528,9 @@ const CourseGrid: React.FC = () => {
                           key={cat.id}
                           type="button"
                           onClick={() => setSelectedCategory(active ? 0 : cat.id)}
-                          className={`btn btn-sm text-start rounded-2 d-flex align-items-center justify-content-between px-2 py-1.5 transition-all ${active ? 'text-white fw-bold shadow-sm' : 'btn-light text-dark'
-                            }`}
+                          className={`btn btn-sm text-start rounded-2 d-flex align-items-center justify-content-between px-2 py-1.5 transition-all ${
+                            active ? 'text-white fw-bold shadow-sm' : 'btn-light text-dark'
+                          }`}
                           style={{
                             fontSize: '0.74rem',
                             background: active ? accent : '#f8fafc',
@@ -572,8 +578,9 @@ const CourseGrid: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => setSelectedInstructor('all')}
-                        className={`btn btn-sm text-start rounded-2 px-2.5 py-1 ${selectedInstructor === 'all' ? 'btn-primary fw-semibold' : 'btn-light text-dark'
-                          }`}
+                        className={`btn btn-sm text-start rounded-2 px-2.5 py-1 ${
+                          selectedInstructor === 'all' ? 'btn-primary fw-semibold' : 'btn-light text-dark'
+                        }`}
                         style={{ fontSize: '0.75rem' }}
                       >
                         All Coordinators
@@ -585,8 +592,9 @@ const CourseGrid: React.FC = () => {
                           onClick={() =>
                             setSelectedInstructor(selectedInstructor === inst.fullname ? 'all' : inst.fullname)
                           }
-                          className={`btn btn-sm text-start rounded-2 d-flex align-items-center gap-1.5 px-2.5 py-1 ${selectedInstructor === inst.fullname ? 'btn-primary fw-semibold' : 'btn-light text-dark'
-                            }`}
+                          className={`btn btn-sm text-start rounded-2 d-flex align-items-center gap-1.5 px-2.5 py-1 ${
+                            selectedInstructor === inst.fullname ? 'btn-primary fw-semibold' : 'btn-light text-dark'
+                          }`}
                           style={{ fontSize: '0.74rem' }}
                         >
                           <img
@@ -699,8 +707,9 @@ const CourseGrid: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setProgramFilter('all')}
-                    className={`btn btn-sm rounded-pill px-2.5 py-1 fw-semibold ${programFilter === 'all' ? 'btn-primary' : 'btn-light text-dark'
-                      }`}
+                    className={`btn btn-sm rounded-pill px-2.5 py-1 fw-semibold ${
+                      programFilter === 'all' ? 'btn-primary' : 'btn-light text-dark'
+                    }`}
                     style={{ fontSize: '0.74rem' }}
                   >
                     All ({courses.length})
@@ -708,8 +717,9 @@ const CourseGrid: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setProgramFilter('psc')}
-                    className={`btn btn-sm rounded-pill px-2.5 py-1 fw-semibold ${programFilter === 'psc' ? 'btn-warning text-dark' : 'btn-light text-dark'
-                      }`}
+                    className={`btn btn-sm rounded-pill px-2.5 py-1 fw-semibold ${
+                      programFilter === 'psc' ? 'btn-warning text-dark' : 'btn-light text-dark'
+                    }`}
                     style={{ fontSize: '0.74rem' }}
                   >
                     🎯 Professional Short Courses ({courses.filter((c) => c.isPSC).length})
@@ -717,8 +727,9 @@ const CourseGrid: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setProgramFilter('mooc')}
-                    className={`btn btn-sm rounded-pill px-2.5 py-1 fw-semibold ${programFilter === 'mooc' ? 'btn-success text-white' : 'btn-light text-dark'
-                      }`}
+                    className={`btn btn-sm rounded-pill px-2.5 py-1 fw-semibold ${
+                      programFilter === 'mooc' ? 'btn-success text-white' : 'btn-light text-dark'
+                    }`}
                     style={{ fontSize: '0.74rem' }}
                   >
                     🌐 MOOCs • Free ({courses.filter((c) => c.isMOOC).length})
@@ -726,8 +737,9 @@ const CourseGrid: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setProgramFilter('micro')}
-                    className={`btn btn-sm rounded-pill px-2.5 py-1 fw-semibold ${programFilter === 'micro' ? 'btn-info text-white' : 'btn-light text-dark'
-                      }`}
+                    className={`btn btn-sm rounded-pill px-2.5 py-1 fw-semibold ${
+                      programFilter === 'micro' ? 'btn-info text-white' : 'btn-light text-dark'
+                    }`}
                     style={{ fontSize: '0.74rem' }}
                   >
                     ⚡ Live Classrooms
@@ -1011,8 +1023,9 @@ const CourseGrid: React.FC = () => {
                             >
                               <button
                                 type="button"
-                                className={`page-link rounded-2 px-3 py-1 fw-semibold ${currentPage === pageNum ? 'bg-primary text-white border-primary' : ''
-                                  }`}
+                                className={`page-link rounded-2 px-3 py-1 fw-semibold ${
+                                  currentPage === pageNum ? 'bg-primary text-white border-primary' : ''
+                                }`}
                                 onClick={() => handlePageChange(pageNum)}
                                 style={{ fontSize: '0.78rem' }}
                               >
@@ -1047,4 +1060,3 @@ const CourseGrid: React.FC = () => {
 };
 
 export default CourseGrid;
-                                                                                                                                                                                                                                                                                                       

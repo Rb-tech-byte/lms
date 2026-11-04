@@ -1,23 +1,19 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import ImageWithBasePath from '../../../../core/common/imageWithBasePath';
 import { all_routes } from '../../../router/all_routes';
-import { courseService } from '../../../../core/api/courseService';
 
 const Error400: React.FC = () => {
-  useEffect(() => {
-    courseService.getRestV2OpenApiInfo().catch(() => null);
-  }, []);
-
   return (
     <div className="error-bg">
       <div className="error-box">
         <div className="error-logo">
           <Link to={all_routes.home}>
             <ImageWithBasePath
-              src="assets/img/logo.svg"
+              src="/assets/img/out-logo.png"
               className="img-fluid"
               alt="OUT Logo"
+              style={{ maxHeight: 56 }}
             />
           </Link>
         </div>

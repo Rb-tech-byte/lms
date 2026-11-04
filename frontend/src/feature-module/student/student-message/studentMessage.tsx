@@ -1,730 +1,136 @@
-import React, { useState } from "react";
-import { all_routes } from "../../router/all_routes";
-import Breadcrumb from "../../../core/common/Breadcrumb/breadcrumb";
-import StudentSidebar from "../common/studentSidebar";
-import { Link } from "react-router-dom";
-import ImageWithBasePath from "../../../core/common/imageWithBasePath";
+import React, { useEffect, useState } from 'react';
+import Breadcrumb from '../../../core/common/Breadcrumb/breadcrumb';
+import StudentSidebar from '../common/studentSidebar';
+import ProfileCard from '../common/profileCard';
+import { useAuth } from '../../../core/auth/authContext';
+import { getMoodleUserId } from '../../../core/api/courseService';
+import { studentService, MoodleConversation } from '../../../core/api/studentService';
 
-const StudentMessage = () => {
-  const route = all_routes;
-  const [showSearch,setShowSearch] = useState<any>(false);
+const StudentMessage: React.FC = () => {
+  const { user } = useAuth();
+  const [conversations, setConversations] = useState<MoodleConversation[]>([]);
+  const [selectedConv, setSelectedConv] = useState<MoodleConversation | null>(null);
+  const [messageText, setMessageText] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    const uid = getMoodleUserId(user);
+    setLoading(true);
+    studentService
+      .getConversations(uid)
+      .then((list) => {
+        if (!mounted) return;
+        setConversations(list || []);
+        if (list && list.length > 0) setSelectedConv(list[0]);
+      })
+      .finally(() => {
+        if (mounted) setLoading(false);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, [user]);
+
+  const handleSend = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!messageText.trim() || !selectedConv) return;
+    setSending(true);
+    try {
+      const targetUserId = selectedConv.members?.[0]?.id || 3;
+      await studentService.sendInstantMessage(targetUserId, messageText.trim());
+      const newMsg = {
+        id: Date.now(),
+        useridfrom: getMoodleUserId(user),
+        text: messageText.trim(),
+        timecreated: Math.floor(Date.now() / 1000),
+      };
+      setSelectedConv({
+        ...selectedConv,
+        messages: [...(selectedConv.messages || []), newMsg],
+      });
+      setMessageText('');
+    } finally {
+      setSending(false);
+    }
+  };
+
   return (
     <>
-      <Breadcrumb title="Messages" />
-
+      <Breadcrumb title="Academic Messages & Lecturer Chat" />
       <div className="content">
         <div className="container">
-          {/* profile box */}
-          <div className="profile-card overflow-hidden bg-blue-gradient2 mb-5 p-5">
-            <div className="profile-card-bg">
-              <ImageWithBasePath
-                src="assets/img/bg/card-bg-01.png"
-                className="profile-card-bg-1"
-                alt=""
-              />
-            </div>
-            <div className="row align-items-center row-gap-3">
-              <div className="col-lg-6">
-                <div className="d-flex align-items-center">
-                  <span className="avatar avatar-xxl avatar-rounded me-3 border border-white border-2 position-relative">
-                    <ImageWithBasePath src="assets/img/user/user-02.jpg" alt="" />
-                    <span className="verify-tick">
-                      <i className="isax isax-verify5" />
-                    </span>
-                  </span>
-                  <div>
-                    <h5 className="mb-1 text-white d-inline-flex align-items-center">
-                      Ronald Richard
-                      <Link
-                        to={route.instructorProfile}
-                        className="link-light fs-16 ms-2"
-                      >
-                        <i className="isax isax-edit-2" />
-                      </Link>
-                    </h5>
-                    <p className="text-light">Student</p>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-6">
-                <div className="d-flex align-items-center justify-content-lg-end flex-wrap gap-2">
-                  <Link
-                    to={route.becomeAnInstructor}
-                    className="btn btn-white rounded-pill me-3"
-                  >
-                    Become an Instructor
-                  </Link>
-                  <Link
-                    to={route.instructorDashboard}
-                    className="btn btn-secondary rounded-pill"
-                  >
-                    Instructor Dashboard
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* profile box */}
+          <ProfileCard />
           <div className="row">
-            {/* sidebar */}
             <StudentSidebar />
-            {/* sidebar */}
             <div className="col-lg-9">
-              <div className="instructor-message">
-                <h5 className="page-title">Messages</h5>
-                <div className="row">
-                  {/* Chat User List */}
-                  <div className="col-lg-5">
-                    <div className="chat-cont-left">
-                      <div className="chat-card mb-0 flex-fill">
-                        <div className="chat-header">
-                          <div className="input-icon">
-                            <span className="input-icon-addon">
-                              <i className="isax isax-search-normal-1 fs-14" />
-                            </span>
-                            <input
-                              type="email"
-                              className="form-control form-control-md"
-                              placeholder="Search"
-                            />
-                          </div>
-                        </div>
-                        <div className="chat-body chat-users-list chat-scroll">
-                          <Link
-                            to="#"
-                            className="d-flex justify-content-between align-items-center chat-member"
-                          >
-                            <div className="d-flex align-items-center">
-                              <div className="avatar avatar-lg online avatar-rounded flex-shrink-0 me-2">
-                                <ImageWithBasePath
-                                  src="assets/img/user/user-29.jpg"
-                                  alt="User Image"
-                                />
-                              </div>
-                              <div>
-                                <h6 className="fs-16 fw-medium mb-1 d-flex align-items-center">
-                                  Andrea Jermian{" "}
-                                  <span className="msg-count badge badge-secondary d-flex align-items-center justify-content-center rounded-circle ms-2">
-                                    3
-                                  </span>
-                                </h6>
-                                <p>Just Now</p>
-                              </div>
-                            </div>
-                            <div className="flex-grow-1">
-                              <div className="text-end">
-                                <div className="d-flex align-items-center justify-content-end">
-                                  <i className="fa-solid fa-check" />
-                                </div>
-                              </div>
-                            </div>
-                          </Link>
-                          <Link
-                            to="#"
-                            className="d-flex align-items-center justify-content-between chat-member"
-                          >
-                            <div className="d-flex align-items-center">
-                              <div className="avatar avatar-lg avatar-rounded flex-shrink-0 me-2">
-                                <ImageWithBasePath
-                                  src="assets/img/user/user-31.jpg"
-                                  alt="User Image"
-                                />
-                              </div>
-                              <div>
-                                <h6 className="fs-16 fw-medium mb-1">
-                                  Samuel James
-                                </h6>
-                                <p className="fs-14 text-gray-6 text-truncate">
-                                  12:30 PM
-                                </p>
-                              </div>
-                            </div>
-                            <div className="flex-grow-1">
-                              <div className="text-end">
-                                <div className="d-flex align-items-center justify-content-end">
-                                  <i className="fa-solid fa-check-double text-success" />
-                                </div>
-                              </div>
-                            </div>
-                          </Link>
-                          <Link
-                            to="#"
-                            className="d-flex justify-content-between align-items-center chat-member"
-                          >
-                            <div className="d-flex align-items-center">
-                              <div className="avatar avatar-lg online avatar-rounded flex-shrink-0 me-2">
-                                <ImageWithBasePath
-                                  src="assets/img/user/user-32.jpg"
-                                  alt="User Image"
-                                />
-                              </div>
-                              <div>
-                                <h6 className="fs-16 fw-medium mb-1 d-flex align-items-center">
-                                  Adrian Marshall{" "}
-                                  <span className="msg-count badge badge-secondary d-flex align-items-center justify-content-center rounded-circle ms-2">
-                                    3
-                                  </span>
-                                </h6>
-                                <p>Just Now</p>
-                              </div>
-                            </div>
-                            <div className="flex-grow-1">
-                              <div className="text-end">
-                                <div className="d-flex align-items-center justify-content-end">
-                                  <i className="fa-solid fa-check" />
-                                </div>
-                              </div>
-                            </div>
-                          </Link>
-                          <Link
-                            to="#"
-                            className="d-flex align-items-center justify-content-between chat-member"
-                          >
-                            <div className="d-flex align-items-center">
-                              <div className="avatar avatar-lg avatar-rounded flex-shrink-0 me-2">
-                                <ImageWithBasePath
-                                  src="assets/img/user/user-33.jpg"
-                                  alt="User Image"
-                                />
-                              </div>
-                              <div>
-                                <h6 className="fs-16 fw-medium mb-1">
-                                  Peter Anderson
-                                </h6>
-                                <p className="fs-14 text-gray-6 text-truncate">
-                                  23/03/24
-                                </p>
-                              </div>
-                            </div>
-                            <div className="flex-grow-1">
-                              <div className="text-end">
-                                <div className="d-flex align-items-center justify-content-end">
-                                  <i className="fa-solid fa-check-double text-success" />
-                                </div>
-                              </div>
-                            </div>
-                          </Link>
-                          <Link
-                            to="#"
-                            className="d-flex align-items-center justify-content-between chat-member"
-                          >
-                            <div className="d-flex align-items-center">
-                              <div className="avatar avatar-lg avatar-rounded flex-shrink-0 me-2">
-                                <ImageWithBasePath
-                                  src="assets/img/user/user-34.jpg"
-                                  alt="User Image"
-                                />
-                              </div>
-                              <div>
-                                <h6 className="fs-16 fw-medium mb-1">
-                                  Anderson
-                                </h6>
-                                <p className="fs-14 text-gray-6 text-truncate">
-                                  23/03/24
-                                </p>
-                              </div>
-                            </div>
-                            <div className="flex-grow-1">
-                              <div className="text-end">
-                                <div className="d-flex align-items-center justify-content-end">
-                                  <i className="fa-solid fa-check-double text-success" />
-                                </div>
-                              </div>
-                            </div>
-                          </Link>
-                          <Link
-                            to="#"
-                            className="d-flex align-items-center justify-content-between chat-member"
-                          >
-                            <div className="d-flex align-items-center">
-                              <div className="avatar avatar-lg avatar-rounded flex-shrink-0 me-2">
-                                <ImageWithBasePath
-                                  src="assets/img/user/user-35.jpg"
-                                  alt="User Image"
-                                />
-                              </div>
-                              <div>
-                                <h6 className="fs-16 fw-medium mb-1">Andrea</h6>
-                                <p className="fs-14 text-gray-6 text-truncate">
-                                  23/03/24
-                                </p>
-                              </div>
-                            </div>
-                            <div className="flex-grow-1">
-                              <div className="text-end">
-                                <div className="d-flex align-items-center justify-content-end">
-                                  <i className="fa-solid fa-check-double text-success" />
-                                </div>
-                              </div>
-                            </div>
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
+              <div className="card border-0 shadow-sm p-4">
+                <h5 className="fw-bold mb-3">Moodle Direct Messages</h5>
+                {loading ? (
+                  <div className="text-center py-5">
+                    <div className="spinner-border text-primary" role="status" />
                   </div>
-                  {/* Chat User List */}
-                  {/* Chat Content */}
-                  <div className="col-lg-7 chat-cont-right chat-window-long">
-                    {/* Chat History */}
-                    <div className="chat-two-card chat-window mb-0 shadow-none flex-fill">
-                      <div className="card-header border-0 p-0">
-                        <div className="msg_head position-relative">
-                          <div className="d-flex bd-highlight align-items-center">
-                            <Link
-                              id="back_user_list"
-                              to="#"
-                              className="back-user-list"
-                            >
-                              <i className="fas fa-chevron-left" />
-                            </Link>
-                            <div className="avatar avatar-lg avatar-rounded flex-shrink-0 me-2">
-                              <ImageWithBasePath
-                                src="assets/img/user/user-02.jpg"
-                                alt="User"
-                              />
-                            </div>
-                            <div>
-                              <h6 className="fs-16 mb-1">Ronald Richard</h6>
-                            </div>
+                ) : (
+                  <div className="row g-3">
+                    <div className="col-md-4 border-end">
+                      {conversations.map((conv) => {
+                        const member = conv.members?.[0];
+                        return (
+                          <div
+                            key={conv.id}
+                            onClick={() => setSelectedConv(conv)}
+                            className={`p-3 rounded-3 mb-2 cursor-pointer border ${
+                              selectedConv?.id === conv.id ? 'bg-primary-transparent border-primary' : 'bg-white'
+                            }`}
+                            style={{ cursor: 'pointer' }}
+                          >
+                            <h6 className="mb-1 fw-bold">{member?.fullname || conv.name || 'OUT Lecturer'}</h6>
+                            <p className="text-muted small mb-0 text-truncate">
+                              {(conv.messages?.[conv.messages.length - 1]?.text || '').replace(/<[^>]*>?/gm, '')}
+                            </p>
                           </div>
-                          <div className="d-flex align-items-center send-action">
-                            <Link
-                              to="#"
-                              className="btn chat-search-btn send-action-btn"
-                              data-bs-toggle="tooltip"
-                              data-bs-placement="bottom"
-                              aria-label="Search"
-                              data-bs-original-title="Search"
-                              onClick={()=>setShowSearch(!showSearch)}
-                            >
-                              <i className="isax isax-search-normal-14" />
-                            </Link>
-                            <Link
-                              className="btn no-bg send-action-btn rounded-circle"
-                              to="#"
-                              data-bs-toggle="dropdown"
-                            >
-                              <i className="fa-solid fa-ellipsis-vertical" />
-                            </Link>
-                            <ul className="dropdown-menu dropdown-menu-end p-3">
-                              <li>
-                                <Link to={route.homeone} className="dropdown-item">
-                                  <i className="isax isax-close-circle me-2" />
-                                  Close Chat
-                                </Link>
-                              </li>
-                              <li>
-                                <Link
-                                  to="#"
-                                  className="dropdown-item"
-                                >
-                                  <i className="fa-solid fa-volume-xmark me-2" />
-                                  Mute Notification
-                                </Link>
-                              </li>
-                              <li>
-                                <Link
-                                  to="#"
-                                  className="dropdown-item"
-                                >
-                                  <i className="isax isax-clock me-2" />
-                                  Disappearing Message
-                                </Link>
-                              </li>
-                              <li>
-                                <Link
-                                  to="#"
-                                  className="dropdown-item"
-                                >
-                                  <i className="isax isax-refresh me-2" />
-                                  Clear Message
-                                </Link>
-                              </li>
-                              <li>
-                                <Link
-                                  to="#"
-                                  className="dropdown-item"
-                                >
-                                  <i className="isax isax-trash me-2" />
-                                  Delete Chat
-                                </Link>
-                              </li>
-                              <li>
-                                <Link
-                                  to="#"
-                                  className="dropdown-item"
-                                >
-                                  <i className="fa-regular fa-thumbs-down me-2" />
-                                  Report
-                                </Link>
-                              </li>
-                              <li>
-                                <Link
-                                  to="#"
-                                  className="dropdown-item"
-                                >
-                                  <i className="fa-solid fa-ban me-2" />
-                                  Block
-                                </Link>
-                              </li>
-                            </ul>
+                        );
+                      })}
+                    </div>
+                    <div className="col-md-8 d-flex flex-column justify-content-between" style={{ minHeight: 340 }}>
+                      {selectedConv ? (
+                        <>
+                          <div className="border-bottom pb-2 mb-3">
+                            <h6 className="mb-0 fw-bold">
+                              {selectedConv.members?.[0]?.fullname || 'Academic Supervisor'}
+                            </h6>
+                            <small className="text-muted">Open University of Tanzania Faculty</small>
                           </div>
-                        </div>
-                        {/* Chat Search */}
-                        <div className={`chat-search search-wrap contact-search ${showSearch ? 'visible-chat':''}`}>
-                          <form>
-                            <div className="input-group">
-                              <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Search Contacts"
-                              />
-                              <span className="input-group-text">
-                                <i className="isax isax-search-normal-14" />
-                              </span>
-                            </div>
-                          </form>
-                        </div>
-                        {/* /Chat Search */}
-                      </div>
-                      <div className="msg_card_body chat-scroll">
-                        <ul className="list-unstyled p-0">
-                          <li className="sent-message-group">
-                            <ul>
-                              <li className="media sent d-flex align-items-end">
-                                <div className="media-body flex-grow-1">
-                                  <div className="msg-box">
-                                    <div className="d-flex align-items-end justify-content-end mb-1">
-                                      <div className="avatar avatar-md avatar-rounded flex-shrink-0 ms-2">
-                                        <ImageWithBasePath
-                                          src="assets/img/user/user-01.jpg"
-                                          alt="User Image "
-                                        />
-                                      </div>
-                                      <div className="position-relative">
-                                        <div className="d-flex align-items-center justify-content-end mb-1">
-                                          <div className="d-flex align-items-center">
-                                            <i className="fa-solid fa-check-double me-2 text-success fs-12" />
-                                            <p className="mb-0">02:39 PM</p>
-                                            <i className="fa-solid fa-circle text-gray-1 fs-7 mx-1" />
-                                          </div>
-                                          <h6 className="fs-14 fw-normal d-flex align-items-center">
-                                            You
-                                          </h6>
-                                        </div>
-                                        <div>
-                                          <div className="sent-message">
-                                            <p>
-                                              How’s the assignment coming along?
-                                            </p>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </li>
-                            </ul>
-                          </li>
-                          <li className="media received">
-                            <div className="d-flex align-items-end mb-1">
-                              <div className="avatar avatar-md avatar-rounded flex-shrink-0 me-2">
-                                <ImageWithBasePath
-                                  src="assets/img/user/user-02.jpg"
-                                  alt="User Image "
+                          <div className="flex-grow-1 overflow-auto mb-3" style={{ maxHeight: 260 }}>
+                            {(selectedConv.messages || []).map((msg) => (
+                              <div key={msg.id} className="mb-2 p-2 rounded bg-light border">
+                                <div
+                                  className="small"
+                                  dangerouslySetInnerHTML={{ __html: msg.text }}
                                 />
                               </div>
-                              <div className="media-body flex-grow-1">
-                                <div className="d-flex align-items-center mb-1">
-                                  <h6 className="fs-14 fw-normal d-flex align-items-center">
-                                    Ronald Richard
-                                  </h6>
-                                  <div className="d-flex align-items-center">
-                                    <i className="fa-solid fa-circle text-gray-1 fs-7 mx-1" />
-                                    <p>02:40 PM</p>
-                                  </div>
-                                </div>
-                                <div className="msg-box">
-                                  <div className="position-relative">
-                                    <div className="d-flex align-items-center ">
-                                      <div className="received-message me-2">
-                                        <p>
-                                          t’s going okay, but I’m stuck on the
-                                          analysis part.
-                                        </p>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </li>
-                          <li className="sent-message-group">
-                            <ul>
-                              <li className="media sent d-flex align-items-end">
-                                <div className="media-body flex-grow-1">
-                                  <div className="msg-box">
-                                    <div className="d-flex align-items-end justify-content-end mb-1">
-                                      <div className="avatar avatar-md avatar-rounded flex-shrink-0 ms-2">
-                                        <ImageWithBasePath
-                                          src="assets/img/user/user-01.jpg"
-                                          alt="User Image "
-                                        />
-                                      </div>
-                                      <div className="position-relative">
-                                        <div className="d-flex align-items-center justify-content-end mb-1">
-                                          <div className="d-flex align-items-center">
-                                            <i className="fa-solid fa-check-double me-2 text-success fs-12" />
-                                            <p className="mb-0">02:39 PM</p>
-                                            <i className="fa-solid fa-circle text-gray-1 fs-7 mx-1" />
-                                          </div>
-                                          <h6 className="fs-14 fw-normal d-flex align-items-center">
-                                            You
-                                          </h6>
-                                        </div>
-                                        <div>
-                                          <div className="sent-message">
-                                            <p>Which part exactly?</p>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </li>
-                            </ul>
-                          </li>
-                          <li className="media received">
-                            <div className="d-flex align-items-end mb-1">
-                              <div className="avatar avatar-md avatar-rounded flex-shrink-0 me-2">
-                                <ImageWithBasePath
-                                  src="assets/img/user/user-02.jpg"
-                                  alt="User Image "
-                                />
-                              </div>
-                              <div className="media-body flex-grow-1">
-                                <div className="d-flex align-items-center mb-1">
-                                  <h6 className="fs-14 fw-normal d-flex align-items-center">
-                                    Ronald Richard
-                                  </h6>
-                                  <div className="d-flex align-items-center">
-                                    <i className="fa-solid fa-circle text-gray-1 fs-7 mx-1" />
-                                    <p>02:40 PM</p>
-                                  </div>
-                                </div>
-                                <div className="msg-box">
-                                  <div className="position-relative">
-                                    <div className="d-flex align-items-center ">
-                                      <div className="received-message me-2">
-                                        <p>
-                                          Understanding the variable
-                                          relationships.
-                                        </p>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </li>
-                          <li className="sent-message-group">
-                            <ul>
-                              <li className="media sent d-flex align-items-end">
-                                <div className="media-body flex-grow-1">
-                                  <div className="msg-box">
-                                    <div className="d-flex align-items-end justify-content-end mb-1">
-                                      <div className="avatar avatar-md avatar-rounded flex-shrink-0 ms-2">
-                                        <ImageWithBasePath
-                                          src="assets/img/user/user-01.jpg"
-                                          alt="User Image "
-                                        />
-                                      </div>
-                                      <div className="position-relative">
-                                        <div className="d-flex align-items-center justify-content-end mb-1">
-                                          <div className="d-flex align-items-center">
-                                            <i className="fa-solid fa-check-double me-2 text-success fs-12" />
-                                            <p className="mb-0">02:39 PM</p>
-                                            <i className="fa-solid fa-circle text-gray-1 fs-7 mx-1" />
-                                          </div>
-                                          <h6 className="fs-14 fw-normal d-flex align-items-center">
-                                            You
-                                          </h6>
-                                        </div>
-                                        <div>
-                                          <div className="sent-message">
-                                            <p>
-                                              Try plotting them. Let’s check
-                                              together.
-                                            </p>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </li>
-                            </ul>
-                          </li>
-                          <li className="media received">
-                            <div className="d-flex align-items-end mb-1">
-                              <div className="avatar avatar-md avatar-rounded flex-shrink-0 me-2">
-                                <ImageWithBasePath
-                                  src="assets/img/user/user-02.jpg"
-                                  alt="User Image "
-                                />
-                              </div>
-                              <div className="media-body flex-grow-1">
-                                <div className="d-flex align-items-center mb-1">
-                                  <h6 className="fs-14 fw-normal d-flex align-items-center">
-                                    Ronald Richard
-                                  </h6>
-                                  <div className="d-flex align-items-center">
-                                    <i className="fa-solid fa-circle text-gray-1 fs-7 mx-1" />
-                                    <p>02:40 PM</p>
-                                  </div>
-                                </div>
-                                <div className="msg-box">
-                                  <div className="position-relative">
-                                    <div className="d-flex align-items-center ">
-                                      <div className="received-message me-2">
-                                        <p>Sure!</p>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </li>
-                        </ul>
-                      </div>
-                      <div className="chat-footer border-0 pt-0">
-                        <div className="d-flex align-items-center">
-                          <div className="d-flex align-items-center chat-input-icons">
-                            <Link
-                              className="btn no-bg"
-                              to="#"
-                              data-bs-toggle="dropdown"
-                            >
-                              <i className="text-gray-5 fa-solid fa-ellipsis-vertical" />
-                            </Link>
-                            <div className="dropdown-menu dropdown-menu-end p-3">
-                              <Link
-                                to="#"
-                                className="dropdown-item"
-                              >
-                                <i className="isax isax-camera me-2" />
-                                Camera
-                              </Link>
-                              <Link
-                                to="#"
-                                className="dropdown-item"
-                              >
-                                <i className="isax isax-gallery me-2" />
-                                Gallery
-                              </Link>
-                              <Link
-                                to="#"
-                                className="dropdown-item"
-                              >
-                                <i className="isax isax-audio-square me-2" />
-                                Audio
-                              </Link>
-                              <Link
-                                to="#"
-                                className="dropdown-item"
-                              >
-                                <i className="isax isax-location me-2" />
-                                Location
-                              </Link>
-                              <Link
-                                to="#"
-                                className="dropdown-item"
-                              >
-                                <i className="isax isax-user-cirlce-add me-2" />
-                                Contact
-                              </Link>
-                            </div>
-                            <div className="form-item emoj-action-foot">
-                              <Link
-                                to="javascrip:void(0);"
-                                className="action-circle"
-                              >
-                                <i className="text-gray-5  fa-regular fa-face-smile" />
-                              </Link>
-                              <div className="emoj-group-list-foot down-emoji-circle">
-                                <ul>
-                                  <li>
-                                    <Link to="#">
-                                      <ImageWithBasePath
-                                        src="assets/img/icons/emonji-02.svg"
-                                        alt="Icon"
-                                      />
-                                    </Link>
-                                  </li>
-                                  <li>
-                                    <Link to="#">
-                                      <ImageWithBasePath
-                                        src="assets/img/icons/emonji-05.svg"
-                                        alt="Icon"
-                                      />
-                                    </Link>
-                                  </li>
-                                  <li>
-                                    <Link to="#">
-                                      <ImageWithBasePath
-                                        src="assets/img/icons/emonji-06.svg"
-                                        alt="Icon"
-                                      />
-                                    </Link>
-                                  </li>
-                                  <li>
-                                    <Link to="#">
-                                      <ImageWithBasePath
-                                        src="assets/img/icons/emonji-07.svg"
-                                        alt="Icon"
-                                      />
-                                    </Link>
-                                  </li>
-                                  <li>
-                                    <Link to="#">
-                                      <ImageWithBasePath
-                                        src="assets/img/icons/emonji-08.svg"
-                                        alt="Icon"
-                                      />
-                                    </Link>
-                                  </li>
-                                  <li className="add-emoj">
-                                    <Link to="#">
-                                      <i className="isax isax-add" />
-                                    </Link>
-                                  </li>
-                                </ul>
-                              </div>
-                            </div>
-                            <Link to="#">
-                              <i className="isax isax-microphone-2 text-gray-5" />
-                            </Link>
+                            ))}
                           </div>
-                          <div className="chat-input me-2">
+                          <form onSubmit={handleSend} className="d-flex gap-2">
                             <input
+                              type="text"
                               className="form-control"
-                              placeholder="Type your message here..."
+                              placeholder="Write a message to your lecturer..."
+                              value={messageText}
+                              onChange={(e) => setMessageText(e.target.value)}
                             />
-                          </div>
-                          <div>
-                            <button className="btn btn-secondary btn_send">
-                              <i
-                                className="isax isax-send-1 text-white"
-                                aria-hidden="true"
-                              />
+                            <button type="submit" disabled={sending} className="btn btn-primary">
+                              Send
                             </button>
-                          </div>
-                        </div>
-                      </div>
+                          </form>
+                        </>
+                      ) : (
+                        <div className="text-center text-muted py-5">Select a conversation</div>
+                      )}
                     </div>
                   </div>
-                  {/* /Chat Content */}
-                </div>
+                )}
               </div>
             </div>
           </div>

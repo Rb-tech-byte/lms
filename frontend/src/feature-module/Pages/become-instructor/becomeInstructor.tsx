@@ -1,321 +1,251 @@
-import React, { useState } from "react";
-import Breadcrumb from "../../../core/common/Breadcrumb/breadcrumb";
-import ImageWithBasePath from "../../../core/common/imageWithBasePath";
-import { Link } from "react-router-dom";
-import CountUp from "react-countup";
-type PasswordField = "password" | "confirmPassword";
-const BecomeInstructor = () => {
-  const [passwordVisibility, setPasswordVisibility] = useState({
-         password: false,
-         confirmPassword: false,
-       });
-     
-       const togglePasswordVisibility = (field: PasswordField) => {
-         setPasswordVisibility((prevState) => ({
-           ...prevState,
-           [field]: !prevState[field],
-         }));
-       };
+import React, { useState } from 'react';
+import Breadcrumb from '../../../core/common/Breadcrumb/breadcrumb';
+import ImageWithBasePath from '../../../core/common/imageWithBasePath';
+import CountUp from 'react-countup';
+import { callInternalApi } from '../../../core/api/apiClient';
+
+const BecomeInstructor: React.FC = () => {
+  const [fullname, setFullname] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [department, setDepartment] = useState('Faculty of Science, Technology & Environmental Studies');
+  const [qualification, setQualification] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [resultMsg, setResultMsg] = useState<{ type: 'success' | 'danger'; text: string } | null>(
+    null
+  );
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setResultMsg(null);
+    if (!fullname.trim() || !email.trim()) {
+      setResultMsg({ type: 'danger', text: 'Full name and official email are required.' });
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const res = await callInternalApi<{ status: string; applicationId: string; message: string }>(
+        'submit_instructor_application',
+        {
+          fullname: fullname.trim(),
+          email: email.trim(),
+          phone: phone.trim(),
+          department,
+          qualification: qualification.trim(),
+        }
+      );
+      setResultMsg({
+        type: 'success',
+        text: `${res.message} (Reference: ${res.applicationId})`,
+      });
+      setFullname('');
+      setEmail('');
+      setPhone('');
+      setQualification('');
+    } catch (err: any) {
+      setResultMsg({
+        type: 'danger',
+        text: err?.message || 'Unable to submit application at this time.',
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <>
-      <Breadcrumb title="Become an Instructor" />
-
-      <>
-        {/* share your knowledge */}
-        <div className="share-your-knowledge">
-          <div className="container">
-            <div className="row">
-              <div className="col-lg-7 pe-xl-5">
-                <div className="share-knowledge-content">
-                  <div className="section-header">
-                    <span className="fw-medium text-secondary text-decoration-underline mb-2 d-inline-block">
-                      Share Knowledge
-                    </span>
-                    <h2>Share Your Knowledge. Inspire the Future.</h2>
-                    <p>
-                      Share your knowledge, inspire learners worldwide, and earn
-                      while doing what you love. Join a community of experts
-                      transforming education through engaging and accessible
-                      content.
+      <Breadcrumb title="Apply as an OUT Academic Lecturer" />
+      <div className="become-an-instructor py-5">
+        <div className="container">
+          <div className="row align-items-center g-4 mb-5">
+            <div className="col-lg-6">
+              <span className="badge bg-primary-transparent text-primary mb-2">
+                Open University of Tanzania Directorate of Academic Services
+              </span>
+              <h2 className="fw-bold mb-3">Join Our Pan-African Distance Learning Faculty</h2>
+              <p className="text-muted mb-4">
+                The Open University of Tanzania welcomes qualified professors, senior lecturers,
+                and subject-matter specialists to author, moderate, and supervise courses on our
+                headless Moodle 5.3 platform.
+              </p>
+              <div className="row g-3">
+                <div className="col-sm-6">
+                  <div className="border rounded-3 p-3 bg-white">
+                    <h6 className="fw-bold mb-1">
+                      <i className="isax isax-teacher text-primary me-2" />
+                      30 Regional Centres
+                    </h6>
+                    <p className="text-muted small mb-0">
+                      Supervise undergraduate and postgraduate students nationwide.
                     </p>
                   </div>
-                  <div className="row">
-                    <div className="col-lg-6">
-                      <div className="card">
-                        <div className="card-body">
-                          <div className="d-flex align-items-center">
-                            <div className="me-2">
-                              <span className="bg-secondary-transparent d-flex justify-content-center align-items-center p-3 rounded-pill">
-                                <ImageWithBasePath
-                                  src="./assets/img/icons/instructor-icon1.svg"
-                                  alt="img"
-                                />
-                              </span>
-                            </div>
-                            <div>
-                              <h6 className="mb-1">Flexible Work</h6>
-                              <p className="text-truncate line-clamb-1">
-                                Teach at your own pace.
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                </div>
+                <div className="col-sm-6">
+                  <div className="border rounded-3 p-3 bg-white">
+                    <h6 className="fw-bold mb-1">
+                      <i className="isax isax-monitor-mobbile text-secondary me-2" />
+                      Moodle 5.3 Studio
+                    </h6>
+                    <p className="text-muted small mb-0">
+                      Author interactive quizzes, video modules, and grading rubrics.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-lg-6">
+              <div className="card border-0 shadow-sm p-4">
+                <h4 className="fw-bold mb-1">Lecturer Application Form</h4>
+                <p className="text-muted small mb-3">
+                  Submit your academic credentials for review by the OUT Faculty Board.
+                </p>
+
+                {resultMsg && (
+                  <div className={`alert alert-${resultMsg.type} py-2 small`}>
+                    {resultMsg.text}
+                  </div>
+                )}
+
+                <form onSubmit={handleSubmit}>
+                  <div className="mb-3">
+                    <label className="form-label">
+                      Full Name &amp; Academic Title <span className="text-danger">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="e.g., Dr. Juma Mwakasege"
+                      value={fullname}
+                      onChange={(e) => setFullname(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="row g-3 mb-3">
+                    <div className="col-md-6">
+                      <label className="form-label">
+                        Email Address <span className="text-danger">*</span>
+                      </label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        placeholder="name@out.ac.tz"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                      />
                     </div>
-                    <div className="col-lg-6">
-                      <div className="card">
-                        <div className="card-body">
-                          <div className="d-flex align-items-center">
-                            <div className="me-2">
-                              <span className="bg-secondary-transparent d-flex justify-content-center align-items-center p-3 rounded-pill">
-                                <ImageWithBasePath
-                                  src="./assets/img/icons/instructor-icon2.svg"
-                                  alt="img"
-                                />
-                              </span>
-                            </div>
-                            <div>
-                              <h6 className="mb-1">Earning Potential</h6>
-                              <p className="text-truncate line-clamb-1">
-                                Monetize your expertise.
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-lg-6">
-                      <div className="card">
-                        <div className="card-body">
-                          <div className="d-flex align-items-center">
-                            <div className="me-2">
-                              <span className="bg-secondary-transparent d-flex justify-content-center align-items-center p-3 rounded-pill">
-                                <ImageWithBasePath
-                                  src="./assets/img/icons/instructor-icon3.svg"
-                                  alt="img"
-                                />
-                              </span>
-                            </div>
-                            <div>
-                              <h6 className="mb-1">Impact</h6>
-                              <p className="text-truncate line-clamb-1">
-                                Reach and educate{" "}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-lg-6">
-                      <div className="card">
-                        <div className="card-body">
-                          <div className="d-flex align-items-center">
-                            <div className="me-2">
-                              <span className="bg-secondary-transparent d-flex justify-content-center align-items-center p-3 rounded-pill">
-                                <ImageWithBasePath
-                                  src="./assets/img/icons/instructor-icon4.svg"
-                                  alt="img"
-                                />
-                              </span>
-                            </div>
-                            <div>
-                              <h6 className="mb-1">Support</h6>
-                              <p className="text-truncate line-clamb-1">
-                                Access to dedicated support
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                    <div className="col-md-6">
+                      <label className="form-label">Phone Number (Tanzania)</label>
+                      <input
+                        type="tel"
+                        className="form-control"
+                        placeholder="+255 7XX XXX XXX"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                      />
                     </div>
                   </div>
-                  <Link
-                    to="#"
-                    className="btn register-btn-1 d-inline-flex align-items-center"
+                  <div className="mb-3">
+                    <label className="form-label">Target Academic Faculty</label>
+                    <select
+                      className="form-select"
+                      value={department}
+                      onChange={(e) => setDepartment(e.target.value)}
+                    >
+                      <option value="Faculty of Science, Technology & Environmental Studies">
+                        Faculty of Science, Technology &amp; Environmental Studies (FSTES)
+                      </option>
+                      <option value="Faculty of Business Management">
+                        Faculty of Business Management (FBM)
+                      </option>
+                      <option value="Faculty of Education">Faculty of Education (FED)</option>
+                      <option value="Faculty of Law">Faculty of Law (FLW)</option>
+                      <option value="Faculty of Arts & Social Sciences">
+                        Faculty of Arts &amp; Social Sciences (FASS)
+                      </option>
+                    </select>
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Highest Qualification &amp; Specialization</label>
+                    <textarea
+                      rows={3}
+                      className="form-control"
+                      placeholder="Summarize your PhD/Master's specialization, teaching experience, and proposed courses..."
+                      value={qualification}
+                      onChange={(e) => setQualification(e.target.value)}
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="btn btn-secondary w-100 py-2"
                   >
-                    Register Now <i className="isax isax-arrow-right-3 ms-1" />
-                  </Link>
-                </div>
-              </div>
-              <div className="col-lg-5">
-                <div className="share-your-knowledge-img d-none d-lg-flex">
-                  <ImageWithBasePath
-                    src="assets/img/shapes/shape-4.png"
-                    alt="img"
-                    className="img-fluid become-instructor-bg-02"
-                  />
-                  <ImageWithBasePath
-                    src="assets/img/shapes/shape-5.png"
-                    alt="img"
-                    className="img-fluid become-instructor-bg-01"
-                  />
-                  <ImageWithBasePath
-                    src="assets/img/shapes/shape-3.png"
-                    alt="img"
-                    className="img-fluid become-instructor-bg-03"
-                  />
-                  <ImageWithBasePath
-                    src="assets/img/feature/feature-5.jpg"
-                    alt="img"
-                    className="img-fluid rounded-4 become-instructor-bg-04"
-                  />
-                  <ImageWithBasePath
-                    src="assets/img/feature/feature-6.jpg"
-                    alt="img"
-                    className="img-fluid rounded-4 become-instructor-bg-05"
-                  />
-                  <ImageWithBasePath
-                    src="assets/img/shapes/shape-7.svg"
-                    alt="img"
-                    className="img-fluid become-instructor-bg-06"
-                  />
-                </div>
+                    {submitting ? 'Submitting Application...' : 'Submit Academic Application'}
+                  </button>
+                </form>
               </div>
             </div>
           </div>
-        </div>
-        {/* share your knowledge */}
-        {/* how it works */}
-        <div className="how-it-works-sec bg-light-900">
-          <div className="container">
-            <div className="section-header">
-              <span className="fw-medium text-secondary text-decoration-underline mb-2 d-inline-block">
-                Our Workflow
-              </span>
-              <h2>How It Works</h2>
-              <p>Turn Your Expertise into Impact in Just 3 Simple Steps!</p>
-            </div>
-            <div className="row row-gap-4">
-              <div className="col-lg-4">
-                <div className="share-knowledge-item-2">
-                  <ImageWithBasePath
-                    src="./assets/img/icons/how-it-works-1.svg"
-                    alt="img"
-                  />
-                  <h5 className="mt-3 mb-2">Apply &amp; Get Approved</h5>
-                  <p className="text-truncate line-clamb-2">
-                    Submit your application and get approved to access the
-                    platform
-                  </p>
-                </div>
-              </div>
-              <div className="col-lg-4">
-                <div className="share-knowledge-item-2">
-                  <ImageWithBasePath
-                    src="./assets/img/icons/how-it-works-2.svg"
-                    alt="img"
-                  />
-                  <h5 className="mt-3 mb-2">Create &amp; Upload Content</h5>
-                  <p className="text-truncate line-clamb-2">
-                    Develop and upload your courses, including videos, lessons,
-                    quizzes, and assignments.
-                  </p>
-                </div>
-              </div>
-              <div className="col-lg-4">
-                <div className="share-knowledge-item-2">
-                  <ImageWithBasePath
-                    src="./assets/img/icons/how-it-works-3.svg"
-                    alt="img"
-                  />
-                  <h5 className="mt-3 mb-2">Teach &amp; Earn</h5>
-                  <p className="text-truncate line-clamb-2">
-                    Reach learners worldwide, teach, and start earning while
-                    making an impact.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        {/* how it works */}
-        {/* counter */}
-        <div className="counter-sec">
-          <div className="container">
+
+          <div className="counter-sec">
             <div className="row row-gap-4">
               <div className="col-xl-3 col-md-6">
-                <div className="become-instructor-item-3 mb-0">
-                  <div className="d-flex align-items-center">
+                <div className="card border-0 mb-0">
+                  <div className="card-body d-flex align-items-center">
                     <div className="counter-icon">
-                      <ImageWithBasePath
-                        src="./assets/img/icons/counter-icon1.svg"
-                        alt="img"
-                      />
+                      <ImageWithBasePath src="./assets/img/icons/counter-icon1.svg" alt="Students" />
                     </div>
-                    <div className="count-content ps-1 pb-2">
-                      <h4 className="text-info">
-                        <span className="count-digit">
-                          <CountUp end={10} />
-                        </span>
-                        K
+                    <div className="count-content">
+                      <h4 className="text-info count-digit">
+                        <CountUp end={15} />K+
                       </h4>
-                      <p className="fw-medium text-truncate">Online Courses</p>
+                      <p>Active OUT Students</p>
                     </div>
                   </div>
                 </div>
               </div>
               <div className="col-xl-3 col-md-6">
-                <div className="become-instructor-item-3 mb-0">
-                  <div className="d-flex align-items-center">
+                <div className="card border-0 mb-0">
+                  <div className="card-body d-flex align-items-center">
                     <div className="counter-icon">
-                      <ImageWithBasePath
-                        src="./assets/img/icons/counter-icon2.svg"
-                        alt="img"
-                      />
+                      <ImageWithBasePath src="./assets/img/icons/counter-icon2.svg" alt="Courses" />
                     </div>
-                    <div className="count-content ps-1 pb-2">
-                      <h4 className="text-warning">
-                        <span className="count-digit">
-                          <CountUp end={200} />
-                        </span>
-                        +
+                    <div className="count-content">
+                      <h4 className="text-warning count-digit">
+                        <CountUp end={120} />+
                       </h4>
-                      <p className="fw-medium text-truncate">Expert Tutors</p>
+                      <p>Accredited Modules</p>
                     </div>
                   </div>
                 </div>
               </div>
               <div className="col-xl-3 col-md-6">
-                <div className="become-instructor-item-3 mb-0">
-                  <div className="d-flex align-items-center">
+                <div className="card border-0 mb-0">
+                  <div className="card-body d-flex align-items-center">
                     <div className="counter-icon">
-                      <ImageWithBasePath
-                        src="./assets/img/icons/counter-icon3.svg"
-                        alt="img"
-                      />
+                      <ImageWithBasePath src="./assets/img/icons/counter-icon3.svg" alt="Centres" />
                     </div>
-                    <div className="count-content ps-1 pb-2">
-                      <h4 className="text-skyblue">
-                        <span className="count-digit">
-                          <CountUp end={6} />
-                        </span>
-                        K+
+                    <div className="count-content">
+                      <h4 className="text-skyblue count-digit">
+                        <CountUp end={30} />
                       </h4>
-                      <p className="fw-medium text-truncate">
-                        Certified Courses
-                      </p>
+                      <p>Regional Centres</p>
                     </div>
                   </div>
                 </div>
               </div>
               <div className="col-xl-3 col-md-6">
-                <div className="become-instructor-item-3 mb-0">
-                  <div className="d-flex align-items-center">
+                <div className="card border-0 mb-0">
+                  <div className="card-body d-flex align-items-center">
                     <div className="counter-icon">
-                      <ImageWithBasePath
-                        src="./assets/img/icons/counter-icon4.svg"
-                        alt="img"
-                      />
+                      <ImageWithBasePath src="./assets/img/icons/counter-icon4.svg" alt="Faculty" />
                     </div>
-                    <div className="count-content ps-1 pb-2">
-                      <h4 className="text-lightgreen">
-                        <span className="count-digit">
-                          <CountUp end={60} />
-                        </span>
-                        K+
+                    <div className="count-content">
+                      <h4 className="text-lightgreen count-digit">
+                        <CountUp end={5} />
                       </h4>
-                      <p className="fw-medium text-truncate">Online Students</p>
+                      <p>University Faculties</p>
                     </div>
                   </div>
                 </div>
@@ -323,158 +253,7 @@ const BecomeInstructor = () => {
             </div>
           </div>
         </div>
-        {/* counter */}
-        {/* register */}
-        <div className="register-sec">
-          <div className="container">
-            <div className="row align-items-center">
-              <div className="col-lg-6">
-                <div className="rounded-4 pe-lg-5">
-                  <ImageWithBasePath
-                    className="img-fluid rounded-5 d-none d-lg-flex"
-                    src="assets/img/feature/feature-4.jpg"
-                    alt="img"
-                  />
-                </div>
-              </div>
-              <div className="col-lg-6">
-                <div className="register-section p-4 p-sm-5 p-md-6">
-                  <h5 className="mb-2">Register</h5>
-                  <p>
-                    Your email address will not be published. Required fields
-                    are marked *
-                  </p>
-                  <form>
-                    <div className="row">
-                      <div className="col-lg-12">
-                        <div className="mb-3">
-                          <label className="form-label mb-1">
-                            Name<span className="ms-1 text-danger">*</span>
-                          </label>
-                          <input type="text" className="form-control" />
-                        </div>
-                      </div>
-                      <div className="col-lg-12">
-                        <div className="mb-3">
-                          <label className="form-label mb-1">
-                            Email<span className="ms-1 text-danger">*</span>
-                          </label>
-                          <input type="email" className="form-control" />
-                        </div>
-                      </div>
-                      <div className="col-lg-12">
-                        <div className="mb-3">
-                          <label className="form-label mb-1">
-                            Phone Number
-                            <span className="ms-1 text-danger">*</span>
-                          </label>
-                          <input type="tel" className="form-control" />
-                        </div>
-                      </div>
-                      <div className="col-lg-12">
-                        <div className="mb-3 position-relative">
-                          <label className="form-label mb-1">
-                            Password<span className="ms-1 text-danger">*</span>
-                          </label>
-                          <div className="position-relative">
-                          <input
-                        type={
-                          passwordVisibility.password
-                            ? "text"
-                            : "password"
-                        }
-                        className="form-control form-control-lg pass-input"
-                         
-                      />
-                      <span
-                        className={`isax toggle-passwords ${passwordVisibility.password
-                          ? "isax-eye"
-                          : "isax-eye-slash"
-                          }`}
-                        onClick={() =>
-                          togglePasswordVisibility("password")
-                        }
-                      ></span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-lg-12">
-                        <div className="mb-4">
-                          <label className="form-label mb-1">
-                            Confirm Password
-                            <span className="ms-1 text-danger">*</span>
-                          </label>
-                          <div className="position-relative">
-                          <input
-                        type={
-                          passwordVisibility.confirmPassword
-                            ? "text"
-                            : "password"
-                        }
-                        className="form-control form-control-lg pass-input"
-                        
-                      />
-                      <span
-                        className={`isax toggle-passwords ${passwordVisibility.confirmPassword
-                            ? "isax-eye"
-                            : "isax-eye-slash"
-                          }`}
-                        onClick={() =>
-                          togglePasswordVisibility("confirmPassword")
-                        }
-                      ></span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-lg-12">
-                        <button
-                          type="submit"
-                          className="btn btn-secondary btn-lg w-100 justify-content-center"
-                        >
-                          Submit
-                        </button>
-                      </div>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
-            <div className="become-an-instructor rounded-2 bg-primary position-relative mt-5 p-5">
-              <ImageWithBasePath
-                src="./assets/img/shapes/instructor-bg-1.png"
-                alt="img"
-                className="instructor-bg-1"
-              />
-              <ImageWithBasePath
-                src="./assets/img/shapes/instructor-bg-2.png"
-                alt="img"
-                className="instructor-bg-2"
-              />
-              <div className="row align-items-center">
-                <div className="col-lg-8">
-                  <h3 className="text-white mb-2 mblg-3">
-                    Become an Instructor
-                  </h3>
-                  <p className="text-light">
-                    Turn your expertise into impactful courses and inspire
-                    learners worldwide. Join our community of instructors and
-                    start your journey today!
-                  </p>
-                </div>
-                <div className="col-lg-4 d-flex justify-content-lg-end justify-content-center">
-                  <Link
-                    to="#"
-                    className="btn btn-secondary btn-lg mt-3 mt-lg-0"
-                  >
-                    Start Teaching Today
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        {/* register */}
-      </>
+      </div>
     </>
   );
 };

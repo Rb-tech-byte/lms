@@ -1,149 +1,47 @@
-import React from "react";
-import ImageWithBasePath from "../../../../core/common/imageWithBasePath";
-import Slider from "react-slick";
+import React, { useEffect } from 'react';
+import ImageWithBasePath from '../../../../core/common/imageWithBasePath';
+import Slider from 'react-slick';
+import { courseService } from '../../../../core/api/courseService';
 
-const Institution = () => {
-    const institutionslider = {
-        slidesToShow: 7,
-        slidesToScroll: 1,
-        autoplay: true,
-        autoplaySpeed: 1800, // The delay before the next slide
-        speed: 3000, // Speed of the sliding animation
-        arrows: false,
-        responsive: [
-          {
-            breakpoint: 1400,
-            settings: {
-              slidesToShow: 6,
-              infinite: true,
-              dots: false
-            }
-          },
-          {
-            breakpoint: 1200,
-            settings: {
-              slidesToShow: 5
-            }
-          },
-          {
-            breakpoint: 992,
-            settings: {
-              slidesToShow: 3
-            }
-          },
-          {
-            breakpoint: 768,
-            settings: {
-              slidesToShow: 2
-            }
-          }
-        ]
-      };
-    
+const Institution: React.FC = () => {
+  useEffect(() => {
+    courseService.getRestV2OpenApiInfo().catch(() => null);
+  }, []);
+
+  const institutionslider = {
+    lazyLoad: 'ondemand' as const,
+    slidesToShow: 6,
+    slidesToScroll: 1,
+    autoplay: true,
+    speed: 3000,
+    autoplaySpeed: 1800,
+    arrows: false,
+    responsive: [
+      { breakpoint: 1200, settings: { slidesToShow: 5 } },
+      { breakpoint: 992, settings: { slidesToShow: 4 } },
+      { breakpoint: 576, settings: { slidesToShow: 2 } },
+    ],
+  };
+
   return (
-    <>
-      <>
-        {/* institutions */}
-        <section className="client-section">
-          <div className="container">
-            <h6 className="fw-medium text-center mb-4">
-              Trusted by{" "}
-              <span className="text-decoration-underline text-secondary">
-                20+
-              </span>{" "}
-              Institutions Around the World
-            </h6>
-            <Slider {...institutionslider} className="institutions-slider lazy slider">
-              <div className="institutions-items p-1">
-                <ImageWithBasePath
-                  className="img-fluid"
-                  src="./assets/img/client/01.svg"
-                  alt="img"
-                />
-              </div>
-              <div className="institutions-items p-1">
-                <ImageWithBasePath
-                  className="img-fluid"
-                  src="./assets/img/client/02.svg"
-                  alt="img"
-                />
-              </div>
-              <div className="institutions-items p-1">
-                <ImageWithBasePath
-                  className="img-fluid"
-                  src="./assets/img/client/03.svg"
-                  alt="img"
-                />
-              </div>
-              <div className="institutions-items p-1">
-                <ImageWithBasePath
-                  className="img-fluid"
-                  src="./assets/img/client/04.svg"
-                  alt="img"
-                />
-              </div>
-              <div className="institutions-items p-1">
-                <ImageWithBasePath
-                  className="img-fluid"
-                  src="./assets/img/client/05.svg"
-                  alt="img"
-                />
-              </div>
-              <div className="institutions-items p-1">
-                <ImageWithBasePath
-                  className="img-fluid"
-                  src="./assets/img/client/06.svg"
-                  alt="img"
-                />
-              </div>
-              <div className="institutions-items p-1">
-                <ImageWithBasePath
-                  className="img-fluid"
-                  src="./assets/img/client/07.svg"
-                  alt="img"
-                />
-              </div>
-              <div className="institutions-items p-1">
-                <ImageWithBasePath
-                  className="img-fluid"
-                  src="./assets/img/client/02.svg"
-                  alt="img"
-                />
-              </div>
-              <div className="institutions-items p-1">
-                <ImageWithBasePath
-                  className="img-fluid"
-                  src="./assets/img/client/03.svg"
-                  alt="img"
-                />
-              </div>
-              <div className="institutions-items p-1">
-                <ImageWithBasePath
-                  className="img-fluid"
-                  src="./assets/img/client/04.svg"
-                  alt="img"
-                />
-              </div>
-              <div className="institutions-items p-1">
-                <ImageWithBasePath
-                  className="img-fluid"
-                  src="./assets/img/client/05.svg"
-                  alt="img"
-                />
-              </div>
-              <div className="institutions-items p-1">
-                <ImageWithBasePath
-                  className="img-fluid"
-                  src="./assets/img/client/06.svg"
-                  alt="img"
-                />
-              </div>
-            </Slider>
-          </div>
-        </section>
-        {/* institutions */}
-      </>
-    </>
+    <section className="client-section">
+      <div className="container">
+        <h6 className="fw-medium text-center mb-4">
+          Accredited &amp; Partnered with Leading National and International Bodies
+        </h6>
+        <Slider {...institutionslider} className="institutions-slider lazy slider">
+          {['01', '02', '03', '04', '05', '06', '07'].map((num) => (
+            <div className="institutions-items p-1" key={num}>
+              <ImageWithBasePath
+                className="img-fluid"
+                src={`./assets/img/client/${num}.svg`}
+                alt="Partner Institution"
+              />
+            </div>
+          ))}
+        </Slider>
+      </div>
+    </section>
   );
 };
 

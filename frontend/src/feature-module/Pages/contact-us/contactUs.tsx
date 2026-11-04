@@ -1,180 +1,228 @@
-import React from "react";
-import Breadcrumb from "../../../core/common/Breadcrumb/breadcrumb";
-import { Link } from "react-router-dom";
+import React, { useState } from 'react';
+import { callInternalApi } from '../../../core/api/apiClient';
+import { useCmsConfig } from '../../../core/api/cmsService';
 
-const ContactUs = () => {
+const ContactUs: React.FC = () => {
+  const { cms } = useCmsConfig();
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [subject, setSubject] = useState('General Academic & Admissions Inquiry');
+  const [message, setMessage] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [feedback, setFeedback] = useState<{ type: 'success' | 'danger'; text: string } | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFeedback(null);
+    if (!name.trim() || !email.trim() || !message.trim()) {
+      setFeedback({ type: 'danger', text: 'Full name, email, and message are required.' });
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const res = await callInternalApi<{ reference?: string; ticketId?: string; message: string }>(
+        'submit_contact_inquiry',
+        {
+          name: name.trim(),
+          email: email.trim(),
+          phone: phone.trim(),
+          subject: subject.trim(),
+          message: message.trim(),
+        }
+      );
+      setFeedback({
+        type: 'success',
+        text: res.message || `Inquiry logged (${res.reference || res.ticketId || 'OUT-INQ'}).`,
+      });
+      setName('');
+      setEmail('');
+      setPhone('');
+      setMessage('');
+    } catch (err: any) {
+      setFeedback({
+        type: 'danger',
+        text: err?.message || 'Unable to submit inquiry at this time.',
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
-    <>
-      <Breadcrumb title="Contact Us" />
-
-      <section className="contact-sec">
+    <div style={{ background: '#f8fafc', minHeight: '82vh' }}>
+      <section
+        className="py-4"
+        style={{
+          background: 'linear-gradient(135deg, #005B97 0%, #0171BB 55%, #0082D6 100%)',
+          borderBottom: '3px solid #FFD200',
+        }}
+      >
         <div className="container">
-          <div className="contact-info">
-            <div className="row row-gap-3">
-              {/* Address info */}
-              <div className="col-lg-4 col-md-6">
-                <div className="card card-body border p-sm-4">
-                  <div className="d-flex align-items-center">
-                    <div className="contact-icon">
-                      <span className="bg-primary fs-24 rounded-3 d-flex justify-content-center align-items-center">
-                        <i className="isax isax-location5 text-white" />
-                      </span>
-                    </div>
-                    <div className="ps-3">
-                      <h5 className="mb-1">Address</h5>
-                      <address className="mb-0">
-                        1364 Still Water Dr, AK 99801.
-                      </address>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {/* Phone info */}
-              <div className="col-lg-4 col-md-6">
-                <div className="card card-body border p-sm-4">
-                  <div className="d-flex align-items-center">
-                    <div className="contact-icon">
-                      <span className="bg-primary fs-24 rounded-3 d-flex justify-content-center align-items-center">
-                        <i className="isax isax-headphone5 text-white" />
-                      </span>
-                    </div>
-                    <div className="ps-3">
-                      <h5 className="mb-1">Phone</h5>
-                      <p className="mb-0">
-                        <Link
-                          to="#"
-                          className="text-gray-5 text-primary-hover text-decoration-underline mb-0"
-                        >
-                          +1 (907) 789-7623
-                        </Link>
+          <span
+            className="badge rounded-pill px-3 py-1 fw-bold mb-2"
+            style={{ background: '#FFD200', color: '#051426', fontSize: '0.72rem' }}
+          >
+            SCHOLAR SUPPORT & ADMISSIONS HELPDESK
+          </span>
+          <h1 className="fw-bold text-white mb-1" style={{ fontSize: 'clamp(1.35rem, 2.2vw, 1.8rem)' }}>
+            Contact University Headquarters & Regional Centres
+          </h1>
+          <p className="mb-0" style={{ color: '#cbd5e1', fontSize: '0.88rem', maxWidth: 640 }}>
+            Reach out to our admissions desk, examination support office, or technical helpdesk for immediate assistance.
+          </p>
+        </div>
+      </section>
+
+      <section className="py-4">
+        <div className="container">
+          <div className="row g-4">
+            {/* Left Contact Info Cards */}
+            <div className="col-lg-5">
+              <div className="d-flex flex-column gap-3">
+                <div className="card border-0 shadow-sm rounded-4 p-3.5 bg-white">
+                  <div className="p-3 d-flex align-items-start gap-3">
+                    <span
+                      className="rounded-3 d-inline-flex align-items-center justify-content-center flex-shrink-0"
+                      style={{ width: 44, height: 44, background: '#eff6ff', color: '#0171BB' }}
+                    >
+                      <i className="isax isax-location fs-4" />
+                    </span>
+                    <div>
+                      <h6 className="fw-bold text-dark mb-1">University Headquarters</h6>
+                      <p className="text-muted small mb-0">
+                        {cms.footer?.address || 'Kawawa Road, Kinondoni, P.O. Box 23409, Dar es Salaam, Tanzania'}
                       </p>
                     </div>
                   </div>
                 </div>
-              </div>
-              {/* Email info */}
-              <div className="col-lg-4 col-md-6">
-                <div className="card card-body border p-sm-4">
-                  <div className="d-flex align-items-center">
-                    <div className="contact-icon">
-                      <span className="bg-primary fs-24 rounded-3 d-flex justify-content-center align-items-center">
-                        <i className="isax isax-message5 text-white" />
-                      </span>
+
+                <div className="card border-0 shadow-sm rounded-4 p-3.5 bg-white">
+                  <div className="p-3 d-flex align-items-start gap-3">
+                    <span
+                      className="rounded-3 d-inline-flex align-items-center justify-content-center flex-shrink-0"
+                      style={{ width: 44, height: 44, background: '#ecfdf5', color: '#059669' }}
+                    >
+                      <i className="isax isax-call-calling fs-4" />
+                    </span>
+                    <div>
+                      <h6 className="fw-bold text-dark mb-1">Telephone & Direct Line</h6>
+                      <p className="text-muted small mb-0">
+                        {cms.footer?.phone || '+255 22 266 8992 / +255 22 266 8820'} (Mon – Fri, 08:00 – 17:00 EAT)
+                      </p>
                     </div>
-                    <div className="ps-3">
-                      <h5 className="mb-1">E-mail Address</h5>
-                      <p className="mb-0">
-                        <Link
-                          to="#"
-                          className="text-gray-5 text-primary-hover text-decoration-underline mb-0"
-                        >
-                          contact@example.com
-                        </Link>
+                  </div>
+                </div>
+
+                <div className="card border-0 shadow-sm rounded-4 p-3.5 bg-white">
+                  <div className="p-3 d-flex align-items-start gap-3">
+                    <span
+                      className="rounded-3 d-inline-flex align-items-center justify-content-center flex-shrink-0"
+                      style={{ width: 44, height: 44, background: '#fffbeb', color: '#d97706' }}
+                    >
+                      <i className="isax isax-sms fs-4" />
+                    </span>
+                    <div>
+                      <h6 className="fw-bold text-dark mb-1">Official Helpdesk Email</h6>
+                      <p className="text-muted small mb-0">
+                        {cms.footer?.email || 'helpdesk@out.ac.tz'} • admissions@out.ac.tz
                       </p>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div className="bg-light border rounded-4 p-4 p-sm-5 p-md-6">
-            <div className="row align-items-center">
-              <div className="col-lg-6">
-                <div className="contact-details">
-                  <div className="section-header">
-                    <span className="section-badge">Contact Us</span>
-                    <h2>Get in touch with us today</h2>
-                    <p>
-                      Get in touch with us to explore how our LMS solution can
-                      enhance your e-learning experience. We're here to help you
-                      build a seamless and engaging learning platform!
-                    </p>
+
+            {/* Right Interactive Inquiry Form */}
+            <div className="col-lg-7">
+              <div className="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                <h5 className="fw-bold text-dark mb-1">Submit an Academic or Support Inquiry</h5>
+                <p className="text-muted small mb-3">
+                  Your inquiry is routed directly to the relevant faculty or admissions officer.
+                </p>
+
+                {feedback && (
+                  <div className={`alert alert-${feedback.type} py-2 px-3 small rounded-3 mb-3`}>
+                    {feedback.text}
                   </div>
-                </div>
-              </div>
-              <div className="col-lg-6">
-                <div className="card mb-0">
-                  <div className="card-body p-4 p-sm-5 p-md-6">
-                    <h4 className="mb-3">Send Us Message</h4>
-                    <form>
-                      <div className="row">
-                        <div className="col-sm-6">
-                          <div className="mb-4">
-                            <label className="form-label">
-                              Name <span className="ms-1 text-danger">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control form-control-lg"
-                            />
-                          </div>
-                        </div>
-                        <div className="col-sm-6">
-                          <div className="mb-4">
-                            <label className="form-label">
-                              Email Address{" "}
-                              <span className="ms-1 text-danger">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              className="form-control form-control-lg"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="row">
-                        <div className="col-sm-6">
-                          <div className="mb-4">
-                            <label className="form-label">Phone Number</label>
-                            <input
-                              type="text"
-                              className="form-control form-control-lg"
-                            />
-                          </div>
-                        </div>
-                        <div className="col-sm-6">
-                          <div className="mb-4">
-                            <label className="form-label">Subject</label>
-                            <input
-                              type="text"
-                              className="form-control form-control-lg"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="mb-4">
-                        <label className="form-label">Your Message</label>
-                        <textarea
-                          className="form-control form-control-lg"
-                          rows={4}
-                          defaultValue={""}
-                        />
-                      </div>
-                      <div className="d-grid">
-                        <button
-                          type="submit"
-                          className="btn btn-secondary btn-lg"
-                        >
-                          Send Enquiry
-                        </button>
-                      </div>
-                    </form>
+                )}
+
+                <form onSubmit={handleSubmit}>
+                  <div className="row g-3">
+                    <div className="col-md-6">
+                      <label className="form-label small fw-semibold mb-1">Full Name *</label>
+                      <input
+                        type="text"
+                        className="form-control form-control-sm"
+                        required
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="e.g., Baraka Mkwawa"
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label small fw-semibold mb-1">Email Address *</label>
+                      <input
+                        type="email"
+                        className="form-control form-control-sm"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="scholar@out.ac.tz"
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label small fw-semibold mb-1">Phone Number</label>
+                      <input
+                        type="text"
+                        className="form-control form-control-sm"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        placeholder="+255 712 345 678"
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label small fw-semibold mb-1">Department / Topic</label>
+                      <select
+                        className="form-select form-select-sm"
+                        value={subject}
+                        onChange={(e) => setSubject(e.target.value)}
+                      >
+                        <option value="General Academic & Admissions Inquiry">General Academic & Admissions</option>
+                        <option value="Course Registration & Tuition Payment">Course Registration & Tuition</option>
+                        <option value="Digital Classroom & Portal Access">Digital Classroom & Portal Access</option>
+                        <option value="Examinations & Transcripts">Examinations & Transcripts</option>
+                      </select>
+                    </div>
+                    <div className="col-12">
+                      <label className="form-label small fw-semibold mb-1">Your Message *</label>
+                      <textarea
+                        rows={4}
+                        className="form-control form-control-sm"
+                        required
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        placeholder="Describe how our academic or technical support team can assist you..."
+                      />
+                    </div>
+                    <div className="col-12">
+                      <button
+                        type="submit"
+                        disabled={submitting}
+                        className="btn btn-primary rounded-pill px-4 py-2 fw-semibold"
+                        style={{ fontSize: '0.84rem' }}
+                      >
+                        {submitting ? 'Sending Inquiry...' : 'Submit Inquiry'}
+                      </button>
+                    </div>
                   </div>
-                </div>
+                </form>
               </div>
             </div>
-          </div>
-          <div className="contact-map rounded-4 overflow-hidden">
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d40686.62603646482!2d-74.03208057194338!3d40.71688115980892!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew%20York%2C%20NY%2C%20USA!5e0!3m2!1sen!2sin!4v1738829223631!5m2!1sen!2sin"
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Example Website"
-            />
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 };
 

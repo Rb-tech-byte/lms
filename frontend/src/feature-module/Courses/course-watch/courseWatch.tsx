@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Breadcrumb from '../../../core/common/Breadcrumb/breadcrumb';
 import { Link, useLocation } from 'react-router-dom';
 import { all_routes } from '../../router/all_routes';
@@ -40,6 +40,8 @@ const CourseWatch = () => {
   const [expandedSections, setExpandedSections] = useState<Record<number, boolean>>({});
   const [updatingCompletion, setUpdatingCompletion] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'notes' | 'discussion'>('overview');
+  const [moduleSearch, setModuleSearch] = useState<string>('');
+  const [moduleFilter, setModuleFilter] = useState<string>('all');
 
   // Load Course and Curriculum from Moodle Web Services
   useEffect(() => {
@@ -108,6 +110,7 @@ const CourseWatch = () => {
     return () => {
       isMounted = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [courseId]);
 
   // Compute live progress percentage from real Moodle module completion states
@@ -223,6 +226,36 @@ const CourseWatch = () => {
     }
   };
 
+
+  // Real-time filtered syllabus sections
+  const displaySections = useMemo(() => {
+    if (!moduleSearch.trim() && moduleFilter === 'all') return sections;
+    const q = moduleSearch.toLowerCase().trim();
+    return sections
+      .map((sec) => {
+        const matchesSection = sec.name.toLowerCase().includes(q);
+        const filteredMods = sec.modules.filter((m) => {
+          let typeMatch = true;
+          if (moduleFilter === 'url') typeMatch = m.modname === 'url';
+          else if (moduleFilter === 'page') typeMatch = m.modname === 'page';
+          else if (moduleFilter === 'quiz') typeMatch = m.modname === 'quiz';
+          else if (moduleFilter === 'assign') typeMatch = m.modname === 'assign';
+
+          const searchMatch = !q || m.name.toLowerCase().includes(q);
+          return typeMatch && searchMatch;
+        });
+
+        if (matchesSection || filteredMods.length > 0) {
+          return {
+            ...sec,
+            modules: filteredMods,
+          };
+        }
+        return null;
+      })
+      .filter((s) => s !== null);
+  }, [sections, moduleSearch, moduleFilter]);
+
   // Helper to render module icon
   const getModuleIcon = (mod: CourseModule) => {
     switch (mod.modname) {
@@ -310,7 +343,62 @@ const CourseWatch = () => {
                   {/* SECTIONS & MODULES LIST */}
                   {!loading && (
                     <div className="accordions-items-seperate">
-                      {sections.map((section, sIndex) => {
+                      {/* Search & Filter in Syllabus */}
+                      <div className="mb-3">
+                        <div className="input-group input-group-sm mb-1.5">
+                          <span className="input-group-text bg-white border-end-0 text-muted">
+                            <i className="feather-search" style={{ fontSize: 12 }} />
+                          </span>
+                          <input
+                            type="text"
+                            className="form-control border-start-0"
+                            placeholder="Search lessons and quizzes..."
+                            value={moduleSearch}
+                            onChange={(e) => setModuleSearch(e.target.value)}
+                            style={{ fontSize: '0.78rem' }}
+                          />
+                          {moduleSearch && (
+                            <button type="button" className="btn btn-light border-0" onClick={() => setModuleSearch('')}>
+                              <i className="feather-x" style={{ fontSize: 11 }} />
+                            </button>
+                          )}
+                        </div>
+                        <div className="d-flex align-items-center gap-1 flex-wrap">
+                          <button
+                            type="button"
+                            onClick={() => setModuleFilter('all')}
+                            className={`btn btn-sm rounded-pill px-2 py-0.5 ${moduleFilter === 'all' ? 'btn-dark fw-semibold' : 'btn-light text-muted'}`}
+                            style={{ fontSize: '0.68rem' }}
+                          >
+                            All
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setModuleFilter('url')}
+                            className={`btn btn-sm rounded-pill px-2 py-0.5 ${moduleFilter === 'url' ? 'btn-primary fw-semibold' : 'btn-light text-muted'}`}
+                            style={{ fontSize: '0.68rem' }}
+                          >
+                            Videos
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setModuleFilter('page')}
+                            className={`btn btn-sm rounded-pill px-2 py-0.5 ${moduleFilter === 'page' ? 'btn-info text-white fw-semibold' : 'btn-light text-muted'}`}
+                            style={{ fontSize: '0.68rem' }}
+                          >
+                            Readings
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setModuleFilter('quiz')}
+                            className={`btn btn-sm rounded-pill px-2 py-0.5 ${moduleFilter === 'quiz' ? 'btn-danger fw-semibold' : 'btn-light text-muted'}`}
+                            style={{ fontSize: '0.68rem' }}
+                          >
+                            Quizzes
+                          </button>
+                        </div>
+                      </div>
+                      {displaySections.map((section, sIndex) => {
                         const isExpanded = !!expandedSections[section.id];
                         const sectionCompleted = section.modules.filter(
                           (m) => m.completiondata?.state === 1
@@ -319,7 +407,7 @@ const CourseWatch = () => {
                         return (
                           <div className="accordion-item mb-3 border rounded-3 overflow-hidden" key={section.id}>
                             <div
-                              className="accordion-header p-3 bg-light d-flex align-items-center justify-content-between"
+                              className={`accordion-header p-3 ${activeSectionId === section.id ? "bg-light-subtle" : "bg-light"} d-flex align-items-center justify-content-between`}
                               role="button"
                               onClick={() => toggleSection(section.id)}
                               style={{ cursor: 'pointer' }}

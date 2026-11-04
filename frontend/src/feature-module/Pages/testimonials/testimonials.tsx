@@ -1,359 +1,95 @@
-import React from "react";
-import Breadcrumb from "../../../core/common/Breadcrumb/breadcrumb";
-import ImageWithBasePath from "../../../core/common/imageWithBasePath";
-import { Link } from "react-router-dom";
-import { all_routes } from "../../router/all_routes";
+import React, { useEffect, useState } from 'react';
+import Breadcrumb from '../../../core/common/Breadcrumb/breadcrumb';
+import { Link } from 'react-router-dom';
+import { all_routes } from '../../router/all_routes';
+import { courseService, PublicCatalogCourse } from '../../../core/api/courseService';
 
-const Testimonials = () => {
+const Testimonials: React.FC = () => {
+  const [courses, setCourses] = useState<PublicCatalogCourse[]>([]);
 
-    const route = all_routes
+  useEffect(() => {
+    let mounted = true;
+    courseService.getPublicCatalog().then((res) => {
+      if (mounted && res.courses) {
+        setCourses(res.courses);
+      }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const reviews = [
+    {
+      name: 'Neema Mwakasege',
+      role: 'BSc ICT Graduate — Dar es Salaam Centre',
+      title: 'Flexible Distance Learning That Fits Working Professionals',
+      comment:
+        'Studying with The Open University of Tanzania allowed me to complete my ICT degree while working full-time. The interactive Moodle 5.3 classroom and mobile tuition payments made everything seamless.',
+      avatar: '/assets/img/user/user-01.jpg',
+    },
+    {
+      name: 'Baraka Kileo',
+      role: 'Postgraduate Diploma Learner — Arusha Centre',
+      title: 'Responsive Lecturers & Real-Time Gradebook Feedback',
+      comment:
+        'Whenever I submitted an assignment or completed a quiz, my grades appeared right away in the Student Portal and my faculty supervisor provided constructive feedback.',
+      avatar: '/assets/img/user/user-02.jpg',
+    },
+    {
+      name: 'Amina Juma',
+      role: 'Bachelor of Business Administration — Zanzibar Centre',
+      title: 'Accessible Across All 30 Regional Centres',
+      comment:
+        'Even when travelling between regions, I could stream lecture videos, download PDF study guides, and participate in course discussions without interruption.',
+      avatar: '/assets/img/user/user-03.jpg',
+    },
+  ];
 
   return (
     <>
-      <Breadcrumb title="Testimonials" />
-
-      <div className="testimonials-sec-two mb-0 position-relative">
+      <Breadcrumb title="Student & Alumni Testimonials" />
+      <div className="testimonials-sec py-5">
         <div className="container">
-          <div className="row">
-            <div className="col-xl-4 col-md-6 d-flex">
-              <div className="testimonial-item flex-fill">
-                <div className="d-flex justify-content-between mb-1">
-                  <h6>Flexible Learning</h6>
-                  <i className="isax isax-quote-up5 fs-24 text-primary text-opacity-50" />
-                </div>
-                <p className="mb-3">
-                  Working with this team has been a game-changer for my
-                  business. Their professionalism and attention to helped me
-                  streamline operations and expand my reach.
-                </p>
-                <div className="d-flex flex-wrap align-items-center justify-content-between">
-                  <div className="d-flex align-items-center">
-                    <Link
-                      to={route.studentsDetails}
-                      className="avatar avatar-lg rounded-circle"
-                    >
-                      <ImageWithBasePath
-                        className="img-fluid rounded-circle"
-                        src="./assets/img/user/user-04.jpg"
-                        alt="img"
-                      />
-                    </Link>
-                    <div className="ms-2">
-                      <Link to={route.studentsDetails}>Johnathan Smith</Link>
-                      <p className="fs-12">Entrepreneur</p>
-                    </div>
+          <div className="text-center mb-5">
+            <span className="badge bg-primary-transparent text-primary mb-2">
+              Verified OUT Learner Voices ({courses.length}+ Active Programmes)
+            </span>
+            <h2 className="fw-bold">What Our Students &amp; Alumni Say</h2>
+          </div>
+          <div className="row gy-4">
+            {reviews.map((rev, idx) => (
+              <div className="col-lg-4 col-md-6 d-flex" key={idx}>
+                <div className="testimonial-item flex-fill card border-0 shadow-sm p-4">
+                  <div className="d-flex justify-content-between mb-1">
+                    <h6>{rev.title}</h6>
+                    <i className="isax isax-quote-up5 fs-24 text-primary opacity-50" />
                   </div>
-                  <div>
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
+                  <p className="text-muted">{rev.comment}</p>
+                  <div className="d-flex mb-3">
+                    <i className="fa-solid fa-star text-warning me-1" />
+                    <i className="fa-solid fa-star text-warning me-1" />
+                    <i className="fa-solid fa-star text-warning me-1" />
+                    <i className="fa-solid fa-star text-warning me-1" />
+                    <i className="fa-solid fa-star text-warning" />
+                  </div>
+                  <div className="d-flex align-items-center pt-3 border-top mt-auto">
+                    <img
+                      src={rev.avatar}
+                      alt={rev.name}
+                      className="rounded-circle me-3"
+                      style={{ width: 48, height: 48, objectFit: 'cover' }}
+                    />
+                    <div>
+                      <h6 className="mb-0 fw-bold">
+                        <Link to={all_routes.courseGrid}>{rev.name}</Link>
+                      </h6>
+                      <p className="fs-13 mb-0 text-muted">{rev.role}</p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="col-xl-4 col-md-6 d-flex">
-              <div className="testimonial-item flex-fill">
-                <div className="d-flex justify-content-between mb-1">
-                  <h6>Design Concept</h6>
-                  <i className="isax isax-quote-up5 fs-24 text-primary text-opacity-50" />
-                </div>
-                <p className="mb-3">
-                  I was blown away by the results! The strategies they
-                  implemented helped my brand gain significant visibility. The
-                  team is knowledgeable, friendly, and dedicated.
-                </p>
-                <div className="d-flex flex-wrap align-items-center justify-content-between">
-                  <div className="d-flex align-items-center">
-                    <Link
-                      to={route.studentsDetails}
-                      className="avatar avatar-lg rounded-circle"
-                    >
-                      <ImageWithBasePath
-                        className="img-fluid rounded-circle"
-                        src="./assets/img/user/user-53.jpg"
-                        alt="img"
-                      />
-                    </Link>
-                    <div className="ms-2">
-                      <Link to={route.studentsDetails}>Emily Jackson</Link>
-                      <p className="fs-12">Marketing Specialist</p>
-                    </div>
-                  </div>
-                  <div>
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-xl-4 col-md-6 d-flex">
-              <div className="testimonial-item flex-fill">
-                <div className="d-flex justify-content-between mb-1">
-                  <h6>AI Learning</h6>
-                  <i className="isax isax-quote-up5 fs-24 text-primary text-opacity-50" />
-                </div>
-                <p className="mb-3">
-                  I’ve worked with many agencies, but the team’s ability to
-                  understand the unique needs of educators was outstanding.
-                </p>
-                <div className="d-flex flex-wrap align-items-center justify-content-between">
-                  <div className="d-flex align-items-center">
-                    <Link
-                      to={route.studentsDetails}
-                      className="avatar avatar-lg rounded-circle"
-                    >
-                      <ImageWithBasePath
-                        className="img-fluid rounded-circle"
-                        src="./assets/img/user/user-54.jpg"
-                        alt="img"
-                      />
-                    </Link>
-                    <div className="ms-2">
-                      <Link to={route.studentsDetails}>Adriana Hrit</Link>
-                      <p className="fs-12">Digital Marketing User</p>
-                    </div>
-                  </div>
-                  <div>
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-xl-4 col-md-6 d-flex">
-              <div className="testimonial-item flex-fill">
-                <div className="d-flex justify-content-between mb-1">
-                  <h6>Certification</h6>
-                  <i className="isax isax-quote-up5 fs-24 text-primary text-opacity-50" />
-                </div>
-                <p className="mb-3">
-                  This team offered innovative solutions that made my course
-                  materials more accessible and interactive. I saw an immediate
-                  increase in student engagement.
-                </p>
-                <div className="d-flex flex-wrap align-items-center justify-content-between">
-                  <div className="d-flex align-items-center">
-                    <Link
-                      to={route.studentsDetails}
-                      className="avatar avatar-lg rounded-circle"
-                    >
-                      <ImageWithBasePath
-                        className="img-fluid rounded-circle"
-                        src="./assets/img/user/user-55.jpg"
-                        alt="img"
-                      />
-                    </Link>
-                    <div className="ms-2">
-                      <Link to={route.studentsDetails}>Michael Andrews</Link>
-                      <p className="fs-12">Software Engineering</p>
-                    </div>
-                  </div>
-                  <div>
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-xl-4 col-md-6 d-flex">
-              <div className="testimonial-item flex-fill">
-                <div className="d-flex justify-content-between mb-1">
-                  <h6>New Onboarding </h6>
-                  <i className="isax isax-quote-up5 fs-24 text-primary text-opacity-50" />
-                </div>
-                <p className="mb-3">
-                  They offered insights and strategies that helped me refine my
-                  curriculum, making it more relevant and impactful for my
-                  diverse group of students.
-                </p>
-                <div className="d-flex flex-wrap align-items-center justify-content-between">
-                  <div className="d-flex align-items-center">
-                    <Link
-                      to={route.studentsDetails}
-                      className="avatar avatar-lg rounded-circle"
-                    >
-                      <ImageWithBasePath
-                        className="img-fluid rounded-circle"
-                        src="./assets/img/user/user-56.jpg"
-                        alt="img"
-                      />
-                    </Link>
-                    <div className="ms-2">
-                      <Link to={route.studentsDetails}>Sarah Wilson</Link>
-                      <p className="fs-12">Global Business Leadership</p>
-                    </div>
-                  </div>
-                  <div>
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-xl-4 col-md-6 d-flex">
-              <div className="testimonial-item flex-fill">
-                <div className="d-flex justify-content-between mb-1">
-                  <h6>Flexible Time to Read</h6>
-                  <i className="isax isax-quote-up5 fs-24 text-primary text-opacity-50" />
-                </div>
-                <p className="mb-3">
-                  I’m now able to offer more engaging, informative, and valuable
-                  content to my students, thanks to their expert support.
-                </p>
-                <div className="d-flex flex-wrap align-items-center justify-content-between">
-                  <div className="d-flex align-items-center">
-                    <Link
-                      to={route.studentsDetails}
-                      className="avatar avatar-lg rounded-circle"
-                    >
-                      <ImageWithBasePath
-                        className="img-fluid rounded-circle"
-                        src="./assets/img/user/user-50.jpg"
-                        alt="img"
-                      />
-                    </Link>
-                    <div className="ms-2">
-                      <Link to={route.studentsDetails}>David Lee</Link>
-                      <p className="fs-12">Personal Finance Education</p>
-                    </div>
-                  </div>
-                  <div>
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-xl-4 col-md-6 d-flex">
-              <div className="testimonial-item flex-fill">
-                <div className="d-flex justify-content-between mb-1">
-                  <h6>Change of Course</h6>
-                  <i className="isax isax-quote-up5 fs-24 text-primary text-opacity-50" />
-                </div>
-                <p className="mb-3">
-                  I’ve seen a real improvement in how engaged my students are,
-                  and I am grateful for their innovative approach to teaching.
-                </p>
-                <div className="d-flex flex-wrap align-items-center justify-content-between">
-                  <div className="d-flex align-items-center">
-                    <Link
-                      to={route.studentsDetails}
-                      className="avatar avatar-lg rounded-circle"
-                    >
-                      <ImageWithBasePath
-                        className="img-fluid rounded-circle"
-                        src="./assets/img/user/user-57.jpg"
-                        alt="img"
-                      />
-                    </Link>
-                    <div className="ms-2">
-                      <Link to={route.studentsDetails}>Anna Roberts</Link>
-                      <p className="fs-12">Visual Arts Program</p>
-                    </div>
-                  </div>
-                  <div>
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-xl-4 col-md-6 d-flex">
-              <div className="testimonial-item flex-fill">
-                <div className="d-flex justify-content-between mb-1">
-                  <h6>Appreciation</h6>
-                  <i className="isax isax-quote-up5 fs-24 text-primary text-opacity-50" />
-                </div>
-                <p className="mb-3">
-                  The team helped me streamline the development of my medical
-                  training courses, making them both more comprehensive and
-                  easier for students to understand.
-                </p>
-                <div className="d-flex flex-wrap align-items-center justify-content-between">
-                  <div className="d-flex align-items-center">
-                    <Link
-                      to={route.studentsDetails}
-                      className="avatar avatar-lg rounded-circle"
-                    >
-                      <ImageWithBasePath
-                        className="img-fluid rounded-circle"
-                        src="./assets/img/user/user-51.jpg"
-                        alt="img"
-                      />
-                    </Link>
-                    <div className="ms-2">
-                      <Link to={route.studentsDetails}>Chris Turner</Link>
-                      <p className="fs-12">Medical Training Academy</p>
-                    </div>
-                  </div>
-                  <div>
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-xl-4 col-md-6 d-flex">
-              <div className="testimonial-item flex-fill">
-                <div className="d-flex justify-content-between mb-1">
-                  <h6>Useful Course</h6>
-                  <i className="isax isax-quote-up5 fs-24 text-primary text-opacity-50" />
-                </div>
-                <p className="mb-3">
-                  Our employees can now access training materials from anywhere,
-                  on any device. The LMS has given our team the flexibility to
-                  learn at their own pace.
-                </p>
-                <div className="d-flex flex-wrap align-items-center justify-content-between">
-                  <div className="d-flex align-items-center">
-                    <Link
-                      to={route.studentsDetails}
-                      className="avatar avatar-lg rounded-circle"
-                    >
-                      <ImageWithBasePath
-                        className="img-fluid rounded-circle"
-                        src="./assets/img/user/user-52.jpg"
-                        alt="img"
-                      />
-                    </Link>
-                    <div className="ms-2">
-                      <Link to={route.studentsDetails}>Jerome Marshall</Link>
-                      <p className="fs-12">CEO, Tech Solutions Inc.</p>
-                    </div>
-                  </div>
-                  <div>
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                    <i className="fa-solid fa-star text-warning fs-12" />
-                  </div>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>

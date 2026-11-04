@@ -1,695 +1,124 @@
-import React from 'react'
-import Breadcrumb from '../../../core/common/Breadcrumb/breadcrumb'
-import { Link } from 'react-router-dom'
-import ImageWithBasePath from '../../../core/common/imageWithBasePath'
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import Breadcrumb from '../../../core/common/Breadcrumb/breadcrumb';
+import { all_routes } from '../../router/all_routes';
+import { courseService, MoodleCourse } from '../../../core/api/courseService';
+import { useAuth } from '../../../core/auth/authContext';
 
-const CourseResume = () => {
+const CourseResume: React.FC = () => {
+  const { user } = useAuth();
+  const [courses, setCourses] = useState<MoodleCourse[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    const loadEnrolled = async () => {
+      setLoading(true);
+      try {
+        const uid = Number(user?.id || 4);
+        const enrolled = await courseService.getUserEnrolledCourses(uid);
+        if (!mounted) return;
+        if (enrolled && enrolled.length > 0) {
+          setCourses(enrolled);
+        } else {
+          const all = await courseService.getCourses();
+          if (mounted) setCourses(all.filter((c) => c.id !== 1));
+        }
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+    loadEnrolled();
+    return () => {
+      mounted = false;
+    };
+  }, [user]);
+
   return (
     <>
-      <Breadcrumb title='Course Resume' />
-
-      <>
-        {/* Course detail */}
-        <div className="course-resume">
-          <div className="container">
-            {/*  */}
-            <div className="card mb-4">
-              <div className="card-body">
-                <div className="course-resume-details-1 d-lg-flex align-items-center mb-3">
-                  <div className="position-relative cou-resume-image">
-                    <ImageWithBasePath
-                      className="img-fluid"
-                      src="assets/img/course/course-26.jpg"
-                      alt="img"
-                    />
-                  </div>
-                  <div className="cou-resume-content w-100 ps-lg-4">
-                    <h3 className="mb-2">The Complete Web Developer Course 2.0</h3>
-                    <p className="mb-3 fs-14">
-                      Learn Web Development by building 25 websites and mobile apps
-                      using HTML, CSS, Javascript, PHP, Python
-                    </p>
-                    <div className="d-flex align-items-center cou-lesson">
-                      <p className="d-flex align-items-center">
-                        <ImageWithBasePath
-                          className="img-fluid"
-                          src="./assets/img/icons/book3.svg"
-                          alt="img"
-                        />
-                        12+ Lesson
-                      </p>
-                      <p className="d-flex align-items-center">
-                        <ImageWithBasePath
-                          className="img-fluid"
-                          src="./assets/img/icons/timer-start.svg"
-                          alt="img"
-                        />
-                        9hr 30min
-                      </p>
-                      <p className="d-flex align-items-center">
-                        <ImageWithBasePath
-                          className="img-fluid"
-                          src="./assets/img/icons/people3.svg"
-                          alt="img"
-                        />
-                        32 students enrolled
-                      </p>
-                      <span className="badge badge-sm fs-12 rounded-pill bg-warning">
-                        Web Development
-                      </span>
-                    </div>
-                    <Link
-                      to="#"
-                      className="btn btn-secondary d-inline-flex align-items-center"
-                    >
-                      <i className="isax isax-pause-circle5 me-1" /> Resume Course
-                    </Link>
-                  </div>
-                </div>
-                <div className="course-resume-details-2">
-                  <h5>Course Curriculum</h5>
-                  <div
-                    className="accordion accordion-customicon1 accordions-items-seperate"
-                    id="accordioncustomicon1Example"
-                  >
-                    <div className="accordion-item" data-aos="fade-up">
-                      <h2 className="accordion-header" id="headingcustomicon1One">
-                        <Link
-                          to="#"
-                          className="accordion-button"
-                          data-bs-toggle="collapse"
-                          data-bs-target="#collapsecustomicon1One"
-                          aria-expanded="true"
-                          aria-controls="collapsecustomicon1One"
-                        >
-                          <span>
-                            Introduction of Digital Marketing{" "}
-                            <small className="d-flex fs-14 text-gray-7 fw-normal mt-1">
-                              No of Lecturers : 3
-                            </small>
-                          </span>{" "}
-                          <i className="isax isax-arrow-circle-up4" />
-                        </Link>
-                      </h2>
-                      <div
-                        id="collapsecustomicon1One"
-                        className="accordion-collapse collapse show"
-                        aria-labelledby="headingcustomicon1One"
-                        data-bs-parent="#accordioncustomicon1Example"
-                      >
-                        <div className="accordion-body pb-0">
-                          <p className="mb-2 fs-16">
-                            1/3 Completed{" "}
-                            <span className="float-end text-gray-9 fw-medium">
-                              50%
-                            </span>
-                          </p>
-                          <div
-                            className="progress mb-1 progress-xs progress-animate border-radius-0"
-                            role="progressbar"
-                            aria-valuenow={50}
-                            aria-valuemin={0}
-                            aria-valuemax={100}
-                          >
-                            <div
-                              className="progress-bar bg-secondary"
-                              style={{ width: "50%" }}
-                            ></div>
-                          </div>
-                          <ul>
-                            <li>
-                              <h6 className="d-flex align-items-center">
-                                <i className="isax isax-play-circle5 fs-24 text-success me-1" />{" "}
-                                Introduction{" "}
-                                <span className="text-gray-7 fw-normal ms-auto flex-shrink-0">
-                                  2m 10s
-                                </span>
-                              </h6>
-                              <div className="d-flex mt-3">
-                                <Link to="#" className="btn note-btn px-3 me-2">
-                                  <i className="isax isax-note-2 me-2 fs-10" />
-                                  Note
-                                </Link>
-                                <Link to="#" className="btn play-again-btn px-3 me-2">
-                                  <i className="isax isax-note-favorite5 me-2 fs-10" />
-                                  Play Again
-                                </Link>
-                              </div>
-                              <div className="d-flex border rounded-2 bg-white p-2 p-sm-3 mt-3 align-items-center justify-content-between">
-                                <div className="d-flex align-items-center">
-                                  <span className="badge badge-primary d-inline-flex align-items-center badge-md p-1">
-                                    <i className="fa-solid fa-circle mx-1 fs-5" />
-                                    5.20
-                                  </span>
-                                  <p className="fw-medium mx-2">
-                                    Describe SEO Engine
-                                  </p>
-                                </div>
-                                <div className="d-flex float-end">
-                                  <Link to="#" className="resume-play-btn">
-                                    <i className="isax isax-play-circle5" />
-                                  </Link>
-                                  <Link to="#" className="delete-btn">
-                                    <i className="isax isax-trash" />
-                                  </Link>
-                                </div>
-                              </div>
-                              <div className="d-flex border rounded-2 bg-white p-2 p-sm-3 mt-2 align-items-center justify-content-between">
-                                <div className="d-flex align-items-center">
-                                  <span className="badge badge-primary d-inline-flex align-items-center badge-md p-1">
-                                    <i className="fa-solid fa-circle mx-1 fs-5" />
-                                    5.20
-                                  </span>
-                                  <p className="fw-medium mx-2">
-                                    Know about all marketing
-                                  </p>
-                                </div>
-                                <div className="d-flex float-end">
-                                  <Link to="#" className="resume-play-btn">
-                                    <i className="isax isax-play-circle5" />
-                                  </Link>
-                                  <Link to="#" className="delete-btn">
-                                    <i className="isax isax-trash" />
-                                  </Link>
-                                </div>
-                              </div>
-                            </li>
-                            <li>
-                              <h6 className="d-flex align-items-center">
-                                <i className="isax isax-play-circle5 fs-24 text-success me-1" />{" "}
-                                What is Digital Marketing What is Digital Marketing{" "}
-                                <span className="text-gray-7 fw-normal ms-auto flex-shrink-0">
-                                  2m 10s
-                                </span>
-                              </h6>
-                              <div className="d-flex mt-3">
-                                <Link to="#" className="btn note-btn px-3 me-2">
-                                  <i className="isax isax-note-2 me-2 fs-10" />
-                                  Note
-                                </Link>
-                                <Link to="#" className="btn play-again-btn px-3 me-2">
-                                  <i className="isax isax-note-favorite5 me-2 fs-10" />
-                                  Play Again
-                                </Link>
-                              </div>
-                            </li>
-                            <li>
-                              <h6 className="d-flex align-items-center">
-                                <i className="isax isax-play-circle5 fs-24 text-info me-1" />
-                                Type of Digital Marketing{" "}
-                                <span className="text-gray-7 fw-normal ms-auto flex-shrink-0">
-                                  18m 10s
-                                </span>
-                              </h6>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                    <div
-                      className="accordion-item"
-                      data-aos="fade-up"
-                      data-aos-delay={250}
-                    >
-                      <h2 className="accordion-header" id="headingcustomicon1Two">
-                        <Link
-                          to="#"
-                          className="accordion-button collapsed"
-                          data-bs-toggle="collapse"
-                          data-bs-target="#collapsecustomicon1Two"
-                          aria-expanded="false"
-                          aria-controls="collapsecustomicon1One"
-                        >
-                          <span>
-                            Introduction of Digital Marketing{" "}
-                            <small className="d-flex fs-14 text-gray-7 fw-normal mt-1">
-                              No of Lecturers : 3
-                            </small>
-                          </span>{" "}
-                          <i className="isax isax-arrow-circle-up4" />
-                        </Link>
-                      </h2>
-                      <div
-                        id="collapsecustomicon1Two"
-                        className="accordion-collapse collapse"
-                        aria-labelledby="headingcustomicon1Two"
-                        data-bs-parent="#accordioncustomicon1Example"
-                      >
-                        <div className="accordion-body pb-0">
-                          <p className="mb-1 fs-16">
-                            1/3 Completed{" "}
-                            <span className="float-end text-gray-9 fw-medium">
-                              50%
-                            </span>
-                          </p>
-                          <div
-                            className="progress mb-1 progress-xs progress-animate border-radius-0"
-                            role="progressbar"
-                            aria-valuenow={50}
-                            aria-valuemin={0}
-                            aria-valuemax={100}
-                          >
-                            <div
-                              className="progress-bar bg-secondary"
-                              style={{ width: "50%" }}
-                            ></div>
-                          </div>
-                          <ul>
-                            <li>
-                              <h6 className="d-flex align-items-center">
-                                <i className="isax isax-play-circle5 fs-24 text-success me-1" />{" "}
-                                Introduction{" "}
-                                <span className="text-gray-7 fw-normal ms-auto flex-shrink-0">
-                                  2m 10s
-                                </span>
-                              </h6>
-                              <div className="d-flex mt-3">
-                                <Link to="#" className="btn note-btn px-3 me-2">
-                                  <i className="isax isax-note-2 me-2 fs-10" />
-                                  Note
-                                </Link>
-                                <Link to="#" className="btn play-again-btn px-3 me-2">
-                                  <i className="isax isax-note-favorite5 me-2 fs-10" />
-                                  Play Again
-                                </Link>
-                              </div>
-                              <div className="d-flex border rounded-2 bg-white p-2 p-sm-3 mt-3 align-items-center justify-content-between">
-                                <div className="d-flex align-items-center">
-                                  <span className="badge badge-primary d-inline-flex align-items-center badge-md p-1">
-                                    <i className="fa-solid fa-circle mx-1 fs-5" />
-                                    5.20
-                                  </span>
-                                  <p className="fw-medium mx-2">
-                                    Describe SEO Engine
-                                  </p>
-                                </div>
-                                <div className="d-flex float-end">
-                                  <Link to="#" className="resume-play-btn">
-                                    <i className="isax isax-play-circle5" />
-                                  </Link>
-                                  <Link to="#" className="delete-btn">
-                                    <i className="isax isax-trash" />
-                                  </Link>
-                                </div>
-                              </div>
-                              <div className="d-flex border rounded-2 bg-white p-2 p-sm-3 mt-2 align-items-center justify-content-between">
-                                <div className="d-flex align-items-center">
-                                  <span className="badge badge-primary d-inline-flex align-items-center badge-md p-1">
-                                    <i className="fa-solid fa-circle mx-1 fs-5" />
-                                    5.20
-                                  </span>
-                                  <p className="fw-medium mx-2">
-                                    Know about all marketing
-                                  </p>
-                                </div>
-                                <div className="d-flex float-end">
-                                  <Link to="#" className="resume-play-btn">
-                                    <i className="isax isax-play-circle5" />
-                                  </Link>
-                                  <Link to="#" className="delete-btn">
-                                    <i className="isax isax-trash" />
-                                  </Link>
-                                </div>
-                              </div>
-                            </li>
-                            <li>
-                              <h6 className="d-flex align-items-center">
-                                <i className="isax isax-play-circle5 fs-24 text-success me-1" />{" "}
-                                What is Digital Marketing What is Digital Marketing{" "}
-                                <span className="text-gray-7 fw-normal ms-auto flex-shrink-0">
-                                  2m 10s
-                                </span>
-                              </h6>
-                              <div className="d-flex mt-3">
-                                <Link to="#" className="btn note-btn px-3 me-2">
-                                  <i className="isax isax-note-2 me-2 fs-10" />
-                                  Note
-                                </Link>
-                                <Link to="#" className="btn play-again-btn px-3 me-2">
-                                  <i className="isax isax-note-favorite5 me-2 fs-10" />
-                                  Play Again
-                                </Link>
-                              </div>
-                            </li>
-                            <li>
-                              <h6 className="d-flex align-items-center">
-                                <i className="isax isax-play-circle5 fs-24 text-success me-1" />
-                                Type of Digital Marketing{" "}
-                                <span className="text-gray-7 fw-normal ms-auto flex-shrink-0">
-                                  18m 10s
-                                </span>
-                              </h6>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+      <Breadcrumb title="Resume Active Courses" />
+      <div className="content">
+        <div className="container">
+          <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <div>
+              <h4 className="mb-1 fw-bold">Continue Learning</h4>
+              <p className="text-muted small mb-0">
+                Pick up right where you left off in your enrolled Open University of Tanzania courses.
+              </p>
             </div>
-            {/*  */}
-            <div className="card">
-              <div className="card-body">
-                <div className="course-resume-details-1 d-lg-flex align-items-center mb-3">
-                  <div className="position-relative cou-resume-image">
-                    <ImageWithBasePath
-                      className="img-fluid"
-                      src="assets/img/course/course-03.jpg"
-                      alt="img"
-                    />
-                  </div>
-                  <div className="cou-resume-content w-100 ps-lg-4">
-                    <h3 className="mb-2">
-                      Sketch from A to Z (2024): Become an app designer
-                    </h3>
-                    <p className="mb-2 fs-14">
-                      Learn Web Development by building 25 websites and mobile apps
-                      using HTML, CSS, Javascript, PHP, Python
-                    </p>
-                    <div className="d-flex align-items-center cou-lesson">
-                      <p className="d-flex align-items-center">
-                        <ImageWithBasePath
-                          className="img-fluid"
-                          src="./assets/img/icons/book3.svg"
-                          alt="img"
-                        />
-                        12+ Lesson
-                      </p>
-                      <p className="d-flex align-items-center">
-                        <ImageWithBasePath
-                          className="img-fluid"
-                          src="./assets/img/icons/timer-start.svg"
-                          alt="img"
-                        />
-                        9hr 30min
-                      </p>
-                      <p className="d-flex align-items-center">
-                        <ImageWithBasePath
-                          className="img-fluid"
-                          src="./assets/img/icons/people3.svg"
-                          alt="img"
-                        />
-                        32 students enrolled
-                      </p>
-                      <span className="badge badge-sm fs-12 rounded-pill bg-warning">
-                        Web Development
-                      </span>
-                    </div>
-                    <Link to="#" className="btn btn-secondary">
-                      <i className="isax isax-pause-circle5 me-1" /> Resume Course
-                    </Link>
-                  </div>
-                </div>
-                <div className="course-resume-details-2">
-                  <h5>Course Curriculum</h5>
-                  <div
-                    className="accordion accordion-customicon2 accordions-items-seperate"
-                    id="accordioncustomicon2Example"
-                  >
-                    <div className="accordion-item" data-aos="fade-up">
-                      <h2 className="accordion-header" id="headingcustomicon2One">
-                        <Link
-                          to="#"
-                          className="accordion-button"
-                          data-bs-toggle="collapse"
-                          data-bs-target="#collapsecustomicon2One"
-                          aria-expanded="true"
-                          aria-controls="collapsecustomicon2One"
-                        >
-                          <span>
-                            Introduction of Digital Marketing{" "}
-                            <small className="d-flex fs-14 text-gray-7 fw-normal mt-1">
-                              No of Lecturers : 3
-                            </small>
-                          </span>{" "}
-                          <i className="isax isax-arrow-circle-up4" />
-                        </Link>
-                      </h2>
-                      <div
-                        id="collapsecustomicon2One"
-                        className="accordion-collapse collapse show"
-                        aria-labelledby="headingcustomicon2One"
-                        data-bs-parent="#accordioncustomicon2Example"
-                      >
-                        <div className="accordion-body pb-0">
-                          <p className="mb-1 fs-16">
-                            1/3 Completed{" "}
-                            <span className="float-end text-gray-9 fw-medium">
-                              50%
-                            </span>
-                          </p>
-                          <div
-                            className="progress mb-1 progress-xs progress-animate border-radius-0"
-                            role="progressbar"
-                            aria-valuenow={50}
-                            aria-valuemin={0}
-                            aria-valuemax={100}
-                          >
-                            <div
-                              className="progress-bar bg-secondary"
-                              style={{ width: "50%" }}
-                            ></div>
-                          </div>
-                          <ul>
-                            <li>
-                              <h6 className="d-flex align-items-center">
-                                <i className="isax isax-play-circle5 fs-24 text-success me-1" />{" "}
-                                Introduction{" "}
-                                <span className="text-gray-7 fw-normal ms-auto flex-shrink-0">
-                                  2m 10s
-                                </span>
-                              </h6>
-                              <div className="d-flex mt-3">
-                                <Link to="#" className="btn note-btn px-3 me-2">
-                                  <i className="isax isax-note-2 me-2 fs-10" />
-                                  Note
-                                </Link>
-                                <Link to="#" className="btn play-again-btn px-3 me-2">
-                                  <i className="isax isax-note-favorite5 me-2 fs-10" />
-                                  Play Again
-                                </Link>
-                              </div>
-                              <div className="d-flex border rounded-2 bg-white p-2 p-sm-3 mt-3 align-items-center justify-content-between">
-                                <div className="d-flex align-items-center">
-                                  <span className="badge badge-primary d-inline-flex align-items-center badge-md p-1">
-                                    <i className="fa-solid fa-circle mx-1 fs-5" />
-                                    5.20
-                                  </span>
-                                  <p className="fw-medium mx-2">
-                                    Describe SEO Engine
-                                  </p>
-                                </div>
-                                <div className="d-flex float-end">
-                                  <Link to="#" className="resume-play-btn">
-                                    <i className="isax isax-play-circle5" />
-                                  </Link>
-                                  <Link to="#" className="delete-btn">
-                                    <i className="isax isax-trash" />
-                                  </Link>
-                                </div>
-                              </div>
-                              <div className="d-flex border rounded-2 bg-white p-2 p-sm-3 mt-2 align-items-center justify-content-between">
-                                <div className="d-flex align-items-center">
-                                  <span className="badge badge-primary d-inline-flex align-items-center badge-md p-1">
-                                    <i className="fa-solid fa-circle mx-1 fs-5" />
-                                    5.20
-                                  </span>
-                                  <p className="fw-medium mx-2">
-                                    Know about all marketing
-                                  </p>
-                                </div>
-                                <div className="d-flex float-end">
-                                  <Link to="#" className="resume-play-btn">
-                                    <i className="isax isax-play-circle5" />
-                                  </Link>
-                                  <Link to="#" className="delete-btn">
-                                    <i className="isax isax-trash" />
-                                  </Link>
-                                </div>
-                              </div>
-                            </li>
-                            <li>
-                              <h6 className="d-flex align-items-center">
-                                <i className="isax isax-play-circle5 fs-24 text-success me-1" />{" "}
-                                What is Digital Marketing What is Digital Marketing{" "}
-                                <span className="text-gray-7 fw-normal ms-auto flex-shrink-0">
-                                  2m 10s
-                                </span>
-                              </h6>
-                              <div className="d-flex mt-3">
-                                <Link to="#" className="btn note-btn px-3 me-2">
-                                  <i className="isax isax-note-2 me-2 fs-10" />
-                                  Note
-                                </Link>
-                                <Link to="#" className="btn play-again-btn px-3 me-2">
-                                  <i className="isax isax-note-favorite5 me-2 fs-10" />
-                                  Play Again
-                                </Link>
-                              </div>
-                            </li>
-                            <li>
-                              <h6 className="d-flex align-items-center">
-                                <i className="isax isax-play-circle5 fs-24 text-success me-1" />
-                                Type of Digital Marketing{" "}
-                                <span className="text-gray-7 fw-normal ms-auto flex-shrink-0">
-                                  18m 10s
-                                </span>
-                              </h6>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                    <div
-                      className="accordion-item"
-                      data-aos="fade-up"
-                      data-aos-delay={250}
-                    >
-                      <h2 className="accordion-header" id="headingcustomicon2Two">
-                        <Link
-                          to="#"
-                          className="accordion-button collapsed"
-                          data-bs-toggle="collapse"
-                          data-bs-target="#collapsecustomicon2Two"
-                          aria-expanded="false"
-                          aria-controls="collapsecustomicon2One"
-                        >
-                          <span>
-                            Introduction of Digital Marketing{" "}
-                            <small className="d-flex fs-14 text-gray-7 fw-normal mt-1">
-                              No of Lecturers : 3
-                            </small>
-                          </span>{" "}
-                          <i className="isax isax-arrow-circle-up4" />
-                        </Link>
-                      </h2>
-                      <div
-                        id="collapsecustomicon2Two"
-                        className="accordion-collapse collapse"
-                        aria-labelledby="headingcustomicon2Two"
-                        data-bs-parent="#accordioncustomicon2Example"
-                      >
-                        <div className="accordion-body pb-0">
-                          <p className="mb-1 fs-16">
-                            1/3 Completed{" "}
-                            <span className="float-end text-gray-9 fw-medium">
-                              50%
-                            </span>
-                          </p>
-                          <div
-                            className="progress mb-1 progress-xs progress-animate border-radius-0"
-                            role="progressbar"
-                            aria-valuenow={50}
-                            aria-valuemin={0}
-                            aria-valuemax={100}
-                          >
-                            <div
-                              className="progress-bar bg-secondary"
-                              style={{ width: "50%" }}
-                            ></div>
-                          </div>
-                          <ul>
-                            <li>
-                              <h6 className="d-flex align-items-center">
-                                <i className="isax isax-play-circle5 fs-24 text-success me-1" />{" "}
-                                Introduction{" "}
-                                <span className="text-gray-7 fw-normal ms-auto flex-shrink-0">
-                                  2m 10s
-                                </span>
-                              </h6>
-                              <div className="d-flex mt-3">
-                                <Link to="#" className="btn note-btn px-3 me-2">
-                                  <i className="isax isax-note-2 me-2 fs-10" />
-                                  Note
-                                </Link>
-                                <Link to="#" className="btn play-again-btn px-3 me-2">
-                                  <i className="isax isax-note-favorite5 me-2 fs-10" />
-                                  Play Again
-                                </Link>
-                              </div>
-                              <div className="d-flex border rounded-2 bg-white p-2 p-sm-3 mt-3 align-items-center justify-content-between">
-                                <div className="d-flex align-items-center">
-                                  <span className="badge badge-primary d-inline-flex align-items-center badge-md p-1">
-                                    <i className="fa-solid fa-circle mx-1 fs-5" />
-                                    5.20
-                                  </span>
-                                  <p className="fw-medium mx-2">
-                                    Describe SEO Engine
-                                  </p>
-                                </div>
-                                <div className="d-flex float-end">
-                                  <Link to="#" className="resume-play-btn">
-                                    <i className="isax isax-play-circle5" />
-                                  </Link>
-                                  <Link to="#" className="delete-btn">
-                                    <i className="isax isax-trash" />
-                                  </Link>
-                                </div>
-                              </div>
-                              <div className="d-flex border rounded-2 bg-white p-2 p-sm-3 mt-2 align-items-center justify-content-between">
-                                <div className="d-flex align-items-center">
-                                  <span className="badge badge-primary d-inline-flex align-items-center badge-md p-1">
-                                    <i className="fa-solid fa-circle mx-1 fs-5" />
-                                    5.20
-                                  </span>
-                                  <p className="fw-medium mx-2">
-                                    Know about all marketing
-                                  </p>
-                                </div>
-                                <div className="d-flex float-end">
-                                  <Link to="#" className="resume-play-btn">
-                                    <i className="isax isax-play-circle5" />
-                                  </Link>
-                                  <Link to="#" className="delete-btn">
-                                    <i className="isax isax-trash" />
-                                  </Link>
-                                </div>
-                              </div>
-                            </li>
-                            <li>
-                              <h6 className="d-flex align-items-center">
-                                <i className="isax isax-play-circle5 fs-24 text-success me-1" />{" "}
-                                What is Digital Marketing What is Digital Marketing{" "}
-                                <span className="text-gray-7 fw-normal ms-auto flex-shrink-0">
-                                  2m 10s
-                                </span>
-                              </h6>
-                              <div className="d-flex mt-3">
-                                <Link to="#" className="btn note-btn px-3 me-2">
-                                  <i className="isax isax-note-2 me-2 fs-10" />
-                                  Note
-                                </Link>
-                                <Link to="#" className="btn play-again-btn px-3 me-2">
-                                  <i className="isax isax-note-favorite5 me-2 fs-10" />
-                                  Play Again
-                                </Link>
-                              </div>
-                            </li>
-                            <li>
-                              <h6 className="d-flex align-items-center">
-                                <i className="isax isax-play-circle5 fs-24 text-success me-1" />
-                                Type of Digital Marketing{" "}
-                                <span className="text-gray-7 fw-normal ms-auto flex-shrink-0">
-                                  18m 10s
-                                </span>
-                              </h6>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <Link to={all_routes.studentDashboard} className="btn btn-outline-primary btn-sm">
+              <i className="isax isax-element-4 me-1" /> Student Portal
+            </Link>
           </div>
+
+          {loading ? (
+            <div className="text-center py-5">
+              <div className="spinner-border text-primary" role="status" />
+              <p className="text-muted mt-2 mb-0">Synchronizing Moodle course progress...</p>
+            </div>
+          ) : courses.length === 0 ? (
+            <div className="card border-0 shadow-sm p-5 text-center">
+              <h5>No enrolled courses yet</h5>
+              <p className="text-muted">Browse the OUT course catalog to enroll in a course.</p>
+              <div>
+                <Link to={all_routes.courseGrid} className="btn btn-primary btn-sm">
+                  Explore Course Catalog
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <div className="row g-4">
+              {courses.map((course) => {
+                const pct = Math.min(100, Math.max(0, Math.round(course.progress || 0)));
+                return (
+                  <div className="col-lg-6" key={course.id}>
+                    <div className="card border-0 shadow-sm h-100 p-4">
+                      <div className="d-flex justify-content-between align-items-start mb-2">
+                        <span className="badge bg-primary-transparent text-primary">
+                          {course.shortname}
+                        </span>
+                        <span className="badge bg-light text-dark border">{pct}% Complete</span>
+                      </div>
+                      <h5 className="fw-bold mb-2">
+                        <Link to={`${all_routes.courseWatch}?id=${course.id}`}>
+                          {course.fullname}
+                        </Link>
+                      </h5>
+                      <div className="progress mb-3" style={{ height: 8 }}>
+                        <div
+                          className="progress-bar bg-primary"
+                          role="progressbar"
+                          style={{ width: `${pct}%` }}
+                          aria-valuenow={pct}
+                          aria-valuemin={0}
+                          aria-valuemax={100}
+                        />
+                      </div>
+                      <div className="d-flex justify-content-between align-items-center mt-auto pt-2">
+                        <Link
+                          to={`${all_routes.courseDetails}?id=${course.id}`}
+                          className="text-muted small text-decoration-underline"
+                        >
+                          View Course Details
+                        </Link>
+                        <Link
+                          to={`${all_routes.courseWatch}?id=${course.id}`}
+                          className="btn btn-secondary btn-sm rounded-pill px-3"
+                        >
+                          <i className="isax isax-play-circle me-1" />
+                          Resume Classroom
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
-        {/* /Course detail */}
-      </>
-
+      </div>
     </>
-  )
-}
+  );
+};
 
-export default CourseResume
+export default CourseResume;

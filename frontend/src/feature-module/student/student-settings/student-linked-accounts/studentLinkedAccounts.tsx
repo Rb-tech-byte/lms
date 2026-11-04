@@ -1,112 +1,42 @@
-import React from "react";
-import Breadcrumb from "../../../../core/common/Breadcrumb/breadcrumb";
-import { Link } from "react-router-dom";
-import ProfileCard from "../../common/profileCard";
-import StudentSidebar from "../../common/studentSidebar";
-import SettingsLinks from "../settingsLinks/settingsLinks";
-import ImageWithBasePath from "../../../../core/common/imageWithBasePath";
+import React from 'react';
+import Breadcrumb from '../../../../core/common/Breadcrumb/breadcrumb';
+import ProfileCard from '../../common/profileCard';
+import StudentSidebar from '../../common/studentSidebar';
+import SettingsLinks from '../settingsLinks/settingsLinks';
+import { useAuth } from '../../../../core/auth/authContext';
 
-const StudentLinkedAccounts = () => {
+const StudentLinkedAccounts: React.FC = () => {
+  const { user } = useAuth();
 
   return (
     <>
-      <Breadcrumb title="Settings" />
+      <Breadcrumb title="Linked Institutional Accounts" />
       <div className="content">
         <div className="container">
-          {/* profile box */}
           <ProfileCard />
-          {/* profile box */}
           <div className="row">
-            {/* sidebar */}
             <StudentSidebar />
-            {/* sidebar */}
             <div className="col-lg-9">
-              <div className="mb-3">
-                <h5>Settings</h5>
-              </div>
-              <SettingsLinks />
               <div className="card mb-0">
                 <div className="card-body">
-                  <div className="row">
-                    <div className="col-md-12">
-                      <div className="d-flex align-items-center border-bottom mb-4 pb-4">
-                        <div className="flex-shrink-0 me-3">
-                          <ImageWithBasePath src="assets/img/icon/fb-icon.svg" alt="Img" />
-                        </div>
-                        <div className="d-sm-flex align-items-center justify-content-between w-100">
-                          <div className="mb-2 mb-sm-0">
-                            <h6 className="mb-1">Facebook</h6>
-                            <p className="mb-0">
-                              Facebook is a social platform for connecting,
-                              sharing, and building communities globally.
-                            </p>
-                          </div>
-                          <Link to="#" className="btn btn-dark flex-shrink-0">
-                            Remove
-                          </Link>
-                        </div>
-                      </div>
-                      <div className="d-flex align-items-center border-bottom mb-4 pb-4">
-                        <div className="flex-shrink-0 me-3">
-                          <ImageWithBasePath
-                            src="assets/img/icon/google-icon.svg"
-                            alt="Img"
-                          />
-                        </div>
-                        <div className="d-sm-flex align-items-center justify-content-between w-100">
-                          <div className="mb-2 mb-sm-0">
-                            <h6 className="mb-1">Google</h6>
-                            <p className="mb-0">
-                              Google is widely used for search, maps, email, and
-                              other services.
-                            </p>
-                          </div>
-                          <Link to="#" className="btn btn-light flex-shrink-0">
-                            Link Account
-                          </Link>
-                        </div>
-                      </div>
-                      <div className="d-flex align-items-center border-bottom mb-4 pb-4">
-                        <div className="flex-shrink-0 me-3">
-                          <ImageWithBasePath
-                            src="assets/img/icon/github-icon.svg"
-                            alt="Img"
-                          />
-                        </div>
-                        <div className="d-sm-flex align-items-center justify-content-between w-100">
-                          <div className="mb-2 mb-sm-0">
-                            <h6 className="mb-1">Github</h6>
-                            <p className="mb-0">
-                              GitHub is a version control and collaboration
-                              platform for hosting, managing, and sharing code.
-                            </p>
-                          </div>
-                          <Link to="#" className="btn btn-light flex-shrink-0">
-                            Link Account
-                          </Link>
-                        </div>
-                      </div>
-                      <div className="d-flex align-items-center">
-                        <div className="flex-shrink-0 me-3">
-                          <ImageWithBasePath
-                            src="assets/img/icon/twitter-x-icon.svg"
-                            alt="Img"
-                          />
-                        </div>
-                        <div className="d-sm-flex align-items-center justify-content-between w-100">
-                          <div className="mb-2 mb-sm-0">
-                            <h6 className="mb-1">Twitter</h6>
-                            <p className="mb-0">
-                              Twitter is a platform for sharing news, updates,
-                              and global conversations.
-                            </p>
-                          </div>
-                          <Link to="#" className="btn btn-light flex-shrink-0">
-                            Link Account
-                          </Link>
-                        </div>
-                      </div>
+                  <SettingsLinks />
+                  <div className="p-3 border rounded-3 mb-3 d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 className="mb-1 fw-bold">OUT SARIS / OAS Student Registry</h6>
+                      <p className="text-muted small mb-0">
+                        Connected to {user?.email || 'student@out.ac.tz'}
+                      </p>
                     </div>
+                    <span className="badge bg-success">Linked</span>
+                  </div>
+                  <div className="p-3 border rounded-3 d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 className="mb-1 fw-bold">Institutional Single Sign-On (SSO)</h6>
+                      <p className="text-muted small mb-0">
+                        Active token session for {user?.username || 'student'}
+                      </p>
+                    </div>
+                    <span className="badge bg-primary">Active</span>
                   </div>
                 </div>
               </div>

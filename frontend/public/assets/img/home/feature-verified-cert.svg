@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 160" width="100%" height="100%">
+  <defs>
+    <linearGradient id="feat-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0171BB"/>
+      <stop offset="60%" stop-color="#0082D6"/>
+      <stop offset="100%" stop-color="#0095F2"/>
+    </linearGradient>
+    <linearGradient id="feat-yellow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFDE7"/>
+      <stop offset="100%" stop-color="#FCF793"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="160" rx="8" fill="url(#feat-bg)"/>
+  <rect x="0" y="0" width="400" height="8" fill="#FFD200"/>
+  <rect x="0" y="152" width="400" height="8" fill="#FFD200"/>
+  <circle cx="350" cy="40" r="65" fill="#FEF207" opacity="0.22"/>
+
+  <!-- Left Map-Yellow Emblem Card -->
+  <g transform="translate(22, 22)">
+    <rect width="126" height="114" rx="14" fill="url(#feat-yellow)" stroke="#FFD200" stroke-width="2.5"/>
+    <circle cx="63" cy="46" r="24" fill="#0171BB" fill-opacity="0.14" stroke="#0171BB" stroke-width="2"/>
+    <path d="M 54 46 L 60 52 L 73 39" stroke="#0171BB" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <rect x="14" y="80" width="98" height="22" rx="6" fill="#0171BB"/>
+    <text x="63" y="95" text-anchor="middle" font-family="'Segoe UI', Inter, sans-serif" font-size="9.5" font-weight="800" fill="#FEF207">QR VERIFIED</text>
+  </g>
+
+  <!-- Right Text Meta -->
+  <text x="168" y="48" font-family="'Segoe UI', Inter, sans-serif" font-size="16.5" font-weight="800" fill="#ffffff">Verified Credentials</text>
+  <text x="168" y="72" font-family="'Segoe UI', Inter, sans-serif" font-size="12" font-weight="500" fill="#FFFDE7">Official Senate certificates with</text>
+  <text x="168" y="90" font-family="'Segoe UI', Inter, sans-serif" font-size="12" font-weight="500" fill="#FFFDE7">instant QR-code validation.</text>
+  <rect x="168" y="106" width="136" height="26" rx="13" fill="#FFD200"/>
+  <text x="236" y="123" text-anchor="middle" font-family="'Segoe UI', Inter, sans-serif" font-size="11" font-weight="800" fill="#003B66">TCU Recognized</text>
+</svg>

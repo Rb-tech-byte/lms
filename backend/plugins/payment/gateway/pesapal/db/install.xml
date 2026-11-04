@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="payment/gateway/pesapal/db" VERSION="20261101" COMMENT="XMLDB file for Pesapal Payment Gateway"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="paygw_pesapal" COMMENT="Stores Pesapal payment transactions and order tracking">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="paymentid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Moodle core payment ID"/>
+        <FIELD NAME="order_tracking_id" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Pesapal order tracking ID"/>
+        <FIELD NAME="merchant_reference" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Unique internal merchant reference"/>
+        <FIELD NAME="amount" TYPE="number" LENGTH="12" DECIMALS="2" NOTNULL="true" SEQUENCE="false" COMMENT="Total transaction amount"/>
+        <FIELD NAME="currency" TYPE="char" LENGTH="3" NOTNULL="true" DEFAULT="TZS" SEQUENCE="false" COMMENT="Transaction currency"/>
+        <FIELD NAME="payment_method" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" COMMENT="Payment channel e.g. MPESA, AIRTEL, CARD"/>
+        <FIELD NAME="status" TYPE="char" LENGTH="50" NOTNULL="true" DEFAULT="PENDING" SEQUENCE="false" COMMENT="Transaction status"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="order_tracking_id" UNIQUE="true" FIELDS="order_tracking_id"/>
+        <INDEX NAME="merchant_reference" UNIQUE="true" FIELDS="merchant_reference"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>

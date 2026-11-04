@@ -6,12 +6,7 @@ export const instructorSidebarData = [
         icon:'isax isax-grid-35',
         route: all_routes.instructorDashboard
     },
-    {
-        title:'My Profile',
-        icon:'fa-solid fa-user',
-        route: all_routes.instructorProfile
-    },
-    {
+        {
         title:'Courses',
         icon:'isax isax-teacher5',
         route: all_routes.instructorCourse

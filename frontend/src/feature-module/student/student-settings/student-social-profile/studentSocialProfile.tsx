@@ -1,82 +1,62 @@
-import React from "react";
-import Breadcrumb from "../../../../core/common/Breadcrumb/breadcrumb";
-import SettingsLinks from "../settingsLinks/settingsLinks";
-import ProfileCard from "../../common/profileCard";
-import StudentSidebar from "../../common/studentSidebar";
+import React, { useState } from 'react';
+import Breadcrumb from '../../../../core/common/Breadcrumb/breadcrumb';
+import ProfileCard from '../../common/profileCard';
+import StudentSidebar from '../../common/studentSidebar';
+import SettingsLinks from '../settingsLinks/settingsLinks';
+import { useAuth } from '../../../../core/auth/authContext';
 
-const StudentSocialProfile = () => {
+const StudentSocialProfile: React.FC = () => {
+  const { user, updateUser } = useAuth();
+  const [orcid, setOrcid] = useState('https://orcid.org/0000-0002-OUT-TZ');
+  const [linkedin, setLinkedin] = useState('https://linkedin.com/school/open-university-of-tanzania');
+  const [saved, setSaved] = useState(false);
+
+  const handleSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateUser({ bio: `${user?.bio || ''} | ORCID: ${orcid}`.trim() });
+    setSaved(true);
+  };
 
   return (
     <>
-      <Breadcrumb title="Settings" />
-
+      <Breadcrumb title="Academic & Research Profiles" />
       <div className="content">
         <div className="container">
-          {/* profile box */}
           <ProfileCard />
-          {/* profile box */}
           <div className="row">
-            {/* sidebar */}
             <StudentSidebar />
-            {/* sidebar */}
             <div className="col-lg-9">
-              <div className="mb-3">
-                <h5>Settings</h5>
-              </div>
-              <SettingsLinks />
-              <div className="card">
+              <div className="card mb-0">
                 <div className="card-body">
-                  <div className="row">
-                    <div className="col-md-12">
-                      <form>
-                        <div className="mb-3">
-                          <label className="form-label">Twitter</label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            placeholder="https://www.twitter.com/"
-                          />
-                        </div>
-                        <div className="mb-3">
-                          <label className="form-label">Facebook</label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            placeholder="https://www.facebook.com/"
-                          />
-                        </div>
-                        <div className="mb-3">
-                          <label className="form-label">Instagram</label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            placeholder="https://www.instagram.com/"
-                          />
-                        </div>
-                        <div className="mb-3">
-                          <label className="form-label">LinkedIn</label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            placeholder="https://www.linkedin.com/"
-                          />
-                        </div>
-                        <div className="mb-3">
-                          <label className="form-label">YouTube</label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            placeholder="https://www.youtube.com/"
-                          />
-                        </div>
-                        <div className="mt-4">
-                          <button className="btn btn-secondary" type="submit">
-                            Save Social Profile
-                          </button>
-                        </div>
-                      </form>
+                  <SettingsLinks />
+                  {saved && (
+                    <div className="alert alert-success py-2 small">
+                      Academic social profiles saved to student record.
                     </div>
-                  </div>
+                  )}
+                  <form onSubmit={handleSave}>
+                    <div className="mb-3">
+                      <label className="form-label">ORCID / Google Scholar URL</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={orcid}
+                        onChange={(e) => setOrcid(e.target.value)}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">LinkedIn Profile</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={linkedin}
+                        onChange={(e) => setLinkedin(e.target.value)}
+                      />
+                    </div>
+                    <button type="submit" className="btn btn-secondary">
+                      Save Academic Links
+                    </button>
+                  </form>
                 </div>
               </div>
             </div>

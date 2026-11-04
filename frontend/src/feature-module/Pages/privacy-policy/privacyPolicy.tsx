@@ -1,86 +1,68 @@
-import React from "react";
-import Breadcrumb from "../../../core/common/Breadcrumb/breadcrumb";
-import { Link } from "react-router-dom";
+import React, { useEffect } from 'react';
+import Breadcrumb from '../../../core/common/Breadcrumb/breadcrumb';
+import { courseService } from '../../../core/api/courseService';
 
-const PrivacyPolicy = () => {
+const PrivacyPolicy: React.FC = () => {
+  useEffect(() => {
+    courseService.getRestV2OpenApiInfo().catch(() => null);
+  }, []);
+
   return (
     <>
-      <Breadcrumb title="Privacy Policy" />
-
+      <Breadcrumb title="OUT Data Protection & Privacy Policy" />
       <div className="content">
         <div className="container">
           <div className="row">
             <div className="col-xl-8 mx-auto">
-              <p className="mb-4">
-                At OUT LMS, we are committed to protecting your privacy. This
-                policy outlines how we handle your information:
-              </p>
               <div className="mb-4">
-                <h6 className="mb-2">Information We Collect</h6>
-                <p className="mb-1 d-flex">
-                  Data, such as your name, email address, and payment details,
-                  collected during registration or purchases.
-                </p>
-                <p className="mb-0 d-flex align-items-center">
-                  Non-personal data, including device information, browser type,
-                  and usage patterns, to improve user experience.
+                <p>
+                  The Open University of Tanzania (OUT) is committed to safeguarding the privacy and
+                  academic records of all students, faculty members, and visitors using the OUT
+                  Headless Moodle 5.3 Learning Management System, in compliance with the Tanzania
+                  Personal Data Protection Act (PDPA).
                 </p>
               </div>
               <div className="mb-4">
-                <h6 className="mb-2">How We Use Your Information</h6>
-                <p className="mb-1 d-flex">
-                  To provide access to courses and services.
+                <h6 className="mb-2">1. Academic &amp; Personal Information We Collect</h6>
+                <p className="mb-2">
+                  When you register or sign in to the OUT LMS portal, we collect and synchronize:
                 </p>
-                <p className="mb-1 d-flex">To process payments securely.</p>
-                <p className="mb-1 d-flex">
-                  To deliver personalized content and updates.
-                </p>
-                <p className="mb-0 d-flex align-items-center">
-                  For research, analytics, and marketing (with your consent when
-                  required).
-                </p>
+                <ul className="list-unstyled mb-0">
+                  <li className="d-flex mb-2">
+                    Full Name, Registration Number, and Official Email Address
+                  </li>
+                  <li className="d-flex mb-2">
+                    Enrolled Courses, Quiz Attempts, Assignment Submissions, and Moodle Gradebook
+                    Scores
+                  </li>
+                  <li className="d-flex mb-2">
+                    Pesapal / Selcom Tuition Transaction References (no raw card PINs are stored on
+                    OUT servers)
+                  </li>
+                </ul>
               </div>
               <div className="mb-4">
-                <h6 className="mb-2">Data Protection</h6>
-                <p className="mb-1 d-flex">
-                  We implement technical and organizational measures to
-                  safeguard your data.
-                </p>
-                <p className="mb-0 d-flex align-items-center">
-                  Your information is not sold or shared with third parties
-                  except for essential service providers (e.g., payment
-                  processors) or legal obligations.
-                </p>
-              </div>
-              <div className="mb-4">
-                <h6 className="mb-2">Third-Party Links</h6>
-                <p className="mb-1 d-flex">
-                  Our platform may include links to external websites.
-                </p>
-                <p className="mb-0 d-flex align-items-center">
-                  We are not responsible for their privacy practices, and you
-                  should review their policies.
-                </p>
-              </div>
-              <div className="mb-4">
-                <h6 className="mb-2">Your Rights</h6>
+                <h6 className="mb-2">2. How We Use Your Data</h6>
                 <p className="mb-0">
-                  Access, update, or delete your personal information by
-                  contacting us at [Insert Contact Information].
+                  Your information is used strictly for academic administration, course delivery,
+                  assessment grading, digital certificate verification, and statutory reporting to
+                  the Tanzania Commission for Universities (TCU).
+                </p>
+              </div>
+              <div className="mb-4">
+                <h6 className="mb-2">3. Role-Based Access Control (RBAC) &amp; Security</h6>
+                <p className="mb-0">
+                  All communication between the React frontend and the Moodle 5.3 core uses token-authenticated
+                  Web Services and OpenAPI 3.1 REST v2 endpoints. Only authorized lecturers and
+                  administrators can view or grade student coursework within their assigned courses.
                 </p>
               </div>
               <div className="mb-0">
-                <h6 className="mb-2">Policy Updates</h6>
-                <p className="mb-1">
-                  We may update this policy and notify you of significant
-                  changes through our platform or email.
-                </p>
+                <h6 className="mb-2">4. Contact the OUT Data Protection Officer</h6>
                 <p className="mb-0">
-                  For any questions or concerns about this Privacy Policy,
-                  contact us at{" "}
-                  <Link to="#" target="_blank">
-                    lms@out.ac.tz
-                  </Link>
+                  For inquiries regarding your personal or academic data, contact the Directorate of
+                  ICT Services, The Open University of Tanzania, Kawawa Road, Kinondoni, P.O. Box
+                  23409, Dar es Salaam, Tanzania (Email: helpdesk@out.ac.tz).
                 </p>
               </div>
             </div>

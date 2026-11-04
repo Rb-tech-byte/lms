@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 600" width="100%" height="100%" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="hero-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0171BB"/>
+      <stop offset="55%" stop-color="#0082D6"/>
+      <stop offset="100%" stop-color="#0095F2"/>
+    </linearGradient>
+    <radialGradient id="hero-glow-1" cx="78%" cy="42%" r="48%">
+      <stop offset="0%" stop-color="#FEF207" stop-opacity="0.34"/>
+      <stop offset="55%" stop-color="#FFD200" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#0171BB" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="hero-glow-2" cx="18%" cy="22%" r="42%">
+      <stop offset="0%" stop-color="#FFFDE7" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#0171BB" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="hero-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="1440" height="600" fill="url(#hero-grad)"/>
+  <rect width="1440" height="600" fill="url(#hero-glow-1)"/>
+  <rect width="1440" height="600" fill="url(#hero-glow-2)"/>
+  <rect width="1440" height="600" fill="url(#hero-grid)"/>
+
+  <!-- Top Gold Ribbon Bar -->
+  <rect x="0" y="0" width="1440" height="6" fill="#FFD200"/>
+
+  <!-- Network Constellation & Academic Rays -->
+  <g stroke="rgba(254,242,7,0.28)" stroke-width="1.5" fill="none">
+    <path d="M -50 200 Q 300 120 650 260 T 1490 180"/>
+    <path d="M -50 420 Q 420 300 850 440 T 1490 320"/>
+    <path d="M 200 600 Q 550 400 900 480 T 1300 60"/>
+  </g>
+
+  <!-- Constellation Nodes (Representing 30+ Regional Centres) -->
+  <g fill="#FEF207" opacity="0.88">
+    <circle cx="210" cy="170" r="3.5"/>
+    <circle cx="430" cy="180" r="3"/>
+    <circle cx="650" cy="260" r="4.5"/>
+    <circle cx="850" cy="210" r="3.5"/>
+    <circle cx="1120" cy="160" r="4"/>
+    <circle cx="1280" cy="240" r="3"/>
+    <circle cx="340" cy="380" r="3.5"/>
+    <circle cx="560" cy="410" r="3"/>
+    <circle cx="850" cy="440" r="4.5"/>
+    <circle cx="1060" cy="380" r="3.5"/>
+  </g>
+  <circle cx="650" cy="260" r="12" stroke="rgba(254,242,7,0.45)" stroke-width="1.8" fill="none"/>
+  <circle cx="850" cy="440" r="14" stroke="rgba(254,242,7,0.4)" stroke-width="1.8" fill="none"/>
+
+  <!-- Subtle Bottom Gold Wave -->
+  <path d="M 0 572 C 360 552, 720 590, 1080 565 C 1260 550, 1380 575, 1440 580 L 1440 600 L 0 600 Z" fill="#FFD200" opacity="0.22"/>
+</svg>

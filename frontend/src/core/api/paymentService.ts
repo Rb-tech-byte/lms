@@ -29,6 +29,19 @@ export interface PesapalStatusResult {
   message: string;
 }
 
+export interface PaymentTransaction {
+  reference: string;
+  courseId: number;
+  courseTitle: string;
+  amount: number;
+  currency: string;
+  channel: string;
+  status: 'Completed' | 'Pending' | 'Failed';
+  timestamp: number;
+}
+
+const TX_STORAGE_KEY = 'outlms_payment_transactions';
+
 export const paymentService = {
   /**
    * Creates an order with Pesapal via Moodle's native paygw_pesapal Web Service.
@@ -80,5 +93,20 @@ export const paymentService = {
       throw error;
     }
   },
-};
 
+  /**
+   * Returns locally cached Pesapal/Selcom tuition transactions for the user
+   */
+  getTransactionHistory(_userId?: string | number): PaymentTransaction[] {
+    try {
+      const raw = localStorage.getItem(TX_STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch {
+      // Ignore parse errors
+    }
+    return [];
+  },
+};

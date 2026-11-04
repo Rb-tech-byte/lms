@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 400" width="100%" height="100%" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="why-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFDF4"/>
+      <stop offset="50%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#F0F8FF"/>
+    </linearGradient>
+    <pattern id="why-dots" width="30" height="30" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.5" fill="#FFD200" opacity="0.35"/>
+    </pattern>
+  </defs>
+  <rect width="1440" height="400" fill="url(#why-grad)"/>
+  <rect width="1440" height="400" fill="url(#why-dots)"/>
+  <path d="M 0 50 Q 360 120 720 40 T 1440 70" fill="none" stroke="rgba(1,113,187,0.10)" stroke-width="2"/>
+  <path d="M 0 320 Q 400 240 800 340 T 1440 290" fill="none" stroke="rgba(255,210,0,0.22)" stroke-width="2.5"/>
+</svg>

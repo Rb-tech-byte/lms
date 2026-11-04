@@ -11,6 +11,7 @@ import { all_routes } from "./all_routes";
 import Feature from "../feature";
 import AuthFeature from "../authFeature";
 import RoleGuard from "../../core/auth/RoleGuard";
+import InstructorLayout from "../Instructor/common/instructorLayout";
 
 const ALLRoutes: React.FC = () => {
   return (
@@ -22,31 +23,38 @@ const ALLRoutes: React.FC = () => {
             <Route path={route.path} element={route.element} key={`pub-${idx}`} />
           ))}
 
-          {/* 2. Student Protected Routes: Restricted to Students and Admins */}
-          {studentProtectedRoutes.map((route, idx) => (
-            <Route
-              path={route.path}
-              element={
-                <RoleGuard allowedRoles={['student', 'admin']}>
-                  {route.element}
-                </RoleGuard>
-              }
-              key={`stu-${idx}`}
-            />
-          ))}
+          {/* 2. Student Protected Routes: Restricted to Students and Admins (Course Player also accessible to Instructors) */}
+          {studentProtectedRoutes.map((route, idx) => {
+            const isSharedClassroom =
+              route.path === all_routes.courseWatch || route.path === all_routes.courseResume;
+            const allowed: ('student' | 'instructor' | 'admin')[] = isSharedClassroom
+              ? ['student', 'instructor', 'admin']
+              : ['student', 'admin'];
+            return (
+              <Route
+                path={route.path}
+                element={
+                  <RoleGuard allowedRoles={allowed}>
+                    {route.element}
+                  </RoleGuard>
+                }
+                key={`stu-${idx}`}
+              />
+            );
+          })}
 
-          {/* 3. Instructor Protected Routes: Restricted to Instructors and Admins */}
-          {instructorProtectedRoutes.map((route, idx) => (
-            <Route
-              path={route.path}
-              element={
-                <RoleGuard allowedRoles={['instructor', 'admin']}>
-                  {route.element}
-                </RoleGuard>
-              }
-              key={`ins-${idx}`}
-            />
-          ))}
+          {/* 3. Instructor Protected Routes: rendered inside the shared Faculty Console shell */}
+          <Route
+            element={
+              <RoleGuard allowedRoles={['instructor', 'admin']}>
+                <InstructorLayout />
+              </RoleGuard>
+            }
+          >
+            {instructorProtectedRoutes.map((route, idx) => (
+              <Route path={route.path} element={route.element} key={`ins-${idx}`} />
+            ))}
+          </Route>
 
           {/* 4. Administrator Protected Routes: Restricted Strictly to Administrators */}
           {adminProtectedRoutes.map((route, idx) => (

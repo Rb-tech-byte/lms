@@ -1,151 +1,88 @@
-import React from "react";
-import Breadcrumb from "../../../core/common/Breadcrumb/breadcrumb";
-import ImageWithBasePath from "../../../core/common/imageWithBasePath";
-import { Link } from "react-router-dom";
-import { all_routes } from "../../router/all_routes";
-import StudentSidebar from "../common/studentSidebar";
+import React, { useEffect, useState } from 'react';
+import Breadcrumb from '../../../core/common/Breadcrumb/breadcrumb';
+import ProfileCard from '../common/profileCard';
+import StudentSidebar from '../common/studentSidebar';
+import { Link } from 'react-router-dom';
+import { all_routes } from '../../router/all_routes';
+import { useAuth } from '../../../core/auth/authContext';
+import { courseService, getMoodleUserId, EnrolledCourse } from '../../../core/api/courseService';
 
-const StudentProfile = () => {
+const StudentProfile: React.FC = () => {
+  const { user } = useAuth();
+  const [courses, setCourses] = useState<EnrolledCourse[]>([]);
 
-    const route = all_routes;
+  useEffect(() => {
+    let mounted = true;
+    const uid = getMoodleUserId(user);
+    courseService.getUserEnrolledCourses(uid).then((list) => {
+      if (mounted) setCourses(list || []);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, [user]);
 
   return (
     <>
-      <Breadcrumb title="My Profile" />
-
+      <Breadcrumb title="My Academic Profile" />
       <div className="content">
         <div className="container">
-          {/* profile box */}
-          <div className="profile-card overflow-hidden bg-blue-gradient2 mb-5 p-5">
-            <div className="profile-card-bg">
-              <ImageWithBasePath
-                src="assets/img/bg/card-bg-01.png"
-                className="profile-card-bg-1"
-                alt=""
-              />
-            </div>
-            <div className="row align-items-center row-gap-3">
-              <div className="col-lg-6">
-                <div className="d-flex align-items-center">
-                  <span className="avatar avatar-xxl avatar-rounded me-3 border border-white border-2 position-relative">
-                    <ImageWithBasePath src="assets/img/user/user-02.jpg" alt="" />
-                    <span className="verify-tick">
-                      <i className="isax isax-verify5" />
-                    </span>
-                  </span>
-                  <div>
-                    <h5 className="mb-1 text-white d-inline-flex align-items-center">
-                      Ronald Richard
-                      <Link
-                        to={route.instructorProfile}
-                        className="link-light fs-16 ms-2"
-                      >
-                        <i className="isax isax-edit-2" />
-                      </Link>
-                    </h5>
-                    <p className="text-light">Student</p>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-6">
-                <div className="d-flex align-items-center justify-content-lg-end flex-wrap gap-2">
-                  <Link
-                    to={route.becomeAnInstructor}
-                    className="btn btn-white rounded-pill me-3"
-                  >
-                    Become an Instructor
-                  </Link>
-                  <Link
-                    to={route.instructorDashboard}
-                    className="btn btn-secondary rounded-pill"
-                  >
-                    Instructor Dashboard
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* profile box */}
+          <ProfileCard />
           <div className="row">
-            {/* sidebar */}
-            <StudentSidebar/>
-            {/* sidebar */}
+            <StudentSidebar />
             <div className="col-lg-9">
               <div className="page-title d-flex align-items-center justify-content-between">
-                <h5 className="fw-bold">My Profile</h5>
-                <Link to="#" className="edit-profile-icon">
+                <h5 className="fw-bold">Student Identity &amp; Academic Record</h5>
+                <Link to={all_routes.studentSettings} className="edit-profile-icon">
                   <i className="isax isax-edit-2" />
                 </Link>
               </div>
               <div className="card mb-0">
                 <div className="card-body">
-                  <h6 className="fs-18 page-title fw-bold">
-                    Basic Information
-                  </h6>
+                  <h6 className="fs-18 page-title fw-bold">Basic Information</h6>
                   <div className="row">
                     <div className="col-md-4">
                       <div className="mb-3">
-                        <h6>First Name</h6>
-                        <span>Ronald</span>
+                        <h6>Full Name</h6>
+                        <span>{user?.name || 'Baraka Mkwawa'}</span>
                       </div>
                     </div>
                     <div className="col-md-4">
                       <div className="mb-3">
-                        <h6>Last Name</h6>
-                        <span>Richard</span>
+                        <h6>Moodle Username</h6>
+                        <span>{user?.username || 'student'}</span>
                       </div>
                     </div>
                     <div className="col-md-4">
                       <div className="mb-3">
-                        <h6>Registration Date</h6>
-                        <span>16 Jan 2024, 11:15 AM</span>
+                        <h6>Institutional Email</h6>
+                        <span>{user?.email || 'student@out.ac.tz'}</span>
                       </div>
                     </div>
                     <div className="col-md-4">
                       <div className="mb-3">
-                        <h6>User Name</h6>
-                        <span>studentdemo</span>
+                        <h6>Academic Role</h6>
+                        <span className="text-uppercase">{user?.role || 'student'}</span>
                       </div>
                     </div>
                     <div className="col-md-4">
                       <div className="mb-3">
-                        <h6>Phone Number</h6>
-                        <span>90154-91036</span>
+                        <h6>Enrolled Modules</h6>
+                        <span>{courses.length} Active Courses</span>
                       </div>
                     </div>
                     <div className="col-md-4">
                       <div className="mb-3">
-                        <h6>Email</h6>
-                        <span>studentdemo@example.com</span>
-                      </div>
-                    </div>
-                    <div className="col-md-4">
-                      <div className="mb-3">
-                        <h6>Gender</h6>
-                        <span>Male</span>
-                      </div>
-                    </div>
-                    <div className="col-md-4">
-                      <div className="mb-3">
-                        <h6>DOB</h6>
-                        <span>16 Jan 2020</span>
-                      </div>
-                    </div>
-                    <div className="col-md-4">
-                      <div className="mb-3">
-                        <h6>Age</h6>
-                        <span>24</span>
+                        <h6>University Campus</h6>
+                        <span>The Open University of Tanzania — Dar es Salaam</span>
                       </div>
                     </div>
                     <div className="col-md-12">
                       <div>
-                        <h6>Bio</h6>
+                        <h6>Academic Bio</h6>
                         <span>
-                          Hello! I'm Ronald Richard. I'm passionate about
-                          developing innovative software solutions, analyzing
-                          classic literature. I aspire to become a software
-                          developer, work as an editor. In my free time, I enjoy
-                          coding, reading, hiking etc.
+                          {user?.bio ||
+                            'Registered distance and blended learning student at The Open University of Tanzania.'}
                         </span>
                       </div>
                     </div>

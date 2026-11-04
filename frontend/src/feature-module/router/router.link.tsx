@@ -4,66 +4,24 @@ import Home from "../HomePages/home/home";
 import CourseGrid from "../Courses/courses-grid/courseGrid";
 import CourseList from "../Courses/course-list/courseList";
 import CourseCategory from "../Courses/course-category/courseCategory";
-import CourseCategoryTwo from "../Courses/course-category-two/courseCategoryTwo";
-import CourseCategoryThree from "../Courses/course-category-three/courseCategoryThree";
 import CourseDetails from "../Courses/course-details/courseDetails";
-import CourseDetailsTwo from "../Courses/course-details-2/courseDetailsTwo";
 import CourseCart from "../Courses/course-cart/courseCart";
 import CourseCheckout from "../Courses/course-checkout/courseCheckout";
 
 // Student Components
 import StudentDashboard from "../student/dashboard/studentDashboard";
-import StudentCourse from "../student/student-course/studentCourse";
 import CourseWatch from "../Courses/course-watch/courseWatch";
-import CourseResume from "../Courses/course-resume/courseResume";
-import StudentQuiz from "../student/student-quiz/studentQuiz";
 import StudentQuizQuestion from "../student/student-quiz-question/studentQuizQuestion";
-import StudentCertificates from "../student/student-certificates/student-certificates";
-import StudentProfile from "../student/student-profile/studentProfile";
-import StudentSettings from "../student/student-settings/studentSettings";
-import StudentChangePassword from "../student/student-settings/student-change-password/studentChangePassword";
-import StudentSocialProfile from "../student/student-settings/student-social-profile/studentSocialProfile";
-import StudentLinkedAccounts from "../student/student-settings/student-linked-accounts/studentLinkedAccounts";
-import StudentNotification from "../student/student-settings/student-notifications/studentNotification";
-import StudentBillingAddress from "../student/student-settings/student-billing-address/studentBillingAddress";
-import StudentOrder from "../student/student-order-history/studentOrder";
-import StudentReviews from "../student/student-reviews/studentReviews";
-import StudentWishlist from "../student/student-wishlist/studentWishlist";
-import StudentTickets from "../student/student-tickets/studentTickets";
-import StudentMessage from "../student/student-message/studentMessage";
-import StudentRefferal from "../student/student-refferal/studentRefferal";
 
 // Instructor Components
 import InstructorDashboard from "../Instructor/instructor-dashboard/instructorDashboard";
-import InstructorCourse from "../Instructor/instructor-course/instructorCourse";
-import InstructorCourseGrid from "../Instructor/instructor-course/instructorCourseGrid";
-import AddNewCourse from "../Courses/add-newCourse/addNewCourse";
-import InstructorProfile from "../Instructor/instructor-profile/instructorProfile";
-import InstructorProfileSettings from "../Instructor/instructor-settings/instructor-profile-settings/instructorProfile";
-import InstructorChangePassoword from "../Instructor/instructor-settings/instructor-change-password/instructorChangePassoword";
-import InstructorAnnouncements from "../Instructor/instructor-announcements/instructorAnnouncements";
-import InstructorAssignment from "../Instructor/instructor-assignment/instructorAssignment";
-import StudentList from "../Instructor/student-list/studentList";
-import StudentGrid from "../Instructor/student-grid/studentGrid";
-import StudentsDetails from "../Instructor/student-details/studentsDetails";
-import InstructorQuiz from "../Instructor/instructor-quiz/instructorQuiz";
-import InstructorQuizResult from "../Instructor/instructor-quiz-result/instructorQuizResult";
-import InstructorQuizQuestions from "../Instructor/instructor-quiz-question/instructorQuizQuestions";
-import InstructorCertificate from "../Instructor/instructor-certificate/instructorCertificate";
-import InstructorEarning from "../Instructor/instructor-earning/instructorEarning";
-import InstructorPayout from "../Instructor/instructor-payout/instructorPayout";
-import InstructorStatement from "../Instructor/instructor-statement/instructorStatement";
-import InstructorMessage from "../Instructor/instructor-message/instructorMessage";
-import InstructorTickets from "../Instructor/instructor-tickets/instructorTickets";
-import InstructorPlanSettings from "../Instructor/instructor-settings/instructor-plans-settings/instructorPlanSettings";
-import InstructorSocialprofileSettings from "../Instructor/instructor-settings/instructor-socialprofile-settings/instructorSocialprofileSettings";
-import InstructorLinkedAccounts from "../Instructor/instructor-settings/instructor-linked-accounts/instructorLinkedAccounts";
-import InstructorNotification from "../Instructor/instructor-settings/instructor-notification/instructorNotification";
-import InstructorIntegrations from "../Instructor/instructor-settings/instructor-integrations/instructorIntegrations";
-import InstructorWithdraw from "../Instructor/instructor-settings/instructor-withdraw/instructorWithdraw";
 
 // Admin Components
 import AdminDashboard from "../admin/adminDashboard";
+
+// Blog Components
+import BlogGrid from "../blog/blog-layouts/blogGrid";
+import BlogDetails from "../blog/blog-details/blogDetails";
 
 // Public Pages & Informational
 import AboutUs from "../Pages/about-us/aboutUs";
@@ -71,6 +29,7 @@ import ContactUs from "../Pages/contact-us/contactUs";
 import Notification from "../Pages/notification/notification";
 import BecomeInstructor from "../Pages/become-instructor/becomeInstructor";
 import Testimonials from "../Pages/testimonials/testimonials";
+import VerifyCertificate from "../Pages/verify-certificate/verifyCertificate";
 import PricePlanning from "../Pages/price-planning/pricePlanning";
 import Faq from "../Pages/faq/faq";
 import TermsCondition from "../Pages/terms-condition/termsCondition";
@@ -85,11 +44,8 @@ import Register from "../auth/register/register";
 import ForgortPassword from "../auth/forgot-password/forgortPassword";
 import SetPassword from "../auth/set-password/setPassword";
 import Otp from "../auth/otp/otp";
-import LockScreen from "../auth/lock-screen/lockScreen";
 import Error404 from "../auth/error/error-404/error400";
 import Error500 from "../auth/error/error-500/error500";
-import ComingSoon from "../auth/coming-soon/comingSoon";
-import UnderConstruction from "../auth/underconstruction/underConstruction";
 
 const routes = all_routes;
 
@@ -150,12 +106,12 @@ export const publicRoutes = [
   },
   {
     path: routes.courseCategory2,
-    element: <CourseCategoryTwo />,
+    element: <Navigate to={routes.courseCategory} replace />,
     route: Route,
   },
   {
     path: routes.courseCategory3,
-    element: <CourseCategoryThree />,
+    element: <Navigate to={routes.courseCategory} replace />,
     route: Route,
   },
   {
@@ -165,7 +121,17 @@ export const publicRoutes = [
   },
   {
     path: routes.courseDetails2,
-    element: <CourseDetailsTwo />,
+    element: <Navigate to={routes.courseDetails} replace />,
+    route: Route,
+  },
+  {
+    path: routes.blogGrid,
+    element: <BlogGrid />,
+    route: Route,
+  },
+  {
+    path: routes.blogDetails,
+    element: <BlogDetails />,
     route: Route,
   },
   {
@@ -180,6 +146,11 @@ export const publicRoutes = [
   },
   {
     path: routes.courseCheckout,
+    element: <CourseCheckout />,
+    route: Route,
+  },
+  {
+    path: "/course/course-checkout",
     element: <CourseCheckout />,
     route: Route,
   },
@@ -216,6 +187,11 @@ export const publicRoutes = [
   {
     path: routes.testimonials,
     element: <Testimonials />,
+    route: Route,
+  },
+  {
+    path: routes.verifyCertificate,
+    element: <VerifyCertificate />,
     route: Route,
   },
   {
@@ -256,7 +232,7 @@ export const studentProtectedRoutes = [
   },
   {
     path: routes.studentCourses,
-    element: <StudentCourse />,
+    element: <Navigate to="/student/student-dashboard?tab=courses" replace />,
     route: Route,
   },
   {
@@ -266,12 +242,12 @@ export const studentProtectedRoutes = [
   },
   {
     path: routes.courseResume,
-    element: <CourseResume />,
+    element: <Navigate to="/course/course-watch?courseId=2" replace />,
     route: Route,
   },
   {
     path: routes.studentQuiz,
-    element: <StudentQuiz />,
+    element: <Navigate to="/student/student-dashboard?tab=quizzes" replace />,
     route: Route,
   },
   {
@@ -281,72 +257,72 @@ export const studentProtectedRoutes = [
   },
   {
     path: routes.studentCertificates,
-    element: <StudentCertificates />,
+    element: <Navigate to="/student/student-dashboard?tab=certificates" replace />,
     route: Route,
   },
   {
     path: routes.studentProfile,
-    element: <StudentProfile />,
+    element: <Navigate to="/student/student-dashboard?tab=profile" replace />,
     route: Route,
   },
   {
     path: routes.studentSettings,
-    element: <StudentSettings />,
+    element: <Navigate to="/student/student-dashboard?tab=settings" replace />,
     route: Route,
   },
   {
     path: routes.studentChangePassword,
-    element: <StudentChangePassword />,
+    element: <Navigate to="/student/student-dashboard?tab=settings" replace />,
     route: Route,
   },
   {
     path: routes.studentSocialProfile,
-    element: <StudentSocialProfile />,
+    element: <Navigate to="/student/student-dashboard?tab=settings" replace />,
     route: Route,
   },
   {
     path: routes.studentLinkedAccounts,
-    element: <StudentLinkedAccounts />,
+    element: <Navigate to="/student/student-dashboard?tab=settings" replace />,
     route: Route,
   },
   {
     path: routes.studentNotification,
-    element: <StudentNotification />,
+    element: <Navigate to="/student/student-dashboard?tab=settings" replace />,
     route: Route,
   },
   {
     path: routes.studentBillingAddress,
-    element: <StudentBillingAddress />,
+    element: <Navigate to="/student/student-dashboard?tab=settings" replace />,
     route: Route,
   },
   {
     path: routes.studentOrderHistory,
-    element: <StudentOrder />,
+    element: <Navigate to="/student/student-dashboard?tab=orders" replace />,
     route: Route,
   },
   {
     path: routes.studentReviews,
-    element: <StudentReviews />,
+    element: <Navigate to="/student/student-dashboard?tab=reviews" replace />,
     route: Route,
   },
   {
     path: routes.studentWishlist,
-    element: <StudentWishlist />,
+    element: <Navigate to="/student/student-dashboard?tab=wishlist" replace />,
     route: Route,
   },
   {
     path: routes.studentTickets,
-    element: <StudentTickets />,
+    element: <Navigate to="/student/student-dashboard?tab=tickets" replace />,
     route: Route,
   },
   {
     path: routes.studentMessage,
-    element: <StudentMessage />,
+    element: <Navigate to="/student/student-dashboard?tab=messages" replace />,
     route: Route,
   },
   {
     path: routes.studentReferral,
-    element: <StudentRefferal />,
+    element: <Navigate to="/student/student-dashboard?tab=referrals" replace />,
     route: Route,
   },
 ];
@@ -362,132 +338,132 @@ export const instructorProtectedRoutes = [
   },
   {
     path: routes.instructorCourse,
-    element: <InstructorCourse />,
+    element: <Navigate to="/instructor/instructor-dashboard?tab=courses" replace />,
     route: Route,
   },
   {
     path: routes.instructorCourseGrid,
-    element: <InstructorCourseGrid />,
+    element: <Navigate to="/instructor/instructor-dashboard?tab=courses" replace />,
     route: Route,
   },
   {
     path: routes.addNewCourse,
-    element: <AddNewCourse />,
+    element: <Navigate to="/instructor/instructor-dashboard?tab=courses" replace />,
     route: Route,
   },
   {
     path: routes.instructorProfile,
-    element: <InstructorProfile />,
+    element: <Navigate to="/instructor/instructor-dashboard?tab=profile" replace />,
     route: Route,
   },
   {
     path: routes.instructorsettings,
-    element: <InstructorProfileSettings />,
+    element: <Navigate to="/instructor/instructor-dashboard?tab=settings" replace />,
     route: Route,
   },
   {
     path: routes.instructorChangePassword,
-    element: <InstructorChangePassoword />,
+    element: <Navigate to="/instructor/instructor-dashboard?tab=settings" replace />,
     route: Route,
   },
   {
     path: routes.instructorAnnouncements,
-    element: <InstructorAnnouncements />,
+    element: <Navigate to="/instructor/instructor-dashboard?tab=announcements" replace />,
     route: Route,
   },
   {
     path: routes.instructorAssignment,
-    element: <InstructorAssignment />,
+    element: <Navigate to="/instructor/instructor-dashboard?tab=assignments" replace />,
     route: Route,
   },
   {
     path: routes.studentsList,
-    element: <StudentList />,
+    element: <Navigate to="/instructor/instructor-dashboard?tab=students" replace />,
     route: Route,
   },
   {
     path: routes.studentsGrid,
-    element: <StudentGrid />,
+    element: <Navigate to="/instructor/instructor-dashboard?tab=students" replace />,
     route: Route,
   },
   {
     path: routes.studentsDetails,
-    element: <StudentsDetails />,
+    element: <Navigate to="/instructor/instructor-dashboard?tab=students" replace />,
     route: Route,
   },
   {
     path: routes.instructorQuiz,
-    element: <InstructorQuiz />,
+    element: <Navigate to="/instructor/instructor-dashboard?tab=quiz" replace />,
     route: Route,
   },
   {
     path: routes.instructorQuizResult,
-    element: <InstructorQuizResult />,
+    element: <Navigate to="/instructor/instructor-dashboard?tab=quiz-results" replace />,
     route: Route,
   },
   {
     path: routes.instructorQA,
-    element: <InstructorQuizQuestions />,
+    element: <Navigate to="/instructor/instructor-dashboard?tab=quiz" replace />,
     route: Route,
   },
   {
     path: routes.instructorCertificate,
-    element: <InstructorCertificate />,
+    element: <Navigate to="/instructor/instructor-dashboard?tab=certificates" replace />,
     route: Route,
   },
   {
     path: routes.instructorEarning,
-    element: <InstructorEarning />,
+    element: <Navigate to="/instructor/instructor-dashboard?tab=earnings" replace />,
     route: Route,
   },
   {
     path: routes.instructorPayout,
-    element: <InstructorPayout />,
+    element: <Navigate to="/instructor/instructor-dashboard?tab=payout" replace />,
     route: Route,
   },
   {
     path: routes.instructorStatements,
-    element: <InstructorStatement />,
+    element: <Navigate to="/instructor/instructor-dashboard?tab=statements" replace />,
     route: Route,
   },
   {
     path: routes.instructorMessage,
-    element: <InstructorMessage />,
+    element: <Navigate to="/instructor/instructor-dashboard?tab=messages" replace />,
     route: Route,
   },
   {
     path: routes.instructorTickets,
-    element: <InstructorTickets />,
+    element: <Navigate to="/instructor/instructor-dashboard?tab=tickets" replace />,
     route: Route,
   },
   {
     path: routes.instructorPlan,
-    element: <InstructorPlanSettings />,
+    element: <Navigate to="/instructor/instructor-dashboard?tab=settings" replace />,
     route: Route,
   },
   {
     path: routes.instructorSocialProfiles,
-    element: <InstructorSocialprofileSettings />,
+    element: <Navigate to="/instructor/instructor-dashboard?tab=settings" replace />,
     route: Route,
   },
   {
     path: routes.instructorLinkedAccounts,
-    element: <InstructorLinkedAccounts />,
+    element: <Navigate to="/instructor/instructor-dashboard?tab=settings" replace />,
     route: Route,
   },
   {
     path: routes.instructorNotification,
-    element: <InstructorNotification />,
+    element: <Navigate to="/instructor/instructor-dashboard?tab=settings" replace />,
     route: Route,
   },
   {
     path: routes.instructorIntegrations,
-    element: <InstructorIntegrations />,
+    element: <Navigate to="/instructor/instructor-dashboard?tab=settings" replace />,
     route: Route,
   },
   {
     path: routes.instructorWithdraw,
-    element: <InstructorWithdraw />,
+    element: <Navigate to="/instructor/instructor-dashboard?tab=payout" replace />,
     route: Route,
   },
 ];
@@ -534,7 +510,7 @@ export const authRoutes = [
   },
   {
     path: routes.lockscreen,
-    element: <LockScreen />,
+    element: <Navigate to={routes.login} replace />,
     route: Route,
   },
   {
@@ -549,12 +525,12 @@ export const authRoutes = [
   },
   {
     path: routes.underconstruction,
-    element: <UnderConstruction />,
+    element: <Navigate to={routes.homeone} replace />,
     route: Route,
   },
   {
     path: routes.comingSoon,
-    element: <ComingSoon />,
+    element: <Navigate to={routes.homeone} replace />,
     route: Route,
   },
 ];

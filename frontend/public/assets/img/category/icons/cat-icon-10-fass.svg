@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="iconBg_fass" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#260f06" />
+      <stop offset="100%" stop-color="#7c2d12" />
+    </linearGradient>
+    <linearGradient id="iconBorder_fass" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fb923c" />
+      <stop offset="100%" stop-color="#ea580c" />
+    </linearGradient>
+  </defs>
+
+  <!-- Squircle Base -->
+  <rect x="4" y="4" width="120" height="120" rx="28" fill="url(#iconBg_fass)" stroke="url(#iconBorder_fass)" stroke-width="3" />
+  
+  <!-- Subtle Internal Glow -->
+  <circle cx="64" cy="64" r="42" fill="#fb923c" opacity="0.15" />
+
+  <!-- Vector Illustration -->
+  
+      <!-- Community Human Nodes & Globe -->
+      <circle cx="64" cy="46" r="16" fill="#ea580c" stroke="#fdba74" stroke-width="2.5" />
+      <path d="M40,90 C40,72 88,72 88,90 Z" fill="#c2410c" stroke="#fdba74" stroke-width="2" />
+      <circle cx="34" cy="55" r="10" fill="#f97316" />
+      <path d="M18,92 C18,80 50,80 50,92 Z" fill="#9a3412" />
+      <circle cx="94" cy="55" r="10" fill="#f97316" />
+      <path d="M78,92 C78,80 110,80 110,92 Z" fill="#9a3412" />
+    
+</svg>

@@ -1,5 +1,8 @@
 /**
- * Centralized API Client for Moodle 5.x Web Services & OUT LMS Gateway Bridge
+ * Unified Multi-Layer API Client for Open University of Tanzania (OUT LMS):
+ * 1. Moodle Core Web Services (`/webservice/rest/server.php`)
+ * 2. Moodle 5.x REST API v2 OpenAPI 3.1 (`/api/rest/v2/*`)
+ * 3. OUT LMS Internal Governance, Bridge & CMS API (`/admin_api.php`)
  */
 
 import { MOODLE_ENDPOINTS } from './moodleEndpoints';
@@ -16,11 +19,12 @@ declare global {
     __OUT_LMS_CONFIG__?: {
       moodleUrl?: string;
       gatewayUrl?: string;
+      adminApiUrl?: string;
     };
   }
 }
 
-const getDynamicMoodleUrl = (): string => {
+export const getDynamicMoodleUrl = (): string => {
   if (process.env.REACT_APP_MOODLE_URL) {
     return process.env.REACT_APP_MOODLE_URL.replace(/\/+$/, '');
   }
@@ -28,17 +32,77 @@ const getDynamicMoodleUrl = (): string => {
     if (window.__OUT_LMS_CONFIG__?.moodleUrl) {
       return window.__OUT_LMS_CONFIG__.moodleUrl.replace(/\/+$/, '');
     }
-    // Dynamic fallback matching relative hosting environment
-    const pathParts = window.location.pathname.split('/').filter(Boolean);
-    const appBase = pathParts.length > 0 && pathParts[0] !== 'frontend' ? `/${pathParts[0]}` : '';
-    return `${window.location.protocol}//${window.location.host}${appBase}/moodle-backend`;
+    const { protocol, hostname, host, port, pathname } = window.location;
+    // When running on dev/SPA port 3000, connect directly to WAMP Apache backend on the same host
+    if (port === '3000') {
+      return `${protocol}//${hostname}/outlmstheme/moodle-backend`;
+    }
+    const pathParts = pathname.split('/').filter(Boolean);
+    const knownAppRoutes = [
+      'admin', 'course', 'courses', 'student', 'instructor',
+      'pages', 'home', 'login', 'register', 'dashboard', 'static', 'build', 'blog', 'index'
+    ];
+    const appBase =
+      pathParts.length > 0 && !knownAppRoutes.includes(pathParts[0].toLowerCase())
+        ? `/${pathParts[0]}`
+        : '/outlmstheme';
+    return `${protocol}//${host}${appBase}/moodle-backend`;
   }
-  return 'http://localhost/moodle-backend';
+  return 'http://localhost/outlmstheme/moodle-backend';
 };
 
-const MOODLE_BASE_URL = getDynamicMoodleUrl();
-const MOODLE_TOKEN = process.env.REACT_APP_MOODLE_TOKEN || '';
+export const MOODLE_BASE_URL = getDynamicMoodleUrl();
+// Public read-only catalog service token fallback for unauthenticated visitors browsing courses/categories
+const PUBLIC_SERVICE_TOKEN = process.env.REACT_APP_MOODLE_TOKEN || '14ba63b0399a3c00f7ab62abad0e9e86';
 const USE_MOCK = process.env.REACT_APP_USE_MOCK === 'true';
+
+/**
+ * Safely parses a Fetch Response as JSON without ever throwing
+ * `SyntaxError: Unexpected token '<', "<!doctype "... is not valid JSON`.
+ */
+export async function parseSafeJson<T = any>(response: Response, context = 'API'): Promise<T> {
+  const raw = await response.text();
+  const trimmed = (raw || '').trim();
+
+  if (!trimmed) {
+    throw new Error(`Empty response from ${context} (HTTP ${response.status})`);
+  }
+
+  // Fast path: valid JSON object or array
+  if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+    try {
+      return JSON.parse(trimmed) as T;
+    } catch {
+      // Fall through to recovery below
+    }
+  }
+
+  // If HTML was returned (e.g., SPA index.html `<!doctype html>` or Apache 404 page)
+  if (trimmed.toLowerCase().startsWith('<!doctype') || trimmed.toLowerCase().startsWith('<html')) {
+    throw new Error(`Endpoint returned HTML instead of JSON (${context}, HTTP ${response.status})`);
+  }
+
+  // Recover if PHP emitted a notice/warning before the JSON payload
+  const firstBrace = trimmed.indexOf('{');
+  const firstBracket = trimmed.indexOf('[');
+  let startIdx = -1;
+  if (firstBrace !== -1 && firstBracket !== -1) {
+    startIdx = Math.min(firstBrace, firstBracket);
+  } else {
+    startIdx = Math.max(firstBrace, firstBracket);
+  }
+
+  if (startIdx !== -1) {
+    const candidate = trimmed.slice(startIdx);
+    try {
+      return JSON.parse(candidate) as T;
+    } catch {
+      // Ignore and throw descriptive error below
+    }
+  }
+
+  throw new Error(`Invalid JSON response from ${context} (HTTP ${response.status})`);
+}
 
 /**
  * Encodes complex nested objects/arrays into Moodle's required query parameter format:
@@ -72,20 +136,18 @@ function serializeMoodleParams(obj: Record<string, any>, prefix = ''): string[] 
 }
 
 /**
- * Calls a Moodle Web Service function via REST
+ * 1. Calls a Moodle Core Web Service function via REST (`/webservice/rest/server.php`)
  */
 export async function callMoodleWs<T = any>(
   wsfunction: string,
   params: Record<string, any> = {},
   customToken?: string
 ): Promise<T> {
-  const token = customToken || localStorage.getItem('out_lms_ws_token') || MOODLE_TOKEN;
+  const token = customToken || localStorage.getItem('out_lms_ws_token') || PUBLIC_SERVICE_TOKEN;
 
-  if (!token && !USE_MOCK) {
-    throw new Error('No Moodle Web Service token found. Please sign in.');
-  }
-
-  const endpoint = `${MOODLE_BASE_URL}/webservice/rest/server.php`;
+  const baseUrl = getDynamicMoodleUrl();
+  // Moodle 5.x public directory support + root fallback
+  const endpoint = `${baseUrl}/webservice/rest/server.php`;
   const baseParams = [
     `wstoken=${encodeURIComponent(token)}`,
     `wsfunction=${encodeURIComponent(wsfunction)}`,
@@ -96,21 +158,30 @@ export async function callMoodleWs<T = any>(
   const allParams = [...baseParams, ...serializedParams].join('&');
 
   try {
-    const response = await fetch(`${endpoint}?${allParams}`, {
+    let response = await fetch(`${endpoint}?${allParams}`, {
       method: 'GET',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
       },
     });
+
+    if (response.status === 404 && !baseUrl.endsWith('/public')) {
+      response = await fetch(`${baseUrl}/public/webservice/rest/server.php?${allParams}`, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+        },
+      });
+    }
 
     if (!response.ok) {
       throw new Error(`HTTP error ${response.status}: ${response.statusText}`);
     }
 
-    const data = await response.json();
+    const data = await parseSafeJson<any>(response, wsfunction);
 
-    if (data.exception || data.errorcode) {
-      console.error(`Moodle API Exception (${wsfunction}):`, data);
+    if (data && (data.exception || data.errorcode)) {
+      console.warn(`Moodle API Exception (${wsfunction}):`, data);
       throw new Error(data.message || data.errorcode || 'Moodle API Error');
     }
 
@@ -122,6 +193,72 @@ export async function callMoodleWs<T = any>(
 }
 
 /**
+ * 2. Calls Moodle 5.3 Modern REST API v2 (OpenAPI 3.1 `/api/rest/v2/*`)
+ */
+export async function callMoodleRestV2<T = any>(
+  path: string = '/openapi.json',
+  options?: RequestInit
+): Promise<T> {
+  const token = localStorage.getItem('out_lms_ws_token') || PUBLIC_SERVICE_TOKEN;
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  const baseUrl = getDynamicMoodleUrl();
+  const url = `${baseUrl}/public/api/rest/v2${cleanPath}`;
+
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(options?.headers || {}),
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`REST API v2 HTTP ${response.status}`);
+  }
+  return await parseSafeJson<T>(response, `REST v2 ${cleanPath}`);
+}
+
+/**
+ * 3. Calls OUT LMS Internal Governance, Bridge & CMS API (`/admin_api.php`)
+ */
+export async function callInternalApi<T = any>(
+  action: string,
+  payload?: Record<string, any>,
+  method: 'GET' | 'POST' = payload ? 'POST' : 'GET'
+): Promise<T> {
+  const token = localStorage.getItem('out_lms_ws_token') || '';
+  const baseUrl = `${getDynamicMoodleUrl()}/admin_api.php`;
+
+  const queryParams = new URLSearchParams({ action });
+  if (token && method === 'GET') {
+    queryParams.set('token', token);
+  }
+  if (method === 'GET' && payload) {
+    Object.entries(payload).forEach(([k, v]) => {
+      if (v !== undefined && v !== null) queryParams.set(k, String(v));
+    });
+  }
+
+  const response = await fetch(`${baseUrl}?${queryParams.toString()}`, {
+    method,
+    headers: {
+      Accept: 'application/json',
+      ...(method === 'POST' ? { 'Content-Type': 'application/json' } : {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    ...(method === 'POST' ? { body: JSON.stringify({ ...(payload || {}), ...(token ? { token } : {}) }) } : {}),
+  });
+
+  const data = await parseSafeJson<any>(response, `admin_api:${action}`);
+  if (!response.ok || data?.error) {
+    throw new Error(data?.error || `API action '${action}' failed`);
+  }
+  return data as T;
+}
+
+/**
  * Authentication helper: exchanges user credentials for a Moodle Web Service token
  */
 export async function fetchMoodleToken(
@@ -129,27 +266,39 @@ export async function fetchMoodleToken(
   password: string,
   service = process.env.REACT_APP_MOODLE_SERVICE || 'moodle_mobile_app'
 ): Promise<string> {
-  const tokenUrl = `${MOODLE_BASE_URL}${MOODLE_ENDPOINTS.TOKEN}`;
+  const baseUrl = getDynamicMoodleUrl();
+  const tokenUrl = `${baseUrl}${MOODLE_ENDPOINTS.TOKEN}`;
   const bodyParams = new URLSearchParams({
     username,
     password,
     service,
   });
 
-  const response = await fetch(tokenUrl, {
+  let response = await fetch(tokenUrl, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
-      'Accept': 'application/json',
+      Accept: 'application/json',
     },
     body: bodyParams.toString(),
   });
+
+  if (response.status === 404 && !baseUrl.endsWith('/public')) {
+    response = await fetch(`${baseUrl}/public${MOODLE_ENDPOINTS.TOKEN}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Accept: 'application/json',
+      },
+      body: bodyParams.toString(),
+    });
+  }
 
   if (!response.ok) {
     throw new Error('Failed to reach Moodle token endpoint');
   }
 
-  const data = await response.json();
+  const data = await parseSafeJson<any>(response, 'login/token.php');
   if (data.error) {
     throw new Error(data.error);
   }

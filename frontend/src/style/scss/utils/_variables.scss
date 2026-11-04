@@ -3,6 +3,20 @@
 
 
 :root {
+  /* OUT Brand Colors (Extracted directly from official University Crest) */
+  --out-primary: #0171BB;
+  --out-primary-hover: #005B97;
+  --out-primary-rgb: 1, 113, 187;
+  --out-secondary: #FFD200;
+  --out-gold: #FEF207;
+  --out-gold-rich: #D97706;
+  --out-navy: #071F38;
+  --out-navy-2: #051426;
+  --out-ice-blue: #E8F4FC;
+  --primary: #0171BB;
+  --primary-rgb: 1, 113, 187;
+  --secondary: #FFD200;
+  --secondary-rgb: 255, 210, 0;
   --white: #fff;
   --dark: #000;
   --black: #000;
@@ -73,13 +87,13 @@ $font-family-primary: "Inter", sans-serif;
 $font-awesome: "Fontawesome";
 	
 // Theme Colors Variables
-$primary: #0072BC;
+$primary: #0171BB;
 $primary-hover: #005B97;
-$secondary: #F5B800;
-$secondary-hover: #DE9E00;
+$secondary: #FFD200;
+$secondary-hover: #E5BD00;
 $success: #03C95A;
 $success-hover: darken($success, 10%);
-$info: #0072BC;
+$info: #0171BB;
 $info-hover: darken($info, 10%);
 $warning: #FFC107;
 $warning-hover: darken($warning, 10%);
@@ -127,18 +141,18 @@ $primary-100: #CCE3F2;
 $primary-200: #99C7E4;
 $primary-300: #66ABD7;
 $primary-400: #338FC9;
-$primary-500: #0072BC;
+$primary-500: #0171BB;
 $primary-600: #0067A9;
 $primary-700: #005B96;
 $primary-800: #004F83;
-$primary-900: #092244;
+$primary-900: #071F38;
 
 // Secondary
 $secondary-100: #FDF1CC;
 $secondary-200: #FCE399;
 $secondary-300: #FAD566;
 $secondary-400: #F8C633;
-$secondary-500: #F5B800;
+$secondary-500: #FFD200;
 $secondary-600: #DDA600;
 $secondary-700: #C49300;
 $secondary-800: #AC8100;
@@ -337,23 +351,23 @@ $dark-transparent: #E8E8E8;
 $teal-transparent: #E6F9FF;
 $purple-transparent: #E8EFF7;
 $skyblue-transparent: #E9FAFE;
-$primary-gradient: linear-gradient(90deg, #E6F1F9 0%, #D4E8F7 51.39%, #0072BC 100%);
-$secondary-gradient: linear-gradient(180deg, #F5B800 0%, #DE9E00 100%);
+$primary-gradient: linear-gradient(90deg, #E8F4FC 0%, #CCE3F2 50%, #0171BB 100%);
+$secondary-gradient: linear-gradient(180deg, #FFD200 0%, #E5BD00 100%);
 $success-gradient: linear-gradient(180deg, #2DCB73 0%, #0DA952 100%);
 $warning-gradient: linear-gradient(180deg, #FFC107 0%, #FFE8A5 100%);
 $danger-gradient: linear-gradient(180deg, #E70D0D 0%, #810707 100%);
-$info-gradient: linear-gradient(180deg, #0072BC 0%, #005B97 100%);
+$info-gradient: linear-gradient(180deg, #0171BB 0%, #005B97 100%);
 $light-gradient: linear-gradient(180deg, #F8F9FA 0%, #EDEDED 100%);
 $dark-gradient: linear-gradient(180deg, #F3F6FF 0%, #FFFFFF 100%);
 $pink-gradient: linear-gradient(180deg, #FFA795 0%, #FFFFFF 100%);
-$purple-gradient: linear-gradient(180deg, #092244 0%, #0072BC 100%);
+$purple-gradient: linear-gradient(180deg, #051426 0%, #071F38 60%, #0171BB 100%);
 $teal-gradient: linear-gradient(180deg, #E6F9FF 0%, #FFFFFF 100%);
 $orange-gradient: linear-gradient(180deg, #FF9945 0%, #FC6173 100%);
-$gradient-purple: linear-gradient(180deg, #092244 0%, #0072BC 100%);
+$gradient-purple: linear-gradient(180deg, #051426 0%, #071F38 60%, #0171BB 100%);
 $blue-gradient: linear-gradient(180deg, #00C0F9 0%, #0072BC 100%);
 $maroon-gradient: linear-gradient(180deg, #EF3B4A 0%, #092244 100%);
 
-$purple-gradient2: linear-gradient(10.93deg, #092244 16.22%, #0072BC 120.13%);
+$purple-gradient2: linear-gradient(10.93deg, #071F38 16.22%, #0171BB 120.13%);
 $blue-gradient2: linear-gradient(10.93deg, #2C7A9C 16.22%, #0936CB 120.13%);
 
 // Style Anchor Elements

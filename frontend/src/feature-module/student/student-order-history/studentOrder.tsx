@@ -1,557 +1,290 @@
-import React from "react";
-import { all_routes } from "../../router/all_routes";
-import Breadcrumb from "../../../core/common/Breadcrumb/breadcrumb";
-import { Link } from "react-router-dom";
-import ImageWithBasePath from "../../../core/common/imageWithBasePath";
-import StudentSidebar from "../common/studentSidebar";
+import React, { useEffect, useState, useMemo } from 'react';
+import Breadcrumb from '../../../core/common/Breadcrumb/breadcrumb';
+import StudentSidebar from '../common/studentSidebar';
+import ProfileCard from '../common/profileCard';
+import { Link } from 'react-router-dom';
+import { all_routes } from '../../router/all_routes';
+import { useAuth } from '../../../core/auth/authContext';
+import { paymentService, PaymentTransaction } from '../../../core/api/paymentService';
 
-const StudentOrder = () => {
-  const route = all_routes;
+const PAGE_SIZE = 6;
+
+const StudentOrder: React.FC = () => {
+  const { user } = useAuth();
+  const [transactions, setTransactions] = useState<PaymentTransaction[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Search & Filter State
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'completed' | 'pending'>('all');
+  const [page, setPage] = useState<number>(1);
+
+  useEffect(() => {
+    let mounted = true;
+    setLoading(true);
+    try {
+      const history = paymentService.getTransactionHistory(user?.id);
+      if (mounted) {
+        setTransactions(history || []);
+      }
+    } finally {
+      if (mounted) setLoading(false);
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [user]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery, statusFilter]);
+
+  const filteredTransactions = useMemo(() => {
+    return transactions.filter((tx) => {
+      const matchesStatus =
+        statusFilter === 'all' ||
+        tx.status.toLowerCase() === statusFilter.toLowerCase();
+
+      const q = searchQuery.toLowerCase().trim();
+      const matchesSearch =
+        !q ||
+        tx.reference.toLowerCase().includes(q) ||
+        tx.courseTitle.toLowerCase().includes(q) ||
+        tx.channel.toLowerCase().includes(q);
+
+      return matchesStatus && matchesSearch;
+    });
+  }, [transactions, statusFilter, searchQuery]);
+
+  const totalPages = Math.ceil(filteredTransactions.length / PAGE_SIZE) || 1;
+  const paginatedTransactions = useMemo(() => {
+    const start = (page - 1) * PAGE_SIZE;
+    return filteredTransactions.slice(start, start + PAGE_SIZE);
+  }, [filteredTransactions, page]);
 
   return (
     <>
-      <Breadcrumb title="Order History" />
+      <Breadcrumb title="Tuition Receipts & Enrollment Orders" />
       <div className="content">
         <div className="container">
-          {/* profile box */}
-          <div className="profile-card overflow-hidden bg-blue-gradient2 mb-5 p-5">
-            <div className="profile-card-bg">
-              <ImageWithBasePath
-                src="assets/img/bg/card-bg-01.png"
-                className="profile-card-bg-1"
-                alt=""
-              />
-            </div>
-            <div className="row align-items-center row-gap-3">
-              <div className="col-lg-6">
-                <div className="d-flex align-items-center">
-                  <span className="avatar avatar-xxl avatar-rounded me-3 border border-white border-2 position-relative">
-                    <ImageWithBasePath
-                      src="assets/img/user/user-02.jpg"
-                      alt=""
-                    />
-                    <span className="verify-tick">
-                      <i className="isax isax-verify5" />
-                    </span>
-                  </span>
-                  <div>
-                    <h5 className="mb-1 text-white d-inline-flex align-items-center">
-                      Ronald Richard
-                      <Link
-                        to={route.instructorProfile}
-                        className="link-light fs-16 ms-2"
-                      >
-                        <i className="isax isax-edit-2" />
-                      </Link>
-                    </h5>
-                    <p className="text-light">Student</p>
-                  </div>
-                </div>
-              </div>
-              <div className="col-lg-6">
-                <div className="d-flex align-items-center justify-content-lg-end flex-wrap gap-2">
-                  <Link
-                    to={route.becomeAnInstructor}
-                    className="btn btn-white rounded-pill me-3"
-                  >
-                    Become an Instructor
-                  </Link>
-                  <Link
-                    to={route.instructorDashboard}
-                    className="btn btn-secondary rounded-pill"
-                  >
-                    Instructor Dashboard
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* profile box */}
+          <ProfileCard />
           <div className="row">
-            {/* sidebar */}
             <StudentSidebar />
-            {/* sidebar */}
             <div className="col-lg-9">
-              <div className="page-title d-flex align-items-center justify-content-between">
-                <h5>Order History</h5>
-              </div>
-              <div className="row">
-                <div className="col-md-8">
-                  <div className="mb-3">
-                    <div className="dropdown">
-                      <Link
-                        to="#"
-                        className="dropdown-toggle btn rounded border d-inline-flex align-items-center"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
-                      >
-                        Status
-                      </Link>
-                      <ul className="dropdown-menu dropdown-menu-end p-3">
-                        <li>
-                          <Link
-                            to="#"
-                            className="dropdown-item rounded-1"
-                          >
-                            Completed
-                          </Link>
-                        </li>
-                        <li>
-                          <Link
-                            to="#"
-                            className="dropdown-item rounded-1"
-                          >
-                            Pending
-                          </Link>
-                        </li>
-                      </ul>
+              <div className="card border-0 shadow-sm mb-4">
+                <div className="card-body p-4">
+                  <div className="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+                    <div>
+                      <h4 className="fw-bold text-dark mb-1">Tuition Receipts &amp; Payment History</h4>
+                      <p className="text-muted small mb-0">
+                        Official Pesapal &amp; Selcom transaction vouchers for tuition fees and examination registrations.
+                      </p>
                     </div>
-                  </div>
-                </div>
-                <div className="col-md-4">
-                  <div className="input-icon mb-3">
-                    <span className="input-icon-addon">
-                      <i className="isax isax-search-normal-14" />
-                    </span>
-                    <input
-                      type="email"
-                      className="form-control form-control-md"
-                      placeholder="Search"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="table-responsive custom-table">
-                <table className="table">
-                  <thead className="thead-light">
-                    <tr>
-                      <th>Order ID</th>
-                      <th>Date</th>
-                      <th>Amount</th>
-                      <th>Status</th>
-                      <th />
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>
-                        <Link
-                          to="#"
-                          className="text-primary"
-                          data-bs-toggle="modal"
-                          data-bs-target="#view_invoice"
-                        >
-                          #ORD010
-                        </Link>
-                      </td>
-                      <td>22 Aug 2025</td>
-                      <td>$160</td>
-                      <td>
-                        <span className="badge bg-success d-inline-flex align-items-center me-1">
-                          <i className="fa-solid fa-circle fs-5 me-1" />
-                          Completed
-                        </span>
-                      </td>
-                      <td>
-                        <div className="d-flex align-items-center">
-                          <Link
-                            to="#"
-                            className="d-inline-flex fs-14 me-1 action-icon"
-                            data-bs-toggle="modal"
-                            data-bs-target="#view_invoice"
-                          >
-                            <i className="isax isax-eye" />
-                          </Link>
-                          <Link
-                            to="#"
-                            className="d-inline-flex fs-14 action-icon"
-                          >
-                            <i className="isax isax-import" />
-                          </Link>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <Link
-                          to="#"
-                          className="text-primary"
-                          data-bs-toggle="modal"
-                          data-bs-target="#view_invoice"
-                        >
-                          #ORD009
-                        </Link>
-                      </td>
-                      <td>10 Aug 2025</td>
-                      <td>$180</td>
-                      <td>
-                        <span className="badge bg-info d-inline-flex align-items-center me-1">
-                          <i className="fa-solid fa-circle fs-5 me-1" />
-                          Pending
-                        </span>
-                      </td>
-                      <td>
-                        <div className="d-flex align-items-center">
-                          <Link
-                            to="#"
-                            className="d-inline-flex fs-14 me-1 action-icon"
-                            data-bs-toggle="modal"
-                            data-bs-target="#view_invoice"
-                          >
-                            <i className="isax isax-eye" />
-                          </Link>
-                          <Link
-                            to="#"
-                            className="d-inline-flex fs-14 action-icon"
-                          >
-                            <i className="isax isax-import" />
-                          </Link>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <Link
-                          to="#"
-                          className="text-primary"
-                          data-bs-toggle="modal"
-                          data-bs-target="#view_invoice"
-                        >
-                          #ORD008
-                        </Link>
-                      </td>
-                      <td>26 Jul 2025</td>
-                      <td>$200</td>
-                      <td>
-                        <span className="badge bg-success d-inline-flex align-items-center me-1">
-                          <i className="fa-solid fa-circle fs-5 me-1" />
-                          Completed
-                        </span>
-                      </td>
-                      <td>
-                        <div className="d-flex align-items-center">
-                          <Link
-                            to="#"
-                            className="d-inline-flex fs-14 me-1 action-icon"
-                            data-bs-toggle="modal"
-                            data-bs-target="#view_invoice"
-                          >
-                            <i className="isax isax-eye" />
-                          </Link>
-                          <Link
-                            to="#"
-                            className="d-inline-flex fs-14 action-icon"
-                          >
-                            <i className="isax isax-import" />
-                          </Link>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <Link
-                          to="#"
-                          className="text-primary"
-                          data-bs-toggle="modal"
-                          data-bs-target="#view_invoice"
-                        >
-                          #ORD007
-                        </Link>
-                      </td>
-                      <td>12 Jul 2025</td>
-                      <td>$220</td>
-                      <td>
-                        <span className="badge bg-success d-inline-flex align-items-center me-1">
-                          <i className="fa-solid fa-circle fs-5 me-1" />
-                          Completed
-                        </span>
-                      </td>
-                      <td>
-                        <div className="d-flex align-items-center">
-                          <Link
-                            to="#"
-                            className="d-inline-flex fs-14 me-1 action-icon"
-                            data-bs-toggle="modal"
-                            data-bs-target="#view_invoice"
-                          >
-                            <i className="isax isax-eye" />
-                          </Link>
-                          <Link
-                            to="#"
-                            className="d-inline-flex fs-14 action-icon"
-                          >
-                            <i className="isax isax-import" />
-                          </Link>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <Link
-                          to="#"
-                          className="text-primary"
-                          data-bs-toggle="modal"
-                          data-bs-target="#view_invoice"
-                        >
-                          #ORD006
-                        </Link>
-                      </td>
-                      <td>02 Jul 2025</td>
-                      <td>$170</td>
-                      <td>
-                        <span className="badge bg-success d-inline-flex align-items-center me-1">
-                          <i className="fa-solid fa-circle fs-5 me-1" />
-                          Completed
-                        </span>
-                      </td>
-                      <td>
-                        <div className="d-flex align-items-center">
-                          <Link
-                            to="#"
-                            className="d-inline-flex fs-14 me-1 action-icon"
-                            data-bs-toggle="modal"
-                            data-bs-target="#view_invoice"
-                          >
-                            <i className="isax isax-eye" />
-                          </Link>
-                          <Link
-                            to="#"
-                            className="d-inline-flex fs-14 action-icon"
-                          >
-                            <i className="isax isax-import" />
-                          </Link>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <Link
-                          to="#"
-                          className="text-primary"
-                          data-bs-toggle="modal"
-                          data-bs-target="#view_invoice"
-                        >
-                          #ORD005
-                        </Link>
-                      </td>
-                      <td>25 Jun 2025</td>
-                      <td>$150</td>
-                      <td>
-                        <span className="badge bg-success d-inline-flex align-items-center me-1">
-                          <i className="fa-solid fa-circle fs-5 me-1" />
-                          Completed
-                        </span>
-                      </td>
-                      <td>
-                        <div className="d-flex align-items-center">
-                          <Link
-                            to="#"
-                            className="d-inline-flex fs-14 me-1 action-icon"
-                            data-bs-toggle="modal"
-                            data-bs-target="#view_invoice"
-                          >
-                            <i className="isax isax-eye" />
-                          </Link>
-                          <Link
-                            to="#"
-                            className="d-inline-flex fs-14 action-icon"
-                          >
-                            <i className="isax isax-import" />
-                          </Link>
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      {/* View Invoice */}
-      <div className="modal fade" id="view_invoice">
-        <div className="modal-dialog modal-dialog-centered modal-lg">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5>Invoice</h5>
-              <button
-                type="button"
-                className="btn-close custom-btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              >
-                <i className="isax isax-close-circle5" />
-              </button>
-            </div>
-            <div className="modal-body">
-              <div className="border-bottom mb-3">
-                <div className="row justify-content-between align-items-center flex-wrap row-gap-4">
-                  <div className="col-md-6">
-                    <div className="mb-2 invoice-logo-white">
-                      <ImageWithBasePath
-                        src="assets/img/logo.svg"
-                        className="img-fluid"
-                        alt="logo"
-                      />
-                    </div>
-                    <p className="mb-2">
-                      3099 Kennedy Court Framingham, MA 01702
-                    </p>
-                  </div>
-                  <div className="col-md-6">
-                    <div className=" text-end mb-3">
-                      <h6 className="text-default mb-1 text-secondary fs-16">
-                        #OI0010
-                      </h6>
-                      <p className="mb-1">
-                        Created Date :{" "}
-                        <span className="text-gray-9">Aug 25, 2025</span>{" "}
-                      </p>
-                      <p>
-                        Due Date :{" "}
-                        <span className="text-gray-9">Aug 30, 2025</span>{" "}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="border-bottom mb-3">
-                <div className="row g-4">
-                  <div className="col-lg-5">
-                    <span className="mb-3 d-flex">From</span>
-                    <div>
-                      <h6 className="mb-2 fs-16">Thomas Lawler</h6>
-                      <p className="fs-14 mb-1">
-                        2077 Chicago Avenue Orosi, CA 93647
-                      </p>
-                      <p className="fs-14 mb-1">
-                        Email :thomaslawler@example.com
-                      </p>
-                      <p className="fs-14">Phone : +1 987 654 3210</p>
-                    </div>
-                  </div>
-                  <div className="col-lg-5">
-                    <span className="mb-3 d-flex">To</span>
-                    <div>
-                      <h6 className="mb-2">Ronald Richard</h6>
-                      <p className="fs-14 mb-1">
-                        3103 Trainer Avenue Peoria, IL 61602
-                      </p>
-                      <p className="fs-14 mb-1">
-                        Email : <Link to="#">adre3@example.com</Link>
-                      </p>
-                      <p className="fs-14">
-                        Phone : <Link to="#">+1 987 471 6589</Link>
-                      </p>
-                    </div>
-                  </div>
-                  <div className="col-lg-2">
-                    <div className="mb-3 text-end">
-                      <span className="mb-1 d-block">Payment Status</span>
-                      <span className="badge bg-success badge-sm d-inline-flex align-items-center fs-10 fw-normal mb-4">
-                        <i className="fa-solid fa-circle fs-5 me-1" />
-                        Completed
-                      </span>
-                      <div>
-                        <ImageWithBasePath
-                          src="assets/img/icon/qr.svg"
-                          className="img-fluid"
-                          alt="QR"
+                    <div className="d-flex align-items-center gap-2">
+                      <div className="input-group input-group-sm" style={{ width: 240 }}>
+                        <span className="input-group-text bg-white border-end-0">
+                          <i className="feather-search text-muted" style={{ fontSize: 13 }} />
+                        </span>
+                        <input
+                          type="text"
+                          className="form-control border-start-0 ps-0"
+                          placeholder="Search receipts..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          style={{ fontSize: 13 }}
                         />
+                        {searchQuery && (
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-white border border-start-0"
+                            onClick={() => setSearchQuery('')}
+                          >
+                            <i className="feather-x" style={{ fontSize: 12 }} />
+                          </button>
+                        )}
                       </div>
+
+                      <Link to={all_routes.pricePlanning} className="btn btn-sm btn-outline-primary rounded-pill px-3">
+                        Fee Schedule
+                      </Link>
                     </div>
                   </div>
-                </div>
-              </div>
-              <div>
-                <div className="table-responsive custom-table rounded-0">
-                  <table className="table">
-                    <thead className="thead-light">
-                      <tr>
-                        <th className="w-50">Description</th>
-                        <th className="text-center">Qty</th>
-                        <th className="text-end">Cost</th>
-                        <th className="text-end">Discount</th>
-                        <th className="text-end">Total</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>
-                          <p className="text-gray-9">
-                            Information About UI/UX Design Degree
-                          </p>
-                        </td>
-                        <td className="text-gray text-center">1</td>
-                        <td className="text-gray text-end">$120</td>
-                        <td className="text-gray text-end">$0</td>
-                        <td className="text-gray text-end">$120</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-              <div className="border-bottom mb-3 pb-3">
-                <div className="row">
-                  <div className="col-md-6" />
-                  <div className="col-md-6">
-                    <div className="d-flex justify-content-between align-items-center border-bottom my-2 pb-2 pe-3">
-                      <p className="text-gray mb-0">Sub Total</p>
-                      <p className="text-gray-9 fw-medium">$120</p>
+
+                  {/* Status Filter Tabs */}
+                  <div className="d-flex flex-wrap align-items-center gap-1.5 mb-3">
+                    <button
+                      type="button"
+                      onClick={() => setStatusFilter('all')}
+                      className={`btn btn-sm rounded-pill px-3 py-1 ${statusFilter === 'all' ? 'btn-primary' : 'btn-outline-secondary'
+                        }`}
+                      style={{ fontSize: '0.78rem' }}
+                    >
+                      All Receipts ({transactions.length})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setStatusFilter('completed')}
+                      className={`btn btn-sm rounded-pill px-3 py-1 ${statusFilter === 'completed' ? 'btn-primary' : 'btn-outline-secondary'
+                        }`}
+                      style={{ fontSize: '0.78rem' }}
+                    >
+                      Completed ({transactions.filter((t) => t.status.toLowerCase() === 'completed').length})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setStatusFilter('pending')}
+                      className={`btn btn-sm rounded-pill px-3 py-1 ${statusFilter === 'pending' ? 'btn-primary' : 'btn-outline-secondary'
+                        }`}
+                      style={{ fontSize: '0.78rem' }}
+                    >
+                      Pending ({transactions.filter((t) => t.status.toLowerCase() === 'pending').length})
+                    </button>
+                  </div>
+
+                  {loading ? (
+                    <div className="text-center py-5">
+                      <div className="spinner-border text-primary spinner-border-sm me-2" role="status" />
+                      <span className="text-muted small">Loading payment ledger...</span>
                     </div>
-                    <div className="d-flex justify-content-between align-items-center border-bottom my-2 pb-2 pe-3">
-                      <p className="mb-0">Discount (0%)</p>
-                      <p className="text-gray-9 fs-14 fw-medium">$0</p>
+                  ) : filteredTransactions.length === 0 ? (
+                    <div className="text-center py-5">
+                      <div className="text-muted mb-2">
+                        <i className="feather-credit-card fs-36 text-muted" />
+                      </div>
+                      <h6 className="fw-semibold text-dark">No Payment Receipts on Record</h6>
+                      <p className="text-muted small mb-3">
+                        Tuition vouchers and invoices will appear here once you enrol in professional certificate courses.
+                      </p>
+                      <Link to={all_routes.courseGrid} className="btn btn-sm btn-primary rounded-pill px-4">
+                        Browse Course Catalog
+                      </Link>
                     </div>
-                    <div className="d-flex justify-content-between align-items-center mb-3 pe-3">
-                      <p className="mb-0">VAT (5%)</p>
-                      <p className="text-gray-9 fs-14 fw-medium mb-2">$0</p>
-                    </div>
-                    <div className="d-flex justify-content-between align-items-center mb-2 pe-3">
-                      <h6 className="fs-16">Total Amount</h6>
-                      <h6 className="fs-16">$120</h6>
-                    </div>
-                    <p>Amount in Words : Dollar One Hundred Twenty</p>
-                  </div>
-                </div>
-              </div>
-              <div className="row align-items-center gy-3">
-                <div className="col-lg-9">
-                  <div className="mb-3">
-                    <h6 className="mb-1 fs-15">Notes</h6>
-                    <p>
-                      Invoice for course purchase, covering course fee,
-                      discounts, and applicable taxes.
-                    </p>
-                  </div>
-                  <div>
-                    <h6 className="mb-1 fs-16">Terms and Conditions</h6>
-                    <p>
-                      Full payment grants non-transferable access to the course,
-                      subject to the provider’s refund policy.{" "}
-                    </p>
-                  </div>
-                </div>
-                <div className="col-md-3">
-                  <div className="text-end pe-4 mb-2">
-                    <ImageWithBasePath
-                      src="assets/img/icons/sign.svg"
-                      className="img-fluid"
-                      alt="sign"
-                    />
-                  </div>
-                  <div className="text-end">
-                    <h6 className="fs-15 pe-3 mb-2">Ted M. Davis</h6>
-                    <p>Assistant Manager</p>
-                  </div>
+                  ) : (
+                    <>
+                      <div className="table-responsive">
+                        <table className="table table-hover align-middle mb-0">
+                          <thead className="table-light">
+                            <tr style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                              <th>Receipt Reference</th>
+                              <th>Course Programme</th>
+                              <th>Date</th>
+                              <th>Amount Paid</th>
+                              <th>Channel</th>
+                              <th>Status</th>
+                              <th className="text-end">Receipt</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {paginatedTransactions.map((tx) => (
+                              <tr key={tx.reference}>
+                                <td>
+                                  <code className="text-primary fw-bold fs-13">{tx.reference}</code>
+                                </td>
+                                <td>
+                                  <span className="fw-medium text-dark fs-13 d-block">
+                                    {tx.courseTitle}
+                                  </span>
+                                  <small className="text-muted">Moodle Tuition Payment</small>
+                                </td>
+                                <td>
+                                  <span className="small text-muted">
+                                    {new Date(tx.timestamp).toLocaleDateString()}
+                                  </span>
+                                </td>
+                                <td>
+                                  <span className="fw-bold text-dark fs-13">
+                                    {tx.currency} {tx.amount.toLocaleString()}
+                                  </span>
+                                </td>
+                                <td>
+                                  <span className="badge bg-light text-secondary border text-uppercase" style={{ fontSize: 11 }}>
+                                    {tx.channel}
+                                  </span>
+                                </td>
+                                <td>
+                                  <span
+                                    className={`badge rounded-pill px-2.5 py-1 ${tx.status.toLowerCase() === 'completed'
+                                      ? 'bg-success-subtle text-success border border-success'
+                                      : 'bg-warning-subtle text-warning border border-warning'
+                                      }`}
+                                  >
+                                    {tx.status}
+                                  </span>
+                                </td>
+                                <td className="text-end">
+                                  <button
+                                    type="button"
+                                    onClick={() => window.print()}
+                                    className="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1"
+                                    style={{ fontSize: '0.78rem' }}
+                                  >
+                                    <i className="feather-printer me-1" /> Voucher
+                                  </button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* Pagination Controls */}
+                      {totalPages > 1 && (
+                        <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-4 pt-3 border-top">
+                          <div className="text-muted small" style={{ fontSize: '0.78rem' }}>
+                            Showing{' '}
+                            <strong>
+                              {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filteredTransactions.length)}
+                            </strong>{' '}
+                            of <strong>{filteredTransactions.length}</strong> receipts
+                          </div>
+                          <ul className="pagination pagination-sm mb-0 gap-1">
+                            <li className={`page-item ${page === 1 ? 'disabled' : ''}`}>
+                              <button
+                                type="button"
+                                className="page-link rounded-2 px-2.5 py-1"
+                                onClick={() => setPage(page - 1)}
+                                disabled={page === 1}
+                                style={{ fontSize: '0.78rem' }}
+                              >
+                                Prev
+                              </button>
+                            </li>
+                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                              <li key={p} className={`page-item ${page === p ? 'active' : ''}`}>
+                                <button
+                                  type="button"
+                                  className={`page-link rounded-2 px-3 py-1 fw-semibold ${page === p ? 'bg-primary text-white border-primary' : ''
+                                    }`}
+                                  onClick={() => setPage(p)}
+                                  style={{ fontSize: '0.78rem' }}
+                                >
+                                  {p}
+                                </button>
+                              </li>
+                            ))}
+                            <li className={`page-item ${page === totalPages ? 'disabled' : ''}`}>
+                              <button
+                                type="button"
+                                className="page-link rounded-2 px-2.5 py-1"
+                                onClick={() => setPage(page + 1)}
+                                disabled={page === totalPages}
+                                style={{ fontSize: '0.78rem' }}
+                              >
+                                Next
+                              </button>
+                            </li>
+                          </ul>
+                        </div>
+                      )}
+                    </>
+                  )}
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      {/* /View Invoice */}
     </>
   );
 };

@@ -1,307 +1,303 @@
-import React, { useState, useEffect } from "react";
-import Breadcrumb from "../../../core/common/Breadcrumb/breadcrumb";
-import { Link } from "react-router-dom";
-import { all_routes } from "../../router/all_routes";
-import StudentSidebar from "../common/studentSidebar";
-import ProfileCard from "../common/profileCard";
-import { useAuth } from "../../../core/auth/authContext";
-import { getMoodleUserId } from "../../../core/api/courseService";
-import { quizService, MoodleQuiz, QuizAttempt } from "../../../core/api/quizService";
+import React, { useEffect, useState, useMemo } from 'react';
+import Breadcrumb from '../../../core/common/Breadcrumb/breadcrumb';
+import ProfileCard from '../common/profileCard';
+import StudentSidebar from '../common/studentSidebar';
+import { Link } from 'react-router-dom';
+import { all_routes } from '../../router/all_routes';
+import { useAuth } from '../../../core/auth/authContext';
+import { getMoodleUserId } from '../../../core/api/courseService';
+import { quizService, MoodleQuiz } from '../../../core/api/quizService';
 
-type QuizFilter = "all" | "pending" | "completed";
+const PAGE_SIZE = 6;
 
-interface QuizWithAttempt extends MoodleQuiz {
-  courseCode: string;
-  courseTitle: string;
-  questionCount: number;
-  attempts: number;
-  latestAttempt?: QuizAttempt | null;
-}
+const COURSE_LABELS: Record<number, { code: string; name: string }> = {
+  2: { code: 'CS101', name: 'Python & Algorithms' },
+  3: { code: 'CS202', name: 'Cloud Computing' },
+  4: { code: 'BBA301', name: 'Financial Governance' },
+};
 
 const StudentQuiz: React.FC = () => {
   const { user } = useAuth();
-  const [quizzes, setQuizzes] = useState<QuizWithAttempt[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<QuizFilter>("all");
+  const [quizzes, setQuizzes] = useState<MoodleQuiz[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Search & Filter State
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCourse, setSelectedCourse] = useState<number | 'all'>('all');
+  const [page, setPage] = useState<number>(1);
 
   useEffect(() => {
-    let isMounted = true;
-    const fetchQuizzesAndAttempts = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const uid = getMoodleUserId(user);
-        const moodleQuizzes = await quizService.getQuizzesByCourses([2, 3, 4]);
-
-        const courseDetails: Record<number, { code: string; title: string }> = {
-          2: { code: "CS101", title: "Data Structures & Algorithms in Python" },
-          3: { code: "CS202", title: "Cloud Computing & Distributed Systems" },
-          4: { code: "BBA301", title: "Financial Management & Strategic Planning" },
-        };
-
-        const enriched: QuizWithAttempt[] = await Promise.all(
-          moodleQuizzes.map(async (q) => {
-            const userAttempts = await quizService.getUserAttempts(q.id, uid);
-            const latest = userAttempts.length > 0 ? userAttempts[userAttempts.length - 1] : null;
-            const qCount = quizService.getQuestionsForQuiz(q.id).length;
-
-            return {
-              ...q,
-              courseCode: courseDetails[q.course]?.code || `Course ${q.course}`,
-              courseTitle: courseDetails[q.course]?.title || "Open University of Tanzania",
-              questionCount: qCount,
-              latestAttempt: latest,
-            };
-          })
-        );
-
-        if (isMounted) {
-          setQuizzes(enriched);
-        }
-      } catch (err: any) {
-        if (isMounted) {
-          setError(err?.message || "Failed to load quizzes from Moodle");
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchQuizzesAndAttempts();
+    let mounted = true;
+    const uid = getMoodleUserId(user);
+    quizService
+      .getQuizzesByCourses([2, 3, 4], uid)
+      .then((list) => {
+        if (mounted) setQuizzes(list || []);
+      })
+      .finally(() => {
+        if (mounted) setLoading(false);
+      });
     return () => {
-      isMounted = false;
+      mounted = false;
     };
   }, [user]);
 
-  const allCount = quizzes.length;
-  const completedCount = quizzes.filter((q) => Boolean(q.latestAttempt)).length;
-  const pendingCount = quizzes.filter((q) => !q.latestAttempt).length;
+  // Reset page when filter changes
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery, selectedCourse]);
 
-  const filteredQuizzes = quizzes.filter((q) => {
-    if (activeTab === "pending") return !q.latestAttempt;
-    if (activeTab === "completed") return Boolean(q.latestAttempt);
-    return true;
-  });
+  // Unique course IDs in quizzes
+  const courseIds = useMemo(() => {
+    const ids = new Set<number>();
+    quizzes.forEach((q) => {
+      if (q.course) ids.add(q.course);
+    });
+    return Array.from(ids);
+  }, [quizzes]);
 
-  const formatDuration = (seconds: number) => {
-    if (!seconds) return "No time limit";
-    const mins = Math.floor(seconds / 60);
-    return `${mins} Mins`;
-  };
+  // Filtered quizzes
+  const filteredQuizzes = useMemo(() => {
+    return quizzes.filter((q) => {
+      const matchesCourse = selectedCourse === 'all' || q.course === selectedCourse;
+      const matchesSearch =
+        !searchQuery.trim() ||
+        q.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (q.intro && q.intro.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (COURSE_LABELS[q.course]?.code &&
+          COURSE_LABELS[q.course].code.toLowerCase().includes(searchQuery.toLowerCase()));
+      return matchesCourse && matchesSearch;
+    });
+  }, [quizzes, selectedCourse, searchQuery]);
+
+  // Paginated quizzes
+  const totalPages = Math.ceil(filteredQuizzes.length / PAGE_SIZE) || 1;
+  const paginatedQuizzes = useMemo(() => {
+    const start = (page - 1) * PAGE_SIZE;
+    return filteredQuizzes.slice(start, start + PAGE_SIZE);
+  }, [filteredQuizzes, page]);
 
   return (
     <>
-      <Breadcrumb title="My Quiz Assessments" />
-
+      <Breadcrumb title="My Quiz Attempts & Assessments" />
       <div className="content">
         <div className="container">
-          {/* Student Profile Header Box */}
           <ProfileCard />
-
           <div className="row">
-            {/* Student Left Sidebar */}
             <StudentSidebar />
-
-            {/* Main Quiz Content */}
             <div className="col-lg-9">
-              {/* Header Box & Tabs */}
+              {/* Header Bar with Search */}
               <div className="card border-0 shadow-sm mb-4">
                 <div className="card-body p-4">
-                  <div className="d-flex flex-wrap gap-3 align-items-center justify-content-between mb-3 pb-3 border-bottom">
+                  <div className="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
                     <div>
-                      <h4 className="fs-20 fw-bold mb-1 text-dark">Knowledge Checks & Quizzes</h4>
+                      <h4 className="fw-bold text-dark mb-1">Moodle Academic Assessments &amp; Quizzes</h4>
                       <p className="text-muted small mb-0">
-                        Interactive academic assessments powered by Moodle 5.x Web Services.
+                        Official continuous assessment quizzes recorded directly in your OUT academic gradebook.
                       </p>
                     </div>
 
-                    <div className="badge bg-primary-subtle text-primary border border-primary px-3 py-2">
-                      <i className="isax isax-task me-1" />
-                      Moodle Assessment Engine
+                    <div className="input-group input-group-sm" style={{ width: 240 }}>
+                      <span className="input-group-text bg-white border-end-0">
+                        <i className="feather-search text-muted" style={{ fontSize: 13 }} />
+                      </span>
+                      <input
+                        type="text"
+                        className="form-control border-start-0 ps-0"
+                        placeholder="Search quizzes..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        style={{ fontSize: 13 }}
+                      />
+                      {searchQuery && (
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-white border border-start-0"
+                          onClick={() => setSearchQuery('')}
+                        >
+                          <i className="feather-x" style={{ fontSize: 12 }} />
+                        </button>
+                      )}
                     </div>
                   </div>
 
-                  {/* Filter Pills */}
-                  <div className="d-flex flex-wrap gap-2 align-items-center justify-content-between">
-                    <ul className="nav nav-pills gap-2" role="tablist">
-                      <li className="nav-item" role="presentation">
+                  {/* Course Filter Pills */}
+                  <div className="d-flex flex-wrap align-items-center gap-1.5 mb-3">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedCourse('all')}
+                      className={`btn btn-sm rounded-pill px-3 py-1 ${
+                        selectedCourse === 'all' ? 'btn-primary' : 'btn-outline-secondary'
+                      }`}
+                      style={{ fontSize: '0.78rem' }}
+                    >
+                      All Assessments ({quizzes.length})
+                    </button>
+                    {courseIds.map((cid) => {
+                      const label = COURSE_LABELS[cid] || { code: `Course ${cid}`, name: '' };
+                      const count = quizzes.filter((q) => q.course === cid).length;
+                      return (
                         <button
+                          key={cid}
                           type="button"
-                          className={`nav-link rounded-pill px-3 py-2 small fw-semibold ${
-                            activeTab === "all" ? "active bg-primary text-white" : "bg-light text-muted"
+                          onClick={() => setSelectedCourse(cid)}
+                          className={`btn btn-sm rounded-pill px-3 py-1 ${
+                            selectedCourse === cid ? 'btn-primary' : 'btn-outline-secondary'
                           }`}
-                          onClick={() => setActiveTab("all")}
+                          style={{ fontSize: '0.78rem' }}
                         >
-                          All Quizzes ({allCount})
+                          {label.code} ({count})
                         </button>
-                      </li>
-                      <li className="nav-item" role="presentation">
-                        <button
-                          type="button"
-                          className={`nav-link rounded-pill px-3 py-2 small fw-semibold ${
-                            activeTab === "pending" ? "active bg-primary text-white" : "bg-light text-muted"
-                          }`}
-                          onClick={() => setActiveTab("pending")}
-                        >
-                          Pending / Ready ({pendingCount})
-                        </button>
-                      </li>
-                      <li className="nav-item" role="presentation">
-                        <button
-                          type="button"
-                          className={`nav-link rounded-pill px-3 py-2 small fw-semibold ${
-                            activeTab === "completed" ? "active bg-primary text-white" : "bg-light text-muted"
-                          }`}
-                          onClick={() => setActiveTab("completed")}
-                        >
-                          Completed / Attempted ({completedCount})
-                        </button>
-                      </li>
-                    </ul>
-
-                    <span className="text-muted small">
-                      Showing <strong>{filteredQuizzes.length}</strong> of {quizzes.length} assessments
-                    </span>
+                      );
+                    })}
                   </div>
+
+                  {loading ? (
+                    <div className="text-center py-5">
+                      <div className="spinner-border text-primary spinner-border-sm me-2" role="status" />
+                      <span className="text-muted small">Loading assessments from Moodle...</span>
+                    </div>
+                  ) : filteredQuizzes.length === 0 ? (
+                    <div className="text-center py-5">
+                      <div className="text-muted mb-2">
+                        <i className="feather-help-circle fs-36 text-muted" />
+                      </div>
+                      <h6 className="fw-semibold text-dark">No matching assessments found</h6>
+                      <p className="text-muted small mb-0">Try clearing your search query or selecting all courses.</p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="table-responsive">
+                        <table className="table table-hover align-middle mb-0">
+                          <thead className="table-light">
+                            <tr style={{ fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                              <th>Assessment Activity</th>
+                              <th>Academic Course</th>
+                              <th>Questions</th>
+                              <th>Duration</th>
+                              <th>Grade Target</th>
+                              <th className="text-end">Action</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {paginatedQuizzes.map((q) => {
+                              const courseInfo = COURSE_LABELS[q.course] || {
+                                code: `Course ${q.course}`,
+                                name: '',
+                              };
+                              const durationMinutes = Math.round((q.timelimit || 600) / 60);
+
+                              return (
+                                <tr key={q.id}>
+                                  <td>
+                                    <div>
+                                      <Link
+                                        to={`${all_routes.studentQuizQuestion}?quizId=${q.id}`}
+                                        className="fw-bold text-dark text-decoration-none d-block fs-14"
+                                      >
+                                        {q.name}
+                                      </Link>
+                                      {q.intro && (
+                                        <span
+                                          className="text-muted small d-block text-truncate"
+                                          style={{ maxWidth: 360, fontSize: 12 }}
+                                        >
+                                          {q.intro.replace(/<[^>]+>/g, '')}
+                                        </span>
+                                      )}
+                                    </div>
+                                  </td>
+                                  <td>
+                                    <span className="badge bg-light text-primary border fw-semibold px-2.5 py-1">
+                                      {courseInfo.code}
+                                    </span>
+                                  </td>
+                                  <td>
+                                    <span className="text-dark fw-medium small">
+                                      {q.questionsCount || 5} Questions
+                                    </span>
+                                  </td>
+                                  <td>
+                                    <span className="badge bg-secondary-subtle text-secondary border px-2 py-1 small">
+                                      <i className="feather-clock me-1" />
+                                      {durationMinutes > 0 ? `${durationMinutes} Mins` : 'Untimed'}
+                                    </span>
+                                  </td>
+                                  <td>
+                                    <span className="fw-bold text-success fs-13">
+                                      {q.grade || 100}%
+                                    </span>
+                                  </td>
+                                  <td className="text-end">
+                                    <Link
+                                      to={`${all_routes.studentQuizQuestion}?quizId=${q.id}`}
+                                      className="btn btn-sm btn-primary rounded-pill px-3 py-1 fw-semibold"
+                                      style={{ fontSize: '0.78rem' }}
+                                    >
+                                      Attempt Assessment
+                                    </Link>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* Pagination Controls */}
+                      {totalPages > 1 && (
+                        <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-4 pt-3 border-top">
+                          <div className="text-muted small" style={{ fontSize: '0.78rem' }}>
+                            Showing{' '}
+                            <strong>
+                              {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filteredQuizzes.length)}
+                            </strong>{' '}
+                            of <strong>{filteredQuizzes.length}</strong> assessments
+                          </div>
+                          <ul className="pagination pagination-sm mb-0 gap-1">
+                            <li className={`page-item ${page === 1 ? 'disabled' : ''}`}>
+                              <button
+                                type="button"
+                                className="page-link rounded-2 px-2.5 py-1"
+                                onClick={() => setPage(page - 1)}
+                                disabled={page === 1}
+                                style={{ fontSize: '0.78rem' }}
+                              >
+                                Prev
+                              </button>
+                            </li>
+                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                              <li key={p} className={`page-item ${page === p ? 'active' : ''}`}>
+                                <button
+                                  type="button"
+                                  className={`page-link rounded-2 px-3 py-1 fw-semibold ${
+                                    page === p ? 'bg-primary text-white border-primary' : ''
+                                  }`}
+                                  onClick={() => setPage(p)}
+                                  style={{ fontSize: '0.78rem' }}
+                                >
+                                  {p}
+                                </button>
+                              </li>
+                            ))}
+                            <li className={`page-item ${page === totalPages ? 'disabled' : ''}`}>
+                              <button
+                                type="button"
+                                className="page-link rounded-2 px-2.5 py-1"
+                                onClick={() => setPage(page + 1)}
+                                disabled={page === totalPages}
+                                style={{ fontSize: '0.78rem' }}
+                              >
+                                Next
+                              </button>
+                            </li>
+                          </ul>
+                        </div>
+                      )}
+                    </>
+                  )}
                 </div>
               </div>
-
-              {/* Quiz Items Container */}
-              {loading ? (
-                <div className="text-center py-5 bg-white rounded-3 shadow-sm mb-4">
-                  <div className="spinner-border text-primary mb-3" role="status" />
-                  <p className="text-muted small mb-0">Loading course quizzes from Moodle...</p>
-                </div>
-              ) : error ? (
-                <div className="alert alert-danger mb-4" role="alert">
-                  <i className="isax isax-danger me-2" />
-                  {error}
-                </div>
-              ) : filteredQuizzes.length === 0 ? (
-                <div className="text-center py-5 bg-white rounded-3 shadow-sm mb-4">
-                  <i className="isax isax-task fs-32 text-muted mb-2 d-block" />
-                  <h6 className="fw-bold text-dark">No Quizzes in this Category</h6>
-                  <p className="text-muted small mb-3">
-                    {activeTab === "completed"
-                      ? "You haven't attempted any quizzes yet. Choose a pending quiz below to begin."
-                      : "All quizzes in your enrolled courses have been completed."}
-                  </p>
-                  <button
-                    type="button"
-                    className="btn btn-outline-primary btn-sm rounded-pill px-4"
-                    onClick={() => setActiveTab("all")}
-                  >
-                    View All Quizzes
-                  </button>
-                </div>
-              ) : (
-                <div className="d-flex flex-column gap-3 mb-4">
-                  {filteredQuizzes.map((quiz) => {
-                    const hasAttempt = Boolean(quiz.latestAttempt);
-                    const score = quiz.latestAttempt?.sumgrades ?? 0;
-                    const passed = score >= 70;
-
-                    return (
-                      <div
-                        key={quiz.id}
-                        className="card border shadow-sm rounded-3 overflow-hidden transition-all"
-                      >
-                        <div className="card-body p-4">
-                          <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3">
-                            <div className="flex-grow-1">
-                              <div className="d-flex flex-wrap align-items-center gap-2 mb-2">
-                                <span className="badge bg-primary text-uppercase px-2 py-1">
-                                  {quiz.courseCode}
-                                </span>
-                                <span className="text-muted small fw-medium">
-                                  {quiz.courseTitle}
-                                </span>
-                                {hasAttempt ? (
-                                  <span
-                                    className={`badge ms-md-2 ${
-                                      passed
-                                        ? "bg-success-subtle text-success border border-success"
-                                        : "bg-danger-subtle text-danger border border-danger"
-                                    }`}
-                                  >
-                                    <i
-                                      className={`isax ${
-                                        passed ? "isax-tick-circle" : "isax-close-circle"
-                                      } me-1`}
-                                    />
-                                    {score}% Score • {passed ? "Passed" : "Retake Recommended"}
-                                  </span>
-                                ) : (
-                                  <span className="badge bg-warning-subtle text-warning border border-warning ms-md-2">
-                                    <i className="isax isax-clock me-1" />
-                                    Not Attempted Yet
-                                  </span>
-                                )}
-                              </div>
-
-                              <h5 className="fs-17 fw-bold mb-2">
-                                <Link
-                                  to={`${all_routes.studentQuizQuestion}?quizId=${quiz.id}`}
-                                  className="text-dark text-decoration-none"
-                                >
-                                  {quiz.name.replace(/&amp;/g, "&")}
-                                </Link>
-                              </h5>
-
-                              <p className="text-muted small mb-3">
-                                {quiz.intro
-                                  ? quiz.intro.replace(/<[^>]*>?/gm, "")
-                                  : "Mastery check for core course concepts and problem-solving."}
-                              </p>
-
-                              <div className="d-flex flex-wrap align-items-center gap-3 text-muted small">
-                                <span>
-                                  <i className="isax isax-document-text text-primary me-1" />
-                                  <strong>{quiz.questionCount}</strong> Questions
-                                </span>
-                                <span>
-                                  <i className="isax isax-timer-1 text-primary me-1" />
-                                  Duration: <strong>{formatDuration(quiz.timelimit)}</strong>
-                                </span>
-                                <span>
-                                  <i className="isax isax-award text-primary me-1" />
-                                  Pass Mark: <strong>70%</strong>
-                                </span>
-                                <span>
-                                  <i className="isax isax-repeat text-primary me-1" />
-                                  Max Attempts: <strong>{quiz.attempts || "Unlimited"}</strong>
-                                </span>
-                              </div>
-                            </div>
-
-                            <div className="flex-shrink-0 text-md-end w-100 w-md-auto pt-3 pt-md-0 border-top border-top-md-0">
-                              <Link
-                                to={`${all_routes.studentQuizQuestion}?quizId=${quiz.id}`}
-                                className={`btn rounded-pill px-4 py-2 d-inline-flex align-items-center gap-2 shadow-sm ${
-                                  hasAttempt
-                                    ? passed
-                                      ? "btn-outline-success"
-                                      : "btn-warning text-white"
-                                    : "btn-primary"
-                                }`}
-                              >
-                                <span>
-                                  {hasAttempt ? (passed ? "Retake / Review" : "Retake Assessment") : "Start Assessment"}
-                                </span>
-                                <i className="isax isax-arrow-right-3" />
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-
             </div>
           </div>
         </div>

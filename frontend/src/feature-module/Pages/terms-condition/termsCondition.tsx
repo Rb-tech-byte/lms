@@ -1,77 +1,57 @@
-import React from "react";
-import Breadcrumb from "../../../core/common/Breadcrumb/breadcrumb";
+import React, { useEffect } from 'react';
+import Breadcrumb from '../../../core/common/Breadcrumb/breadcrumb';
+import { courseService } from '../../../core/api/courseService';
 
-const TermsCondition = () => {
+const TermsCondition: React.FC = () => {
+  useEffect(() => {
+    courseService.getRestV2OpenApiInfo().catch(() => null);
+  }, []);
+
   return (
     <>
-      <Breadcrumb title="Terms and Conditions" />
-
+      <Breadcrumb title="Academic Regulations & Terms of Use" />
       <div className="content">
         <div className="container">
           <div className="row">
             <div className="col-xl-8 mx-auto">
-              <div className="mb-3">
-                <h5 className="mb-3">Introduction</h5>
+              <div className="mb-4">
+                <h5 className="mb-3">Open University of Tanzania Digital Learning Terms</h5>
                 <p className="mb-0">
-                  Welcome to OUT LMS. By accessing or using our platform, you
-                  agree to comply with and be bound by the following terms and
-                  conditions (“Terms”). Please read them carefully before using
-                  our services.
+                  By accessing or using the Open University of Tanzania (OUT) Learning Management
+                  System (LMS), you agree to abide by the University Charter, Student Examination
+                  Regulations, and ICT Acceptable Use Policy.
                 </p>
               </div>
-              <div className="mb-3">
-                <h5 className="mb-3">Acceptance of Terms</h5>
-                <p className="mb-2 d-flex align-items-center">
-                  By accessing or using our LMS, you confirm that you have read,
-                  understood, and agreed to these Terms.
-                </p>
-                <p className="mb-0 d-flex align-items-center">
-                  If you do not agree to these Terms, you may not use the
-                  Website or its services.
+              <div className="mb-4">
+                <h6 className="mb-2">1. Academic Integrity &amp; Assessment Honesty</h6>
+                <p className="mb-0">
+                  All quizzes, timed tests, and written assignments submitted through the OUT LMS
+                  must be the student&apos;s own original work. Plagiarism, credential sharing, or
+                  unauthorized assistance is subject to disciplinary action under OUT Examination
+                  Regulations.
                 </p>
               </div>
-              <div className="mb-3">
-                <h5 className="mb-3">Eligibility</h5>
-                <p className="mb-2 d-flex align-items-center">
-                  Users must be at least 18 years old or have parental/guardian
-                  consent to use the platform
-                </p>
-                <p className="mb-0 d-flex align-items-center">
-                  Organizations must ensure that their members comply with these
-                  Terms
+              <div className="mb-4">
+                <h6 className="mb-2">2. Course Enrollment &amp; Tuition Payments</h6>
+                <p className="mb-0">
+                  Course enrollment is activated upon verification of tuition payment via Pesapal or
+                  Selcom (or immediately for open-access courses). Tuition fees are governed by the
+                  official OUT Prospectus and Fee Schedule.
                 </p>
               </div>
-              <div className="mb-3">
-                <h5 className="mb-3">Account Registration</h5>
-                <p className="mb-2 d-flex align-items-center">
-                  Users are required to register an account to access courses
-                  and other features.
-                </p>
-                <p className="mb-2 d-flex align-items-center">
-                  You agree to provide accurate and complete information during
-                  registration.
-                </p>
-                <p className="mb-0 d-flex align-items-center">
-                  You are responsible for maintaining the confidentiality of
-                  your login credentials.
-                </p>
-              </div>
-              <div className="mb-3">
-                <h5 className="mb-3">Payments and Subscriptions</h5>
-                <p className="mb-2 d-flex align-items-center">
-                  Certain courses or features may require payment or a
-                  subscription.
-                </p>
-                <p className="mb-0 d-flex align-items-center">
-                  You are responsible for any taxes applicable to your purchase.
+              <div className="mb-4">
+                <h6 className="mb-2">3. Intellectual Property of Study Materials</h6>
+                <p className="mb-0">
+                  Lecture videos, SCORM packages, PDF study guides, and assessment banks published
+                  on the platform remain the intellectual property of The Open University of
+                  Tanzania and may not be redistributed commercially.
                 </p>
               </div>
               <div className="mb-0">
-                <h5 className="mb-3">Changes to Terms &amp; Conditions</h5>
+                <h6 className="mb-2">4. Governing Law</h6>
                 <p className="mb-0">
-                  OUT LMS may update these Terms &amp; Conditions
-                  periodically. Any changes will be communicated through the
-                  website or via email.
+                  These terms are governed by the laws of the United Republic of Tanzania and the
+                  regulations of the Tanzania Commission for Universities (TCU).
                 </p>
               </div>
             </div>

@@ -1,81 +1,48 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { all_routes } from "../../../router/all_routes";
-import ImageWithBasePath from "../../../../core/common/imageWithBasePath";
+import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import ImageWithBasePath from '../../../../core/common/imageWithBasePath';
+import { all_routes } from '../../../router/all_routes';
+import { courseService } from '../../../../core/api/courseService';
 
-const Error404 = () => {
-
-    const route = all_routes;
+const Error400: React.FC = () => {
+  useEffect(() => {
+    courseService.getRestV2OpenApiInfo().catch(() => null);
+  }, []);
 
   return (
-    <>
-      <>
-        {/* Main Wrapper */}
-        <div className="main-wrapper">
-          <div className="error-box">
+    <div className="error-bg">
+      <div className="error-box">
+        <div className="error-logo">
+          <Link to={all_routes.home}>
             <ImageWithBasePath
-              src="assets/img/error/img-01.svg"
-              alt="img"
-              className="img-fluid bg-01"
+              src="assets/img/logo.svg"
+              className="img-fluid"
+              alt="OUT Logo"
             />
-            <ImageWithBasePath
-              src="assets/img/error/img-02.svg"
-              alt="img"
-              className="img-fluid bg-02"
-            />
-            <ImageWithBasePath
-              src="assets/img/error/img-03.svg"
-              alt="img"
-              className="img-fluid bg-03"
-            />
-            <ImageWithBasePath
-              src="assets/img/error/img-04.svg"
-              alt="img"
-              className="img-fluid bg-04"
-            />
-            <ImageWithBasePath
-              src="assets/img/error/img-05.svg"
-              alt="img"
-              className="img-fluid bg-05"
-            />
-            <ImageWithBasePath
-              src="assets/img/error/img-06.svg"
-              alt="img"
-              className="img-fluid bg-06"
-            />
-            <div className="error-logo">
-              <Link to={route.homeone}>
-                <ImageWithBasePath
-                  src="assets/img/logo.svg"
-                  className="img-fluid"
-                  alt="Logo"
-                />
-              </Link>
-            </div>
-            <div className="error-box-img">
-              <ImageWithBasePath
-                src="assets/img/error/error-01.svg"
-                alt="Img"
-                className="img-fluid"
-              />
-            </div>
-            <h3 className="h2 mb-3">
-              {" "}
-              Oh No! Error <span className="text-secondary ms-1">404</span>
-            </h3>
-            <p className="h4 font-weight-normal">
-              This page you requested counld not found. May the force be with
-              you!
-            </p>
-            <Link to={route.homeone} className="btn back-to-home-btn">
-              <i className="isax isax-arrow-left-2 me-1" /> Back to Home
-            </Link>
-          </div>
+          </Link>
         </div>
-        {/* /Main Wrapper */}
-      </>
-    </>
+        <div className="error-img">
+          <ImageWithBasePath
+            src="/assets/img/error/error-01.svg"
+            className="img-fluid"
+            alt="404 Not Found"
+          />
+        </div>
+        <h3 className="h2 mb-3">404 — Academic Resource Not Found</h3>
+        <p className="h4 font-weight-normal">
+          The requested Open University of Tanzania page or course module could not be found.
+        </p>
+        <div className="d-flex justify-content-center gap-2 mt-3">
+          <Link to={all_routes.home} className="btn back-to-home-btn">
+            <i className="isax isax-arrow-left-2 me-1" /> Back to OUT Home
+          </Link>
+          <Link to={all_routes.courseGrid} className="btn btn-outline-primary">
+            Browse Course Catalog
+          </Link>
+        </div>
+      </div>
+    </div>
   );
 };
 
-export default Error404;
+export default Error400;

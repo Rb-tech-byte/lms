@@ -47,7 +47,7 @@ const StudentSettings: React.FC = () => {
         phone,
       });
     }
-    setSuccessMsg("Academic profile updated successfully! Settings synchronized with Moodle account.");
+    setSuccessMsg("Academic profile updated successfully! Settings synchronized.");
     setTimeout(() => setSuccessMsg(null), 4000);
   };
 
@@ -108,7 +108,7 @@ const StudentSettings: React.FC = () => {
                           </p>
                           <div className="d-flex align-items-center gap-2">
                             <span className="badge bg-primary-subtle text-primary border border-primary px-3 py-1">
-                              Moodle Active Learner
+                              Enrolled Scholar
                             </span>
                           </div>
                         </div>

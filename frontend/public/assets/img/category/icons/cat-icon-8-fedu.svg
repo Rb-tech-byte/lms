@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="iconBg_fedu" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#180a2b" />
+      <stop offset="100%" stop-color="#3b0764" />
+    </linearGradient>
+    <linearGradient id="iconBorder_fedu" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c084fc" />
+      <stop offset="100%" stop-color="#8b5cf6" />
+    </linearGradient>
+  </defs>
+
+  <!-- Squircle Base -->
+  <rect x="4" y="4" width="120" height="120" rx="28" fill="url(#iconBg_fedu)" stroke="url(#iconBorder_fedu)" stroke-width="3" />
+  
+  <!-- Subtle Internal Glow -->
+  <circle cx="64" cy="64" r="42" fill="#c084fc" opacity="0.15" />
+
+  <!-- Vector Illustration -->
+  
+      <!-- Open Book & Mortarboard -->
+      <polygon points="64,30 35,44 64,56 93,44" fill="#a855f7" stroke="#f3e8ff" stroke-width="2" />
+      <path d="M48,50 L48,68 C48,78 80,78 80,68 L80,50" fill="#6d28d9" stroke="#f3e8ff" stroke-width="1.5" />
+      <!-- Book pages below -->
+      <path d="M35,82 C48,78 62,80 64,88 C66,80 80,78 93,82 L93,100 C80,96 66,98 64,104 C62,98 48,96 35,100 Z" fill="#c084fc" />
+    
+</svg>

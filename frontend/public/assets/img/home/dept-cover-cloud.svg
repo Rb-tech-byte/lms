@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" width="100%" height="100%">
+  <defs>
+    <linearGradient id="dc-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0171BB"/>
+      <stop offset="60%" stop-color="#0082D6"/>
+      <stop offset="100%" stop-color="#0095F2"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="120" fill="url(#dc-grad)"/>
+  <rect x="0" y="0" width="400" height="7" fill="#FFD200"/>
+  <rect x="0" y="113" width="400" height="7" fill="#FFD200"/>
+  <circle cx="345" cy="55" r="55" fill="#FEF207" opacity="0.25"/>
+  <rect x="305" y="22" width="72" height="26" rx="13" fill="#FFD200"/>
+  <text x="341" y="39" text-anchor="middle" font-family="'Segoe UI', Inter, sans-serif" font-size="11" font-weight="800" fill="#003B66">ICT</text>
+  <text x="22" y="42" font-family="'Segoe UI', Inter, sans-serif" font-size="10.5" font-weight="700" fill="#FFFDE7" letter-spacing="0.8">THE OPEN UNIVERSITY OF TANZANIA</text>
+  <text x="22" y="88" font-family="'Segoe UI', Inter, sans-serif" font-size="12.5" font-weight="800" fill="#FEF207" letter-spacing="0.8">CLOUD & DISTRIBUTED SYSTEMS</text>
+</svg>

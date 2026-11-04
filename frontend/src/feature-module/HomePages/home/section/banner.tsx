@@ -1,287 +1,306 @@
-import React from 'react'
-import ImageWithBasePath from '../../../../core/common/imageWithBasePath'
-import CustomSelect from '../../../../core/common/commonSelect'
-import { BannerSelect } from '../../../../core/common/selectOption/json/selectOption'
-import { Link, useNavigate } from 'react-router-dom'
-import Slider from 'react-slick'
-import { all_routes } from '../../../router/all_routes'
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { all_routes } from '../../../router/all_routes';
+import { courseService, PublicCatalogCategory, PublicCatalogCourse } from '../../../../core/api/courseService';
+import { useCmsConfig } from '../../../../core/api/cmsService';
+import { useAuth } from '../../../../core/auth/authContext';
 
-const Banner = () => {
-    const route = all_routes
-    const navigate = useNavigate();
-    const handleSubmit = (event: React.FormEvent) => {
-        event.preventDefault(); 
-        const Path = route.courseList; 
-        navigate(Path);
-      };
-    const bannerslider = {
-        infinite: true,
-        slidesToShow: 5,
-        slidesToScroll: 1,
-        autoplay: true,
-        autoplaySpeed: 3000,
-        arrows: false,
-        dots: false,
-        responsive: [
-            {
-                breakpoint: 992,
-                settings: {
-                    slidesToShow: 3,
-                    slidesToScroll: 1,
-                    infinite: true,
-                    dots: false,
-                },
-            },
-            {
-                breakpoint: 768,
-                settings: {
-                    slidesToShow: 2,
-                    slidesToScroll: 1,
-                },
-            },
-        ],
+const Banner: React.FC = () => {
+  const navigate = useNavigate();
+  const { cms } = useCmsConfig();
+  const { isAuthenticated, user } = useAuth();
+  const [keyword, setKeyword] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [categories, setCategories] = useState<PublicCatalogCategory[]>([]);
+  const [spotlightCourses, setSpotlightCourses] = useState<PublicCatalogCourse[]>([]);
+
+  useEffect(() => {
+    let active = true;
+    courseService.getPublicCatalog().then((res) => {
+      if (!active) return;
+      setCategories(res.categories || []);
+      setSpotlightCourses((res.courses || []).slice(0, 3));
+    });
+    return () => {
+      active = false;
     };
+  }, []);
 
-    return (
-        <>
-            {/* Home Banner */}
-            <section className="home-slide-five">
-                <div className="container">
-                    <div className="row align-items-center">
-                        <div className="col-xl-5 col-lg-6 col-12">
-                            <div className="home-slide-five-face" data-aos="fade-down">
-                                {/* Banner Text */}
-                                <div className="home-slide-five-text">
-                                    <span className="text-warning d-inline-flex fw-semibold text-uppercase mb-3">
-                                        The Leader in Online Learning
-                                    </span>
-                                    <h1 className="text-white mb-4">
-                                        Engaging &amp; Accessible Online Courses For All
-                                    </h1>
-                                    <p className="text-white fs-lg text-center text-md-start pb-2 pb-md-3 mb-4">
-                                        Trusted by over 15K Users worldwide since 2022
-                                    </p>
-                                </div>
-                                {/* /Banner Text */}
-                                {/* banner Seach Category */}
-                                <div className="banner-content-five">
-                                    <form onSubmit={handleSubmit} className="form">
-                                        <div className="form-inner-five">
-                                            <div className="input-group">
-                                                {/* Slect Category */}
-                                                <span className="drop-detail-five">
-                                                    <CustomSelect
-                                                        options={BannerSelect}
-                                                        className="select d-flex"
-                                                        placeholder="Select"
-                                                        defaultValue={BannerSelect[1]}
-                                                    />
-                                                </span>
-                                                {/* Slect Category */}
-                                                {/* Search */}
-                                                <input
-                                                    type="email"
-                                                    className="form-control"
-                                                    placeholder="Search for Courses, Instructors"
-                                                />
-                                                {/* Search */}
-                                                {/* Submit Button */}
-                                                <button className="btn btn-primary sub-btn" type="submit">
-                                                    <span>
-                                                        <i className="fa-solid fa-magnifying-glass" />
-                                                    </span>
-                                                </button>
-                                                {/* Submit Button */}
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
-                                {/* /banner Seach Category */}
-                                {/* Review and Experience */}
-                                <div className="review-five-group">
-                                    <div className="review-user-five  d-flex align-items-center">
-                                        <ul className="review-users-list">
-                                            <li>
-                                                <Link
-                                                    to="#"
-                                                    data-bs-toggle="tooltip"
-                                                    data-bs-placement="top"
-                                                    title=""
-                                                    data-bs-original-title="leader 1"
-                                                >
-                                                    <ImageWithBasePath src="assets/img/user/user-01.jpg" alt="img" />
-                                                </Link>
-                                            </li>
-                                            <li>
-                                                <Link
-                                                    to="#"
-                                                    data-bs-toggle="tooltip"
-                                                    data-bs-placement="top"
-                                                    title=""
-                                                    data-bs-original-title="leader 2"
-                                                >
-                                                    <ImageWithBasePath src="assets/img/user/user-02.jpg" alt="img" />
-                                                </Link>
-                                            </li>
-                                            <li>
-                                                <Link
-                                                    to="#"
-                                                    data-bs-toggle="tooltip"
-                                                    data-bs-placement="top"
-                                                    title=""
-                                                    data-bs-original-title="leader 3"
-                                                >
-                                                    <ImageWithBasePath src="assets/img/user/user-03.jpg" alt="img" />
-                                                </Link>
-                                            </li>
-                                        </ul>
-                                        <div className="review-rating-five">
-                                            <div className="rating-star">
-                                                <i className="fas fa-star filled" />
-                                                <i className="fas fa-star filled" />
-                                                <i className="fas fa-star filled" />
-                                                <i className="fas fa-star filled" />
-                                                <i className="fas fa-star filled" />
-                                                <p>4.9 / 200 Review</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {/* /Review and Experience */}
-                            </div>
-                        </div>
-                        <div className="col-xl-7 col-lg-6 col-12">
-                            <div className="banner-six-img">
-                                <div className="row">
-                                    <div className="col-lg-6 align-self-end">
-                                        <div className="ban-img-1" data-aos="fade-up">
-                                            <ImageWithBasePath src="./assets/img/hero/hero-7.png" alt="img" />
-                                        </div>
-                                    </div>
-                                    <div className="col-lg-6">
-                                        <div className="ban-img-2" data-aos="fade-down">
-                                            <ImageWithBasePath
-                                                className="ban-shape2"
-                                                data-aos="fade-down"
-                                                data-aos-delay={250}
-                                                src="./assets/img/shapes/dot-group.png"
-                                                alt="img"
-                                            />
-                                            <ImageWithBasePath
-                                                className="ban-shape3"
-                                                data-aos="fade-down"
-                                                data-aos-delay={300}
-                                                src="./assets/img/banner/ban-shape-2.svg"
-                                                alt="img"
-                                            />
-                                            <ImageWithBasePath
-                                                className="ban-shape4"
-                                                data-aos="fade-down"
-                                                data-aos-delay={350}
-                                                src="./assets/img/banner/ban-shape-3.svg"
-                                                alt="img"
-                                            />
-                                            <ImageWithBasePath src="./assets/img/hero/hero-8.png" alt="img" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="vector-shapes-five d-none d-lg-flex">
-                        <ImageWithBasePath src="assets/img/bg/banner-vector.svg" alt="OUT LMS Feature" />
-                    </div>
+  if (!cms.hero.visible) return null;
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    if (keyword.trim()) params.set('q', keyword.trim());
+    if (selectedCategory) params.set('category', selectedCategory);
+    navigate(`${all_routes.courseGrid}?${params.toString()}`);
+  };
+
+  return (
+    <section
+      style={{
+        background: cms.hero.bgImage
+          ? `linear-gradient(135deg, rgba(1, 113, 187, 0.88) 0%, rgba(0, 130, 214, 0.84) 55%, rgba(0, 149, 242, 0.82) 100%), url(${cms.hero.bgImage}) center/cover no-repeat`
+          : 'linear-gradient(135deg, #0171BB 0%, #0082D6 55%, #0095F2 100%)',
+        color: '#ffffff',
+        padding: '38px 0 34px',
+        borderTop: '4px solid #FFD200',
+        borderBottom: '5px solid #FFD200',
+      }}
+    >
+      <div className="container">
+        <div className="row align-items-center g-4">
+          {/* Left Column: Compact Hero & Search Card */}
+          <div className="col-lg-7">
+            <div className="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3"
+              style={{
+                background: '#FFD200', border: '1.5px solid #FEF207', color: '#003B66',
+                fontSize: '12px',
+                fontWeight: 800,
+                boxShadow: '0 4px 12px rgba(0, 59, 102, 0.16)',
+              }}
+            >
+              <i className="isax isax-verify" />
+              <span>{cms.hero.eyebrow}</span>
+            </div>
+
+            <h1
+              className="fw-bold text-white mb-2"
+              style={{ fontSize: 'clamp(1.65rem, 2.8vw, 2.35rem)', lineHeight: 1.22, letterSpacing: '-0.02em' }}
+            >
+              {cms.hero.title}
+            </h1>
+
+            <p
+              className="mb-3"
+              style={{ color: '#FFFDE7', fontSize: '14.5px', lineHeight: 1.6, maxWidth: '620px' }}
+            >
+              {cms.hero.subtitle}
+            </p>
+
+            {/* Compact Native Search Card */}
+            <form
+              onSubmit={handleSearch}
+              className="p-2 rounded-3 mb-3 shadow-sm"
+              style={{
+                background: '#ffffff', border: '2.5px solid #FFD200', boxShadow: '0 8px 24px rgba(1, 113, 187, 0.22)',
+              }}
+            >
+              <div className="row g-2 align-items-center">
+                <div className="col-md-6">
+                  <div className="input-group input-group-sm">
+                    <span className="input-group-text bg-transparent border-0 text-primary">
+                      <i className="isax isax-search-normal-1" />
+                    </span>
+                    <input
+                      type="text"
+                      className="form-control border-0 shadow-none"
+                      placeholder={cms.hero.searchPlaceholder}
+                      value={keyword}
+                      onChange={(e) => setKeyword(e.target.value)}
+                      style={{ fontSize: '13px', color: '#003B66' }}
+                    />
+                  </div>
                 </div>
-            </section>
-            {/* /Home Banner */}
-            {/* Leading Companies */}
-            <section className="leading-section-five">
-                <div className="container">
-                    <div className="row align-items-center">
-                        <div className="col-lg-4 col-md-6" data-aos="fade-down">
-                            <div className="leading-five-content course-count">
-                                <h3 className="mb-2">
-                                    Trusted By <span className="counterUp">500</span>+
-                                </h3>
-                                <p>Leading Universities And Companies</p>
-                            </div>
-                        </div>
-                        <div className="col-lg-8 col-md-6" data-aos="fade-down">
-                            <div className="lead-group-five">
-                                <Slider {...bannerslider} className="leading-slider-five">
-                                    <div className="item">
-                                        <div className="lead-img">
-                                            <ImageWithBasePath
-                                                className="img-fluid"
-                                                alt="OUT LMS Feature"
-                                                src="assets/img/client/client-28.svg"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="item">
-                                        <div className="lead-img">
-                                            <ImageWithBasePath
-                                                className="img-fluid"
-                                                alt="OUT LMS Feature"
-                                                src="assets/img/client/client-29.svg"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="item">
-                                        <div className="lead-img">
-                                            <ImageWithBasePath
-                                                className="img-fluid"
-                                                alt="OUT LMS Feature"
-                                                src="assets/img/client/client-30.svg"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="item">
-                                        <div className="lead-img">
-                                            <ImageWithBasePath
-                                                className="img-fluid"
-                                                alt="OUT LMS Feature"
-                                                src="assets/img/client/client-31.svg"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="item">
-                                        <div className="lead-img">
-                                            <ImageWithBasePath
-                                                className="img-fluid"
-                                                alt="OUT LMS Feature"
-                                                src="assets/img/client/client-32.svg"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="item">
-                                        <div className="lead-img">
-                                            <ImageWithBasePath
-                                                className="img-fluid"
-                                                alt="OUT LMS Feature"
-                                                src="assets/img/client/client-30.svg"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="item">
-                                        <div className="lead-img">
-                                            <ImageWithBasePath
-                                                className="img-fluid"
-                                                alt="OUT LMS Feature"
-                                                src="assets/img/client/client-31.svg"
-                                            />
-                                        </div>
-                                    </div>
-                                </Slider>
-                            </div>
-                        </div>
-                    </div>
+                <div className="col-md-4">
+                  <select
+                    className="form-select form-select-sm border-start border-0 rounded-0 shadow-none"
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    style={{ fontSize: '12.5px', color: '#003B66' }}
+                  >
+                    <option value="">All Academic Faculties</option>
+                    {categories.map((cat) => (
+                      <option key={cat.id} value={cat.name}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-            </section>
-            {/* /Leading Companies */}
-        </>
+                <div className="col-md-2 d-grid">
+                  <button
+                    type="submit"
+                    className="btn btn-sm btn-primary fw-semibold py-2 rounded-2"
+                    style={{ background: '#0171BB', borderColor: '#0171BB', borderBottom: '2px solid #FFD200', color: '#ffffff', fontSize: '13px', fontWeight: 700 }}
+                  >
+                    Search
+                  </button>
+                </div>
+              </div>
+            </form>
 
-    )
-}
+            {/* Compact Highlight Badges & Quick CTAs */}
+            <div className="d-flex flex-wrap align-items-center gap-2 mb-3">
+              {(cms.hero.highlights || []).map((item, idx) => (
+                <span
+                  key={idx}
+                  className="px-2.5 py-1 rounded-2 d-inline-flex align-items-center gap-1"
+                  style={{
+                    background: 'rgba(255, 253, 231, 0.18)', border: '1px solid #FFD200', color: '#ffffff',
+                    fontSize: '11.5px', fontWeight: 600,
+                  }}
+                >
+                  <i className="isax isax-tick-circle" style={{ color: '#FEF207' }} />
+                  <span>{item}</span>
+                </span>
+              ))}
+            </div>
 
-export default Banner
+            <div className="d-flex flex-wrap align-items-center gap-2">
+              <Link
+                to={cms.hero.primaryCtaRoute || all_routes.courseGrid}
+                className="btn btn-sm px-3 py-2 fw-bold rounded-2 d-inline-flex align-items-center gap-2"
+                style={{ background: '#FFD200', border: '1.5px solid #FEF207', color: '#003B66', fontSize: '13px', boxShadow: '0 4px 12px rgba(0, 59, 102, 0.18)' }}
+              >
+                <i className="isax isax-book-1" />
+                <span>{cms.hero.primaryCtaText}</span>
+              </Link>
+              <Link
+                to={isAuthenticated && user ? user.dashboardUrl : cms.hero.secondaryCtaRoute || all_routes.login}
+                className="btn btn-sm px-3 py-2 fw-semibold rounded-2 d-inline-flex align-items-center gap-2"
+                style={{
+                  background: 'rgba(255, 253, 231, 0.16)',
+                  border: '1.5px solid #FFD200',
+                  color: '#FFFDE7',
+                  fontSize: '13px',
+                }}
+              >
+                <i className="isax isax-login-1" />
+                <span>
+                  {isAuthenticated && user ? 'Open My Dashboard' : cms.hero.secondaryCtaText}
+                </span>
+              </Link>
+            </div>
+          </div>
+
+          {/* Right Column: Bright OUT Logo White & Warm Map-Yellow Spotlight Card */}
+          <div className="col-lg-5">
+            <div
+              className="p-3 rounded-3 shadow"
+              style={{
+                background: 'linear-gradient(145deg, #FFFFFF 0%, #FFFDE7 100%)',
+                border: '3px solid #FFD200',
+                borderBottom: '5px solid #0171BB',
+                boxShadow: '0 14px 32px rgba(0, 59, 102, 0.22)',
+              }}
+            >
+              {cms.hero.spotlightCover && (
+                <div className="mb-2 rounded-2 overflow-hidden" style={{ height: '74px', border: '1.5px solid #0171BB' }}>
+                  <img
+                    src={cms.hero.spotlightCover}
+                    alt="Featured Modules"
+                    className="w-100 h-100"
+                    style={{ objectFit: 'cover' }}
+                  />
+                </div>
+              )}
+              <div className="d-flex align-items-center justify-content-between pb-2 mb-2" style={{ borderBottom: '1.5px solid #CBE4F9' }}>
+                <div className="d-flex align-items-center gap-2">
+                  <span
+                    className="d-inline-block rounded-circle"
+                    style={{ width: '9px', height: '9px', background: '#0171BB', border: '2px solid #FFD200' }}
+                  />
+                  <span className="fw-bold" style={{ fontSize: '13px', color: '#003B66' }}>
+                    Featured Degree Modules
+                  </span>
+                </div>
+                <Link
+                  to={all_routes.courseGrid}
+                  className="text-decoration-none fw-bold"
+                  style={{ fontSize: '12px', color: '#0171BB' }}
+                >
+                  All Courses →
+                </Link>
+              </div>
+
+              <div className="d-flex flex-column gap-2">
+                {spotlightCourses.map((course) => (
+                  <div
+                    key={course.id}
+                    className="p-2 rounded-2 d-flex align-items-center justify-content-between gap-2"
+                    style={{
+                      background: '#F0F8FF',
+                      border: '1px solid #93C5FD',
+                      borderLeft: '4px solid #0171BB',
+                    }}
+                  >
+                    <div className="min-w-0">
+                      <div className="d-flex align-items-center gap-2 mb-1">
+                        <span
+                          className="badge px-2 py-0"
+                          style={{
+                            background: '#FFD200', color: '#003B66', fontWeight: 800,
+                            fontSize: '10.5px',
+                          }}
+                        >
+                          {course.shortname}
+                        </span>
+                        <span className="fw-bold text-truncate" style={{ fontSize: '12.5px', color: '#003B66' }}>
+                          {course.fullname}
+                        </span>
+                      </div>
+                      <div className="d-flex align-items-center gap-3" style={{ color: '#334155', fontSize: '11px' }}>
+                        <span>
+                          <i className="isax isax-teacher me-1 text-primary" />
+                          {course.instructorName}
+                        </span>
+                        <span>
+                          <i className="isax isax-book me-1 text-primary" />
+                          {course.modulesCount} Units
+                        </span>
+                        <span className="fw-bold" style={{ color: '#0171BB' }}>{course.priceFormatted}</span>
+                      </div>
+                    </div>
+
+                    <Link
+                      to={`${all_routes.courseDetails}?id=${course.id}`}
+                      className="btn btn-sm py-1 px-2.5 flex-shrink-0 fw-bold"
+                      style={{
+                        background: '#0171BB',
+                        borderBottom: '2px solid #FFD200',
+                        color: '#ffffff',
+                        fontSize: '11.5px',
+                      }}
+                    >
+                      Open
+                    </Link>
+                  </div>
+                ))}
+              </div>
+
+              {/* Quick Role Portal Pills */}
+              <div className="mt-3 pt-2 d-flex align-items-center justify-content-between flex-wrap gap-2" style={{ borderTop: '1.5px solid #CBE4F9' }}>
+                <span className="fw-semibold" style={{ color: '#003B66', fontSize: '11.5px' }}>Quick Access:</span>
+                <div className="d-flex gap-1">
+                  <Link
+                    to={all_routes.studentDashboard}
+                    className="badge text-decoration-none px-2 py-1 fw-bold"
+                    style={{ background: '#0171BB', color: '#ffffff', fontSize: '11px' }}
+                  >
+                    Scholar Portal
+                  </Link>
+                  <Link
+                    to={all_routes.instructorDashboard}
+                    className="badge text-decoration-none px-2 py-1 fw-bold"
+                    style={{ background: '#FFD200', color: '#003B66', fontSize: '11px' }}
+                  >
+                    Lecturer Console
+                  </Link>
+                  <Link
+                    to={all_routes.adminDashboard}
+                    className="badge text-decoration-none px-2 py-1 fw-bold"
+                    style={{ background: '#E8F4FC', color: '#0171BB', border: '1px solid #0171BB', fontSize: '11px' }}
+                  >
+                    Admin Governance
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default Banner;

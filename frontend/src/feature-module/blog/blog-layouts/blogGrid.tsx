@@ -1,229 +1,215 @@
-import React from 'react'
-import Breadcrumb from '../../../core/common/Breadcrumb/breadcrumb'
-import { Link } from 'react-router-dom'
-import ImageWithBasePath from '../../../core/common/imageWithBasePath'
-import { all_routes } from '../../router/all_routes'
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { all_routes } from '../../router/all_routes';
+import { courseService, PublicCatalogCourse } from '../../../core/api/courseService';
+import { useCmsConfig } from '../../../core/api/cmsService';
 
-const BlogGrid = () => {
+const BlogGrid: React.FC = () => {
+  const route = all_routes;
+  const { cms } = useCmsConfig();
+  const [courses, setCourses] = useState<PublicCatalogCourse[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    courseService
+      .getPublicCatalog()
+      .then((res) => {
+        if (mounted) setCourses(res.courses || []);
+      })
+      .finally(() => {
+        if (mounted) setLoading(false);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  // Merge CMS bulletins + dynamic course notices
+  const cmsItems = (cms.sections?.bulletins?.items || []).map((b: any, idx: number) => ({
+    id: b.id || `cms-${idx}`,
+    title: b.title,
+    category: b.category || 'Academic Notice',
+    date: b.date || 'Current Semester',
+    summary: b.summary,
+    image: b.image || `/assets/img/course/course-0${(idx % 4) + 1}.jpg`,
+    link: b.route || route.courseGrid,
+    author: 'Office of the Deputy Vice Chancellor (Academics)',
+  }));
+
+  const courseItems = courses.map((c) => ({
+    id: `course-${c.id}`,
+    title: `${c.shortname}: ${c.fullname} — Study Schedule & Assessment Guide`,
+    category: c.categoryName,
+    date: 'Active Semester',
+    summary:
+      c.summary ||
+      `Updated syllabus units, continuous assessment timelines, and study materials for ${c.fullname}.`,
+    image: c.courseImage,
+    link: `${route.courseDetails}?id=${c.id}`,
+    author: c.instructor.fullname,
+  }));
+
+  const allNotices = [...cmsItems, ...courseItems];
+  const categories = Array.from(new Set(allNotices.map((n) => n.category)));
+
+  const filtered = allNotices.filter((item) => {
+    if (selectedCategory !== 'all' && item.category !== selectedCategory) return false;
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      item.title.toLowerCase().includes(q) ||
+      item.category.toLowerCase().includes(q) ||
+      item.summary.toLowerCase().includes(q) ||
+      item.author.toLowerCase().includes(q)
+    );
+  });
+
   return (
-    <>
-    <Breadcrumb title='Blog 1 Grid'/>
-    <div className="content">
-  <div className="container">
-    <div className="row justify-content-center">
-      <div className="col-lg-9">
-        <div className="blog">
-          <div className="blog-image">
-            <Link to={all_routes.blogDetails}>
-              <ImageWithBasePath
-                className="img-fluid"
-                src="./assets/img/blog/blog-16.jpg"
-                alt="img"
-              />
-            </Link>
-          </div>
-          <div className="blog-item">
-            <h5 className="mb-2">
-              <Link to={all_routes.blogDetails}>
-                Learn Web App Development from Experts in 2024
-              </Link>
-            </h5>
-            <p className="text-truncate line-clamb-2">
-              Master the art of web application development with expert-led
-              courses that cover the latest tools, fram...
-            </p>
-            <div className="blog-info">
-              <div className="d-flex align-items-center flex-wrap justify-content-between gap-2">
-                <div className="d-flex align-items-center user-profile">
-                  <Link to={all_routes.instructorDetails} className="user-img">
-                    <ImageWithBasePath
-                      className="rounded-pill w-auto"
-                      src="./assets/img/user/user-52.jpg"
-                      alt="img"
-                    />
-                  </Link>
-                  <Link to={all_routes.instructorDetails} className="user-name">
-                    John Miller
-                  </Link>
+    <div style={{ background: '#f8fafc', minHeight: '82vh' }}>
+      <section
+        className="py-4"
+        style={{
+          background: 'linear-gradient(135deg, #005B97 0%, #0171BB 55%, #0082D6 100%)',
+          borderBottom: '3px solid #FFD200',
+        }}
+      >
+        <div className="container">
+          <div className="row align-items-center g-3">
+            <div className="col-lg-7">
+              <span
+                className="badge rounded-pill px-3 py-1 fw-bold mb-2"
+                style={{ background: '#FFD200', color: '#051426', fontSize: '0.72rem' }}
+              >
+                {cms.sections?.bulletins?.eyebrow || 'OFFICIAL NOTICES & BULLETINS'}
+              </span>
+              <h1 className="fw-bold text-white mb-1" style={{ fontSize: 'clamp(1.35rem, 2.2vw, 1.8rem)' }}>
+                {cms.sections?.bulletins?.title || 'University Academic Notices & Announcements'}
+              </h1>
+              <p className="mb-0" style={{ color: '#cbd5e1', fontSize: '0.88rem' }}>
+                {cms.sections?.bulletins?.subtitle ||
+                  'Official semester dates, examination timetables, admissions updates, and programme circulars.'}
+              </p>
+            </div>
+            <div className="col-lg-5">
+              <div className="d-flex justify-content-lg-end">
+                <div className="input-group input-group-sm" style={{ maxWidth: 320 }}>
+                  <span className="input-group-text bg-white border-0 text-muted">
+                    <i className="feather-search" />
+                  </span>
+                  <input
+                    type="text"
+                    className="form-control border-0"
+                    placeholder="Search notices, dates, or programmes..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
                 </div>
-                <ul className="d-flex align-items-center flex-wrap gap-2">
-                  <li>
-                    <ImageWithBasePath
-                      className="me-1"
-                      src="./assets/img/icons/calendar.svg"
-                      alt="img"
-                    />
-                    <p>20 Apr 2024</p>
-                  </li>
-                  <li>
-                    <ImageWithBasePath
-                      className="me-1"
-                      src="./assets/img/icons/tag.svg"
-                      alt="img"
-                    />
-                    <p>Programming, Web Design</p>
-                  </li>
-                </ul>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-      <div className="col-lg-9">
-        <div className="blog">
-          <div className="blog-image">
-            <Link to={all_routes.blogDetails}>
-              <ImageWithBasePath
-                className="img-fluid"
-                src="./assets/img/blog/blog-17.jpg"
-                alt="img"
-              />
-            </Link>
-          </div>
-          <div className="blog-item">
-            <h5 className="mb-2">
-              <Link to={all_routes.blogDetails}>
-                The Complete JavaScript Course for Beginners
-              </Link>
-            </h5>
-            <p className="text-truncate line-clamb-2">
-              Dive into the world of JavaScript with our complete
-              beginner-friendly course! Learn essential concepts...
-            </p>
-            <div className="blog-info">
-              <div className="d-flex align-items-center flex-wrap justify-content-between gap-2">
-                <div className="d-flex align-items-center user-profile">
-                  <Link to={all_routes.instructorDetails} className="user-img">
-                    <ImageWithBasePath
-                      className="rounded-pill w-auto"
-                      src="./assets/img/user/user-15.jpg"
-                      alt="img"
-                    />
-                  </Link>
-                  <Link to={all_routes.instructorDetails} className="user-name">
-                    Donald Vesely
-                  </Link>
-                </div>
-                <ul className="d-flex align-items-center flex-wrap gap-2">
-                  <li>
-                    <ImageWithBasePath
-                      className="me-1"
-                      src="./assets/img/icons/calendar.svg"
-                      alt="img"
-                    />
-                    <p>08 Apr 2024</p>
-                  </li>
-                  <li>
-                    <ImageWithBasePath
-                      className="me-1"
-                      src="./assets/img/icons/tag.svg"
-                      alt="img"
-                    />
-                    <p>Programming, Web Design</p>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="col-lg-9">
-        <div className="blog">
-          <div className="blog-image">
-            <Link to={all_routes.blogDetails}>
-              <ImageWithBasePath
-                className="img-fluid"
-                src="./assets/img/blog/blog-18.jpg"
-                alt="img"
-              />
-            </Link>
-          </div>
-          <div className="blog-item">
-            <h5 className="mb-2">
-              <Link to={all_routes.blogDetails}>
-                Revolutionize Learning with a Modern LMS
-              </Link>
-            </h5>
-            <p className="text-truncate line-clamb-2">
-              Discover how a Learning Management System (LMS) can transform
-              education and corporate training by ...
-            </p>
-            <div className="blog-info">
-              <div className="d-flex align-items-center flex-wrap justify-content-between gap-2">
-                <div className="d-flex align-items-center user-profile">
-                  <Link to={all_routes.instructorDetails} className="user-img">
-                    <ImageWithBasePath
-                      className="rounded-pill w-auto"
-                      src="./assets/img/user/user-05.jpg"
-                      alt="img"
-                    />
-                  </Link>
-                  <Link to={all_routes.instructorDetails} className="user-name">
-                    James Barnes
-                  </Link>
-                </div>
-                <ul className="d-flex align-items-center flex-wrap gap-2">
-                  <li>
-                    <ImageWithBasePath
-                      className="me-1"
-                      src="./assets/img/icons/calendar.svg"
-                      alt="img"
-                    />
-                    <p>23 Feb 2024</p>
-                  </li>
-                  <li>
-                    <ImageWithBasePath
-                      className="me-1"
-                      src="./assets/img/icons/tag.svg"
-                      alt="img"
-                    />
-                    <p>Modern Learning, Innovative</p>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    {/* /pagination */}
-    <div className="row align-items-center">
-      <div className="col-md-12">
-        <ul className="pagination justify-content-center">
-          <li className="page-item prev">
-            <Link className="page-link" to="#" tabIndex={-1}>
-              <i className="fas fa-angle-left" />
-            </Link>
-          </li>
-          <li className="page-item first-page active">
-            <Link className="page-link" to="#">
-              1
-            </Link>
-          </li>
-          <li className="page-item">
-            <Link className="page-link" to="#">
-              2
-            </Link>
-          </li>
-          <li className="page-item">
-            <Link className="page-link" to="#">
-              3
-            </Link>
-          </li>
-          <li className="page-item next">
-            <Link className="page-link" to="#">
-              <i className="fas fa-angle-right" />
-            </Link>
-          </li>
-        </ul>
-      </div>
-    </div>
-    {/* /pagination */}
-  </div>
-</div>
 
-    </>
-  )
-}
+          {categories.length > 0 && (
+            <div className="d-flex align-items-center gap-1.5 flex-wrap mt-3 pt-2" style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+              <button
+                type="button"
+                onClick={() => setSelectedCategory('all')}
+                className="btn btn-sm rounded-pill px-3 py-1 fw-semibold"
+                style={{
+                  fontSize: '0.73rem',
+                  background: selectedCategory === 'all' ? '#f59e0b' : 'rgba(255,255,255,0.1)',
+                  color: selectedCategory === 'all' ? '#0f172a' : '#e2e8f0',
+                  border: 'none',
+                }}
+              >
+                All Notices ({allNotices.length})
+              </button>
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setSelectedCategory(cat)}
+                  className="btn btn-sm rounded-pill px-3 py-1 fw-medium"
+                  style={{
+                    fontSize: '0.73rem',
+                    background: selectedCategory === cat ? '#f59e0b' : 'rgba(255,255,255,0.1)',
+                    color: selectedCategory === cat ? '#0f172a' : '#e2e8f0',
+                    border: 'none',
+                  }}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
 
-export default BlogGrid
+      <section className="py-4">
+        <div className="container">
+          {loading ? (
+            <div className="text-center py-5">
+              <div className="spinner-border text-primary spinner-border-sm me-2" role="status" />
+              <span className="text-muted small">Loading official notices...</span>
+            </div>
+          ) : (
+            <div className="row g-3">
+              {filtered.map((item) => (
+                <div className="col-lg-4 col-md-6 d-flex" key={item.id}>
+                  <div className="card border-0 shadow-sm rounded-4 w-100 d-flex flex-column justify-content-between bg-white overflow-hidden">
+                    <div>
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className="w-100"
+                        style={{ height: 150, objectFit: 'cover' }}
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = '/assets/img/course/course-01.jpg';
+                        }}
+                      />
+                      <div className="p-3">
+                        <div className="d-flex align-items-center justify-content-between mb-1.5">
+                          <span className="badge bg-primary-subtle text-primary rounded-pill" style={{ fontSize: '0.68rem' }}>
+                            {item.category}
+                          </span>
+                          <small className="text-muted" style={{ fontSize: '0.72rem' }}>
+                            <i className="isax isax-calendar-1 me-1" />
+                            {item.date}
+                          </small>
+                        </div>
+                        <h6 className="fw-bold text-dark mb-1.5" style={{ fontSize: '0.93rem', lineHeight: 1.35 }}>
+                          <Link to={item.link} className="text-dark text-decoration-none">
+                            {item.title}
+                          </Link>
+                        </h6>
+                        <p className="text-muted small mb-0" style={{ fontSize: '0.79rem', lineHeight: 1.5 }}>
+                          {item.summary}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="px-3 py-2.5 bg-light border-top d-flex align-items-center justify-content-between">
+                      <span className="small text-muted text-truncate" style={{ fontSize: '0.73rem', maxWidth: '68%' }}>
+                        {item.author}
+                      </span>
+                      <Link
+                        to={item.link}
+                        className="btn btn-sm btn-outline-primary rounded-pill px-3 py-1"
+                        style={{ fontSize: '0.73rem' }}
+                      >
+                        Open
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default BlogGrid;

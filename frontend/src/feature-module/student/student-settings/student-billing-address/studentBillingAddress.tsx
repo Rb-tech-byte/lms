@@ -1,111 +1,58 @@
-import React from "react";
-import Breadcrumb from "../../../../core/common/Breadcrumb/breadcrumb";
-import { Link } from "react-router-dom";
-import ProfileCard from "../../common/profileCard";
-import StudentSidebar from "../../common/studentSidebar";
-import SettingsLinks from "../settingsLinks/settingsLinks";
-import SettingsModal from "../settingsModal/settingsModal";
+import React, { useState } from 'react';
+import Breadcrumb from '../../../../core/common/Breadcrumb/breadcrumb';
+import ProfileCard from '../../common/profileCard';
+import StudentSidebar from '../../common/studentSidebar';
+import SettingsLinks from '../settingsLinks/settingsLinks';
+import { useAuth } from '../../../../core/auth/authContext';
 
-const StudentBillingAddress = () => {
+const StudentBillingAddress: React.FC = () => {
+  const { user, updateUser } = useAuth();
+  const [centre, setCentre] = useState('Kinondoni HQ Regional Centre, Kawawa Road, Dar es Salaam');
+  const [saved, setSaved] = useState(false);
+
+  const handleSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateUser({ title: `${user?.title || 'OUT Student'} • ${centre}` });
+    setSaved(true);
+  };
+
   return (
     <>
-      <Breadcrumb title="Settings" />
+      <Breadcrumb title="Regional Study Centre & Billing Address" />
       <div className="content">
         <div className="container">
-          {/* Profile */}
           <ProfileCard />
-          {/* /Profile */}
           <div className="row">
-            {/* Sidebar */}
             <StudentSidebar />
-            {/* Sidebar */}
             <div className="col-lg-9">
-              <div className="mb-3">
-                <h5>Settings</h5>
-              </div>
-              <SettingsLinks />
               <div className="card mb-0">
                 <div className="card-body">
-                  <form>
-                    <div className="d-sm-flex align-items-center justify-content-between border-bottom mb-3 pb-3">
-                      <div className="d-flex align-items-center mb-2 mb-sm-0">
-                        <div>
-                          <h6 className="mb-1">
-                            Home{" "}
-                            <span className="badge bg-soft-success ms-1 fs-12 fw-normal">
-                              Default
-                            </span>
-                          </h6>
-                          <p>16 Lake Floyd Circle, Newark, DE 19714</p>
-                        </div>
-                      </div>
-                      <div className="d-flex align-items-center">
-                        <Link
-                          to="#"
-                          className="btn btn-light btn-sm border me-2"
-                          data-bs-toggle="modal"
-                          data-bs-target="#edit_billing"
-                        >
-                          <i className="isax isax-edit-2 me-2" />
-                          Edit
-                        </Link>
-                        <Link
-                          to="#"
-                          className="btn btn-secondary btn-sm"
-                          data-bs-toggle="modal"
-                          data-bs-target="#delete_modal"
-                        >
-                          <i className="isax isax-trash me-1" />
-                          Delete
-                        </Link>
-                      </div>
+                  <SettingsLinks />
+                  {saved && (
+                    <div className="alert alert-success py-2 small">
+                      Regional study centre address synchronized with student profile.
                     </div>
-                    <div className="d-sm-flex align-items-center justify-content-between border-bottom mb-3 pb-3">
-                      <div className="d-flex align-items-center mb-2 mb-sm-0">
-                        <div>
-                          <h6 className="mb-1">Work</h6>
-                          <p>33 Hart Country Lane, West Point, GA 31833</p>
-                        </div>
-                      </div>
-                      <div className="d-flex align-items-center">
-                        <Link
-                          to="#"
-                          className="btn btn-light btn-sm border me-2"
-                          data-bs-toggle="modal"
-                          data-bs-target="#edit_billing"
-                        >
-                          <i className="isax isax-edit-2 me-2" />
-                          Edit
-                        </Link>
-                        <Link
-                          to="#"
-                          className="btn btn-secondary btn-sm"
-                          data-bs-toggle="modal"
-                          data-bs-target="#delete_modal"
-                        >
-                          <i className="isax isax-trash me-1" />
-                          Delete
-                        </Link>
-                      </div>
+                  )}
+                  <form onSubmit={handleSave}>
+                    <div className="mb-3">
+                      <label className="form-label">Assigned OUT Regional Study Centre</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={centre}
+                        onChange={(e) => setCentre(e.target.value)}
+                      />
                     </div>
+                    <button type="submit" className="btn btn-secondary">
+                      Save Regional Centre
+                    </button>
                   </form>
-                  <div className="mt-4">
-                    <Link
-                      to="#"
-                      className="btn btn-secondary"
-                      data-bs-toggle="modal"
-                      data-bs-target="#add_billing"
-                    >
-                      Add New Address
-                    </Link>
-                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <SettingsModal />
     </>
   );
 };

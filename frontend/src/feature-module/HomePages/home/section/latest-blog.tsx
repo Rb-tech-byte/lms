@@ -1,182 +1,106 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import ImageWithBasePath from '../../../../core/common/imageWithBasePath'
-import { all_routes } from '../../../router/all_routes'
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { all_routes } from '../../../router/all_routes';
+import { useCmsConfig } from '../../../../core/api/cmsService';
 
-const Latestblog = () => {
-    const route = all_routes
-    return (
-        <>
-            {/* Latest Blogs */}
-            <section className="blogs-section-five bg-white">
-                <div className="container">
-                    <div
-                        className="section-header section-header-six text-center"
-                        data-aos="fade-down"
+const Latestblog: React.FC = () => {
+  const { cms } = useCmsConfig();
+  const bulCfg = cms.sections.bulletins;
+
+  if (!bulCfg.visible) return null;
+
+  return (
+    <section className="py-4" style={{ background: '#ffffff', borderTop: '1px solid #e2e8f0' }}>
+      <div className="container">
+        <div className="d-flex flex-wrap align-items-end justify-content-between gap-2 mb-3">
+          <div>
+            <div
+              className="text-uppercase fw-bold mb-1"
+              style={{ fontSize: '11px', color: '#0171BB', letterSpacing: '0.06em' }}
+            >
+              {bulCfg.eyebrow}
+            </div>
+            <h3 className="fw-bold mb-1" style={{ fontSize: '20px', color: '#0f172a' }}>
+              {bulCfg.title}
+            </h3>
+            <p className="text-muted mb-0" style={{ fontSize: '13px' }}>
+              {bulCfg.subtitle}
+            </p>
+          </div>
+          <Link
+            to={bulCfg.ctaRoute || all_routes.blogGrid}
+            className="btn btn-sm btn-outline-primary rounded-2 px-3 fw-semibold"
+            style={{ fontSize: '12.5px' }}
+          >
+            {bulCfg.ctaText} →
+          </Link>
+        </div>
+
+        <div className="row g-3">
+          {(bulCfg.items || []).map((item) => (
+            <div key={item.id} className="col-lg-4 col-md-6">
+              <div
+                className="card h-100 border shadow-sm overflow-hidden"
+                style={{ borderRadius: '12px', borderTop: '3px solid #0171BB', borderBottom: '3px solid #FFD200', borderColor: '#93C5FD' }}
+              >
+                {item.coverImage && (
+                  <div style={{ height: '115px', overflow: 'hidden', background: '#F0F8FF', borderBottom: '2px solid #FFD200' }}>
+                    <img
+                      src={item.coverImage}
+                      alt={item.title}
+                      className="w-100 h-100"
+                      style={{ objectFit: 'cover' }}
+                      loading="lazy"
+                    />
+                  </div>
+                )}
+                <div className="card-body p-3 d-flex flex-column">
+                  <div className="d-flex align-items-center justify-content-between mb-2">
+                    <span
+                      className="badge rounded-pill px-2 py-1 fw-bold"
+                      style={{
+                        background: '#FFD200',
+                        color: '#003B66',
+                        fontSize: '10.5px',
+                      }}
                     >
-                        <h2>Latest Blogs</h2>
-                        <p>Follow the latest and most useful articles on that student's blog</p>
-                    </div>
-                    <div className="home-five-blog">
-                        <div className="row">
-                            <div className="col-lg-4">
-                                <div className="blog-card">
-                                    <div className="blog-img">
-                                        <Link to={route.blogDetails}>
-                                            <ImageWithBasePath
-                                                src="assets/img/blog/blog-22.jpg"
-                                                alt="img"
-                                                className="img-fluid"
-                                            />
-                                        </Link>
-                                    </div>
-                                    <div className="blog-content">
-                                        <h5>
-                                            <Link to={route.blogDetails}>
-                                                Mastering Programming with a Technical Mentor
-                                            </Link>
-                                        </h5>
-                                        <p>
-                                            Learning to code can be overwhelming, but a mentor can make
-                                            the journey smoother....
-                                        </p>
-                                        <div className="blog-user d-flex align-items-center justify-content-between">
-                                            <div className="d-flex align-items-center">
-                                                <Link to="#" className="avatar me-2">
-                                                    <ImageWithBasePath
-                                                        src="assets/img/user/user-42.jpg"
-                                                        alt="img"
-                                                        className="img-fluid"
-                                                    />
-                                                </Link>
-                                                <p className="mb-0 d-flex align-items-center">
-                                                    by{" "}
-                                                    <Link
-                                                        to="#"
-                                                        className="link-info text-decoration-underline ms-1"
-                                                    >
-                                                        Reni Sarow
-                                                    </Link>
-                                                </p>
-                                            </div>
-                                            <p className="d-flex align-items-center">
-                                                <i className="isax isax-calendar-1 text-gray-7 me-2" />
-                                                09 Aug 2025
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col-lg-4">
-                                <div className="blog-card">
-                                    <div className="blog-img">
-                                        <Link to={route.blogDetails}>
-                                            <ImageWithBasePath
-                                                src="assets/img/blog/blog-23.jpg"
-                                                alt="img"
-                                                className="img-fluid"
-                                            />
-                                        </Link>
-                                    </div>
-                                    <div className="blog-content">
-                                        <h5>
-                                            <Link to={route.blogDetails}>
-                                                How to Level Up Your Coding Skills with the Help of a Mentor
-                                            </Link>
-                                        </h5>
-                                        <p>
-                                            Whether you're a beginner or an advanced coder, this blog will
-                                            explore how....
-                                        </p>
-                                        <div className="blog-user d-flex align-items-center justify-content-between">
-                                            <div className="d-flex align-items-center">
-                                                <Link to="#" className="avatar me-2">
-                                                    <ImageWithBasePath
-                                                        src="assets/img/user/user-36.jpg"
-                                                        alt="img"
-                                                        className="img-fluid"
-                                                    />
-                                                </Link>
-                                                <p className="mb-0 d-flex align-items-center">
-                                                    by{" "}
-                                                    <Link
-                                                        to="#"
-                                                        className="link-info text-decoration-underline ms-1"
-                                                    >
-                                                        Chris Daniel
-                                                    </Link>
-                                                </p>
-                                            </div>
-                                            <p className="d-flex align-items-center">
-                                                <i className="isax isax-calendar-1 text-gray-7 me-2" />
-                                                15 Jul 2025
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col-lg-4">
-                                <div className="blog-card">
-                                    <div className="blog-img">
-                                        <Link to={route.blogDetails}>
-                                            <ImageWithBasePath
-                                                src="assets/img/blog/blog-24.jpg"
-                                                alt="img"
-                                                className="img-fluid"
-                                            />
-                                        </Link>
-                                    </div>
-                                    <div className="blog-content">
-                                        <h5>
-                                            <Link to={route.blogDetails}>
-                                                Navigating the Tech World: The Ultimate Guide
-                                            </Link>
-                                        </h5>
-                                        <p>
-                                            {" "}
-                                            The tech industry is vast and ever-changing, but a mentor can
-                                            help you stay ahead.....
-                                        </p>
-                                        <div className="blog-user d-flex align-items-center justify-content-between">
-                                            <div className="d-flex align-items-center">
-                                                <Link to="#" className="avatar me-2">
-                                                    <ImageWithBasePath
-                                                        src="assets/img/user/user-53.jpg"
-                                                        alt="img"
-                                                        className="img-fluid"
-                                                    />
-                                                </Link>
-                                                <p className="mb-0 d-flex align-items-center">
-                                                    by{" "}
-                                                    <Link
-                                                        to="#"
-                                                        className="link-info text-decoration-underline ms-1"
-                                                    >
-                                                        Andrew
-                                                    </Link>
-                                                </p>
-                                            </div>
-                                            <p className="d-flex align-items-center">
-                                                <i className="isax isax-calendar-1 text-gray-7 me-2" />
-                                                15 Jan 2025
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="text-center">
-                            <Link to={route.blogGrid2} className="btn btn-xl btn-primary mt-3">
-                                See More Blogs
-                            </Link>
-                        </div>
-                    </div>
+                      {item.category}
+                    </span>
+                    <span className="text-muted" style={{ fontSize: '11.5px' }}>
+                      <i className="isax isax-calendar-1 me-1 text-primary" />
+                      {item.date}
+                    </span>
+                  </div>
+
+                  <h6 className="fw-bold mb-2" style={{ fontSize: '14.5px', lineHeight: 1.38 }}>
+                    <Link
+                      to={item.route || all_routes.blogDetails}
+                      className="text-decoration-none"
+                      style={{ color: '#003B66' }}
+                    >
+                      {item.title}
+                    </Link>
+                  </h6>
+
+                  <p className="text-muted mb-3 flex-grow-1" style={{ fontSize: '12.5px', lineHeight: 1.5 }}>
+                    {item.summary}
+                  </p>
+
+                  <Link
+                    to={item.route || all_routes.blogDetails}
+                    className="text-decoration-none fw-bold mt-auto"
+                    style={{ fontSize: '12px', color: '#0171BB' }}
+                  >
+                    Read Official Notice →
+                  </Link>
                 </div>
-            </section>
-            {/* Latest Blogs */}
-        </>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
 
-    )
-}
-
-export default Latestblog
+export default Latestblog;

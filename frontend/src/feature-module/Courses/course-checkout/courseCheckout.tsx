@@ -1,23 +1,243 @@
 import React, { useState, useEffect } from 'react';
-import Breadcrumb from '../../../core/common/Breadcrumb/breadcrumb';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { all_routes } from '../../router/all_routes';
-import ImageWithBasePath from '../../../core/common/imageWithBasePath';
 import { paymentService, PesapalOrderResult, PesapalStatusResult } from '../../../core/api/paymentService';
+import { courseService, PublicCatalogCourse } from '../../../core/api/courseService';
+import { useAuth } from '../../../core/auth/authContext';
 
-const CourseCheckout = () => {
+interface CourseMetaInfo {
+  code: string;
+  title: string;
+  price: string;
+  rawAmount: string;
+  usdPrice: string;
+  itemId: number;
+  img: string;
+  cpdCredits: number;
+  duration: string;
+  delivery: string;
+  instructor: string;
+  instructorRole: string;
+  instructorAvatar: string;
+  category: string;
+}
+
+const COURSE_CATALOG_FALLBACK: Record<number, CourseMetaInfo> = {
+  8: {
+    code: 'PSC-DATASCI',
+    title: 'Data Science & Applied Machine Learning with Python',
+    price: 'TZS 180,000',
+    rawAmount: '180000',
+    usdPrice: '$69',
+    itemId: 8,
+    img: '/assets/img/course/thumbnails/course-8-psc-datasci.svg',
+    cpdCredits: 20,
+    duration: '6 Weeks (Blended & Cohort)',
+    delivery: 'Live Interactive Webinars & Labs',
+    instructor: 'Prof. Juma Kikwete',
+    instructorRole: 'Director, IEMT & Senior Lecturer',
+    instructorAvatar: '/assets/img/user/user-04.jpg',
+    category: 'IEMT Professional Short Course',
+  },
+  7: {
+    code: 'PSC-CYBER',
+    title: 'Cybersecurity & Network Defense Fundamentals',
+    price: 'TZS 180,000',
+    rawAmount: '180000',
+    usdPrice: '$69',
+    itemId: 7,
+    img: '/assets/img/course/thumbnails/course-7-psc-cyber.svg',
+    cpdCredits: 20,
+    duration: '6 Weeks (Blended & Cohort)',
+    delivery: 'Live Interactive Webinars & Labs',
+    instructor: 'Dr. Emmanuel Michael',
+    instructorRole: 'Director, IEMT & Senior Lecturer',
+    instructorAvatar: '/assets/img/user/user-03.jpg',
+    category: 'IEMT Professional Short Course',
+  },
+  9: {
+    code: 'PSC-WEBMOB',
+    title: 'Web & Mobile Applications Development',
+    price: 'TZS 180,000',
+    rawAmount: '180000',
+    usdPrice: '$69',
+    itemId: 9,
+    img: '/assets/img/course/thumbnails/course-9-psc-webmob.svg',
+    cpdCredits: 20,
+    duration: '6 Weeks (Blended & Cohort)',
+    delivery: 'Live Interactive Webinars & Labs',
+    instructor: 'Eng. Grace Temba',
+    instructorRole: 'Senior Lecturer, Software & Cloud',
+    instructorAvatar: '/assets/img/user/user-05.jpg',
+    category: 'IEMT Professional Short Course',
+  },
+  10: {
+    code: 'PSC-GIS',
+    title: 'Geographic Information Systems (GIS) & Remote Sensing',
+    price: 'TZS 180,000',
+    rawAmount: '180000',
+    usdPrice: '$69',
+    itemId: 10,
+    img: '/assets/img/course/thumbnails/course-10-psc-gis.svg',
+    cpdCredits: 20,
+    duration: '6 Weeks (Blended & Cohort)',
+    delivery: 'Live Interactive Webinars & Labs',
+    instructor: 'Dr. Emmanuel Michael',
+    instructorRole: 'Director, IEMT & Senior Lecturer',
+    instructorAvatar: '/assets/img/user/user-01.jpg',
+    category: 'IEMT Professional Short Course',
+  },
+  11: {
+    code: 'PSC-CLOUD',
+    title: 'Cloud Infrastructure & Systems Administration',
+    price: 'TZS 180,000',
+    rawAmount: '180000',
+    usdPrice: '$69',
+    itemId: 11,
+    img: '/assets/img/course/thumbnails/course-11-psc-cloud.svg',
+    cpdCredits: 25,
+    duration: '6 Weeks (Blended & Cohort)',
+    delivery: 'Live Interactive Webinars & Labs',
+    instructor: 'Eng. Grace Temba',
+    instructorRole: 'Senior Lecturer, Software & Cloud',
+    instructorAvatar: '/assets/img/user/user-02.jpg',
+    category: 'IEMT Professional Short Course',
+  },
+  2: {
+    code: 'CS101',
+    title: 'CS101: Data Structures & Algorithms in Python',
+    price: 'TZS 150,000',
+    rawAmount: '150000',
+    usdPrice: '$59',
+    itemId: 10,
+    img: '/assets/img/course/thumbnails/course-2-cs101.svg',
+    cpdCredits: 15,
+    duration: '8 Weeks',
+    delivery: 'Modular Digital Units',
+    instructor: 'Dr. Emmanuel Michael',
+    instructorRole: 'Senior Lecturer, Computing',
+    instructorAvatar: '/assets/img/user/user-03.jpg',
+    category: 'Undergraduate Core Module',
+  },
+  3: {
+    code: 'CS202',
+    title: 'CS202: Cloud Computing & Distributed Systems',
+    price: 'TZS 180,000',
+    rawAmount: '180000',
+    usdPrice: '$69',
+    itemId: 11,
+    img: '/assets/img/course/thumbnails/course-3-cs202.svg',
+    cpdCredits: 20,
+    duration: '8 Weeks',
+    delivery: 'Modular Digital Units',
+    instructor: 'Eng. Grace Temba',
+    instructorRole: 'Senior Lecturer, Cloud Infrastructure',
+    instructorAvatar: '/assets/img/user/user-05.jpg',
+    category: 'Intermediate Specialization',
+  },
+  4: {
+    code: 'BBA301',
+    title: 'BBA301: Financial Management & Strategic Planning',
+    price: 'TZS 220,000',
+    rawAmount: '220000',
+    usdPrice: '$85',
+    itemId: 12,
+    img: '/assets/img/course/thumbnails/course-4-bba301.svg',
+    cpdCredits: 20,
+    duration: '10 Weeks',
+    delivery: 'Executive Blended',
+    instructor: 'Dr. Michael Ng\'umbi',
+    instructorRole: 'Faculty Lead, Management Studies',
+    instructorAvatar: '/assets/img/user/user-01.jpg',
+    category: 'Executive Business Module',
+  },
+};
+
+export const CourseCheckout: React.FC = () => {
   const route = all_routes;
+  const location = useLocation();
+  const { user } = useAuth();
 
-  // Student Billing Information
-  const [formData, setFormData] = useState({
-    firstName: 'Student',
-    lastName: 'User',
-    email: 'student@out.ac.tz',
-    phone: '0712345678',
-    address1: 'Kipawa, Ilala',
-    city: 'Dar es Salaam',
-    country: 'Tanzania',
+  // Support both ?id=8 and ?courseId=8, defaulting to 8
+  const searchParams = new URLSearchParams(location.search);
+  const rawIdParam = searchParams.get('id') || searchParams.get('courseId') || '8';
+  const requestedCourseId = parseInt(rawIdParam, 10) || 8;
+
+  const [selectedCourseId, setSelectedCourseId] = useState<number>(requestedCourseId);
+  const [liveCourse, setLiveCourse] = useState<PublicCatalogCourse | null>(null);
+  const [catalogList, setCatalogList] = useState<PublicCatalogCourse[]>([]);
+  const [paymentMode, setPaymentMode] = useState<'mobile' | 'card' | 'bank'>('mobile');
+  const [showAddressFields, setShowAddressFields] = useState<boolean>(false);
+
+  // Fallback metadata lookup
+  const fallbackMeta = COURSE_CATALOG_FALLBACK[selectedCourseId] || COURSE_CATALOG_FALLBACK[8];
+
+  // Derived course display information
+  const courseMeta: CourseMetaInfo = {
+    code: liveCourse?.shortname || fallbackMeta.code,
+    title: liveCourse?.fullname || fallbackMeta.title,
+    price: liveCourse?.priceFormatted || fallbackMeta.price,
+    rawAmount: String(liveCourse?.tuitionFee || fallbackMeta.rawAmount),
+    usdPrice: liveCourse?.priceUSDFormatted || fallbackMeta.usdPrice,
+    itemId: liveCourse?.id || fallbackMeta.itemId,
+    img: liveCourse?.courseImage || fallbackMeta.img,
+    cpdCredits: liveCourse?.cpdCredits || fallbackMeta.cpdCredits,
+    duration: liveCourse?.duration || fallbackMeta.duration,
+    delivery: liveCourse?.deliveryMode || fallbackMeta.delivery,
+    instructor: liveCourse?.instructor?.fullname || fallbackMeta.instructor,
+    instructorRole: liveCourse?.instructor?.role || fallbackMeta.instructorRole,
+    instructorAvatar: liveCourse?.instructor?.avatar || fallbackMeta.instructorAvatar,
+    category: liveCourse?.categoryName || fallbackMeta.category,
+  };
+
+  // Student Billing Information pre-populated from authenticated user
+  const [formData, setFormData] = useState(() => {
+    const parts = (user?.name || 'Baraka Mkwawa').trim().split(/\s+/);
+    return {
+      firstName: parts[0] || 'Baraka',
+      lastName: parts.slice(1).join(' ') || 'Mkwawa',
+      email: user?.email || 'student@out.ac.tz',
+      phone: user?.phone?.replace(/\s+/g, '') || '0712345678',
+      address1: 'Kawawa Road, Kinondoni',
+      city: 'Dar es Salaam',
+      country: 'Tanzania',
+    };
   });
+
+  useEffect(() => {
+    if (user) {
+      const parts = (user.name || '').trim().split(/\s+/);
+      setFormData((prev) => ({
+        ...prev,
+        firstName: parts[0] || prev.firstName,
+        lastName: parts.slice(1).join(' ') || prev.lastName,
+        email: user.email || prev.email,
+        phone: user.phone ? user.phone.replace(/\s+/g, '') : prev.phone,
+      }));
+    }
+  }, [user]);
+
+  // Load live course catalog from Moodle backend
+  useEffect(() => {
+    let active = true;
+    courseService
+      .getShortCoursesCatalog()
+      .then((data) => {
+        if (!active) return;
+        if (data && data.courses && data.courses.length > 0) {
+          setCatalogList(data.courses);
+          const found = data.courses.find((c) => c.id === selectedCourseId);
+          if (found) {
+            setLiveCourse(found);
+          }
+        }
+      })
+      .catch(() => {});
+
+    return () => {
+      active = false;
+    };
+  }, [selectedCourseId]);
 
   // Pesapal Order & Status State
   const [loading, setLoading] = useState(false);
@@ -31,9 +251,7 @@ const CourseCheckout = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  /**
-   * Listen for postMessage from process.php when payment completes inside the embedded iframe
-   */
+  // Listen for postMessage from process.php when payment completes inside embedded iframe
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (event.data?.type === 'PESAPAL_PAYMENT_STATUS') {
@@ -41,7 +259,7 @@ const CourseCheckout = () => {
           setStatusResult({
             order_tracking_id: event.data.orderTrackingId || '',
             status: 'COMPLETED',
-            amount: '150000',
+            amount: courseMeta.rawAmount,
             currency: 'TZS',
             payment_method: 'Pesapal Gateway',
             payment_account: 'OUT LMS Main Account',
@@ -54,11 +272,9 @@ const CourseCheckout = () => {
 
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, []);
+  }, [courseMeta.rawAmount]);
 
-  /**
-   * Auto-poll transaction status from Moodle backend every 5 seconds while an order is active
-   */
+  // Auto-poll transaction status from backend
   useEffect(() => {
     if (!pesapalOrder?.order_tracking_id || statusResult?.is_completed) {
       return;
@@ -70,23 +286,21 @@ const CourseCheckout = () => {
           pesapalOrder.order_tracking_id,
           'enrol_fee',
           'fee',
-          10
+          courseMeta.itemId
         );
         if (res.is_completed) {
           setStatusResult(res);
           clearInterval(intervalId);
         }
-      } catch (e) {
-        // Background polling check
+      } catch {
+        // Background polling
       }
     }, 5000);
 
     return () => clearInterval(intervalId);
-  }, [pesapalOrder, statusResult]);
+  }, [pesapalOrder, statusResult, courseMeta.itemId]);
 
-  /**
-   * Initiates real payment order with Pesapal API 3.0 via Moodle Web Service
-   */
+  // Initiate payment order with Pesapal API 3.0 via Moodle Web Service
   const handleInitiatePesapal = async () => {
     setLoading(true);
     setIframeLoading(true);
@@ -94,34 +308,36 @@ const CourseCheckout = () => {
     setStatusResult(null);
 
     try {
-      // In Moodle fee enrolment, itemid corresponds to the enrol_fee instance ID
       const order = await paymentService.createPesapalOrder({
         component: 'enrol_fee',
         paymentarea: 'fee',
-        itemid: 10,
+        itemid: courseMeta.itemId,
         phone: formData.phone,
-        description: 'CS101 - Introduction to Computer Science Enrolment Fee',
+        description: `${courseMeta.title} Enrolment Fee`,
       });
 
       setPesapalOrder(order);
     } catch (err: any) {
       console.error('Pesapal checkout error:', err);
-      setErrorMessage(err.message || 'Failed to initialize Pesapal payment. Please try again.');
+      setErrorMessage(err.message || 'Failed to initialize payment gateway. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  /**
-   * Manual verification trigger
-   */
+  // Manual verification trigger
   const handleVerifyStatus = async () => {
     if (!pesapalOrder?.order_tracking_id) return;
     setCheckingStatus(true);
     setErrorMessage(null);
 
     try {
-      const status = await paymentService.checkPesapalStatus(pesapalOrder.order_tracking_id);
+      const status = await paymentService.checkPesapalStatus(
+        pesapalOrder.order_tracking_id,
+        'enrol_fee',
+        'fee',
+        courseMeta.itemId
+      );
       setStatusResult(status);
     } catch (err: any) {
       console.error('Status verification error:', err);
@@ -131,10 +347,7 @@ const CourseCheckout = () => {
     }
   };
 
-  /**
-   * Opens Pesapal checkout in a focused dedicated window with window.opener attached
-   * This provides full compatibility with browsers that restrict cross-site cookies in iframes.
-   */
+  // Dedicated Window option
   const handleOpenDedicatedWindow = (e?: React.MouseEvent) => {
     if (e) e.preventDefault();
     if (pesapalOrder?.redirect_url) {
@@ -150,405 +363,609 @@ const CourseCheckout = () => {
   };
 
   return (
-    <>
-      <Breadcrumb title="Checkout" />
-      <div className="content">
-        <div className="container">
-          <div className="checkout-content">
-            <div className="row">
-              <div className="col-lg-8">
-                {/* SUCCESS SCREEN */}
-                {statusResult?.is_completed ? (
-                  <div className="card shadow-sm border-0 rounded-4 p-4 text-center mb-4 bg-white">
-                    <div className="mb-3">
-                      <div
-                        className="rounded-circle bg-success text-white d-inline-flex align-items-center justify-content-center"
-                        style={{ width: '80px', height: '80px' }}
-                      >
-                        <i className="isax isax-tick-circle text-white" style={{ fontSize: '42px' }}></i>
+    <div style={{ backgroundColor: '#f8fafc', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
+      {/* 1. SLIM NATIVE NAVIGATION & TRUST BAR (NO HUGE BREADCRUMB) */}
+      <div className="bg-white border-bottom shadow-xs py-2 px-3 px-md-4">
+        <div className="container-xl d-flex align-items-center justify-content-between flex-wrap gap-2">
+          <div className="d-flex align-items-center gap-2">
+            <Link
+              to={route.courseGrid}
+              className="btn btn-sm btn-light rounded-pill border px-3 d-inline-flex align-items-center gap-1.5 text-muted hover-dark text-decoration-none"
+              style={{ fontSize: '12px' }}
+            >
+              <i className="feather-arrow-left fs-14" />
+              <span>Back to Catalog</span>
+            </Link>
+            <span className="text-muted small d-none d-sm-inline">/</span>
+            <span className="text-dark small fw-semibold d-none d-sm-inline">
+              Tuition Checkout
+            </span>
+          </div>
+
+          <div className="d-flex align-items-center gap-2">
+            <span className="badge bg-light text-secondary border rounded-pill px-2.5 py-1 d-inline-flex align-items-center gap-1" style={{ fontSize: '11px' }}>
+              <i className="feather-shield text-success fs-12" />
+              <span>Bank of Tanzania Regulated</span>
+            </span>
+            <span className="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1 d-inline-flex align-items-center gap-1" style={{ fontSize: '11px' }}>
+              <i className="feather-lock fs-12" />
+              <span>256-Bit SSL Enrolment</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. COMPACT SCREEN-FIT CHECKOUT CANVAS */}
+      <div className="container-xl py-3 py-md-4">
+        {/* Error Alert */}
+        {errorMessage && (
+          <div className="alert alert-danger border-0 shadow-sm rounded-3 d-flex align-items-center justify-content-between p-3 mb-3">
+            <div className="d-flex align-items-center gap-2">
+              <i className="feather-alert-triangle fs-18 text-danger" />
+              <div className="small fw-medium">{errorMessage}</div>
+            </div>
+            <button type="button" className="btn-close" onClick={() => setErrorMessage(null)} />
+          </div>
+        )}
+
+        {/* SUCCESS CONFIRMATION SCREEN */}
+        {statusResult?.is_completed ? (
+          <div className="card border-0 shadow-sm rounded-4 p-4 p-md-5 text-center bg-white mx-auto my-3" style={{ maxWidth: '640px' }}>
+            <div className="mb-3">
+              <div
+                className="rounded-circle bg-success text-white d-inline-flex align-items-center justify-content-center shadow-sm"
+                style={{ width: '72px', height: '72px' }}
+              >
+                <i className="feather-check fs-36" style={{ strokeWidth: 3 }} />
+              </div>
+            </div>
+
+            <div className="d-inline-flex align-items-center justify-content-center gap-2 mb-1">
+              <span className="badge bg-success-subtle text-success rounded-pill px-3 py-1 font-monospace" style={{ fontSize: '11px' }}>
+                PAYMENT CONFIRMED • SARIS ENROLLED
+              </span>
+            </div>
+
+            <h4 className="fw-bold text-dark mb-2">Tuition Successfully Verified!</h4>
+            <p className="text-muted small mb-4">
+              Your payment of <strong className="text-dark">{courseMeta.price}</strong> has been cleared. You now have full lifetime access to lectures, study materials, and virtual labs.
+            </p>
+
+            <div className="bg-light border rounded-3 p-3 text-start mb-4">
+              <div className="d-flex justify-content-between align-items-center mb-1.5">
+                <span className="text-muted small">Course Enrolled:</span>
+                <span className="fw-bold text-dark small text-end">{courseMeta.title}</span>
+              </div>
+              <div className="d-flex justify-content-between align-items-center mb-1.5">
+                <span className="text-muted small">Scholar Reg ID:</span>
+                <span className="font-monospace small fw-semibold text-dark">{formData.email}</span>
+              </div>
+              <div className="d-flex justify-content-between align-items-center mb-1.5">
+                <span className="text-muted small">Pesapal Tracking Ref:</span>
+                <span className="font-monospace small fw-bold text-primary">{statusResult.order_tracking_id}</span>
+              </div>
+              <div className="d-flex justify-content-between align-items-center">
+                <span className="text-muted small">Accreditation:</span>
+                <span className="badge bg-primary text-white rounded-pill px-2 py-0.5" style={{ fontSize: '10px' }}>
+                  {courseMeta.cpdCredits} CPD Credits
+                </span>
+              </div>
+            </div>
+
+            <div className="d-flex flex-column flex-sm-row justify-content-center gap-2">
+              <Link
+                to={`${route.courseWatch}?courseId=${selectedCourseId}`}
+                className="btn btn-primary rounded-pill px-4 py-2.5 fw-semibold shadow-sm d-inline-flex align-items-center justify-content-center gap-2"
+                style={{ backgroundColor: '#0171BB' }}
+              >
+                <i className="feather-play-circle fs-16" />
+                <span>Enter Classroom &amp; Start Learning</span>
+              </Link>
+              <button
+                type="button"
+                className="btn btn-outline-secondary rounded-pill px-4 py-2.5 small"
+                onClick={() => {
+                  setPesapalOrder(null);
+                  setStatusResult(null);
+                }}
+              >
+                New Transaction
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="row g-3 g-lg-4 align-items-start">
+            {/* LEFT COLUMN: COMPACT SCHOLAR FORM & PAYMENT GATEWAY */}
+            <div className="col-12 col-lg-7">
+              {!pesapalOrder ? (
+                <>
+                  {/* CARD 1: SCHOLAR ENROLLMENT DETAILS (COMPACT 2x2 GRID) */}
+                  <div className="card border-0 shadow-sm rounded-3 bg-white p-3 p-md-4 mb-3">
+                    <div className="d-flex align-items-center justify-content-between border-bottom pb-2.5 mb-3">
+                      <div className="d-flex align-items-center gap-2">
+                        <div className="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center" style={{ width: '28px', height: '28px' }}>
+                          <i className="feather-user fs-14" />
+                        </div>
+                        <h6 className="fw-bold mb-0 text-dark">1. Scholar &amp; Contact Details</h6>
+                      </div>
+                      <span className="badge bg-success-subtle text-success rounded-pill px-2.5 py-1" style={{ fontSize: '11px' }}>
+                        <i className="feather-check-circle me-1" /> Verified Session
+                      </span>
+                    </div>
+
+                    <div className="row g-2.5">
+                      <div className="col-6">
+                        <label className="form-label text-muted small fw-medium mb-1" style={{ fontSize: '12px' }}>
+                          First Name <span className="text-danger">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          name="firstName"
+                          value={formData.firstName}
+                          onChange={handleInputChange}
+                          className="form-control form-control-sm rounded-3"
+                          style={{ height: '38px', fontSize: '13px' }}
+                          required
+                        />
+                      </div>
+                      <div className="col-6">
+                        <label className="form-label text-muted small fw-medium mb-1" style={{ fontSize: '12px' }}>
+                          Last Name <span className="text-danger">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          name="lastName"
+                          value={formData.lastName}
+                          onChange={handleInputChange}
+                          className="form-control form-control-sm rounded-3"
+                          style={{ height: '38px', fontSize: '13px' }}
+                          required
+                        />
+                      </div>
+
+                      <div className="col-12 col-sm-6">
+                        <label className="form-label text-muted small fw-medium mb-1" style={{ fontSize: '12px' }}>
+                          Institutional Email <span className="text-danger">*</span>
+                        </label>
+                        <input
+                          type="email"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          className="form-control form-control-sm rounded-3"
+                          style={{ height: '38px', fontSize: '13px' }}
+                          required
+                        />
+                      </div>
+
+                      <div className="col-12 col-sm-6">
+                        <div className="d-flex justify-content-between align-items-center mb-1">
+                          <label className="form-label text-muted small fw-medium mb-0" style={{ fontSize: '12px' }}>
+                            Phone (Mobile Money) <span className="text-danger">*</span>
+                          </label>
+                          <span className="text-primary fw-medium" style={{ fontSize: '10px' }}>TZ Networks</span>
+                        </div>
+                        <input
+                          type="text"
+                          name="phone"
+                          value={formData.phone}
+                          onChange={handleInputChange}
+                          className="form-control form-control-sm rounded-3 font-monospace"
+                          placeholder="0712345678"
+                          style={{ height: '38px', fontSize: '13px' }}
+                          required
+                        />
+                      </div>
+
+                      {/* Collapsible Address Fields for clean compactness */}
+                      <div className="col-12 mt-2">
+                        <button
+                          type="button"
+                          className="btn btn-link p-0 text-decoration-none small text-muted d-inline-flex align-items-center gap-1"
+                          style={{ fontSize: '12px' }}
+                          onClick={() => setShowAddressFields(!showAddressFields)}
+                        >
+                          <i className={`feather-${showAddressFields ? 'minus-circle' : 'plus-circle'} fs-12`} />
+                          <span>{showAddressFields ? 'Hide physical billing address' : '+ Add physical billing address (Optional for e-Invoice)'}</span>
+                        </button>
+                      </div>
+
+                      {showAddressFields && (
+                        <>
+                          <div className="col-12 mt-2">
+                            <input
+                              type="text"
+                              name="address1"
+                              value={formData.address1}
+                              onChange={handleInputChange}
+                              placeholder="Street Address or Regional Centre"
+                              className="form-control form-control-sm rounded-3"
+                              style={{ height: '36px', fontSize: '13px' }}
+                            />
+                          </div>
+                          <div className="col-6">
+                            <input
+                              type="text"
+                              name="city"
+                              value={formData.city}
+                              onChange={handleInputChange}
+                              placeholder="City / Region"
+                              className="form-control form-control-sm rounded-3"
+                              style={{ height: '36px', fontSize: '13px' }}
+                            />
+                          </div>
+                          <div className="col-6">
+                            <input
+                              type="text"
+                              name="country"
+                              value={formData.country}
+                              onChange={handleInputChange}
+                              placeholder="Country"
+                              className="form-control form-control-sm rounded-3"
+                              style={{ height: '36px', fontSize: '13px' }}
+                            />
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* CARD 2: PAYMENT METHOD & INSTANT INITIATE */}
+                  <div className="card border-0 shadow-sm rounded-3 bg-white p-3 p-md-4">
+                    <div className="d-flex align-items-center justify-content-between border-bottom pb-2.5 mb-3">
+                      <div className="d-flex align-items-center gap-2">
+                        <div className="rounded-circle bg-success-subtle text-success d-flex align-items-center justify-content-center" style={{ width: '28px', height: '28px' }}>
+                          <i className="feather-credit-card fs-14" />
+                        </div>
+                        <h6 className="fw-bold mb-0 text-dark">2. Payment Method &amp; Gateway</h6>
+                      </div>
+                      <img src="/assets/img/icons/pesapal.svg" alt="Pesapal" height="18" className="opacity-75" />
+                    </div>
+
+                    {/* Mode Selector Tabs (Mobile Money / Cards / Bank) */}
+                    <div className="row g-2 mb-3">
+                      <div className="col-4">
+                        <button
+                          type="button"
+                          onClick={() => setPaymentMode('mobile')}
+                          className={`btn w-100 py-2 px-2 text-start rounded-3 border d-flex flex-column justify-content-between h-100 ${
+                            paymentMode === 'mobile'
+                              ? 'border-primary bg-primary-subtle text-primary shadow-xs'
+                              : 'border-light bg-light text-muted'
+                          }`}
+                        >
+                          <div className="d-flex align-items-center justify-content-between mb-1">
+                            <i className="feather-smartphone fs-16" />
+                            {paymentMode === 'mobile' && <i className="feather-check-circle fs-12 text-primary" />}
+                          </div>
+                          <div>
+                            <div className="fw-bold small text-dark" style={{ fontSize: '12px' }}>Mobile Money</div>
+                            <div className="text-muted" style={{ fontSize: '10px' }}>M-Pesa / Tigo / Airtel</div>
+                          </div>
+                        </button>
+                      </div>
+
+                      <div className="col-4">
+                        <button
+                          type="button"
+                          onClick={() => setPaymentMode('card')}
+                          className={`btn w-100 py-2 px-2 text-start rounded-3 border d-flex flex-column justify-content-between h-100 ${
+                            paymentMode === 'card'
+                              ? 'border-primary bg-primary-subtle text-primary shadow-xs'
+                              : 'border-light bg-light text-muted'
+                          }`}
+                        >
+                          <div className="d-flex align-items-center justify-content-between mb-1">
+                            <i className="feather-credit-card fs-16" />
+                            {paymentMode === 'card' && <i className="feather-check-circle fs-12 text-primary" />}
+                          </div>
+                          <div>
+                            <div className="fw-bold small text-dark" style={{ fontSize: '12px' }}>Debit / Credit</div>
+                            <div className="text-muted" style={{ fontSize: '10px' }}>Visa &amp; Mastercard</div>
+                          </div>
+                        </button>
+                      </div>
+
+                      <div className="col-4">
+                        <button
+                          type="button"
+                          onClick={() => setPaymentMode('bank')}
+                          className={`btn w-100 py-2 px-2 text-start rounded-3 border d-flex flex-column justify-content-between h-100 ${
+                            paymentMode === 'bank'
+                              ? 'border-primary bg-primary-subtle text-primary shadow-xs'
+                              : 'border-light bg-light text-muted'
+                          }`}
+                        >
+                          <div className="d-flex align-items-center justify-content-between mb-1">
+                            <i className="feather-briefcase fs-16" />
+                            {paymentMode === 'bank' && <i className="feather-check-circle fs-12 text-primary" />}
+                          </div>
+                          <div>
+                            <div className="fw-bold small text-dark" style={{ fontSize: '12px' }}>Bank Transfer</div>
+                            <div className="text-muted" style={{ fontSize: '10px' }}>BOT RTGS / Direct Wire</div>
+                          </div>
+                        </button>
                       </div>
                     </div>
-                    <h3 className="fw-bold text-success mb-2">🎉 Enrolment Confirmed!</h3>
-                    <p className="text-muted mb-4 lead fs-6">
-                      Your payment of <strong>TZS 150,000</strong> has been verified by Pesapal.
-                      You are now officially enrolled in <strong>CS101: Introduction to Computer Science</strong>.
-                    </p>
 
-                    <div className="bg-light p-3 rounded-3 text-start mb-4 mx-auto" style={{ maxWidth: '480px' }}>
-                      <div className="d-flex justify-content-between mb-2">
-                        <span className="text-muted small">Tracking Reference:</span>
-                        <span className="font-monospace small fw-bold">{statusResult.order_tracking_id}</span>
+                    {/* Channel Badges Container */}
+                    <div className="p-2.5 rounded-3 border bg-light mb-3">
+                      <div className="d-flex align-items-center justify-content-between flex-wrap gap-1 mb-1.5">
+                        <span className="small text-muted fw-semibold" style={{ fontSize: '11px' }}>Supported Payment Rails:</span>
+                        <span className="badge bg-success-subtle text-success border border-success-subtle rounded-pill" style={{ fontSize: '10px' }}>
+                          Instant Confirmation
+                        </span>
                       </div>
-                      <div className="d-flex justify-content-between mb-2">
-                        <span className="text-muted small">Payment Processor:</span>
-                        <span className="badge bg-primary-subtle text-primary">Pesapal API 3.0</span>
-                      </div>
-                      <div className="d-flex justify-content-between">
-                        <span className="text-muted small">Status:</span>
-                        <span className="badge bg-success">ACTIVE &amp; ENROLLED</span>
+                      <div className="d-flex flex-wrap gap-1.5 align-items-center">
+                        <span className="badge bg-white text-dark border px-2 py-1 shadow-xs" style={{ fontSize: '11px' }}>🟢 Vodacom M-Pesa</span>
+                        <span className="badge bg-white text-dark border px-2 py-1 shadow-xs" style={{ fontSize: '11px' }}>🔵 Tigo Pesa</span>
+                        <span className="badge bg-white text-dark border px-2 py-1 shadow-xs" style={{ fontSize: '11px' }}>🔴 Airtel Money</span>
+                        <span className="badge bg-white text-dark border px-2 py-1 shadow-xs" style={{ fontSize: '11px' }}>🟠 Halopesa</span>
+                        <span className="badge bg-white text-dark border px-2 py-1 shadow-xs" style={{ fontSize: '11px' }}>💳 Visa / MC</span>
                       </div>
                     </div>
 
-                    <div className="d-flex justify-content-center gap-3">
-                      <Link to={`${route.courseWatch}?courseId=2`} className="btn btn-primary rounded-pill px-5 py-2 fw-semibold">
-                        <i className="isax isax-play-circle me-2"></i> Enter Classroom &amp; Start Learning
-                      </Link>
+                    {/* Instant Pay Primary Action */}
+                    <button
+                      type="button"
+                      className="btn btn-primary w-100 rounded-pill py-2.5 fw-semibold shadow-sm d-flex align-items-center justify-content-center gap-2"
+                      style={{ backgroundColor: '#0171BB', fontSize: '14px' }}
+                      onClick={handleInitiatePesapal}
+                      disabled={loading}
+                    >
+                      {loading ? (
+                        <>
+                          <span className="spinner-border spinner-border-sm" role="status" />
+                          <span>Connecting to Pesapal Gateway...</span>
+                        </>
+                      ) : (
+                        <>
+                          <i className="feather-lock fs-15" />
+                          <span>Pay {courseMeta.price} with Pesapal Gateway</span>
+                        </>
+                      )}
+                    </button>
+
+                    <div className="d-flex align-items-center justify-content-center gap-3 mt-2.5 text-muted" style={{ fontSize: '11px' }}>
+                      <span className="d-inline-flex align-items-center gap-1">
+                        <i className="feather-check text-success" /> Zero Transaction Fees
+                      </span>
+                      <span>•</span>
+                      <span className="d-inline-flex align-items-center gap-1">
+                        <i className="feather-shield text-primary" /> SARIS Enrolment Guarantee
+                      </span>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                /* EMBEDDED PESAPAL ACTIVE TERMINAL CARD */
+                <div className="card border-0 shadow-sm rounded-3 bg-white p-3 p-md-4">
+                  <div className="d-flex align-items-center justify-content-between flex-wrap border-bottom pb-2.5 mb-3 gap-2">
+                    <div className="d-flex align-items-center gap-2">
+                      <span className="spinner-grow spinner-grow-sm text-primary" role="status" />
+                      <div>
+                        <div className="fw-bold small text-dark">Pesapal 3.0 Secure Payment Terminal</div>
+                        <div className="text-muted" style={{ fontSize: '11px' }}>
+                          Ref: <span className="font-monospace fw-semibold">{pesapalOrder.order_tracking_id}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="d-flex align-items-center gap-1.5">
                       <button
                         type="button"
-                        className="btn btn-outline-secondary rounded-pill px-4"
-                        onClick={() => {
-                          setPesapalOrder(null);
-                          setStatusResult(null);
-                        }}
+                        onClick={handleOpenDedicatedWindow}
+                        className="btn btn-outline-primary btn-sm rounded-pill px-3"
+                        style={{ fontSize: '11px' }}
                       >
-                        New Payment
+                        <i className="feather-external-link me-1" /> Dedicated Window
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleVerifyStatus}
+                        disabled={checkingStatus}
+                        className="btn btn-light btn-sm rounded-pill border px-3"
+                        style={{ fontSize: '11px' }}
+                      >
+                        <i className={`feather-refresh-cw me-1 ${checkingStatus ? 'spin' : ''}`} /> Verify
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPesapalOrder(null)}
+                        className="btn btn-outline-secondary btn-sm rounded-pill px-2.5"
+                        style={{ fontSize: '11px' }}
+                      >
+                        Edit
                       </button>
                     </div>
                   </div>
-                ) : (
-                  <>
-                    {/* Billing Address */}
-                    {!pesapalOrder && (
-                      <div className="checkout-item-1 mb-4">
-                        <div className="border-bottom pb-3 mb-3">
-                          <h5 className="mb-0">Billing &amp; Student Information</h5>
-                        </div>
-                        <div className="row">
-                          <div className="col-md-6">
-                            <div className="input-block">
-                              <label className="form-label">
-                                First Name<span className="text-danger ms-1">*</span>
-                              </label>
-                              <input
-                                type="text"
-                                name="firstName"
-                                value={formData.firstName}
-                                onChange={handleInputChange}
-                                className="form-control"
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-6">
-                            <div className="input-block">
-                              <label className="form-label">
-                                Last Name<span className="text-danger ms-1">*</span>
-                              </label>
-                              <input
-                                type="text"
-                                name="lastName"
-                                value={formData.lastName}
-                                onChange={handleInputChange}
-                                className="form-control"
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-6">
-                            <div className="input-block">
-                              <label className="form-label">
-                                Email Address<span className="text-danger ms-1">*</span>
-                              </label>
-                              <input
-                                type="email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleInputChange}
-                                className="form-control"
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-6">
-                            <div className="input-block">
-                              <label className="form-label">
-                                Phone Number (M-Pesa / Tigo / Airtel)<span className="text-danger ms-1">*</span>
-                              </label>
-                              <input
-                                type="text"
-                                name="phone"
-                                value={formData.phone}
-                                onChange={handleInputChange}
-                                className="form-control"
-                                placeholder="0712345678"
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-12">
-                            <div className="input-block">
-                              <label className="form-label">
-                                Address Line 1<span className="text-danger ms-1">*</span>
-                              </label>
-                              <input
-                                type="text"
-                                name="address1"
-                                value={formData.address1}
-                                onChange={handleInputChange}
-                                className="form-control"
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-6">
-                            <div className="input-block">
-                              <label className="form-label">City</label>
-                              <input
-                                type="text"
-                                name="city"
-                                value={formData.city}
-                                onChange={handleInputChange}
-                                className="form-control"
-                              />
-                            </div>
-                          </div>
-                          <div className="col-md-6">
-                            <div className="input-block">
-                              <label className="form-label">Country</label>
-                              <input
-                                type="text"
-                                name="country"
-                                value={formData.country}
-                                onChange={handleInputChange}
-                                className="form-control"
-                              />
-                            </div>
-                          </div>
-                        </div>
+
+                  {/* Compact Embedded Terminal Viewport */}
+                  <div className="position-relative rounded-3 border overflow-hidden" style={{ minHeight: '520px', background: '#fafafa' }}>
+                    {iframeLoading && (
+                      <div className="d-flex flex-column align-items-center justify-content-center p-4 text-center position-absolute w-100 h-100 bg-white" style={{ zIndex: 3 }}>
+                        <div className="spinner-border text-primary mb-2" style={{ width: '2.5rem', height: '2.5rem' }} role="status" />
+                        <div className="fw-bold text-dark small mb-1">Loading Bank Payment Channels...</div>
+                        <p className="text-muted small mb-3" style={{ fontSize: '11px' }}>
+                          Connecting with Vodacom, Tigo, Airtel &amp; Bank rails
+                        </p>
+                        <button
+                          type="button"
+                          onClick={handleOpenDedicatedWindow}
+                          className="btn btn-primary btn-sm rounded-pill px-3"
+                          style={{ fontSize: '11px', backgroundColor: '#0171BB' }}
+                        >
+                          Open in Dedicated Window Now
+                        </button>
                       </div>
                     )}
 
-                    {/* PESAPAL UNIFIED PAYMENT GATEWAY */}
-                    <div className="checkout-item-1">
-                      <div className="border-bottom pb-3 mb-3 d-flex align-items-center justify-content-between">
-                        <div className="d-flex align-items-center">
-                          <ImageWithBasePath
-                            src="assets/img/icons/pesapal.svg"
-                            alt="Pesapal"
-                            className="img-fluid me-3"
-                            height={32}
-                          />
-                          <div>
-                            <h5 className="mb-0 fw-bold">Pesapal Payment Gateway</h5>
-                            <small className="text-muted">
-                              Unified checkout for East African Mobile Money, Cards, and Banks
-                            </small>
-                          </div>
-                        </div>
-                        <span className="badge bg-success-subtle text-success border border-success-subtle px-3 py-1">
-                          <i className="isax isax-shield-tick me-1"></i> 256-bit Secure
-                        </span>
-                      </div>
-
-                      {/* Supported Channels Bar */}
-                      <div className="d-flex flex-wrap gap-2 align-items-center mb-4 p-3 bg-light rounded-3 border">
-                        <span className="small text-muted fw-semibold me-1">Supported Channels:</span>
-                        <span className="badge bg-white text-dark border px-2 py-1 shadow-xs">🟢 Vodacom M-Pesa</span>
-                        <span className="badge bg-white text-dark border px-2 py-1 shadow-xs">🔵 Tigo Pesa</span>
-                        <span className="badge bg-white text-dark border px-2 py-1 shadow-xs">🔴 Airtel Money</span>
-                        <span className="badge bg-white text-dark border px-2 py-1 shadow-xs">🟠 Halopesa</span>
-                        <span className="badge bg-white text-dark border px-2 py-1 shadow-xs">💳 Visa &amp; Mastercard</span>
-                        <span className="badge bg-white text-dark border px-2 py-1 shadow-xs">🏦 Bank Transfer</span>
-                      </div>
-
-                      {errorMessage && (
-                        <div className="alert alert-danger d-flex align-items-center mb-3">
-                          <i className="isax isax-danger me-2 fs-5"></i>
-                          <div>{errorMessage}</div>
-                        </div>
-                      )}
-
-                      {/* INITIAL CHECKOUT CARD (BEFORE ORDER INITIATION) */}
-                      {!pesapalOrder && (
-                        <div className="p-4 border rounded-3 bg-white">
-                          <div className="d-flex align-items-center justify-content-between mb-3 pb-3 border-bottom">
-                            <div>
-                              <h6 className="fw-bold mb-1">Course Enrolment Fee</h6>
-                              <p className="text-muted mb-0 small">
-                                Complete your payment directly via Pesapal's official secure gateway.
-                              </p>
-                            </div>
-                            <span className="badge bg-primary px-3 py-2 fs-6">TZS 150,000</span>
-                          </div>
-
-                          <div className="d-flex justify-content-between align-items-center">
-                            <span className="text-muted small">
-                              Clicking below will embed Pesapal's secure checkout interface right inside this page.
-                            </span>
-                            <button
-                              type="button"
-                              className="btn btn-primary rounded-pill px-4 py-2 fw-semibold d-flex align-items-center"
-                              onClick={handleInitiatePesapal}
-                              disabled={loading}
-                            >
-                              {loading ? (
-                                <>
-                                  <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                                  Initializing Pesapal Gateway...
-                                </>
-                              ) : (
-                                <>
-                                  <i className="isax isax-card-tick me-2"></i>
-                                  Pay with Pesapal (TZS 150,000)
-                                </>
-                              )}
-                            </button>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* EMBEDDED PESAPAL IFRAME SECTION */}
-                      {pesapalOrder && (
-                        <div className="border border-primary-subtle rounded-3 p-3 bg-white shadow-sm">
-                          <div className="d-flex flex-wrap align-items-center justify-content-between pb-3 border-bottom mb-3 gap-2">
-                            <div className="d-flex align-items-center gap-2">
-                              <span className="spinner-grow spinner-grow-sm text-primary" role="status"></span>
-                              <span className="badge bg-primary-subtle text-primary fw-semibold">
-                                Secure Checkout Session Active
-                              </span>
-                              <span className="text-muted small">
-                                Tracking ID: <strong className="font-monospace">{pesapalOrder.order_tracking_id}</strong>
-                              </span>
-                            </div>
-
-                            <div className="d-flex align-items-center gap-2">
-                              <button
-                                type="button"
-                                onClick={handleOpenDedicatedWindow}
-                                className="btn btn-outline-success btn-sm rounded-pill px-3"
-                                title="Open Pesapal in a dedicated secure window"
-                              >
-                                <i className="isax isax-export-1 me-1"></i>
-                                Pay in Dedicated Window
-                              </button>
-
-                              <button
-                                type="button"
-                                className="btn btn-outline-primary btn-sm rounded-pill px-3"
-                                onClick={handleVerifyStatus}
-                                disabled={checkingStatus}
-                              >
-                                {checkingStatus ? (
-                                  <>
-                                    <span className="spinner-border spinner-border-sm me-1"></span>
-                                    Verifying...
-                                  </>
-                                ) : (
-                                  <>
-                                    <i className="isax isax-refresh me-1"></i>
-                                    Verify Payment Status
-                                  </>
-                                )}
-                              </button>
-
-                              <button
-                                type="button"
-                                className="btn btn-outline-secondary btn-sm rounded-pill px-3"
-                                onClick={() => setPesapalOrder(null)}
-                              >
-                                Edit Details
-                              </button>
-                            </div>
-                          </div>
-
-                          <div className="small text-muted mb-2 d-flex justify-content-between align-items-center">
-                            <span>Select your preferred mobile money network or card below:</span>
-                            <span className="small">
-                              <button
-                                type="button"
-                                onClick={handleOpenDedicatedWindow}
-                                className="btn btn-link p-0 text-primary fw-semibold text-decoration-none small"
-                              >
-                                Pay in Dedicated Window &rarr;
-                              </button>
-                            </span>
-                          </div>
-
-                          {/* DIRECT EMBEDDED IFRAME */}
-                          <div
-                            className="border rounded-3 overflow-hidden position-relative"
-                            style={{ minHeight: '680px', background: '#fafafa' }}
-                          >
-                            {iframeLoading && (
-                              <div
-                                className="d-flex flex-column align-items-center justify-content-center p-5 text-center position-absolute w-100 h-100"
-                                style={{ background: '#fdfdfd', zIndex: 2 }}
-                              >
-                                <div className="spinner-border text-primary mb-3" style={{ width: '3rem', height: '3rem' }} role="status"></div>
-                                <h6 className="fw-bold text-dark mb-1">Connecting to Pesapal Payment Gateway...</h6>
-                                <p className="text-muted small mb-3">Loading Bank of Tanzania regulated East African payment channels</p>
-                                <button
-                                  type="button"
-                                  onClick={handleOpenDedicatedWindow}
-                                  className="btn btn-primary btn-sm rounded-pill px-4"
-                                >
-                                  Open in Dedicated Window Now
-                                </button>
-                              </div>
-                            )}
-
-                            <iframe
-                              src={pesapalOrder.redirect_url}
-                              title="Pesapal Checkout Interface"
-                              width="100%"
-                              height="720px"
-                              style={{ border: 'none', display: 'block' }}
-                              allow="payment"
-                              onLoad={() => setIframeLoading(false)}
-                            />
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </>
-                )}
-              </div>
-
-              {/* Order Summary Sidebar */}
-              <div className="col-lg-4">
-                <div className="checkout-item-2 shadow-sm rounded-3">
-                  <div className="pb-3 border-bottom mb-3">
-                    <h5 className="mb-0">Order Summary</h5>
+                    <iframe
+                      src={pesapalOrder.redirect_url}
+                      title="Pesapal Checkout Interface"
+                      width="100%"
+                      height="540px"
+                      style={{ border: 'none', display: 'block' }}
+                      allow="payment"
+                      onLoad={() => setIframeLoading(false)}
+                    />
                   </div>
-                  <div className="checkout-item-3 bg-light p-3 rounded-3 border mb-3">
-                    <div className="row row-gap-2 mb-3">
-                      <div className="col-md-12 d-flex align-items-center">
-                        <div className="order-img flex-shrink-0 me-3">
-                          <ImageWithBasePath
-                            src="assets/img/course/course-01.jpg"
-                            alt="img"
-                            className="img-fluid h-100 w-100"
-                          />
-                        </div>
-                        <div>
-                          <h6 className="mb-2">
-                            <Link to={route.courseDetails}>
-                              CS101: Introduction to Computer Science
-                            </Link>
-                          </h6>
-                          <h6 className="text-primary fw-bold">TZS 150,000</h6>
-                        </div>
-                      </div>
+                </div>
+              )}
+            </div>
+
+            {/* RIGHT COLUMN: COMPACT ORDER SUMMARY CARD */}
+            <div className="col-12 col-lg-5">
+              <div className="card border-0 shadow-sm rounded-3 bg-white p-3 p-md-4 sticky-top" style={{ top: '20px' }}>
+                <div className="d-flex align-items-center justify-content-between border-bottom pb-2.5 mb-3">
+                  <h6 className="fw-bold mb-0 text-dark">Order Summary</h6>
+                  <span className="badge bg-primary-subtle text-primary rounded-pill px-2.5 py-1" style={{ fontSize: '11px' }}>
+                    {courseMeta.cpdCredits} CPD Credits
+                  </span>
+                </div>
+
+                {/* Course Thumbnail & Meta Header */}
+                <div className="d-flex gap-3 mb-3 pb-3 border-bottom">
+                  <img
+                    src={courseMeta.img}
+                    alt={courseMeta.title}
+                    className="rounded-3 border object-fit-cover flex-shrink-0"
+                    style={{ width: '76px', height: '64px', objectFit: 'cover' }}
+                    onError={(e: any) => {
+                      const ownFallback = `/assets/img/course/thumbnails/course-${courseMeta.itemId}-${(courseMeta.code || `course-${courseMeta.itemId}`).toLowerCase().replace(/[^a-z0-9]/g, '-')}.svg`;
+                      if (e.target.src !== ownFallback && !e.target.src.endsWith(ownFallback)) {
+                        e.target.src = ownFallback;
+                      }
+                    }}
+                  />
+                  <div className="flex-grow-1 min-w-0">
+                    <div className="badge bg-light text-secondary border px-2 py-0.5 rounded-pill mb-1" style={{ fontSize: '10px' }}>
+                      {courseMeta.category}
+                    </div>
+                    <h6 className="fw-bold text-dark text-truncate mb-1" title={courseMeta.title} style={{ fontSize: '13px' }}>
+                      {courseMeta.title}
+                    </h6>
+                    <div className="text-muted d-flex align-items-center gap-1.5" style={{ fontSize: '11px' }}>
+                      <i className="feather-user fs-12 text-primary" />
+                      <span className="text-truncate">{courseMeta.instructor}</span>
                     </div>
                   </div>
-                  <div className="d-flex align-items-center justify-content-between mb-2">
-                    <p className="mb-0 text-muted">Course Tuition</p>
-                    <p className="text-gray-9 fw-medium mb-0">TZS 150,000</p>
+                </div>
+
+                {/* Key Course Academic Highlights */}
+                <div className="d-flex flex-wrap gap-1.5 mb-3">
+                  <span className="badge bg-light text-dark border px-2 py-1 rounded-pill" style={{ fontSize: '11px' }}>
+                    <i className="feather-clock me-1 text-primary" /> {courseMeta.duration.split('(')[0]}
+                  </span>
+                  <span className="badge bg-light text-dark border px-2 py-1 rounded-pill" style={{ fontSize: '11px' }}>
+                    <i className="feather-video me-1 text-success" /> Live Webinars
+                  </span>
+                  <span className="badge bg-light text-dark border px-2 py-1 rounded-pill" style={{ fontSize: '11px' }}>
+                    <i className="feather-award me-1 text-warning" /> QR Certificate
+                  </span>
+                </div>
+
+                {/* Course Switcher (Quick Toggle) */}
+                <div className="mb-3">
+                  <label className="form-label text-muted small fw-medium mb-1" style={{ fontSize: '11px' }}>
+                    Switch Selected Short Course:
+                  </label>
+                  <select
+                    className="form-select form-select-sm rounded-3"
+                    style={{ fontSize: '12px' }}
+                    value={selectedCourseId}
+                    onChange={(e) => {
+                      const newId = Number(e.target.value);
+                      setSelectedCourseId(newId);
+                      setPesapalOrder(null);
+                      setStatusResult(null);
+                    }}
+                  >
+                    {catalogList.length > 0 ? (
+                      catalogList.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.fullname} ({c.priceFormatted})
+                        </option>
+                      ))
+                    ) : (
+                      <>
+                        <option value={8}>Data Science &amp; Applied Machine Learning (TZS 180,000)</option>
+                        <option value={7}>Cybersecurity &amp; Network Defense (TZS 180,000)</option>
+                        <option value={9}>Web &amp; Mobile Applications Development (TZS 180,000)</option>
+                        <option value={11}>Cloud Infrastructure &amp; Systems (TZS 180,000)</option>
+                        <option value={2}>CS101: Data Structures in Python (TZS 150,000)</option>
+                        <option value={3}>CS202: Cloud Computing (TZS 180,000)</option>
+                        <option value={4}>BBA301: Financial Management (TZS 220,000)</option>
+                      </>
+                    )}
+                  </select>
+                </div>
+
+                {/* Tuition Cost Breakdown Table */}
+                <div className="border-top pt-2.5 mb-3" style={{ fontSize: '12px' }}>
+                  <div className="d-flex justify-content-between align-items-center mb-1.5 text-muted">
+                    <span>Course Tuition Fee:</span>
+                    <span className="fw-semibold text-dark">{courseMeta.price}</span>
                   </div>
-                  <div className="d-flex align-items-center justify-content-between mb-2">
-                    <p className="mb-0 text-muted">Pesapal Processing Fee</p>
-                    <p className="text-success fw-medium mb-0">Free (Waived by OUT)</p>
+                  <div className="d-flex justify-content-between align-items-center mb-1.5 text-muted">
+                    <span>Payment Processing Fee:</span>
+                    <span className="text-success fw-medium">Free (Waived by OUT)</span>
                   </div>
-                  <div className="d-flex align-items-center justify-content-between border-bottom pb-3 mb-3">
-                    <p className="mb-0 text-muted">Tax / VAT</p>
-                    <p className="text-gray-9 fw-medium mb-0">TZS 0</p>
+                  <div className="d-flex justify-content-between align-items-center mb-1.5 text-muted">
+                    <span>SARIS Exam &amp; Certification:</span>
+                    <span className="text-success fw-medium">Included</span>
                   </div>
-                  <div className="total d-flex align-items-center justify-content-between">
-                    <h6 className="mb-0 fw-bold">Total Due</h6>
-                    <h4 className="mb-0 text-primary fw-bold">TZS 150,000</h4>
+                  <div className="d-flex justify-content-between align-items-center mb-2 text-muted">
+                    <span>Value Added Tax (VAT 0%):</span>
+                    <span className="fw-semibold text-dark">TZS 0</span>
+                  </div>
+
+                  <div className="d-flex justify-content-between align-items-center pt-2.5 border-top">
+                    <div>
+                      <div className="fw-bold text-dark fs-6 mb-0">Total Due</div>
+                      <div className="text-muted" style={{ fontSize: '10px' }}>Approx {courseMeta.usdPrice} USD</div>
+                    </div>
+                    <div className="text-end">
+                      <h4 className="fw-bold text-primary mb-0">{courseMeta.price}</h4>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Institutional Accreditation Pill */}
+                <div className="bg-light rounded-3 p-2 text-center border">
+                  <div className="text-muted" style={{ fontSize: '11px' }}>
+                    <i className="feather-check-circle text-success me-1" />
+                    <strong>SARIS &amp; TCU Accredited</strong> • Open University of Tanzania
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
-    </>
+
+      {/* 3. MOBILE-ONLY BOTTOM FIXED STICKY ACTION BAR */}
+      {!statusResult?.is_completed && !pesapalOrder && (
+        <div className="d-block d-lg-none fixed-bottom bg-white border-top shadow-lg p-2.5 px-3">
+          <div className="d-flex align-items-center justify-content-between">
+            <div>
+              <div className="text-muted" style={{ fontSize: '10px' }}>Total Amount Due:</div>
+              <div className="fw-bold text-primary fs-6 mb-0">{courseMeta.price}</div>
+            </div>
+            <button
+              type="button"
+              className="btn btn-primary rounded-pill px-4 py-2 fw-semibold shadow-sm d-inline-flex align-items-center gap-1.5"
+              style={{ backgroundColor: '#0171BB', fontSize: '13px' }}
+              onClick={handleInitiatePesapal}
+              disabled={loading}
+            >
+              <i className="feather-lock fs-13" />
+              <span>Pay Now</span>
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

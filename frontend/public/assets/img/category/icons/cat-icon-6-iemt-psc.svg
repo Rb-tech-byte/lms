@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="iconBg_iemt-psc" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#200505" />
+      <stop offset="100%" stop-color="#450a0a" />
+    </linearGradient>
+    <linearGradient id="iconBorder_iemt-psc" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f87171" />
+      <stop offset="100%" stop-color="#dc2626" />
+    </linearGradient>
+  </defs>
+
+  <!-- Squircle Base -->
+  <rect x="4" y="4" width="120" height="120" rx="28" fill="url(#iconBg_iemt-psc)" stroke="url(#iconBorder_iemt-psc)" stroke-width="3" />
+  
+  <!-- Subtle Internal Glow -->
+  <circle cx="64" cy="64" r="42" fill="#f87171" opacity="0.15" />
+
+  <!-- Vector Illustration -->
+  
+      <!-- Executive Certification Shield -->
+      <path d="M64,25 L98,42 C98,78 80,100 64,108 C48,100 30,78 30,42 Z" fill="#991b1b" stroke="#f87171" stroke-width="2.5" />
+      <polygon points="64,48 68,58 79,59 70,67 73,78 64,72 55,78 58,67 49,59 60,58" fill="#facc15" />
+    
+</svg>

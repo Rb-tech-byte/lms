@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450">
+  <defs>
+    <!-- Background Gradient tailored for PSC-ITPM -->
+    <linearGradient id="bgGrad_PSC-ITPM" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#270617" />
+      <stop offset="55%" stop-color="#500724" />
+      <stop offset="100%" stop-color="#831843" />
+    </linearGradient>
+
+    <!-- Accent Badge Gradient -->
+    <linearGradient id="accentGrad_PSC-ITPM" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f43f5e" />
+      <stop offset="100%" stop-color="#e11d48" />
+    </linearGradient>
+
+    <!-- Glassmorphic Card Container -->
+    <linearGradient id="cardGrad_PSC-ITPM" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.14" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.04" />
+    </linearGradient>
+
+    <!-- Drop Shadow Filter -->
+    <filter id="shadow_PSC-ITPM" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.45" />
+    </filter>
+
+    <pattern id="gridPattern_PSC-ITPM" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ffffff" stroke-width="0.7" opacity="0.06" />
+    </pattern>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect width="800" height="450" fill="url(#bgGrad_PSC-ITPM)" />
+  <rect width="800" height="450" fill="url(#gridPattern_PSC-ITPM)" />
+
+  <!-- Thematic Ambient Light Orbs -->
+  <circle cx="700" cy="110" r="220" fill="#fb7185" opacity="0.18" filter="blur(40px)" />
+  <circle cx="100" cy="380" r="160" fill="#e11d48" opacity="0.14" filter="blur(40px)" />
+
+  <!-- Official OUT Top Institutional Gold Bar -->
+  <rect x="0" y="0" width="800" height="14" fill="#FFD200" />
+
+  <!-- OUT Institutional Brand Pill -->
+  <g transform="translate(48, 44)">
+    <rect width="360" height="34" rx="17" fill="#003B66" fill-opacity="0.65" stroke="#FFD200" stroke-opacity="0.85" stroke-width="1.5" />
+    <circle cx="18" cy="17" r="7" fill="#FFD200" />
+    <text x="36" y="22" font-family="'Segoe UI', Inter, sans-serif" font-size="12" font-weight="700" fill="#ffffff" letter-spacing="1.2">THE OPEN UNIVERSITY OF TANZANIA</text>
+  </g>
+
+  <!-- Faculty / Department Label -->
+  <g transform="translate(48, 98)">
+    <text font-family="'Segoe UI', Inter, sans-serif" font-size="13" font-weight="700" fill="#f43f5e" letter-spacing="0.5">IEMT PROFESSIONAL SHORT COURSES</text>
+  </g>
+
+  <!-- Course Code Badge -->
+  <g transform="translate(48, 124)">
+    <rect width="130" height="36" rx="8" fill="url(#accentGrad_PSC-ITPM)" filter="url(#shadow_PSC-ITPM)" />
+    <text x="65" y="24" text-anchor="middle" font-family="'Segoe UI', Inter, sans-serif" font-size="16" font-weight="800" fill="#ffffff" letter-spacing="0.8">PSC-ITPM</text>
+  </g>
+
+  <!-- Delivery / Program Type Badge -->
+  <g transform="translate(190, 124)">
+    <rect width="210" height="36" rx="8" fill="#ffffff" fill-opacity="0.12" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1.2" />
+    <text x="105" y="23" text-anchor="middle" font-family="'Segoe UI', Inter, sans-serif" font-size="12.5" font-weight="700" fill="#ffffff">Professional Short Course</text>
+  </g>
+
+  <!-- Course Title (Multline wrapped) -->
+  <g transform="translate(48, 200)">
+    <text font-family="'Segoe UI', Inter, sans-serif" font-size="28" font-weight="800" fill="#ffffff" letter-spacing="-0.5">
+      <tspan x="0" dy="0">IT Project Management &</tspan><tspan x="0" dy="34">Agile Methodologies</tspan>
+    </text>
+  </g>
+
+  <!-- Key Syllabus Bullets / Subtitle -->
+  <g transform="translate(48, 355)">
+    <rect width="440" height="48" rx="8" fill="#000000" fill-opacity="0.3" stroke="#ffffff" stroke-opacity="0.15" stroke-width="1.2" />
+    <text x="18" y="28" font-family="'Segoe UI', Inter, sans-serif" font-size="12" font-weight="500" fill="#e2e8f0">Scrum Sprints, Kanban Boards, Risk Matrix & Team Leadership</text>
+  </g>
+
+  <!-- Right Visual Feature Showcase Card -->
+  <g transform="translate(520, 70)" filter="url(#shadow_PSC-ITPM)">
+    <!-- Glassmorphic Card Container -->
+    <rect width="232" height="310" rx="20" fill="url(#cardGrad_PSC-ITPM)" stroke="#ffffff" stroke-opacity="0.3" stroke-width="2" />
+    
+    <!-- Topic Thematic Graphic -->
+    <g transform="translate(-5, 20)">
+      
+      <!-- Agile Kanban Columns & Milestone Flag -->
+      <rect x="52" y="45" width="40" height="120" rx="5" fill="#500724" stroke="#fb7185" stroke-width="1.5" />
+      <rect x="100" y="45" width="40" height="120" rx="5" fill="#500724" stroke="#fb7185" stroke-width="1.5" />
+      <rect x="148" y="45" width="40" height="120" rx="5" fill="#500724" stroke="#fb7185" stroke-width="1.5" />
+      <!-- Cards in Column 1 -->
+      <rect x="56" y="55" width="32" height="18" rx="3" fill="#be123c" />
+      <rect x="56" y="78" width="32" height="18" rx="3" fill="#be123c" />
+      <!-- Cards in Column 2 -->
+      <rect x="104" y="55" width="32" height="24" rx="3" fill="#f43f5e" />
+      <rect x="104" y="85" width="32" height="18" rx="3" fill="#be123c" />
+      <!-- Cards in Column 3 (Done) -->
+      <rect x="152" y="55" width="32" height="20" rx="3" fill="#22c55e" />
+      <path d="M162,65 L166,69 L174,61" stroke="#ffffff" stroke-width="2" fill="none" stroke-linecap="round" />
+      <rect x="152" y="80" width="32" height="20" rx="3" fill="#22c55e" />
+      <path d="M162,90 L166,94 L174,86" stroke="#ffffff" stroke-width="2" fill="none" stroke-linecap="round" />
+      <text x="120" y="200" text-anchor="middle" font-family="'Segoe UI', Inter, sans-serif" font-size="11" font-weight="700" fill="#fecdd3" letter-spacing="1">SCRUM &amp; KANBAN CADENCE</text>
+    
+    </g>
+
+    <!-- Bottom Institutional Verified Stamp -->
+    <g transform="translate(16, 260)">
+      <rect width="200" height="34" rx="8" fill="#003B66" fill-opacity="0.9" stroke="#FFD200" stroke-width="1.5" />
+      <circle cx="20" cy="17" r="5" fill="#22c55e" />
+      <text x="34" y="21" font-family="'Segoe UI', Inter, sans-serif" font-size="10.5" font-weight="800" fill="#ffffff" letter-spacing="0.5">SARIS &amp; TCU ACCREDITED</text>
+    </g>
+  </g>
+
+  <!-- Bottom Accent Line -->
+  <rect x="0" y="442" width="800" height="8" fill="url(#accentGrad_PSC-ITPM)" />
+</svg>

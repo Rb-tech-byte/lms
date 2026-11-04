@@ -3,11 +3,17 @@ import { instructorSidebarData } from '../../../core/common/data/json/instructor
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { all_routes } from '../../router/all_routes';
 import { useAuth } from '../../../core/auth/authContext';
+import { useInstructorShell } from './instructorLayout';
 
 const InstructorSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { logout } = useAuth();
+  const shell = useInstructorShell();
+
+  // Inside the Faculty Console shell the persistent sidebar already handles navigation.
+  if (shell?.inShell) return null;
+
   return (
     <div className="col-lg-3 ">
     <div className="settings-sidebar mb-lg-0 theiaStickySidebar">

@@ -1,870 +1,418 @@
-import React, { useState } from 'react'
-import Breadcrumb from '../../../core/common/Breadcrumb/breadcrumb'
-import { Link } from 'react-router-dom'
-import ImageWithBasePath from '../../../core/common/imageWithBasePath'
-import { Slider } from 'antd'
-import type { SliderSingleProps } from 'antd';
-import { all_routes } from '../../router/all_routes'
+import React, { useEffect, useState, useMemo } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { all_routes } from '../../router/all_routes';
+import {
+  courseService,
+  PublicCatalogCourse,
+  PublicCatalogCategory,
+} from '../../../core/api/courseService';
 
-const CourseList = () => {
+const PAGE_SIZE = 6;
 
-  const [selectedItems, setSelectedItems] = useState(Array(10).fill(false));
-  const handleItemClick = (index: number) => {
-      setSelectedItems((prevSelectedItems) => {
-          const updatedSelectedItems = [...prevSelectedItems];
-          updatedSelectedItems[index] = !updatedSelectedItems[index];
-          return updatedSelectedItems;
-      });
+const CourseList: React.FC = () => {
+  const route = all_routes;
+  const [searchParams] = useSearchParams();
+  const initialCategoryId = Number(searchParams.get('category') || 0);
+
+  const [courses, setCourses] = useState<PublicCatalogCourse[]>([]);
+  const [categories, setCategories] = useState<PublicCatalogCategory[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<number>(initialCategoryId);
+  const [programFilter, setProgramFilter] = useState<'all' | 'psc' | 'mooc'>('all');
+  const [searchQuery, setSearchQuery] = useState<string>(searchParams.get('q') || '');
+  const [sortBy, setSortBy] = useState<'popular' | 'title' | 'fee_asc'>('popular');
+  const [loading, setLoading] = useState<boolean>(true);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
+  useEffect(() => {
+    let mounted = true;
+    const loadCatalog = async () => {
+      setLoading(true);
+      try {
+        const res = await courseService.getPublicCatalog();
+        if (!mounted) return;
+        setCourses(res.courses || []);
+        setCategories(res.categories || []);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+    loadCatalog();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory, programFilter, searchQuery, sortBy]);
+
+  const clearFilters = () => {
+    setSelectedCategory(0);
+    setProgramFilter('all');
+    setSearchQuery('');
+    setSortBy('popular');
+    setCurrentPage(1);
   };
 
-  const route = all_routes;
+  const filteredCourses = useMemo(() => {
+    return courses
+      .filter((c) => {
+        if (programFilter === 'psc' && !c.isPSC) return false;
+        if (programFilter === 'mooc' && !c.isMOOC) return false;
+        if (selectedCategory > 0 && c.categoryid !== selectedCategory) return false;
+        if (searchQuery.trim()) {
+          const q = searchQuery.toLowerCase();
+          return (
+            c.fullname.toLowerCase().includes(q) ||
+            c.shortname.toLowerCase().includes(q) ||
+            c.summary.toLowerCase().includes(q) ||
+            c.categoryName.toLowerCase().includes(q) ||
+            c.instructor.fullname.toLowerCase().includes(q)
+          );
+        }
+        return true;
+      })
+      .sort((a, b) => {
+        if (sortBy === 'title') return a.fullname.localeCompare(b.fullname);
+        if (sortBy === 'fee_asc') return a.tuitionFee - b.tuitionFee;
+        return b.enrolledCount - a.enrolledCount;
+      });
+  }, [courses, programFilter, selectedCategory, searchQuery, sortBy]);
 
-  const formatter: NonNullable<SliderSingleProps['tooltip']>['formatter'] = (value) => `$${value}`;
+  const totalItems = filteredCourses.length;
+  const totalPages = Math.ceil(totalItems / PAGE_SIZE) || 1;
+  const paginatedCourses = useMemo(() => {
+    const startIndex = (currentPage - 1) * PAGE_SIZE;
+    return filteredCourses.slice(startIndex, startIndex + PAGE_SIZE);
+  }, [filteredCourses, currentPage]);
+
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+      window.scrollTo({ top: 160, behavior: 'smooth' });
+    }
+  };
+
   return (
-    <>
-      <Breadcrumb title='Course List' />
-      <>
-        {/* Course */}
-        <section className="course-content course-list-content">
-          <div className="container">
-            <div className="row align-items-baseline">
-              <div className="col-lg-3 theiaStickySidebar">
-                <div className="filter-clear">
-                  <div className="clear-filter mb-4 pb-lg-2 d-flex align-items-center justify-content-between">
-                    <h5>
-                      <i className="feather-filter me-2" />
-                      Filters
-                    </h5>
-                    <Link to="#" className="clear-text">
-                      Clear
-                    </Link>
-                  </div>
-                  <div className="accordion accordion-customicon1 accordions-items-seperate">
-                    <div className="accordion-item">
-                      <h2 className="accordion-header" id="headingcustomicon1One">
-                        <Link
-                          to="#"
-                          className="accordion-button"
-                          data-bs-toggle="collapse"
-                          data-bs-target="#collapsecustomicon1One"
-                          aria-expanded="false"
-                          aria-controls="collapsecustomicon1One"
-                        >
-                          Categories <i className="fa-solid fa-chevron-down" />
-                        </Link>
-                      </h2>
-                      <div
-                        id="collapsecustomicon1One"
-                        className="accordion-collapse collapse show"
-                        aria-labelledby="headingcustomicon1One"
-                        data-bs-parent="#accordioncustomicon1Example"
-                        style={{}}
-                      >
-                        <div className="accordion-body">
-                          <div>
-                            <label className="custom_check">
-                              <input type="checkbox" name="select_specialist" />
-                              <span className="checkmark" /> Backend (3)
-                            </label>
-                          </div>
-                          <div>
-                            <label className="custom_check">
-                              <input type="checkbox" name="select_specialist" />
-                              <span className="checkmark" /> CSS (2)
-                            </label>
-                          </div>
-                          <div>
-                            <label className="custom_check">
-                              <input type="checkbox" name="select_specialist" />
-                              <span className="checkmark" /> Frontend (2)
-                            </label>
-                          </div>
-                          <div>
-                            <label className="custom_check">
-                              <input type="checkbox" name="select_specialist" />
-                              <span className="checkmark" /> General (2)
-                            </label>
-                          </div>
-                          <div>
-                            <label className="custom_check">
-                              <input
-                                type="checkbox"
-                                name="select_specialist"
-                                defaultChecked
-                              />
-                              <span className="checkmark" /> IT &amp; Software (2)
-                            </label>
-                          </div>
-                          <div>
-                            <label className="custom_check">
-                              <input type="checkbox" name="select_specialist" />
-                              <span className="checkmark" /> Photography (2)
-                            </label>
-                          </div>
-                          <div>
-                            <label className="custom_check">
-                              <input type="checkbox" name="select_specialist" />
-                              <span className="checkmark" /> Programming Language (3)
-                            </label>
-                          </div>
-                          <div>
-                            <label className="custom_check mb-0">
-                              <input type="checkbox" name="select_specialist" />
-                              <span className="checkmark" /> Technology (2)
-                            </label>
-                          </div>
-                          <Link to="#" className="see-more-btn">
-                            See More
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="accordion-item">
-                      <h2 className="accordion-header" id="headingcustomicon1Two">
-                        <Link
-                          to="#"
-                          className="accordion-button"
-                          data-bs-toggle="collapse"
-                          data-bs-target="#collapsecustomicon1Two"
-                          aria-expanded="false"
-                          aria-controls="collapsecustomicon1Two"
-                        >
-                          Instructors
-                          <i className="fa-solid fa-chevron-down" />
-                        </Link>
-                      </h2>
-                      <div
-                        id="collapsecustomicon1Two"
-                        className="accordion-collapse collapse show"
-                        aria-labelledby="headingcustomicon1Two"
-                        data-bs-parent="#accordioncustomicon1Example"
-                      >
-                        <div className="accordion-body">
-                          <div>
-                            <label className="custom_check">
-                              <input type="checkbox" name="select_specialist" />
-                              <span className="checkmark" /> Keny White (10)
-                            </label>
-                          </div>
-                          <div>
-                            <label className="custom_check">
-                              <input type="checkbox" name="select_specialist" />
-                              <span className="checkmark" /> Hinata Hyuga (5)
-                            </label>
-                          </div>
-                          <div>
-                            <label className="custom_check">
-                              <input type="checkbox" name="select_specialist" />
-                              <span className="checkmark" /> John Doe (3)
-                            </label>
-                          </div>
-                          <div>
-                            <label className="custom_check mb-0">
-                              <input
-                                type="checkbox"
-                                name="select_specialist"
-                                defaultChecked
-                              />
-                              <span className="checkmark" /> Nicole Brown
-                            </label>
-                          </div>
-                          <Link to="#" className="see-more-btn">
-                            See More
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="accordion-item">
-                      <h2 className="accordion-header" id="headingcustomicon1Three">
-                        <Link
-                          to="#"
-                          className="accordion-button"
-                          data-bs-toggle="collapse"
-                          data-bs-target="#collapsecustomicon1Three"
-                          aria-expanded="false"
-                          aria-controls="collapsecustomicon1Three"
-                        >
-                          Price
-                          <i className="fa-solid fa-chevron-down" />
-                        </Link>
-                      </h2>
-                      <div
-                        id="collapsecustomicon1Three"
-                        className="accordion-collapse collapse show"
-                        aria-labelledby="headingcustomicon1Three"
-                        data-bs-parent="#accordioncustomicon1Example"
-                      >
-                        <div className="accordion-body">
-                          <div>
-                            <label className="custom_check custom_one">
-                              <input type="checkbox" name="select_specialist" />
-                              <span className="checkmark" /> All (10)
-                            </label>
-                          </div>
-                          <div>
-                            <label className="custom_check custom_one">
-                              <input type="checkbox" name="select_specialist" />
-                              <span className="checkmark" /> Free (5)
-                            </label>
-                          </div>
-                          <div>
-                            <label className="custom_check custom_one mb-0">
-                              <input type="checkbox" name="select_specialist" />
-                              <span className="checkmark" /> Paid (3)
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="accordion-item">
-                      <h2 className="accordion-header" id="headingcustomicon1Four">
-                        <Link
-                          to="#"
-                          className="accordion-button"
-                          data-bs-toggle="collapse"
-                          data-bs-target="#collapsecustomicon1Four"
-                          aria-expanded="false"
-                          aria-controls="collapsecustomicon1Four"
-                        >
-                          Range
-                          <i className="fa-solid fa-chevron-down" />
-                        </Link>
-                      </h2>
-                      <div
-                        id="collapsecustomicon1Four"
-                        className="accordion-collapse collapse show"
-                        aria-labelledby="headingcustomicon1Four"
-                        data-bs-parent="#accordioncustomicon1Example"
-                      >
-                        <div className="accordion-body">
-                          <div className="filter-range">
-                            <Slider range tooltip={{ formatter }} min={50} max={5695} defaultValue={[50, 2000]} />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="accordion-item">
-                      <h2 className="accordion-header" id="headingcustomicon1Five">
-                        <Link
-                          to="#"
-                          className="accordion-button"
-                          data-bs-toggle="collapse"
-                          data-bs-target="#collapsecustomicon1Five"
-                          aria-expanded="false"
-                          aria-controls="collapsecustomicon1Five"
-                        >
-                          Level
-                          <i className="fa-solid fa-chevron-down" />
-                        </Link>
-                      </h2>
-                      <div
-                        id="collapsecustomicon1Five"
-                        className="accordion-collapse collapse show"
-                        aria-labelledby="headingcustomicon1Five"
-                        data-bs-parent="#accordioncustomicon1Example"
-                      >
-                        <div className="accordion-body">
-                          <div>
-                            <label className="custom_check custom_one">
-                              <input type="checkbox" name="select_specialist" />
-                              <span className="checkmark" />
-                              Beginner (10)
-                            </label>
-                          </div>
-                          <div>
-                            <label className="custom_check custom_one">
-                              <input type="checkbox" name="select_specialist" />
-                              <span className="checkmark" /> Intermediate (5)
-                            </label>
-                          </div>
-                          <div>
-                            <label className="custom_check custom_one">
-                              <input type="checkbox" name="select_specialist" />
-                              <span className="checkmark" />
-                              Advanced (21)
-                            </label>
-                          </div>
-                          <div>
-                            <label className="custom_check custom_one mb-0">
-                              <input type="checkbox" name="select_specialist" />
-                              <span className="checkmark" />
-                              Expert (3)
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="accordion-item">
-                      <h2 className="accordion-header" id="headingcustomicon1Six">
-                        <Link
-                          to="#"
-                          className="accordion-button"
-                          data-bs-toggle="collapse"
-                          data-bs-target="#collapsecustomicon1Six"
-                          aria-expanded="false"
-                          aria-controls="collapsecustomicon1Six"
-                        >
-                          Reviews <i className="fa-solid fa-chevron-down" />
-                        </Link>
-                      </h2>
-                      <div
-                        id="collapsecustomicon1Six"
-                        className="accordion-collapse collapse show"
-                        aria-labelledby="headingcustomicon1Six"
-                        data-bs-parent="#accordioncustomicon1Example"
-                      >
-                        <div className="accordion-body">
-                          <div>
-                            <label className="custom_check custom_one">
-                              <input type="checkbox" name="select_specialist" />
-                              <span className="checkmark" />
-                              <i className="fa-solid fa-star text-warning me-1" />
-                              <i className="fa-solid fa-star text-warning me-1" />
-                              <i className="fa-solid fa-star text-warning me-1" />
-                              <i className="fa-solid fa-star text-warning me-1" />
-                              <i className="fa-solid fa-star text-warning" />
-                            </label>
-                          </div>
-                          <div>
-                            <label className="custom_check custom_one">
-                              <input type="checkbox" name="select_specialist" />
-                              <span className="checkmark" />
-                              <i className="fa-solid fa-star text-warning me-1" />
-                              <i className="fa-solid fa-star text-warning me-1" />
-                              <i className="fa-solid fa-star text-warning me-1" />
-                              <i className="fa-solid fa-star text-warning me-1" />
-                              <i className="fa-solid fa-star text-light" />
-                            </label>
-                          </div>
-                          <div>
-                            <label className="custom_check custom_one">
-                              <input type="checkbox" name="select_specialist" />
-                              <span className="checkmark" />
-                              <i className="fa-solid fa-star text-warning me-1" />
-                              <i className="fa-solid fa-star text-warning me-1" />
-                              <i className="fa-solid fa-star text-warning me-1" />
-                              <i className="fa-solid fa-star text-light me-1" />
-                              <i className="fa-solid fa-star text-light" />
-                            </label>
-                          </div>
-                          <div>
-                            <label className="custom_check custom_one">
-                              <input type="checkbox" name="select_specialist" />
-                              <span className="checkmark" />
-                              <i className="fa-solid fa-star text-warning me-1" />
-                              <i className="fa-solid fa-star text-warning me-1" />
-                              <i className="fa-solid fa-star text-light me-1" />
-                              <i className="fa-solid fa-star text-light me-1" />
-                              <i className="fa-solid fa-star text-light" />
-                            </label>
-                          </div>
-                          <div>
-                            <label className="custom_check custom_one mb-0">
-                              <input type="checkbox" name="select_specialist" />
-                              <span className="checkmark" />
-                              <i className="fa-solid fa-star text-warning me-1" />
-                              <i className="fa-solid fa-star text-light me-1" />
-                              <i className="fa-solid fa-star text-light me-1" />
-                              <i className="fa-solid fa-star text-light me-1" />
-                              <i className="fa-solid fa-star text-light" />
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+    <div style={{ background: '#f8fafc', minHeight: '82vh' }}>
+      <section
+        className="py-3.5"
+        style={{
+          background: 'linear-gradient(135deg, #005B97 0%, #0171BB 55%, #0082D6 100%)',
+          borderBottom: '3px solid #FFD200',
+        }}
+      >
+        <div className="container">
+          <div className="row align-items-center g-3">
+            <div className="col-lg-7">
+              <span
+                className="badge rounded-pill px-2.5 py-1 fw-bold mb-1.5"
+                style={{ background: '#FFD200', color: '#051426', fontSize: '0.7rem' }}
+              >
+                PROGRAMME DIRECTORY
+              </span>
+              <h1 className="fw-bold text-white mb-1" style={{ fontSize: 'clamp(1.3rem, 2vw, 1.7rem)' }}>
+                University Course Directory
+              </h1>
+              <p className="mb-0" style={{ color: '#cbd5e1', fontSize: '0.84rem' }}>
+                Showing {totalItems} accredited university courses with structured learning units.
+              </p>
+            </div>
+            <div className="col-lg-5">
+              <div className="d-flex align-items-center justify-content-lg-end gap-2">
+                <div className="input-group input-group-sm" style={{ maxWidth: 280 }}>
+                  <span className="input-group-text bg-white border-0 text-muted">
+                    <i className="feather-search" />
+                  </span>
+                  <input
+                    type="text"
+                    className="form-control border-0"
+                    placeholder="Search course code or title..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    style={{ fontSize: '0.82rem' }}
+                  />
+                  {searchQuery && (
+                    <button type="button" className="btn btn-light border-0" onClick={() => setSearchQuery('')}>
+                      <i className="feather-x" />
+                    </button>
+                  )}
                 </div>
-              </div>
-              <div className="col-lg-9">
-                {/* Filter */}
-                <div className="showing-list mb-4">
-                  <div className="row align-items-center">
-                    <div className="col-lg-4">
-                      <div className="show-result text-center text-lg-start">
-                        <h6 className="fw-medium">Showing 1-9 of 50 results</h6>
-                      </div>
-                    </div>
-                    <div className="col-lg-8">
-                      <div className="show-filter add-course-info">
-                        <form action="#">
-                          <div className="d-sm-flex justify-content-center justify-content-lg-end mb-1 mb-lg-0">
-                            <div className="view-icons mb-2 mb-sm-0">
-                              <Link to={route.courseGrid} className="grid-view">
-                                <i className="feather-grid" />
-                              
-                              </Link>
-                              <Link to={route.courseList} className="list-view active">
-                                <i className="isax isax-task" />
-                              </Link>
-                            </div>
-                            <select className="form-select">
-                              <option>Newly Published </option>
-                              <option>Trending Courses</option>
-                              <option>Top Rated</option>
-                              <option>Free Courses</option>
-                            </select>
-                            <div className=" search-group">
-                              <i className="isax isax-search-normal-1" />
-                              <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Search"
-                              />
-                            </div>
-                          </div>
-                        </form>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                {/* /Filter */}
-                <div className="row course-list-wrap">
-                  <div className="col-12">
-                    <div className="courses-list-item">
-                      <div className="d-md-flex align-items-center">
-                        <div className="position-relative overflow-hidden rounded-3 card-image">
-                          <Link to={route.courseDetails}>
-                            <ImageWithBasePath
-                              className="img-fluid rounded-3"
-                              src="./assets/img/course/course-01.jpg"
-                              alt="img"
-                            />
-                          </Link>
-                          <div className="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-2" key={1} onClick={() => handleItemClick(1)}>
-                            <Link to="#" className={`like ${selectedItems[1]? 'selected':''}`}>
-                              <i className="isax isax-heart" />
-                            </Link>
-                          </div>
-                        </div>
-                        <div className="course-list-contents w-100 ps-0 ps-md-3 pt-4 pt-md-0">
-                          <div className="d-flex flex-wrap align-items-center justify-content-between">
-                            <div className="d-flex align-items-center">
-                              <div className="avatar avatar-sm rounded-circle">
-                                <Link to="#">
-                                  <ImageWithBasePath
-                                    className="img-fluid rounded-circle"
-                                    src="./assets/img/avatar/avatar1.jpg"
-                                    alt="img"
-                                  />
-                                </Link>
-                              </div>
-                              <p className="ms-2">
-                                <Link to={route.instructorDetails}>David Benitez</Link>
-                              </p>
-                            </div>
-                            <span>
-                              <Link className="tag-btn" to="#">
-                                Design
-                              </Link>
-                            </span>
-                          </div>
-                          <h4 className="mt-3 mb-2">
-                            <Link to={route.courseDetails}>
-                              Information About UI/UX Design Degree
-                            </Link>
-                          </h4>
-                          <div className="d-flex align-items-center">
-                            <p className="d-flex align-items-center mb-0">
-                              <i className="fa-solid fa-star text-warning me-2" /> 4.9
-                              (200 Reviews)
-                            </p>
-                            <span className="dot" />
-                            <p>Intermediate</p>
-                          </div>
-                          <div className="d-flex justify-content-between mt-3 align-items-center">
-                            <h5 className="text-secondary">$120</h5>
-                            <Link
-                              to={route.courseDetails}
-                              className="btn btn-dark btn-sm d-inline-flex align-items-center"
-                            >
-                              Get Course
-                              <i className="fs-8 fas fa-angle-right ms-2" />
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-12">
-                    <div className="courses-list-item">
-                      <div className="d-md-flex align-items-center">
-                        <div className="position-relative overflow-hidden rounded-3 card-image">
-                          <Link to={route.courseDetails}>
-                            <ImageWithBasePath
-                              className="img-fluid rounded-3"
-                              src="./assets/img/course/course-02.jpg"
-                              alt="img"
-                            />
-                          </Link>
-                          <div className="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-2" key={2} onClick={() => handleItemClick(1)}>
-                            <Link to="#" className={`like ${selectedItems[2]? 'selected':''}`}>
-                              <i className="isax isax-heart" />
-                            </Link>
-                          </div>
-                        </div>
-                        <div className="course-list-contents w-100 ps-0 ps-md-3 pt-4 pt-md-0">
-                          <div className="d-flex flex-wrap align-items-center justify-content-between">
-                            <div className="d-flex align-items-center">
-                              <div className="avatar avatar-sm rounded-circle">
-                                <Link to="#">
-                                  <ImageWithBasePath
-                                    className="img-fluid rounded-circle"
-                                    src="./assets/img/avatar/avatar2.jpg"
-                                    alt="img"
-                                  />
-                                </Link>
-                              </div>
-                              <p className="ms-2">
-                                <Link to={route.instructorDetails}>Ana Reyes</Link>
-                              </p>
-                            </div>
-                            <span>
-                              <Link to="#" className="tag-btn">
-                                Wordpress
-                              </Link>
-                            </span>
-                          </div>
-                          <h4 className="mt-3 mb-2">
-                            <Link to={route.courseDetails}>
-                              Wordpress for Beginners - Master Wordpress Quickly
-                            </Link>
-                          </h4>
-                          <div className="d-flex align-items-center">
-                            <p className="d-flex align-items-center mb-0">
-                              <i className="fa-solid fa-star text-warning me-2" />
-                              4.4 (160 Reviews)
-                            </p>
-                            <span className="dot" />
-                            <p>Advanced</p>
-                          </div>
-                          <div className="d-flex justify-content-between mt-3 align-items-center">
-                            <h5 className="text-secondary">$140</h5>
-                            <Link
-                              to={route.courseDetails}
-                              className="btn btn-dark btn-sm d-inline-flex align-items-center"
-                            >
-                              Get Course
-                              <i className="fs-8 fas fa-angle-right ms-2" />
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-12">
-                    <div className="courses-list-item">
-                      <div className="d-md-flex align-items-center">
-                        <div className="position-relative overflow-hidden rounded-3 card-image">
-                          <Link to={route.courseDetails}>
-                            <ImageWithBasePath
-                              className="img-fluid rounded-3"
-                              src="./assets/img/course/course-03.jpg"
-                              alt="img"
-                            />
-                          </Link>
-                          <div className="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-2" key={3} onClick={() => handleItemClick(1)}>
-                            <Link to="#" className={`like ${selectedItems[3]? 'selected':''}`}>
-                              <i className="isax isax-heart" />
-                            </Link>
-                          </div>
-                        </div>
-                        <div className="course-list-contents w-100 ps-0 ps-md-3 pt-4 pt-md-0">
-                          <div className="d-flex flex-wrap align-items-center justify-content-between">
-                            <div className="d-flex align-items-center">
-                              <div className="avatar avatar-sm rounded-circle">
-                                <Link to="#">
-                                  <ImageWithBasePath
-                                    className="img-fluid rounded-circle"
-                                    src="./assets/img/avatar/avatar3.jpg"
-                                    alt="img"
-                                  />
-                                </Link>
-                              </div>
-                              <p className="ms-2">
-                                <Link to={route.instructorDetails}>Andrew Pirtle</Link>
-                              </p>
-                            </div>
-                            <span>
-                              <Link to="#" className="tag-btn">
-                                Design
-                              </Link>
-                            </span>
-                          </div>
-                          <h4 className="mt-3 mb-2">
-                            <Link to={route.courseDetails}>
-                              Sketch from A to Z (2024): Become an app designer
-                            </Link>
-                          </h4>
-                          <div className="d-flex align-items-center">
-                            <p className="d-flex align-items-center mb-0">
-                              <i className="fa-solid fa-star text-warning me-2" />
-                              4.6 (170 Reviews)
-                            </p>
-                            <span className="dot" />
-                            <p>Basic</p>
-                          </div>
-                          <div className="d-flex justify-content-between mt-3 align-items-center">
-                            <h5 className="text-secondary">$160</h5>
-                            <Link
-                              to={route.courseDetails}
-                              className="btn btn-dark btn-sm d-inline-flex align-items-center"
-                            >
-                              Get Course
-                              <i className="fs-8 fas fa-angle-right ms-2" />
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-12">
-                    <div className="courses-list-item">
-                      <div className="d-md-flex align-items-center">
-                        <div className="position-relative overflow-hidden rounded-3 card-image">
-                          <Link to={route.courseDetails}>
-                            <ImageWithBasePath
-                              className="img-fluid rounded-3"
-                              src="./assets/img/course/course-04.jpg"
-                              alt="img"
-                            />
-                          </Link>
-                          <div className="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-2" key={4} onClick={() => handleItemClick(1)}>
-                            <Link to="#" className={`like ${selectedItems[4]? 'selected':''}`}>
-                              <i className="isax isax-heart" />
-                            </Link>
-                          </div>
-                        </div>
-                        <div className="course-list-contents w-100 ps-0 ps-md-3 pt-4 pt-md-0">
-                          <div className="d-flex flex-wrap align-items-center justify-content-between">
-                            <div className="d-flex align-items-center">
-                              <div className="avatar avatar-sm rounded-circle">
-                                <Link to="#">
-                                  <ImageWithBasePath
-                                    className="img-fluid rounded-circle"
-                                    src="./assets/img/avatar/avatar4.jpg"
-                                    alt="img"
-                                  />
-                                </Link>
-                              </div>
-                              <p className="ms-2">
-                                <Link to={route.instructorDetails}>Christy Garner</Link>
-                              </p>
-                            </div>
-                            <span>
-                              <Link to="#" className="tag-btn">
-                                Programming
-                              </Link>
-                            </span>
-                          </div>
-                          <h4 className="mt-3 mb-2">
-                            <Link to={route.courseDetails}>
-                              Build Responsive Real World Websites with Crash Course
-                            </Link>
-                          </h4>
-                          <div className="d-flex align-items-center">
-                            <p className="d-flex align-items-center mb-0">
-                              <i className="fa-solid fa-star text-warning me-2" />
-                              4.2 (220 Reviews)
-                            </p>
-                            <span className="dot" />
-                            <p>Advanced</p>
-                          </div>
-                          <div className="d-flex justify-content-between mt-3 align-items-center">
-                            <h5 className="text-secondary">$200</h5>
-                            <Link
-                              to={route.courseDetails}
-                              className="btn btn-dark btn-sm d-inline-flex align-items-center"
-                            >
-                              Get Course
-                              <i className="fs-8 fas fa-angle-right ms-2" />
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-12">
-                    <div className="courses-list-item">
-                      <div className="d-md-flex align-items-center">
-                        <div className="position-relative overflow-hidden rounded-3 card-image">
-                          <Link to={route.courseDetails}>
-                            <ImageWithBasePath
-                              className="img-fluid rounded-3"
-                              src="./assets/img/course/course-05.jpg"
-                              alt="img"
-                            />
-                          </Link>
-                          <div className="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-2" key={5} onClick={() => handleItemClick(1)}>
-                            <Link to="#" className={`like ${selectedItems[5]? 'selected':''}`}>
-                              <i className="isax isax-heart" />
-                            </Link>
-                          </div>
-                        </div>
-                        <div className="course-list-contents w-100 ps-0 ps-md-3 pt-4 pt-md-0">
-                          <div className="d-flex flex-wrap align-items-center justify-content-between">
-                            <div className="d-flex align-items-center">
-                              <div className="avatar avatar-sm rounded-circle">
-                                <Link to="#">
-                                  <ImageWithBasePath
-                                    className="img-fluid rounded-circle"
-                                    src="./assets/img/avatar/avatar5.jpg"
-                                    alt="img"
-                                  />
-                                </Link>
-                              </div>
-                              <p className="ms-2">
-                                <Link to={route.instructorDetails}>Justin Gregory</Link>
-                              </p>
-                            </div>
-                            <span>
-                              <Link to="#" className="tag-btn">
-                                Programming
-                              </Link>
-                            </span>
-                          </div>
-                          <h4 className="mt-3 mb-2">
-                            <Link to={route.courseDetails}>
-                              Learn JavaScript and Express to become a Expert
-                            </Link>
-                          </h4>
-                          <div className="d-flex align-items-center">
-                            <p className="d-flex align-items-center mb-0">
-                              <i className="fa-solid fa-star text-warning me-2" />
-                              4.4 (180 Reviews)
-                            </p>
-                            <span className="dot" />
-                            <p>Intermediate</p>
-                          </div>
-                          <div className="d-flex justify-content-between mt-3 align-items-center">
-                            <h5 className="text-secondary">$130</h5>
-                            <Link
-                              to={route.courseDetails}
-                              className="btn btn-dark btn-sm d-inline-flex align-items-center"
-                            >
-                              Get Course
-                              <i className="fs-8 fas fa-angle-right ms-2" />
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-12">
-                    <div className="courses-list-item">
-                      <div className="d-md-flex align-items-center">
-                        <div className="position-relative overflow-hidden rounded-3 card-image">
-                          <Link to={route.courseDetails}>
-                            <ImageWithBasePath
-                              className="img-fluid rounded-3"
-                              src="./assets/img/course/course-06.jpg"
-                              alt="img"
-                            />
-                          </Link>
-                          <div className="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-2" key={6} onClick={() => handleItemClick(1)}>
-                            <Link to="#" className={`like ${selectedItems[6]? 'selected':''}`}>
-                              <i className="isax isax-heart" />
-                            </Link>
-                          </div>
-                        </div>
-                        <div className="course-list-contents w-100 ps-0 ps-md-3 pt-4 pt-md-0">
-                          <div className="d-flex flex-wrap align-items-center justify-content-between">
-                            <div className="d-flex align-items-center">
-                              <div className="avatar avatar-sm rounded-circle">
-                                <Link to="#">
-                                  <ImageWithBasePath
-                                    className="img-fluid rounded-circle"
-                                    src="./assets/img/avatar/avatar6.jpg"
-                                    alt="img"
-                                  />
-                                </Link>
-                              </div>
-                              <p className="ms-2">
-                                <Link to={route.instructorDetails}>Carolyn Hines</Link>
-                              </p>
-                            </div>
-                            <span>
-                              <Link to="#" className="tag-btn">
-                                Programming
-                              </Link>
-                            </span>
-                          </div>
-                          <h4 className="mt-3 mb-2">
-                            <Link to={route.courseDetails}>
-                              Introduction to Python Programming
-                            </Link>
-                          </h4>
-                          <div className="d-flex align-items-center">
-                            <p className="d-flex align-items-center mb-0">
-                              <i className="fa-solid fa-star text-warning me-2" />
-                              4.7 (130 Reviews)
-                            </p>
-                            <span className="dot" />
-                            <p>Expert</p>
-                          </div>
-                          <div className="d-flex justify-content-between mt-3 align-items-center">
-                            <h5 className="text-secondary">$150</h5>
-                            <Link
-                              to={route.courseDetails}
-                              className="btn btn-dark btn-sm d-inline-flex align-items-center"
-                            >
-                              Get Course
-                              <i className="fs-8 fas fa-angle-right ms-2" />
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                {/* /pagination */}
-                <div className="row align-items-center">
-                  <div className="col-md-2">
-                    <p className="pagination-text">Page 1 of 2</p>
-                  </div>
-                  <div className="col-md-10">
-                    <ul className="pagination lms-page justify-content-center justify-content-md-end mt-2 mt-md-0">
-                      <li className="page-item prev">
-                        <Link
-                          className="page-link"
-                          to="#"
-                          tabIndex={-1}
-                        >
-                          <i className="fas fa-angle-left" />
-                        </Link>
-                      </li>
-                      <li className="page-item first-page active">
-                        <Link className="page-link" to="#">
-                          1
-                        </Link>
-                      </li>
-                      <li className="page-item">
-                        <Link className="page-link" to="#">
-                          2
-                        </Link>
-                      </li>
-                      <li className="page-item">
-                        <Link className="page-link" to="#">
-                          3
-                        </Link>
-                      </li>
-                      <li className="page-item next">
-                        <Link className="page-link" to="#">
-                          <i className="fas fa-angle-right" />
-                        </Link>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                {/* /pagination */}
+                <Link to={route.courseGrid} className="btn btn-sm btn-outline-light rounded-pill px-2.5">
+                  <i className="feather-grid" />
+                </Link>
+                <Link to={route.courseList} className="btn btn-sm btn-warning rounded-pill px-2.5">
+                  <i className="feather-list" />
+                </Link>
               </div>
             </div>
           </div>
-        </section>
-        {/* /Course */}
-      </>
 
-    </>
-  )
-}
+          {/* Faculty Filter Pills */}
+          <div className="d-flex align-items-center gap-1.5 flex-wrap mt-3 pt-2" style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+            <button
+              type="button"
+              onClick={() => setSelectedCategory(0)}
+              className="btn btn-sm rounded-pill px-3 py-1 fw-semibold"
+              style={{
+                fontSize: '0.74rem',
+                background: selectedCategory === 0 ? '#FFD200' : 'rgba(255,255,255,0.1)',
+                color: selectedCategory === 0 ? '#0f172a' : '#e2e8f0',
+                border: 'none',
+              }}
+            >
+              All Faculties ({courses.length})
+            </button>
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                type="button"
+                onClick={() => setSelectedCategory(selectedCategory === cat.id ? 0 : cat.id)}
+                className="btn btn-sm rounded-pill px-3 py-1 fw-medium"
+                style={{
+                  fontSize: '0.74rem',
+                  background: selectedCategory === cat.id ? '#FFD200' : 'rgba(255,255,255,0.08)',
+                  color: selectedCategory === cat.id ? '#0f172a' : '#cbd5e1',
+                  border: 'none',
+                }}
+              >
+                {cat.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
 
-export default CourseList
+      <section className="py-4">
+        <div className="container">
+          {/* Top Bar Options */}
+          <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3 p-2 bg-white rounded-3 shadow-sm border">
+            <div className="d-flex align-items-center gap-1.5 flex-wrap">
+              <button
+                type="button"
+                onClick={() => setProgramFilter('all')}
+                className={`btn btn-sm rounded-pill px-2.5 py-1 fw-semibold ${programFilter === 'all' ? 'btn-primary' : 'btn-light text-dark'
+                  }`}
+                style={{ fontSize: '0.74rem' }}
+              >
+                All
+              </button>
+              <button
+                type="button"
+                onClick={() => setProgramFilter('psc')}
+                className={`btn btn-sm rounded-pill px-2.5 py-1 fw-semibold ${programFilter === 'psc' ? 'btn-warning text-dark' : 'btn-light text-dark'
+                  }`}
+                style={{ fontSize: '0.74rem' }}
+              >
+                🎯 Professional Short Courses
+              </button>
+              <button
+                type="button"
+                onClick={() => setProgramFilter('mooc')}
+                className={`btn btn-sm rounded-pill px-2.5 py-1 fw-semibold ${programFilter === 'mooc' ? 'btn-success text-white' : 'btn-light text-dark'
+                  }`}
+                style={{ fontSize: '0.74rem' }}
+              >
+                🌐 MOOCs • Free
+              </button>
+            </div>
+
+            <div className="d-flex align-items-center gap-2">
+              <span className="text-muted small" style={{ fontSize: '0.74rem' }}>
+                Showing <strong>{totalItems === 0 ? 0 : (currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, totalItems)}</strong> of <strong>{totalItems}</strong>
+              </span>
+              <select
+                className="form-select form-select-sm rounded-2 py-1"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as any)}
+                style={{ fontSize: '0.74rem', width: 'auto' }}
+              >
+                <option value="popular">Most Enrolled</option>
+                <option value="title">Alphabetical (A-Z)</option>
+                <option value="fee_asc">Tuition: Low to High</option>
+              </select>
+            </div>
+          </div>
+
+          {loading ? (
+            <div className="text-center py-5">
+              <div className="spinner-border spinner-border-sm text-primary me-2" role="status" />
+              <span className="small text-muted">Loading courses...</span>
+            </div>
+          ) : paginatedCourses.length === 0 ? (
+            <div className="card border-0 shadow-sm rounded-4 p-5 text-center bg-white">
+              <h6 className="fw-bold text-dark mb-1">No courses found</h6>
+              <p className="text-muted small mb-3">Adjust your search or filter parameters to find courses.</p>
+              <div>
+                <button type="button" onClick={clearFilters} className="btn btn-sm btn-primary rounded-pill px-4">
+                  Reset Filters
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="d-flex flex-column gap-3">
+              {paginatedCourses.map((c) => (
+                <div
+                  className="card border-0 shadow-sm rounded-3 bg-white overflow-hidden p-3"
+                  key={c.id}
+                  style={{
+                    border: '1.5px solid #E2E8F0',
+                    borderLeft: `4.5px solid ${c.accentColor || '#0171BB'}`,
+                    borderBottom: '2.5px solid #FFD200',
+                  }}
+                >
+                  <div className="row align-items-center g-3">
+                    <div className="col-md-3">
+                      <div className="position-relative rounded-3 overflow-hidden" style={{ border: '1px solid #E2E8F0', background: c.accentColor ? `${c.accentColor}12` : '#F0F8FF' }}>
+                        <Link to={`${route.courseDetails}?id=${c.id}`}>
+                          <img
+                            src={c.courseImage}
+                            alt={c.fullname}
+                            className="w-100"
+                            style={{ height: 130, objectFit: 'cover' }}
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              const ownSlug = (c.shortname || `course-${c.id}`).toLowerCase().replace(/[^a-z0-9]/g, '-');
+                              const ownThumbnail = `/assets/img/course/thumbnails/course-${c.id}-${ownSlug}.svg`;
+                              if (target.src !== ownThumbnail && !target.src.endsWith(ownThumbnail)) {
+                                target.src = ownThumbnail;
+                              }
+                            }}
+                          />
+                        </Link>
+                        <span
+                          className="badge rounded-pill position-absolute top-0 start-0 m-2 px-2.5 py-1 fw-bold"
+                          style={{ background: c.accentColor || '#0171BB', color: '#ffffff', border: '1px solid #FFD200', fontSize: '0.68rem', boxShadow: '0 2px 6px rgba(0,0,0,0.18)' }}
+                        >
+                          {c.shortname}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="col-md-6">
+                      <div className="d-flex align-items-center gap-2 mb-1">
+                        <span className="badge bg-primary-subtle text-primary" style={{ fontSize: '0.68rem' }}>
+                          {c.categoryName}
+                        </span>
+                        {c.isPSC && (
+                          <span className="badge bg-warning-subtle text-dark border border-warning" style={{ fontSize: '0.64rem' }}>
+                            PSC • {c.cpdCredits || 20} CPD
+                          </span>
+                        )}
+                        {c.isMOOC && (
+                          <span className="badge bg-success-subtle text-success border border-success" style={{ fontSize: '0.64rem' }}>
+                            MOOC • Free
+                          </span>
+                        )}
+                      </div>
+                      <h5 className="fw-bold mb-1.5" style={{ fontSize: '0.96rem' }}>
+                        <Link to={`${route.courseDetails}?id=${c.id}`} className="text-dark text-decoration-none">
+                          {c.fullname}
+                        </Link>
+                      </h5>
+                      <p className="text-muted small mb-2 text-truncate" style={{ maxWidth: 540, fontSize: '0.78rem' }}>
+                        {c.summary || 'Structured university study units and academic assessment.'}
+                      </p>
+                      <div className="d-flex align-items-center gap-3 text-muted small" style={{ fontSize: '0.74rem' }}>
+                        <span>
+                          <i className="isax isax-book-1 text-primary me-1" />
+                          {c.sectionsCount} Units
+                        </span>
+                        <span>
+                          <i className="isax isax-profile-2user text-secondary me-1" />
+                          {c.enrolledCount} Scholars
+                        </span>
+                        <span>
+                          <i className="fas fa-star text-warning me-1" />
+                          {c.rating}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="col-md-3 text-md-end border-start-md">
+                      <div className="fw-bold text-dark fs-5 mb-2">{c.priceFormatted}</div>
+                      <div className="d-flex flex-column gap-1.5">
+                        {c.isMOOC ? (
+                          <Link
+                            to={`/course/course-watch?courseId=${c.id}`}
+                            className="btn btn-sm btn-success rounded-pill fw-semibold"
+                            style={{ fontSize: '0.76rem' }}
+                          >
+                            Enrol Free
+                          </Link>
+                        ) : (
+                          <Link
+                            to={`/course/course-checkout?courseId=${c.id}`}
+                            className="btn btn-sm btn-warning rounded-pill fw-semibold text-dark"
+                            style={{ fontSize: '0.76rem' }}
+                          >
+                            Enrol Now
+                          </Link>
+                        )}
+                        <Link
+                          to={`${route.courseDetails}?id=${c.id}`}
+                          className="btn btn-sm btn-outline-primary rounded-pill fw-semibold"
+                          style={{ fontSize: '0.76rem' }}
+                        >
+                          View Details
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-4 pt-3 border-top">
+              <div className="text-muted small" style={{ fontSize: '0.78rem' }}>
+                Page <strong>{currentPage}</strong> of <strong>{totalPages}</strong>
+              </div>
+              <ul className="pagination pagination-sm mb-0 gap-1">
+                <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                  <button
+                    type="button"
+                    className="page-link rounded-2 px-2.5 py-1"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    style={{ fontSize: '0.78rem' }}
+                  >
+                    Prev
+                  </button>
+                </li>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                  <li key={pageNum} className={`page-item ${currentPage === pageNum ? 'active' : ''}`}>
+                    <button
+                      type="button"
+                      className={`page-link rounded-2 px-3 py-1 fw-semibold ${currentPage === pageNum ? 'bg-primary text-white border-primary' : ''
+                        }`}
+                      onClick={() => handlePageChange(pageNum)}
+                      style={{ fontSize: '0.78rem' }}
+                    >
+                      {pageNum}
+                    </button>
+                  </li>
+                ))}
+                <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                  <button
+                    type="button"
+                    className="page-link rounded-2 px-2.5 py-1"
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    style={{ fontSize: '0.78rem' }}
+                  >
+                    Next
+                  </button>
+                </li>
+              </ul>
+            </div>
+          )}
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default CourseList;

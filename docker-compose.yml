@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  # ---------------------------------------------------------------------------
+  # 1. Database Service (MariaDB with Automated Seeding)
+  # ---------------------------------------------------------------------------
+  mariadb:
+    image: mariadb:11.4
+    container_name: outlms-mariadb
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-secret}
+      MYSQL_DATABASE: ${MOODLE_DB_NAME:-moodle_out}
+      MYSQL_USER: ${MOODLE_DB_USER:-outlms}
+      MYSQL_PASSWORD: ${MOODLE_DB_PASSWORD:-outlms_pass}
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      # Auto-executes on first container initialization to seed all OUT LMS data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ---------------------------------------------------------------------------
+  # 2. Backend Service (PHP 8.2 + Apache Moodle API Bridge)
+  # ---------------------------------------------------------------------------
+  backend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend
+    container_name: outlms-backend
+    restart: unless-stopped
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    environment:
+      MOODLE_DB_TYPE: mariadb
+      MOODLE_DB_HOST: mariadb
+      MOODLE_DB_NAME: ${MOODLE_DB_NAME:-moodle_out}
+      MOODLE_DB_USER: ${MOODLE_DB_USER:-outlms}
+      MOODLE_DB_PASSWORD: ${MOODLE_DB_PASSWORD:-outlms_pass}
+      MOODLE_DB_PORT: 3306
+      MOODLE_WWWROOT: ${BACKEND_URL:-http://localhost:8080}
+    ports:
+      - "${BACKEND_PORT:-8080}:80"
+    volumes:
+      - moodledata:/var/www/moodledata
+      - ./backend:/var/www/html/backend
+
+  # ---------------------------------------------------------------------------
+  # 3. Frontend Service (React 18 + TypeScript SSR / Static Server)
+  # ---------------------------------------------------------------------------
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.frontend
+    container_name: outlms-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      PORT: 3000
+      REACT_APP_API_URL: ${BACKEND_URL:-http://backend:80}
+      REACT_APP_MOODLE_URL: ${BACKEND_URL:-http://backend:80}
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+
+volumes:
+  mariadb_data:
+    name: outlms_mariadb_data
+  moodledata:
+    name: outlms_moodledata

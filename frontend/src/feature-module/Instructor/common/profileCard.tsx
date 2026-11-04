@@ -4,9 +4,13 @@ import { all_routes } from '../../router/all_routes'
 import ImageWithBasePath from '../../../core/common/imageWithBasePath'
 
 import { useAuth } from '../../../core/auth/authContext'
+import { useInstructorShell } from './instructorLayout'
 
 const ProfileCard = () => {
   const { user } = useAuth();
+  const shell = useInstructorShell();
+  // Identity lives in the Faculty Console header when rendered inside the shell.
+  if (shell?.inShell) return null;
   const isInstructor = user?.role === 'instructor';
   const displayName = isInstructor ? user.name : "Dr. Amina Kilindo";
   const displayTitle = isInstructor

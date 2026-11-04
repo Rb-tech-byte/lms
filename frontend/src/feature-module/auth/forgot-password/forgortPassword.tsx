@@ -1,171 +1,142 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { all_routes } from "../../router/all_routes";
-import ImageWithBasePath from "../../../core/common/imageWithBasePath";
-import Slider from "react-slick";
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { all_routes } from '../../router/all_routes';
+import { callInternalApi } from '../../../core/api/apiClient';
+import { AuthBrandHeader, AuthSideShowcase } from '../common/authSideShowcase';
 
-const ForgortPassword = () => {
+const ForgortPassword: React.FC = () => {
+  const route = all_routes;
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
 
-    const route = all_routes;
-    const navigate = useNavigate();
-    const handleSubmit = (event: React.FormEvent) => {
-        event.preventDefault(); 
-        const Path = route.setpassowrd; 
-        navigate(Path);
-      };
-    const loginSLider = {
-        dots: true,
-        infinite: true,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        adaptiveHeight: true,
-        // autoplay: true, // Uncomment if needed
-      };
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setErrorMsg('');
+    setSuccessMsg('');
+
+    if (!email.trim()) {
+      setErrorMsg('Please enter your registered email address or username.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const data = await callInternalApi<any>(
+        'request_password_reset',
+        { email: email.trim() },
+        'POST'
+      );
+      setLoading(false);
+
+      if (!data?.success) {
+        setErrorMsg(data?.error || 'No active account matched that email address.');
+        return;
+      }
+
+      sessionStorage.setItem('out_lms_reset_identifier', email.trim());
+      setSuccessMsg(
+        data.message || 'Account verified! Redirecting to set your new password...'
+      );
+      setTimeout(() => {
+        navigate(`${route.setpassowrd}?account=${encodeURIComponent(email.trim())}`);
+      }, 700);
+    } catch (err: any) {
+      setLoading(false);
+      setErrorMsg(err?.message || 'Unable to verify account at this time.');
+    }
+  };
 
   return (
-    <>
-      {/* Main Wrapper */}
-      <div className="main-wrapper">
-        <div className="login-content">
-          <div className="row">
-            {/* Login Banner */}
-            <div className="col-md-6 login-bg d-none d-lg-flex">
-              <Slider {...loginSLider} className="login-carousel">
-                <div>
-                  <div className="login-carousel-section mb-3">
-                    <div className="login-banner">
-                      <ImageWithBasePath
-                        src="assets/img/auth/auth-1.svg"
-                        className="img-fluid"
-                        alt="Logo"
-                      />
-                    </div>
-                    <div className="mentor-course text-center">
-                      <h3 className="mb-2">
-                        Welcome to <br />
-                        OUT <span className="text-secondary">LMS</span>{" "}
-                        Courses.
-                      </h3>
-                      <p>
-                        Platform designed to help organizations, educators, and
-                        learners manage, deliver, and track learning and
-                        training activities.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <div className="login-carousel-section mb-3">
-                    <div className="login-banner">
-                      <ImageWithBasePath
-                        src="assets/img/auth/auth-1.svg"
-                        className="img-fluid"
-                        alt="Logo"
-                      />
-                    </div>
-                    <div className="mentor-course text-center">
-                      <h3 className="mb-2">
-                        Welcome to <br />
-                        OUT <span className="text-secondary">LMS</span>{" "}
-                        Courses.
-                      </h3>
-                      <p>
-                        Platform designed to help organizations, educators, and
-                        learners manage, deliver, and track learning and
-                        training activities.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <div className="login-carousel-section mb-3">
-                    <div className="login-banner">
-                      <ImageWithBasePath
-                        src="assets/img/auth/auth-1.svg"
-                        className="img-fluid"
-                        alt="Logo"
-                      />
-                    </div>
-                    <div className="mentor-course text-center">
-                      <h3 className="mb-2">
-                        Welcome to <br />
-                        OUT <span className="text-secondary">LMS</span>{" "}
-                        Courses.
-                      </h3>
-                      <p>
-                        Platform designed to help organizations, educators, and
-                        learners manage, deliver, and track learning and
-                        training activities.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </Slider>
+    <div className="container-fluid p-0" style={{ minHeight: '100vh', background: '#f8fafc' }}>
+      <div className="row g-0" style={{ minHeight: '100vh' }}>
+        <AuthSideShowcase
+          badge="ACCOUNT RECOVERY & IDENTITY"
+          headline="Secure Credential Recovery for Scholars & Faculty"
+          subheadline="Verify your registered academic email or username to reset your portal password and restore access to your classrooms."
+        />
+
+        <div className="col-lg-6 d-flex align-items-center justify-content-center p-3 p-sm-4 p-xl-5">
+          <div
+            className="card border-0 shadow-sm rounded-4 bg-white w-100 p-4"
+            style={{ maxWidth: 460, border: '1px solid #e2e8f0' }}
+          >
+            <AuthBrandHeader />
+
+            <div className="mb-3">
+              <h1 className="fw-bold text-dark mb-1" style={{ fontSize: '1.45rem' }}>
+                Reset Portal Password
+              </h1>
+              <p className="text-muted small mb-0" style={{ fontSize: '0.83rem' }}>
+                Enter your registered university email address or username to continue.
+              </p>
             </div>
-            {/* /Login Banner */}
-            <div className="col-md-6 login-wrap-bg">
-              {/* Login */}
-              <div className="login-wrapper">
-                <div className="loginbox">
-                  <div className="w-100">
-                    <div className="d-flex align-items-center justify-content-between login-header">
-                      <ImageWithBasePath
-                        src="assets/img/logo.svg"
-                        className="img-fluid"
-                        alt="Logo"
-                      />
-                      <Link to={route.homeone} className="link-1">
-                        Back to Home
-                      </Link>
-                    </div>
-                    <div className="topic">
-                      <h1 className="fs-32 fw-bold mb-3">Forgot Password</h1>
-                      <p className="fs-14 fw-normal mb-0">
-                        Enter your email to reset your password.
-                      </p>
-                    </div>
-                    <form onSubmit={handleSubmit} className="mb-3 pb-3">
-                      <div className="mb-3 position-relative">
-                        <label className="form-label">
-                          Email<span className="text-danger ms-1">*</span>
-                        </label>
-                        <div className="position-relative">
-                          <input
-                            type="email"
-                            className="form-control form-control-lg"
-                          />
-                          <span>
-                            <i className="isax isax-sms input-icon text-gray-7 fs-14" />
-                          </span>
-                        </div>
-                      </div>
-                      <div className="d-grid">
-                        <button
-                          className="btn btn-secondary btn-lg"
-                          type="submit"
-                        >
-                          Submit
-                          <i className="isax isax-arrow-right-3 ms-1" />
-                        </button>
-                      </div>
-                    </form>
-                    <p className="fs-14 fw-normal d-flex align-items-center justify-content-center">
-                      Remember Password?
-                      <Link to={route.login} className="link-2 ms-1">
-                        {" "}
-                        Sign In
-                      </Link>
-                    </p>
-                    {/* /Login */}
-                  </div>
+
+            {errorMsg && (
+              <div className="alert alert-danger py-2 px-3 rounded-3 small mb-3">
+                <i className="isax isax-danger me-1" />
+                {errorMsg}
+              </div>
+            )}
+            {successMsg && (
+              <div className="alert alert-success py-2 px-3 rounded-3 small mb-3">
+                <i className="isax isax-tick-circle me-1" />
+                {successMsg}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit}>
+              <div className="mb-3">
+                <label className="form-label small fw-semibold text-dark mb-1">
+                  Registered Email or Username <span className="text-danger">*</span>
+                </label>
+                <div className="input-group">
+                  <span className="input-group-text bg-light border-end-0 text-muted">
+                    <i className="isax isax-sms" />
+                  </span>
+                  <input
+                    type="text"
+                    className="form-control border-start-0 ps-0"
+                    placeholder="student@out.ac.tz"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
                 </div>
               </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="btn w-100 rounded-pill py-2.5 fw-bold text-white shadow-sm mb-3"
+                style={{
+                  background: 'linear-gradient(135deg, #071F38 0%, #0171BB 100%)',
+                  fontSize: '0.9rem',
+                }}
+              >
+                {loading ? 'Verifying Account...' : 'Verify & Continue'}
+                <i className="isax isax-arrow-right-3 ms-1" />
+              </button>
+            </form>
+
+            <div className="pt-3 border-top text-center">
+              <p className="small text-muted mb-0">
+                Remember your password?{' '}
+                <Link
+                  to={route.login}
+                  className="fw-bold text-decoration-none"
+                  style={{ color: '#0171BB' }}
+                >
+                  Return to Sign In
+                </Link>
+              </p>
             </div>
           </div>
         </div>
       </div>
-      {/* /Main Wrapper */}
-    </>
+    </div>
   );
 };
 

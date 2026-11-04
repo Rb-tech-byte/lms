@@ -3,7 +3,7 @@
  * Interfaces with Moodle 5.x gradereport_user_get_grade_items and course completion APIs.
  */
 
-import { callMoodleWs, isMockMode } from './apiClient';
+import { callMoodleWs, callInternalApi, isMockMode } from './apiClient';
 import { MOODLE_ENDPOINTS } from './moodleEndpoints';
 
 export interface MoodleGradeItem {
@@ -211,5 +211,48 @@ export const certificateService = {
     }
 
     return certificates;
+  },
+
+  /**
+   * Verifies an official OUT certificate code via Moodle customcert database records
+   */
+  async verifyCertificate(code: string): Promise<{
+    verified: boolean;
+    message?: string;
+    certificate?: {
+      id: number;
+      code: string;
+      issueDate: string;
+      issueTimestamp: number;
+      scholarName: string;
+      scholarEmail: string;
+      regNumber: string;
+      courseName: string;
+      courseCode: string;
+      courseId: number;
+      grade: string;
+      cpdCredits: number;
+      issuer: string;
+      accreditation: string;
+      signatory: string;
+      verificationUrl: string;
+    };
+  }> {
+    try {
+      const res = await callInternalApi<any>(`verify_certificate&code=${encodeURIComponent(code)}`, undefined, 'GET');
+      if (res && res.success) {
+        return {
+          verified: Boolean(res.verified),
+          message: res.message,
+          certificate: res.certificate,
+        };
+      }
+    } catch (err: any) {
+      console.warn('Certificate verification request failed:', err);
+    }
+    return {
+      verified: false,
+      message: `Certificate code "${code}" could not be verified with the central academic registry.`,
+    };
   },
 };

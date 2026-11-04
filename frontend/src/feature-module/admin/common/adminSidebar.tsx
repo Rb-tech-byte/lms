@@ -63,60 +63,38 @@ const AdminSidebar = () => {
               );
             })}
           </ul>
-          <hr />
-          <h6 className="mb-3">Administrative Consoles</h6>
-          <div className="d-flex flex-column gap-2 mb-3">
-            <Link
-              to={route.studentsList}
-              className="btn btn-sm btn-outline-primary text-start d-flex align-items-center gap-2"
-            >
-              <span>🎓</span> Student Directory
-            </Link>
-            <Link
-              to={route.instructorList}
-              className="btn btn-sm btn-outline-secondary text-start d-flex align-items-center gap-2"
-            >
-              <span>👨‍🏫</span> Faculty Directory
-            </Link>
-            <a
-              href={adminService.getMoodleSsoUrl('/admin/search.php')}
-              target="_blank"
-              rel="noreferrer"
-              className="btn btn-sm btn-outline-warning text-dark text-start d-flex align-items-center gap-2 fw-medium"
-            >
-              <span>⚙️</span> Moodle Site Admin (SSO)
-            </a>
-            <a
-              href={adminService.getMoodleSsoUrl('/course/management.php')}
-              target="_blank"
-              rel="noreferrer"
-              className="btn btn-sm btn-outline-info text-start d-flex align-items-center gap-2 fw-medium"
-            >
-              <span>📚</span> Course Management (SSO)
-            </a>
-            <a
-              href={adminService.getMoodleSsoUrl('/admin/swagger')}
-              target="_blank"
-              rel="noreferrer"
-              className="btn btn-sm btn-outline-dark text-start d-flex align-items-center gap-2 fw-medium"
-            >
-              <span>⚡</span> REST API Swagger (OAS 3.1)
-            </a>
-          </div>
-          <hr />
-          <h6>Session</h6>
-          <ul>
-            <li>
-              <button
-                type="button"
-                className="btn btn-link text-danger d-inline-flex align-items-center p-0 text-decoration-none"
-                onClick={handleLogout}
+          <div className="mt-3">
+            <h6 className="mb-3">Administrative Consoles</h6>
+            <div className="d-flex flex-column gap-2 mb-3">
+              <Link
+                to={route.studentsList}
+                className="btn btn-sm btn-outline-primary text-start d-flex align-items-center gap-2"
               >
-                <i className="isax isax-logout5 me-2" />
-                Sign Out
-              </button>
-            </li>
-          </ul>
+                <span>🎓</span> Student Directory
+              </Link>
+              <Link
+                to={route.instructorList}
+                className="btn btn-sm btn-outline-secondary text-start d-flex align-items-center gap-2"
+              >
+                <span>👨‍🏫</span> Faculty Directory
+              </Link>
+            </div>
+          </div>
+          <div className="mt-3">
+            <h6>Session</h6>
+            <ul className="list-unstyled">
+              <li>
+                <button
+                  type="button"
+                  className="btn btn-link text-danger d-inline-flex align-items-center p-0 text-decoration-none"
+                  onClick={handleLogout}
+                >
+                  <i className="isax isax-logout5 me-2" />
+                  Sign Out
+                </button>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>

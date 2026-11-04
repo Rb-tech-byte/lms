@@ -1,341 +1,310 @@
-import React, { useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import Slider from "react-slick";
-import { all_routes } from "../../router/all_routes";
-import ImageWithBasePath from "../../../core/common/imageWithBasePath";
-import { useAuth } from "../../../core/auth/authContext";
-import { DEMO_USERS } from "../../../core/auth/demoUsers";
-type PasswordField = "password" | "confirmPassword";
+import React, { useState } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { all_routes } from '../../router/all_routes';
+import { useAuth } from '../../../core/auth/authContext';
+import { DEMO_USERS } from '../../../core/auth/demoUsers';
+import { AuthBrandHeader, AuthSideShowcase } from '../common/authSideShowcase';
 
-const Login = () => {
-  const loginSLider = {
-    dots: true,
-    infinite: true,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    adaptiveHeight: true,
-    // autoplay: true, // Uncomment if needed
-  };
+const Login: React.FC = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [activeDemoRole, setActiveDemoRole] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const [passwordVisibility, setPasswordVisibility] = useState({
-    password: false,
-    confirmPassword: false,
-  });
-
-  const togglePasswordVisibility = (field: PasswordField) => {
-    setPasswordVisibility((prevState) => ({
-      ...prevState,
-      [field]: !prevState[field],
-    }));
-  };
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
   const { login } = useAuth();
   const route = all_routes;
   const navigate = useNavigate();
   const location = useLocation();
 
+  const redirectAfterLogin = (fallbackUrl?: string, loginIdentifier?: string) => {
+    const idLower = (loginIdentifier || email || '').trim().toLowerCase();
+    try {
+      const storedUser = JSON.parse(localStorage.getItem('out_lms_auth_user') || '{}');
+      if (
+        storedUser?.role === 'admin' ||
+        idLower === 'admin' ||
+        idLower === 'admin@out.ac.tz' ||
+        idLower === 'ict@out.ac.tz'
+      ) {
+        navigate('/admin/dashboard', { replace: true });
+        return;
+      }
+      if (
+        storedUser?.role === 'instructor' ||
+        idLower === 'instructor' ||
+        idLower === 'instructor@out.ac.tz'
+      ) {
+        navigate(route.instructorDashboard, { replace: true });
+        return;
+      }
+      if (storedUser?.dashboardUrl) {
+        navigate(storedUser.dashboardUrl, { replace: true });
+        return;
+      }
+    } catch {
+      // Fallback below
+    }
+    const from = (location.state as any)?.from?.pathname;
+    if (from && from !== '/login') {
+      navigate(from, { replace: true });
+      return;
+    }
+    navigate(fallbackUrl || route.studentDashboard, { replace: true });
+  };
+
   const handleDemoClick = async (roleKey: 'student' | 'instructor' | 'admin') => {
     const creds = DEMO_USERS[roleKey];
     setEmail(creds.email);
     setPassword(creds.password);
-    setErrorMessage("");
-    const ok = await login(creds.email, creds.password);
-    if (ok) {
-      const from = (location.state as any)?.from?.pathname;
-      if (from) {
-        navigate(from, { replace: true });
+    setErrorMessage('');
+    setActiveDemoRole(roleKey);
+    setSubmitting(true);
+    try {
+      const ok = await login(creds.email, creds.password);
+      if (ok) {
+        if (roleKey === 'admin') {
+          navigate('/admin/dashboard', { replace: true });
+        } else {
+          redirectAfterLogin(creds.dashboardUrl, creds.email);
+        }
       } else {
-        navigate(creds.dashboardUrl);
+        setErrorMessage('Unable to sign in with demo profile. Please try again.');
       }
+    } finally {
+      setSubmitting(false);
+      setActiveDemoRole(null);
     }
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    setErrorMessage("");
-    const ok = await login(email || 'student@out.ac.tz', password);
-    if (ok) {
-      const from = (location.state as any)?.from?.pathname;
-      if (from) {
-        navigate(from, { replace: true });
-        return;
-      }
-      const trimmed = (email || '').toLowerCase();
-      if (trimmed.includes('admin') || trimmed === 'admin') {
-        navigate(route.adminDashboard);
-      } else if (trimmed.includes('instructor') || trimmed.includes('teacher')) {
-        navigate(route.instructorDashboard);
+    setErrorMessage('');
+    if (!email.trim() || !password) {
+      setErrorMessage('Please enter both your email/username and password.');
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const ok = await login(email.trim(), password);
+      if (ok) {
+        redirectAfterLogin(undefined, email.trim());
       } else {
-        navigate(route.studentDashboard);
+        setErrorMessage('Invalid credentials. Please verify your email/username and password.');
       }
-    } else {
-      setErrorMessage("Authentication failed. Please check your username and password.");
+    } finally {
+      setSubmitting(false);
     }
   };
+
   return (
-    <>
-      {/* Main Wrapper */}
-      <div className="main-wrapper">
-        <div className="login-content">
-          <div className="row">
-            {/* Login Banner */}
-            <div className="col-md-6 login-bg d-none d-lg-flex">
-              <Slider {...loginSLider} className="login-carousel">
-                <div>
-                  <div className="login-carousel-section mb-3">
-                    <div className="login-banner">
-                      <ImageWithBasePath
-                        src="assets/img/auth/auth-1.svg"
-                        className="img-fluid"
-                        alt="Logo"
-                      />
-                    </div>
-                    <div className="mentor-course text-center">
-                      <h3 className="mb-2">
-                        Welcome to <br />
-                        OUT <span className="text-secondary">LMS</span>{" "}
-                        Courses.
-                      </h3>
-                      <p>
-                        Platform designed to help organizations, educators, and
-                        learners manage, deliver, and track learning and
-                        training activities.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <div className="login-carousel-section mb-3">
-                    <div className="login-banner">
-                      <ImageWithBasePath
-                        src="assets/img/auth/auth-1.svg"
-                        className="img-fluid"
-                        alt="Logo"
-                      />
-                    </div>
-                    <div className="mentor-course text-center">
-                      <h3 className="mb-2">
-                        Welcome to <br />
-                        OUT <span className="text-secondary">LMS</span>{" "}
-                        Courses.
-                      </h3>
-                      <p>
-                        Platform designed to help organizations, educators, and
-                        learners manage, deliver, and track learning and
-                        training activities.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <div className="login-carousel-section mb-3">
-                    <div className="login-banner">
-                      <ImageWithBasePath
-                        src="assets/img/auth/auth-1.svg"
-                        className="img-fluid"
-                        alt="Logo"
-                      />
-                    </div>
-                    <div className="mentor-course text-center">
-                      <h3 className="mb-2">
-                        Welcome to <br />
-                        OUT <span className="text-secondary">LMS</span>{" "}
-                        Courses.
-                      </h3>
-                      <p>
-                        Platform designed to help organizations, educators, and
-                        learners manage, deliver, and track learning and
-                        training activities.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </Slider>
+    <div className="container-fluid p-0" style={{ minHeight: '100vh', background: '#f8fafc' }}>
+      <div className="row g-0" style={{ minHeight: '100vh' }}>
+        {/* Left Niche University SVG Showcase */}
+        <AuthSideShowcase
+          badge="ACCREDITED DIGITAL UNIVERSITY CAMPUS"
+          headline="Advance Your Degree & Career Through Flexible Digital Learning"
+          subheadline="Sign in to access your study units, continuous assessments, academic transcripts, and regional study centre support."
+        />
+
+        {/* Right Clean Native Card Form */}
+        <div className="col-lg-6 d-flex align-items-center justify-content-center p-3 p-sm-4 p-xl-5">
+          <div
+            className="card border-0 shadow-sm rounded-4 bg-white w-100 p-4 p-sm-4"
+            style={{ maxWidth: 465, border: '1px solid #e2e8f0' }}
+          >
+            <AuthBrandHeader />
+
+            <div className="mb-3">
+              <h1 className="fw-bold text-dark mb-1" style={{ fontSize: '1.45rem' }}>
+                Sign In to Your Portal
+              </h1>
+              <p className="text-muted small mb-0" style={{ fontSize: '0.83rem' }}>
+                Enter your university credentials or use instant role access below.
+              </p>
             </div>
-            {/* /Login Banner */}
-            <div className="col-md-6 login-wrap-bg">
-              {/* Login */}
-              <div className="login-wrapper">
-                <div className="loginbox">
-                  <div className="w-100">
-                    <div className="d-flex align-items-center justify-content-between login-header">
-                      <ImageWithBasePath
-                        src="assets/img/logo.svg"
-                        className="img-fluid"
-                        alt="Logo"
-                      />
-                      <Link to={route.homeone} className="link-1">
-                        Back to Home
-                      </Link>
-                    </div>
-                    <h1 className="fs-32 fw-bold topic">
-                      Sign into Your Account
-                    </h1>
 
-                    {/* Quick Demo Access Box */}
-                    <div className="bg-light p-3 rounded-3 mb-4 border">
-                      <div className="d-flex align-items-center justify-content-between mb-2">
-                        <span className="fw-bold fs-13 text-dark">
-                          <i className="isax isax-key text-primary me-1" /> One-Click Demo Access:
-                        </span>
-                        <span className="badge bg-primary text-white fs-10 px-2 py-1">Instant Demo</span>
-                      </div>
-                      <div className="row g-2">
-                        <div className="col-4">
-                          <button
-                            type="button"
-                            className="btn btn-outline-primary btn-sm w-100 py-2 d-flex flex-column align-items-center"
-                            onClick={() => handleDemoClick('student')}
-                          >
-                            <span className="fs-18 mb-1">🎓</span>
-                            <span className="fw-bold fs-11">Student</span>
-                          </button>
-                        </div>
-                        <div className="col-4">
-                          <button
-                            type="button"
-                            className="btn btn-outline-secondary btn-sm w-100 py-2 d-flex flex-column align-items-center"
-                            onClick={() => handleDemoClick('instructor')}
-                          >
-                            <span className="fs-18 mb-1">👨‍🏫</span>
-                            <span className="fw-bold fs-11">Instructor</span>
-                          </button>
-                        </div>
-                        <div className="col-4">
-                          <button
-                            type="button"
-                            className="btn btn-outline-dark btn-sm w-100 py-2 d-flex flex-column align-items-center"
-                            onClick={() => handleDemoClick('admin')}
-                          >
-                            <span className="fs-18 mb-1">🛡️</span>
-                            <span className="fw-bold fs-11">Admin</span>
-                          </button>
-                        </div>
-                      </div>
+            {/* Compact One-Click Role Access Bar */}
+            <div
+              className="p-2.5 rounded-3 mb-3"
+              style={{ background: '#f8fafc', border: '1px solid #e2e8f0' }}
+            >
+              <div className="d-flex align-items-center justify-content-between px-1 mb-2">
+                <span className="fw-semibold text-dark" style={{ fontSize: '0.75rem' }}>
+                  <i className="isax isax-flash-1 text-warning me-1" />
+                  Instant Portal Access
+                </span>
+                <span
+                  className="badge rounded-pill"
+                  style={{ background: '#eff6ff', color: '#0171BB', fontSize: '0.66rem' }}
+                >
+                  One-Click Demo
+                </span>
+              </div>
+              <div className="row g-2">
+                {[
+                  { key: 'student' as const, label: 'Scholar', icon: 'isax-teacher', accent: '#0171BB' },
+                  { key: 'instructor' as const, label: 'Lecturer', icon: 'isax-briefcase', accent: '#059669' },
+                  { key: 'admin' as const, label: 'Admin', icon: 'isax-shield-tick', accent: '#071F38' },
+                ].map((item) => {
+                  const isBusy = activeDemoRole === item.key;
+                  return (
+                    <div className="col-4" key={item.key}>
+                      <button
+                        type="button"
+                        disabled={submitting}
+                        onClick={() => handleDemoClick(item.key)}
+                        className="btn btn-sm w-100 rounded-3 py-2 d-flex align-items-center justify-content-center gap-1.5 fw-semibold bg-white border"
+                        style={{
+                          fontSize: '0.76rem',
+                          color: item.accent,
+                          borderColor: '#cbd5e1',
+                        }}
+                      >
+                        <i className={`isax ${item.icon}`} />
+                        <span>{isBusy ? '...' : item.label}</span>
+                      </button>
                     </div>
+                  );
+                })}
+              </div>
+            </div>
 
-                    {errorMessage && (
-                      <div className="alert alert-danger py-2 fs-13 mb-3 d-flex align-items-center">
-                        <i className="isax isax-danger me-2 fs-16" />
-                        {errorMessage}
-                      </div>
-                    )}
+            {errorMessage && (
+              <div className="alert alert-danger py-2 px-3 rounded-3 small mb-3 d-flex align-items-center gap-2">
+                <i className="isax isax-danger" />
+                <span>{errorMessage}</span>
+              </div>
+            )}
 
-                    <form onSubmit={handleSubmit} className="mb-3 pb-3">
-                      <div className="mb-3 position-relative">
-                        <label className="form-label">
-                          Email<span className="text-danger ms-1">*</span>
-                        </label>
-                        <div className="position-relative">
-                          <input
-                            type="email"
-                            className="form-control form-control-lg"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="student@out.ac.tz"
-                            required
-                          />
-                          <span>
-                            <i className="isax isax-sms input-icon text-gray-7 fs-14" />
-                          </span>
-                        </div>
-                      </div>
-                      <div className="mb-3 position-relative">
-                        <label className="form-label">
-                          Password <span className="text-danger ms-1">*</span>
-                        </label>
-                        <div className="position-relative" id="passwordInput">
-                          <input
-                            type={
-                              passwordVisibility.password ? "text" : "password"
-                            }
-                            className="form-control form-control-lg pass-input"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="••••••••"
-                            required
-                          />
-                          <span
-                            className={`isax toggle-passwords fs-14 ${
-                              passwordVisibility.password
-                                ? "isax-eye"
-                                : "isax-eye-slash"
-                            }`}
-                            onClick={() => togglePasswordVisibility("password")}
-                          ></span>
-                        </div>
-                      </div>
-                      <div className="d-flex align-items-center justify-content-between mb-4">
-                        <div className="remember-me d-flex align-items-center">
-                          <input
-                            className="form-check-input"
-                            type="checkbox"
-                            defaultValue=""
-                            id="flexCheckDefault"
-                          />
-                          <label
-                            className="form-check-label ms-2"
-                            htmlFor="flexCheckDefault"
-                          >
-                            Remember Me
-                          </label>
-                        </div>
-                        <div className="">
-                          <Link to={route.forgotpassword} className="link-2">
-                            Forgot Password ?
-                          </Link>
-                        </div>
-                      </div>
-                      <div className="d-grid">
-                        <button
-                          className="btn btn-secondary btn-lg"
-                          type="submit"
-                        >
-                          Login <i className="isax isax-arrow-right-3 ms-1" />
-                        </button>
-                      </div>
-                    </form>
-                    <div className="d-flex align-items-center justify-content-center or fs-14 mb-3">
-                      Or
-                    </div>
-                    <div className="d-flex align-items-center justify-content-center mb-3">
-                      <Link to="#" className="btn btn-light me-2">
-                        <ImageWithBasePath
-                          src="assets/img/icons/google.svg"
-                          alt="img"
-                          className="me-2"
-                        />
-                        Google
-                      </Link>
-                      <Link to="#" className="btn btn-light">
-                        <ImageWithBasePath
-                          src="assets/img/icons/facebook.svg"
-                          alt="img"
-                          className="me-2"
-                        />
-                        Facebook
-                      </Link>
-                    </div>
-                    <div className="fs-14 fw-normal d-flex align-items-center justify-content-center">
-                      Don't you have an account?
-                      <Link to={route.register} className="link-2 ms-1">
-                        {" "}
-                        Sign up
-                      </Link>
-                    </div>
-                    {/* /Login */}
-                  </div>
+            <form onSubmit={handleSubmit}>
+              <div className="mb-3">
+                <label className="form-label small fw-semibold text-dark mb-1">
+                  Academic Email or Username <span className="text-danger">*</span>
+                </label>
+                <div className="input-group">
+                  <span className="input-group-text bg-light border-end-0 text-muted">
+                    <i className="isax isax-sms" />
+                  </span>
+                  <input
+                    type="text"
+                    className="form-control border-start-0 ps-0"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="student@out.ac.tz or username"
+                    required
+                    style={{ fontSize: '0.88rem' }}
+                  />
                 </div>
+              </div>
+
+              <div className="mb-3">
+                <div className="d-flex align-items-center justify-content-between mb-1">
+                  <label className="form-label small fw-semibold text-dark mb-0">
+                    Password <span className="text-danger">*</span>
+                  </label>
+                  <Link
+                    to={route.forgotpassword}
+                    className="text-decoration-none fw-semibold"
+                    style={{ fontSize: '0.76rem', color: '#0171BB' }}
+                  >
+                    Forgot Password?
+                  </Link>
+                </div>
+                <div className="input-group">
+                  <span className="input-group-text bg-light border-end-0 text-muted">
+                    <i className="isax isax-lock" />
+                  </span>
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    className="form-control border-start-0 border-end-0 ps-0"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter your password"
+                    required
+                    style={{ fontSize: '0.88rem' }}
+                  />
+                  <button
+                    type="button"
+                    className="input-group-text bg-light border-start-0 text-muted"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    tabIndex={-1}
+                  >
+                    <i className={`isax ${showPassword ? 'isax-eye' : 'isax-eye-slash'}`} />
+                  </button>
+                </div>
+              </div>
+
+              <div className="d-flex align-items-center justify-content-between mb-3">
+                <div className="form-check mb-0">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    defaultChecked
+                    id="rememberScholarSession"
+                  />
+                  <label
+                    className="form-check-label small text-muted"
+                    htmlFor="rememberScholarSession"
+                    style={{ fontSize: '0.8rem' }}
+                  >
+                    Keep me signed in on this device
+                  </label>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={submitting}
+                className="btn w-100 rounded-pill py-2.5 fw-bold text-white shadow-sm mb-3"
+                style={{
+                  background: 'linear-gradient(135deg, #071F38 0%, #0171BB 100%)',
+                  fontSize: '0.9rem',
+                }}
+              >
+                {submitting ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2" role="status" />
+                    Signing In...
+                  </>
+                ) : (
+                  <>
+                    Sign In to Portal <i className="isax isax-arrow-right-3 ms-1" />
+                  </>
+                )}
+              </button>
+            </form>
+
+            <div className="pt-3 border-top text-center">
+              <p className="small text-muted mb-2" style={{ fontSize: '0.82rem' }}>
+                New applicant or prospective scholar?{' '}
+                <Link
+                  to={route.register}
+                  className="fw-bold text-decoration-none"
+                  style={{ color: '#0171BB' }}
+                >
+                  Create Scholar Account
+                </Link>
+              </p>
+              <div className="d-flex align-items-center justify-content-center gap-3 small">
+                <Link to={route.courseGrid} className="text-muted text-decoration-none" style={{ fontSize: '0.75rem' }}>
+                  Browse Courses
+                </Link>
+                <span className="text-muted">•</span>
+                <Link to={route.courseCategory} className="text-muted text-decoration-none" style={{ fontSize: '0.75rem' }}>
+                  Faculties
+                </Link>
+                <span className="text-muted">•</span>
+                <Link to={route.contactUs} className="text-muted text-decoration-none" style={{ fontSize: '0.75rem' }}>
+                  Helpdesk
+                </Link>
               </div>
             </div>
           </div>
         </div>
       </div>
-      {/* /Main Wrapper */}
-    </>
+    </div>
   );
 };
 

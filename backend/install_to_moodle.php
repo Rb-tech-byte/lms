@@ -74,3 +74,4 @@ foreach ($mappings as $srcSub => $dstSub) {
 }
 
 echo "[SUCCESS] All OUT LMS backend enhancements successfully deployed to Moodle!\n";
+

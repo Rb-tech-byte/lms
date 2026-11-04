@@ -128,3 +128,4 @@ Write-Host " Launching server daemon at http://localhost:3000 ..." -ForegroundCo
 Write-Host "==============================================================================" -ForegroundColor Green
 
 node "$ScriptDir\frontend\serve_build.js"
+

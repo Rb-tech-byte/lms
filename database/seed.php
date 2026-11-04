@@ -139,3 +139,4 @@ try {
     fwrite(STDERR, "\n[FATAL ERROR] " . $e->getMessage() . "\n");
     exit(1);
 }
+

@@ -148,3 +148,4 @@ echo " [SUCCESS] System ready for launch!"
 echo " Starting production server on http://localhost:3000 ..."
 echo "=============================================================================="
 node frontend/serve_build.js
+

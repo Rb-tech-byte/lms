@@ -43,3 +43,4 @@ child.on('close', (code) => {
   console.log(`[INFO] Server exited with code ${code}`);
   process.exit(code);
 });
+

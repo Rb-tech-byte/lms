@@ -38,3 +38,4 @@ EXPOSE 3000
 
 # Run lightweight production asset server
 CMD ["node", "serve_build.js"]
+

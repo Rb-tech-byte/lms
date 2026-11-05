@@ -31,8 +31,8 @@
   ],
   "tags": [
     {
-      "name": "Moodle Marketplace Plugins (GET & POST)",
-      "description": "Full-stack GET & POST endpoints for installed Moodle Marketplace plugins: format_tiles, format_onetopic, format_topcoll, qtype_coderunner, mod_vpl, mod_attendance, mod_customcert, mod_reengagement, block_completion_progress, and block_xp."
+      "name": "OUT LMS Core System Features & Functional Capabilities",
+      "description": "Enterprise system features and native functional modules of the Open University of Tanzania (OUT) LMS: Adaptive Curriculum Layout Engine (Visual Tiles, Tabbed Units, Collapsible Accordions), OUT Cloud Virtual Lab IDE, Automated Algorithmic & Unit-Test Grader, SARIS Biometric & Rotating QR Digital Attendance System, Milestone Completion Telemetry, Academic Merit & XP Engine, TCU & SARIS Verifiable Digital Credential Engine, and Intelligent Scholar Retention Automation."
     },
     {
       "name": "Public Academic Catalog",
@@ -2661,10 +2661,10 @@
     "/admin_api.php?action=get_installed_plugins_summary": {
       "get": {
         "tags": [
-          "Moodle Marketplace Plugins (GET & POST)"
+          "OUT LMS Core System Features & Functional Capabilities"
         ],
-        "summary": "List Installed Moodle Marketplace Plugins & Live Stats (GET)",
-        "description": "Returns all 12 active Moodle Marketplace plugins with versions from mdl_config_plugins, live database row counts, and supported GET/POST actions.",
+        "summary": "Query OUT LMS Core System Capabilities & Live Telemetry (GET)",
+        "description": "Returns all 12 core system features and functional capabilities of the OUT LMS platform along with live database telemetry counts across all academic programmes.",
         "operationId": "get_get_installed_plugins_summary",
         "parameters": [
           {
@@ -2679,7 +2679,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful plugin API response",
+            "description": "Successful system feature response",
             "content": {
               "application/json": {
                 "schema": {
@@ -2692,10 +2692,10 @@
       },
       "post": {
         "tags": [
-          "Moodle Marketplace Plugins (GET & POST)"
+          "OUT LMS Core System Features & Functional Capabilities"
         ],
-        "summary": "List Installed Moodle Marketplace Plugins & Live Stats (POST)",
-        "description": "Returns all 12 active Moodle Marketplace plugins with versions from mdl_config_plugins, live database row counts, and supported GET/POST actions.",
+        "summary": "Query OUT LMS Core System Capabilities & Live Telemetry (POST)",
+        "description": "Returns all 12 core system features and functional capabilities of the OUT LMS platform along with live database telemetry counts across all academic programmes.",
         "operationId": "post_get_installed_plugins_summary",
         "parameters": [
           {
@@ -2723,7 +2723,7 @@
         },
         "responses": {
           "200": {
-            "description": "Successful plugin POST mutation / evaluation response",
+            "description": "Successful system feature execution / mutation response",
             "content": {
               "application/json": {
                 "schema": {
@@ -2738,10 +2738,10 @@
     "/admin_api.php?action=get_course_formats": {
       "get": {
         "tags": [
-          "Moodle Marketplace Plugins (GET & POST)"
+          "OUT LMS Core System Features & Functional Capabilities"
         ],
-        "summary": "Get Course Format Plugins (Tiles, OneTopic, Collapsed Topics) (GET)",
-        "description": "Retrieves current course format from mdl_course and available Moodle format plugins (format_tiles, format_onetopic, format_topcoll, format_topics).",
+        "summary": "Get Adaptive Curriculum Layout Modes (Tiles, Tabbed Units, Accordions) (GET)",
+        "description": "Retrieves the active curriculum layout configuration for a programme and lists all supported adaptive display modes (Visual Tiles Grid, Horizontal Unit Tabs, Compact Collapsible Topics, Sequential Syllabus).",
         "operationId": "get_get_course_formats",
         "parameters": [
           {
@@ -2765,7 +2765,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful plugin API response",
+            "description": "Successful system feature response",
             "content": {
               "application/json": {
                 "schema": {
@@ -2778,10 +2778,10 @@
       },
       "post": {
         "tags": [
-          "Moodle Marketplace Plugins (GET & POST)"
+          "OUT LMS Core System Features & Functional Capabilities"
         ],
-        "summary": "Get Course Format Plugins (Tiles, OneTopic, Collapsed Topics) (POST)",
-        "description": "Retrieves current course format from mdl_course and available Moodle format plugins (format_tiles, format_onetopic, format_topcoll, format_topics).",
+        "summary": "Get Adaptive Curriculum Layout Modes (Tiles, Tabbed Units, Accordions) (POST)",
+        "description": "Retrieves the active curriculum layout configuration for a programme and lists all supported adaptive display modes (Visual Tiles Grid, Horizontal Unit Tabs, Compact Collapsible Topics, Sequential Syllabus).",
         "operationId": "post_get_course_formats",
         "parameters": [
           {
@@ -2810,7 +2810,7 @@
         },
         "responses": {
           "200": {
-            "description": "Successful plugin POST mutation / evaluation response",
+            "description": "Successful system feature execution / mutation response",
             "content": {
               "application/json": {
                 "schema": {
@@ -2825,10 +2825,10 @@
     "/admin_api.php?action=update_course_format": {
       "get": {
         "tags": [
-          "Moodle Marketplace Plugins (GET & POST)"
+          "OUT LMS Core System Features & Functional Capabilities"
         ],
-        "summary": "Switch Course Format Layout (tiles | onetopic | topcoll | topics) (GET)",
-        "description": "Updates mdl_course.format in MariaDB for the specified course_id and returns updated layout metadata.",
+        "summary": "Switch Adaptive Curriculum Layout Mode (tiles | onetopic | topcoll | topics) (GET)",
+        "description": "Updates and persists the adaptive curriculum layout mode for the specified programme in real time.",
         "operationId": "get_update_course_format",
         "parameters": [
           {
@@ -2861,7 +2861,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful plugin API response",
+            "description": "Successful system feature response",
             "content": {
               "application/json": {
                 "schema": {
@@ -2874,10 +2874,10 @@
       },
       "post": {
         "tags": [
-          "Moodle Marketplace Plugins (GET & POST)"
+          "OUT LMS Core System Features & Functional Capabilities"
         ],
-        "summary": "Switch Course Format Layout (tiles | onetopic | topcoll | topics) (POST)",
-        "description": "Updates mdl_course.format in MariaDB for the specified course_id and returns updated layout metadata.",
+        "summary": "Switch Adaptive Curriculum Layout Mode (tiles | onetopic | topcoll | topics) (POST)",
+        "description": "Updates and persists the adaptive curriculum layout mode for the specified programme in real time.",
         "operationId": "post_update_course_format",
         "parameters": [
           {
@@ -2907,7 +2907,7 @@
         },
         "responses": {
           "200": {
-            "description": "Successful plugin POST mutation / evaluation response",
+            "description": "Successful system feature execution / mutation response",
             "content": {
               "application/json": {
                 "schema": {
@@ -2922,10 +2922,10 @@
     "/admin_api.php?action=get_attendance": {
       "get": {
         "tags": [
-          "Moodle Marketplace Plugins (GET & POST)"
+          "OUT LMS Core System Features & Functional Capabilities"
         ],
-        "summary": "Get Digital Attendance Sessions & QR Passkeys (mod_attendance) (GET)",
-        "description": "Queries mdl_attendance, mdl_attendance_statuses, mdl_attendance_sessions, and mdl_attendance_log for a course and scholar.",
+        "summary": "Get SARIS Digital Attendance Sessions & Rotating QR Passkeys (GET)",
+        "description": "Retrieves live seminar attendance sessions, rotating QR passkeys, participation logs, and cumulative attendance rate for a programme.",
         "operationId": "get_get_attendance",
         "parameters": [
           {
@@ -2958,7 +2958,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful plugin API response",
+            "description": "Successful system feature response",
             "content": {
               "application/json": {
                 "schema": {
@@ -2971,10 +2971,10 @@
       },
       "post": {
         "tags": [
-          "Moodle Marketplace Plugins (GET & POST)"
+          "OUT LMS Core System Features & Functional Capabilities"
         ],
-        "summary": "Get Digital Attendance Sessions & QR Passkeys (mod_attendance) (POST)",
-        "description": "Queries mdl_attendance, mdl_attendance_statuses, mdl_attendance_sessions, and mdl_attendance_log for a course and scholar.",
+        "summary": "Get SARIS Digital Attendance Sessions & Rotating QR Passkeys (POST)",
+        "description": "Retrieves live seminar attendance sessions, rotating QR passkeys, participation logs, and cumulative attendance rate for a programme.",
         "operationId": "post_get_attendance",
         "parameters": [
           {
@@ -3004,7 +3004,7 @@
         },
         "responses": {
           "200": {
-            "description": "Successful plugin POST mutation / evaluation response",
+            "description": "Successful system feature execution / mutation response",
             "content": {
               "application/json": {
                 "schema": {
@@ -3019,10 +3019,10 @@
     "/admin_api.php?action=record_attendance": {
       "get": {
         "tags": [
-          "Moodle Marketplace Plugins (GET & POST)"
+          "OUT LMS Core System Features & Functional Capabilities"
         ],
-        "summary": "Record Scholar Attendance Check-In or Create Session (mod_attendance) (GET)",
-        "description": "Records student check-in (P, L, E, A) in mdl_attendance_log or creates a new QR-enabled session in mdl_attendance_sessions.",
+        "summary": "Verify Scholar QR Check-In or Schedule Live Seminar Session (GET)",
+        "description": "Records a scholar attendance check-in (Present, Late, Excused, Absent) or schedules a new QR-enabled live seminar session.",
         "operationId": "get_record_attendance",
         "parameters": [
           {
@@ -3064,7 +3064,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful plugin API response",
+            "description": "Successful system feature response",
             "content": {
               "application/json": {
                 "schema": {
@@ -3077,10 +3077,10 @@
       },
       "post": {
         "tags": [
-          "Moodle Marketplace Plugins (GET & POST)"
+          "OUT LMS Core System Features & Functional Capabilities"
         ],
-        "summary": "Record Scholar Attendance Check-In or Create Session (mod_attendance) (POST)",
-        "description": "Records student check-in (P, L, E, A) in mdl_attendance_log or creates a new QR-enabled session in mdl_attendance_sessions.",
+        "summary": "Verify Scholar QR Check-In or Schedule Live Seminar Session (POST)",
+        "description": "Records a scholar attendance check-in (Present, Late, Excused, Absent) or schedules a new QR-enabled live seminar session.",
         "operationId": "post_record_attendance",
         "parameters": [
           {
@@ -3104,7 +3104,7 @@
                   "course_id": 7,
                   "user_id": 3,
                   "status": "P",
-                  "remarks": "Verified via QR Portal"
+                  "remarks": "Verified via SARIS QR Portal"
                 }
               }
             }
@@ -3112,7 +3112,7 @@
         },
         "responses": {
           "200": {
-            "description": "Successful plugin POST mutation / evaluation response",
+            "description": "Successful system feature execution / mutation response",
             "content": {
               "application/json": {
                 "schema": {
@@ -3127,10 +3127,10 @@
     "/admin_api.php?action=get_vpl_labs": {
       "get": {
         "tags": [
-          "Moodle Marketplace Plugins (GET & POST)"
+          "OUT LMS Core System Features & Functional Capabilities"
         ],
-        "summary": "Get Virtual Programming Labs & Submissions (mod_vpl) (GET)",
-        "description": "Queries mdl_vpl and mdl_vpl_submissions for a course, returning starter code, runtime config, and latest grades.",
+        "summary": "Get OUT Cloud Virtual Programming Labs & Graded Submissions (GET)",
+        "description": "Retrieves interactive cloud coding labs, starter code templates, runtime environments, and pre-evaluated unit test telemetry.",
         "operationId": "get_get_vpl_labs",
         "parameters": [
           {
@@ -3163,7 +3163,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful plugin API response",
+            "description": "Successful system feature response",
             "content": {
               "application/json": {
                 "schema": {
@@ -3176,10 +3176,10 @@
       },
       "post": {
         "tags": [
-          "Moodle Marketplace Plugins (GET & POST)"
+          "OUT LMS Core System Features & Functional Capabilities"
         ],
-        "summary": "Get Virtual Programming Labs & Submissions (mod_vpl) (POST)",
-        "description": "Queries mdl_vpl and mdl_vpl_submissions for a course, returning starter code, runtime config, and latest grades.",
+        "summary": "Get OUT Cloud Virtual Programming Labs & Graded Submissions (POST)",
+        "description": "Retrieves interactive cloud coding labs, starter code templates, runtime environments, and pre-evaluated unit test telemetry.",
         "operationId": "post_get_vpl_labs",
         "parameters": [
           {
@@ -3209,7 +3209,7 @@
         },
         "responses": {
           "200": {
-            "description": "Successful plugin POST mutation / evaluation response",
+            "description": "Successful system feature execution / mutation response",
             "content": {
               "application/json": {
                 "schema": {
@@ -3224,10 +3224,10 @@
     "/admin_api.php?action=submit_vpl_code": {
       "get": {
         "tags": [
-          "Moodle Marketplace Plugins (GET & POST)"
+          "OUT LMS Core System Features & Functional Capabilities"
         ],
-        "summary": "Submit & Grade Code in Virtual Programming Lab (mod_vpl) (GET)",
-        "description": "Executes and grades student code against automated VPL unit assertions, storing the submission and score in mdl_vpl_submissions.",
+        "summary": "Execute & Grade Code in OUT Cloud Sandbox IDE (GET)",
+        "description": "Compiles and executes scholar code in the OUT Cloud Sandbox IDE against automated unit assertions, persisting the rubric grade and execution log.",
         "operationId": "get_submit_vpl_code",
         "parameters": [
           {
@@ -3269,7 +3269,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful plugin API response",
+            "description": "Successful system feature response",
             "content": {
               "application/json": {
                 "schema": {
@@ -3282,10 +3282,10 @@
       },
       "post": {
         "tags": [
-          "Moodle Marketplace Plugins (GET & POST)"
+          "OUT LMS Core System Features & Functional Capabilities"
         ],
-        "summary": "Submit & Grade Code in Virtual Programming Lab (mod_vpl) (POST)",
-        "description": "Executes and grades student code against automated VPL unit assertions, storing the submission and score in mdl_vpl_submissions.",
+        "summary": "Execute & Grade Code in OUT Cloud Sandbox IDE (POST)",
+        "description": "Compiles and executes scholar code in the OUT Cloud Sandbox IDE against automated unit assertions, persisting the rubric grade and execution log.",
         "operationId": "post_submit_vpl_code",
         "parameters": [
           {
@@ -3318,7 +3318,7 @@
         },
         "responses": {
           "200": {
-            "description": "Successful plugin POST mutation / evaluation response",
+            "description": "Successful system feature execution / mutation response",
             "content": {
               "application/json": {
                 "schema": {
@@ -3333,10 +3333,10 @@
     "/admin_api.php?action=get_coderunner_questions": {
       "get": {
         "tags": [
-          "Moodle Marketplace Plugins (GET & POST)"
+          "OUT LMS Core System Features & Functional Capabilities"
         ],
-        "summary": "Get CodeRunner Automated Grading Questions (qtype_coderunner) (GET)",
-        "description": "Retrieves CodeRunner programming challenges with function signatures, starter templates, and visible unit test cases.",
+        "summary": "Get Automated Algorithmic Assessment & Unit-Test Suites (GET)",
+        "description": "Retrieves algorithmic assessment challenges with function signatures, starter templates, visible test assertions, and sample verification matrices.",
         "operationId": "get_get_coderunner_questions",
         "parameters": [
           {
@@ -3360,7 +3360,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful plugin API response",
+            "description": "Successful system feature response",
             "content": {
               "application/json": {
                 "schema": {
@@ -3373,10 +3373,10 @@
       },
       "post": {
         "tags": [
-          "Moodle Marketplace Plugins (GET & POST)"
+          "OUT LMS Core System Features & Functional Capabilities"
         ],
-        "summary": "Get CodeRunner Automated Grading Questions (qtype_coderunner) (POST)",
-        "description": "Retrieves CodeRunner programming challenges with function signatures, starter templates, and visible unit test cases.",
+        "summary": "Get Automated Algorithmic Assessment & Unit-Test Suites (POST)",
+        "description": "Retrieves algorithmic assessment challenges with function signatures, starter templates, visible test assertions, and sample verification matrices.",
         "operationId": "post_get_coderunner_questions",
         "parameters": [
           {
@@ -3405,7 +3405,7 @@
         },
         "responses": {
           "200": {
-            "description": "Successful plugin POST mutation / evaluation response",
+            "description": "Successful system feature execution / mutation response",
             "content": {
               "application/json": {
                 "schema": {
@@ -3420,10 +3420,10 @@
     "/admin_api.php?action=evaluate_coderunner": {
       "get": {
         "tags": [
-          "Moodle Marketplace Plugins (GET & POST)"
+          "OUT LMS Core System Features & Functional Capabilities"
         ],
-        "summary": "Evaluate CodeRunner Answer Against Test Suite (qtype_coderunner) (GET)",
-        "description": "Runs student code against CodeRunner test cases and returns expected vs actual output table and score.",
+        "summary": "Verify Solution Against Automated Unit-Test Suite (GET)",
+        "description": "Executes submitted code against all test assertions and returns the expected vs. actual verification matrix and calculated marks.",
         "operationId": "get_evaluate_coderunner",
         "parameters": [
           {
@@ -3456,7 +3456,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful plugin API response",
+            "description": "Successful system feature response",
             "content": {
               "application/json": {
                 "schema": {
@@ -3469,10 +3469,10 @@
       },
       "post": {
         "tags": [
-          "Moodle Marketplace Plugins (GET & POST)"
+          "OUT LMS Core System Features & Functional Capabilities"
         ],
-        "summary": "Evaluate CodeRunner Answer Against Test Suite (qtype_coderunner) (POST)",
-        "description": "Runs student code against CodeRunner test cases and returns expected vs actual output table and score.",
+        "summary": "Verify Solution Against Automated Unit-Test Suite (POST)",
+        "description": "Executes submitted code against all test assertions and returns the expected vs. actual verification matrix and calculated marks.",
         "operationId": "post_evaluate_coderunner",
         "parameters": [
           {
@@ -3503,7 +3503,7 @@
         },
         "responses": {
           "200": {
-            "description": "Successful plugin POST mutation / evaluation response",
+            "description": "Successful system feature execution / mutation response",
             "content": {
               "application/json": {
                 "schema": {
@@ -3518,10 +3518,10 @@
     "/admin_api.php?action=get_completion_progress": {
       "get": {
         "tags": [
-          "Moodle Marketplace Plugins (GET & POST)"
+          "OUT LMS Core System Features & Functional Capabilities"
         ],
-        "summary": "Get Completion Progress Bar & Gamification XP (block_completion_progress & block_xp) (GET)",
-        "description": "Queries mdl_course_modules_completion to build the color-coded completion bar and calculates scholar XP level and badge.",
+        "summary": "Get Milestone Completion Telemetry & Scholar Merit XP (GET)",
+        "description": "Returns the interactive color-coded milestone completion bar across all syllabus units along with the scholar XP level and academic merit rank.",
         "operationId": "get_get_completion_progress",
         "parameters": [
           {
@@ -3554,7 +3554,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful plugin API response",
+            "description": "Successful system feature response",
             "content": {
               "application/json": {
                 "schema": {
@@ -3567,10 +3567,10 @@
       },
       "post": {
         "tags": [
-          "Moodle Marketplace Plugins (GET & POST)"
+          "OUT LMS Core System Features & Functional Capabilities"
         ],
-        "summary": "Get Completion Progress Bar & Gamification XP (block_completion_progress & block_xp) (POST)",
-        "description": "Queries mdl_course_modules_completion to build the color-coded completion bar and calculates scholar XP level and badge.",
+        "summary": "Get Milestone Completion Telemetry & Scholar Merit XP (POST)",
+        "description": "Returns the interactive color-coded milestone completion bar across all syllabus units along with the scholar XP level and academic merit rank.",
         "operationId": "post_get_completion_progress",
         "parameters": [
           {
@@ -3600,7 +3600,7 @@
         },
         "responses": {
           "200": {
-            "description": "Successful plugin POST mutation / evaluation response",
+            "description": "Successful system feature execution / mutation response",
             "content": {
               "application/json": {
                 "schema": {
@@ -3615,10 +3615,10 @@
     "/admin_api.php?action=toggle_activity_completion": {
       "get": {
         "tags": [
-          "Moodle Marketplace Plugins (GET & POST)"
+          "OUT LMS Core System Features & Functional Capabilities"
         ],
-        "summary": "Toggle Activity Completion & Award XP (block_completion_progress & block_xp) (GET)",
-        "description": "Toggles completionstate in mdl_course_modules_completion for a course module and recalculates XP points.",
+        "summary": "Synchronize Milestone Completion & Award Scholar Merit XP (GET)",
+        "description": "Toggles completion state for a syllabus learning activity and recalculates overall programme progress percentage and Scholar Merit XP.",
         "operationId": "get_toggle_activity_completion",
         "parameters": [
           {
@@ -3660,7 +3660,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful plugin API response",
+            "description": "Successful system feature response",
             "content": {
               "application/json": {
                 "schema": {
@@ -3673,10 +3673,10 @@
       },
       "post": {
         "tags": [
-          "Moodle Marketplace Plugins (GET & POST)"
+          "OUT LMS Core System Features & Functional Capabilities"
         ],
-        "summary": "Toggle Activity Completion & Award XP (block_completion_progress & block_xp) (POST)",
-        "description": "Toggles completionstate in mdl_course_modules_completion for a course module and recalculates XP points.",
+        "summary": "Synchronize Milestone Completion & Award Scholar Merit XP (POST)",
+        "description": "Toggles completion state for a syllabus learning activity and recalculates overall programme progress percentage and Scholar Merit XP.",
         "operationId": "post_toggle_activity_completion",
         "parameters": [
           {
@@ -3707,7 +3707,7 @@
         },
         "responses": {
           "200": {
-            "description": "Successful plugin POST mutation / evaluation response",
+            "description": "Successful system feature execution / mutation response",
             "content": {
               "application/json": {
                 "schema": {
@@ -3722,10 +3722,10 @@
     "/admin_api.php?action=get_customcert_templates": {
       "get": {
         "tags": [
-          "Moodle Marketplace Plugins (GET & POST)"
+          "OUT LMS Core System Features & Functional Capabilities"
         ],
-        "summary": "Get Verifiable Custom Certificate Template & Issue (mod_customcert) (GET)",
-        "description": "Queries mdl_customcert and mdl_customcert_issues for verifiable PDF certificate metadata and QR verification code.",
+        "summary": "Get TCU & SARIS Verifiable Digital Credential Metadata (GET)",
+        "description": "Retrieves the official verifiable digital certificate template and issued cryptographic serial code for a programme and scholar.",
         "operationId": "get_get_customcert_templates",
         "parameters": [
           {
@@ -3758,7 +3758,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful plugin API response",
+            "description": "Successful system feature response",
             "content": {
               "application/json": {
                 "schema": {
@@ -3771,10 +3771,10 @@
       },
       "post": {
         "tags": [
-          "Moodle Marketplace Plugins (GET & POST)"
+          "OUT LMS Core System Features & Functional Capabilities"
         ],
-        "summary": "Get Verifiable Custom Certificate Template & Issue (mod_customcert) (POST)",
-        "description": "Queries mdl_customcert and mdl_customcert_issues for verifiable PDF certificate metadata and QR verification code.",
+        "summary": "Get TCU & SARIS Verifiable Digital Credential Metadata (POST)",
+        "description": "Retrieves the official verifiable digital certificate template and issued cryptographic serial code for a programme and scholar.",
         "operationId": "post_get_customcert_templates",
         "parameters": [
           {
@@ -3804,7 +3804,7 @@
         },
         "responses": {
           "200": {
-            "description": "Successful plugin POST mutation / evaluation response",
+            "description": "Successful system feature execution / mutation response",
             "content": {
               "application/json": {
                 "schema": {
@@ -3819,10 +3819,10 @@
     "/admin_api.php?action=issue_customcert": {
       "get": {
         "tags": [
-          "Moodle Marketplace Plugins (GET & POST)"
+          "OUT LMS Core System Features & Functional Capabilities"
         ],
-        "summary": "Issue Verifiable Digital Certificate (mod_customcert) (GET)",
-        "description": "Issues a uniquely coded verifiable certificate in mdl_customcert_issues and returns verification URL and serial code.",
+        "summary": "Generate & Issue Verifiable Digital Credential (GET)",
+        "description": "Generates a uniquely coded TCU & SARIS verifiable digital certificate and returns the cryptographic serial number and QR verification URL.",
         "operationId": "get_issue_customcert",
         "parameters": [
           {
@@ -3855,7 +3855,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful plugin API response",
+            "description": "Successful system feature response",
             "content": {
               "application/json": {
                 "schema": {
@@ -3868,10 +3868,10 @@
       },
       "post": {
         "tags": [
-          "Moodle Marketplace Plugins (GET & POST)"
+          "OUT LMS Core System Features & Functional Capabilities"
         ],
-        "summary": "Issue Verifiable Digital Certificate (mod_customcert) (POST)",
-        "description": "Issues a uniquely coded verifiable certificate in mdl_customcert_issues and returns verification URL and serial code.",
+        "summary": "Generate & Issue Verifiable Digital Credential (POST)",
+        "description": "Generates a uniquely coded TCU & SARIS verifiable digital certificate and returns the cryptographic serial number and QR verification URL.",
         "operationId": "post_issue_customcert",
         "parameters": [
           {
@@ -3901,7 +3901,7 @@
         },
         "responses": {
           "200": {
-            "description": "Successful plugin POST mutation / evaluation response",
+            "description": "Successful system feature execution / mutation response",
             "content": {
               "application/json": {
                 "schema": {
@@ -3916,10 +3916,10 @@
     "/admin_api.php?action=get_reengagement_nudges": {
       "get": {
         "tags": [
-          "Moodle Marketplace Plugins (GET & POST)"
+          "OUT LMS Core System Features & Functional Capabilities"
         ],
-        "summary": "Get Automated Retention Nudges (mod_reengagement) (GET)",
-        "description": "Queries mdl_reengagement for active scholar retention and deadline reminder campaigns.",
+        "summary": "Get Intelligent Scholar Retention & Momentum Campaigns (GET)",
+        "description": "Retrieves active automated study momentum alerts, inactivity reminders, and dispatch telemetry for a programme.",
         "operationId": "get_get_reengagement_nudges",
         "parameters": [
           {
@@ -3943,7 +3943,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful plugin API response",
+            "description": "Successful system feature response",
             "content": {
               "application/json": {
                 "schema": {
@@ -3956,10 +3956,10 @@
       },
       "post": {
         "tags": [
-          "Moodle Marketplace Plugins (GET & POST)"
+          "OUT LMS Core System Features & Functional Capabilities"
         ],
-        "summary": "Get Automated Retention Nudges (mod_reengagement) (POST)",
-        "description": "Queries mdl_reengagement for active scholar retention and deadline reminder campaigns.",
+        "summary": "Get Intelligent Scholar Retention & Momentum Campaigns (POST)",
+        "description": "Retrieves active automated study momentum alerts, inactivity reminders, and dispatch telemetry for a programme.",
         "operationId": "post_get_reengagement_nudges",
         "parameters": [
           {
@@ -3988,7 +3988,7 @@
         },
         "responses": {
           "200": {
-            "description": "Successful plugin POST mutation / evaluation response",
+            "description": "Successful system feature execution / mutation response",
             "content": {
               "application/json": {
                 "schema": {
@@ -4003,10 +4003,10 @@
     "/admin_api.php?action=trigger_reengagement": {
       "get": {
         "tags": [
-          "Moodle Marketplace Plugins (GET & POST)"
+          "OUT LMS Core System Features & Functional Capabilities"
         ],
-        "summary": "Trigger Automated Retention Nudge Campaign (mod_reengagement) (GET)",
-        "description": "Dispatches a retention nudge for a course and increments remindercount in mdl_reengagement.",
+        "summary": "Dispatch Automated Scholar Retention & Momentum Alert (GET)",
+        "description": "Triggers an immediate study momentum and assessment readiness alert to enrolled scholars in the specified programme.",
         "operationId": "get_trigger_reengagement",
         "parameters": [
           {
@@ -4030,7 +4030,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful plugin API response",
+            "description": "Successful system feature response",
             "content": {
               "application/json": {
                 "schema": {
@@ -4043,10 +4043,10 @@
       },
       "post": {
         "tags": [
-          "Moodle Marketplace Plugins (GET & POST)"
+          "OUT LMS Core System Features & Functional Capabilities"
         ],
-        "summary": "Trigger Automated Retention Nudge Campaign (mod_reengagement) (POST)",
-        "description": "Dispatches a retention nudge for a course and increments remindercount in mdl_reengagement.",
+        "summary": "Dispatch Automated Scholar Retention & Momentum Alert (POST)",
+        "description": "Triggers an immediate study momentum and assessment readiness alert to enrolled scholars in the specified programme.",
         "operationId": "post_trigger_reengagement",
         "parameters": [
           {
@@ -4068,7 +4068,7 @@
                 "example": {
                   "action": "trigger_reengagement",
                   "course_id": 7,
-                  "emailsubject": "[PSC-CYBER] Keep Your Academic Streak Going at OUT!"
+                  "emailsubject": "[PSC-CYBER] Keep Your OUT Academic Streak & Milestone Progress Active!"
                 }
               }
             }
@@ -4076,7 +4076,7 @@
         },
         "responses": {
           "200": {
-            "description": "Successful plugin POST mutation / evaluation response",
+            "description": "Successful system feature execution / mutation response",
             "content": {
               "application/json": {
                 "schema": {
@@ -4091,10 +4091,10 @@
     "/admin_api.php?action=moodle_ws_bridge": {
       "get": {
         "tags": [
-          "Moodle Marketplace Plugins (GET & POST)"
+          "OUT LMS Core System Features & Functional Capabilities"
         ],
-        "summary": "Unified Moodle Core Web Services JSON Bridge (GET & POST) (GET)",
-        "description": "Executes Moodle Core Web Service functions (core_webservice_get_site_info, core_course_get_courses, core_course_get_categories) with JSON output.",
+        "summary": "Unified OUT LMS Core Web Services JSON Bridge (GET)",
+        "description": "Executes core academic web service functions (site info, programme catalog, faculty hierarchy, and enrollment records) with unified JSON output.",
         "operationId": "get_moodle_ws_bridge",
         "parameters": [
           {
@@ -4118,7 +4118,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful plugin API response",
+            "description": "Successful system feature response",
             "content": {
               "application/json": {
                 "schema": {
@@ -4131,10 +4131,10 @@
       },
       "post": {
         "tags": [
-          "Moodle Marketplace Plugins (GET & POST)"
+          "OUT LMS Core System Features & Functional Capabilities"
         ],
-        "summary": "Unified Moodle Core Web Services JSON Bridge (GET & POST) (POST)",
-        "description": "Executes Moodle Core Web Service functions (core_webservice_get_site_info, core_course_get_courses, core_course_get_categories) with JSON output.",
+        "summary": "Unified OUT LMS Core Web Services JSON Bridge (POST)",
+        "description": "Executes core academic web service functions (site info, programme catalog, faculty hierarchy, and enrollment records) with unified JSON output.",
         "operationId": "post_moodle_ws_bridge",
         "parameters": [
           {
@@ -4163,7 +4163,7 @@
         },
         "responses": {
           "200": {
-            "description": "Successful plugin POST mutation / evaluation response",
+            "description": "Successful system feature execution / mutation response",
             "content": {
               "application/json": {
                 "schema": {

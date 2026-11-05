@@ -186,12 +186,18 @@ const CourseDetails: React.FC = () => {
           setVplCode(vplRes.labs[0].starterCode || '');
           setVplLanguage(vplRes.labs[0].language || 'python');
         }
+        if (vplRes.evaluation) {
+          setVplEvaluation(vplRes.evaluation);
+        }
       }
       if (crRes?.success && Array.isArray(crRes.questions)) {
         setCodeRunnerQuestions(crRes.questions);
         if (crRes.questions.length > 0) {
           setSelectedCrId(crRes.questions[0].id);
           setCrAnswerCode(crRes.questions[0].starterCode || '');
+        }
+        if (crRes.evaluation) {
+          setCrEvaluation(crRes.evaluation);
         }
       }
       if (compRes?.success) {
@@ -230,7 +236,7 @@ const CourseDetails: React.FC = () => {
     try {
       const res = await courseService.updateCourseFormat(course.id, newFormat);
       if (res?.success) {
-        setFeedback({ type: 'success', message: `Course layout format switched to "${newFormat.toUpperCase()}" (persisted via Moodle format_${newFormat}).` });
+        setFeedback({ type: 'success', message: `Adaptive curriculum layout switched to "${newFormat.toUpperCase()}" mode.` });
       }
     } catch {
       // Visual switch remains active
@@ -805,10 +811,103 @@ const CourseDetails: React.FC = () => {
                   )}
                 </div>
 
+                {/* OUT LMS Core System Capabilities & Pre-Loaded Sample Telemetry Strip */}
+                <div className="row g-2 mb-3">
+                  <div className="col-6 col-md-3">
+                    <div
+                      onClick={() => setActiveTab('syllabus')}
+                      className="p-2.5 rounded-3 bg-white border shadow-sm h-100"
+                      style={{ cursor: 'pointer', borderLeft: '3px solid #0171BB' }}
+                    >
+                      <div className="d-flex align-items-center justify-content-between mb-0.5">
+                        <small className="text-muted fw-semibold" style={{ fontSize: '0.66rem' }}>
+                          ADAPTIVE LAYOUT
+                        </small>
+                        <i className="isax isax-element-3 text-primary" style={{ fontSize: 13 }} />
+                      </div>
+                      <div className="fw-bold text-dark text-truncate" style={{ fontSize: '0.78rem' }}>
+                        {activeFormat === 'tiles'
+                          ? 'Visual Tiles Grid'
+                          : activeFormat === 'onetopic'
+                          ? 'Horizontal Unit Tabs'
+                          : activeFormat === 'topcoll'
+                          ? 'Compact Accordions'
+                          : 'Sequential Syllabus'}
+                      </div>
+                      <small className="text-primary" style={{ fontSize: '0.67rem' }}>
+                        {course.sections.length} Active Units →
+                      </small>
+                    </div>
+                  </div>
+
+                  <div className="col-6 col-md-3">
+                    <div
+                      onClick={() => setActiveTab('labs')}
+                      className="p-2.5 rounded-3 bg-white border shadow-sm h-100"
+                      style={{ cursor: 'pointer', borderLeft: '3px solid #0284c7' }}
+                    >
+                      <div className="d-flex align-items-center justify-content-between mb-0.5">
+                        <small className="text-muted fw-semibold" style={{ fontSize: '0.66rem' }}>
+                          CLOUD LABS &amp; GRADER
+                        </small>
+                        <i className="isax isax-code text-info" style={{ fontSize: 13 }} />
+                      </div>
+                      <div className="fw-bold text-dark text-truncate" style={{ fontSize: '0.78rem' }}>
+                        {vplLabs.length} Labs • {codeRunnerQuestions.length} Suites
+                      </div>
+                      <small className="text-success fw-semibold" style={{ fontSize: '0.67rem' }}>
+                        Sample Score: {vplEvaluation?.grade ?? 100}% →
+                      </small>
+                    </div>
+                  </div>
+
+                  <div className="col-6 col-md-3">
+                    <div
+                      onClick={() => setActiveTab('tracking')}
+                      className="p-2.5 rounded-3 bg-white border shadow-sm h-100"
+                      style={{ cursor: 'pointer', borderLeft: '3px solid #0d9488' }}
+                    >
+                      <div className="d-flex align-items-center justify-content-between mb-0.5">
+                        <small className="text-muted fw-semibold" style={{ fontSize: '0.66rem' }}>
+                          QR ATTENDANCE
+                        </small>
+                        <i className="isax isax-calendar-tick text-success" style={{ fontSize: 13 }} />
+                      </div>
+                      <div className="fw-bold text-dark text-truncate" style={{ fontSize: '0.78rem' }}>
+                        {attendanceData?.summary?.attendanceRate ?? 75}% Rate
+                      </div>
+                      <small className="text-secondary" style={{ fontSize: '0.67rem' }}>
+                        {attendanceData?.summary?.presentCount ?? 3}/{attendanceData?.summary?.totalSessions ?? 4} Seminars →
+                      </small>
+                    </div>
+                  </div>
+
+                  <div className="col-6 col-md-3">
+                    <div
+                      onClick={() => setActiveTab('tracking')}
+                      className="p-2.5 rounded-3 bg-white border shadow-sm h-100"
+                      style={{ cursor: 'pointer', borderLeft: '3px solid #d97706' }}
+                    >
+                      <div className="d-flex align-items-center justify-content-between mb-0.5">
+                        <small className="text-muted fw-semibold" style={{ fontSize: '0.66rem' }}>
+                          MILESTONES &amp; CREDENTIAL
+                        </small>
+                        <i className="isax isax-award text-warning" style={{ fontSize: 13 }} />
+                      </div>
+                      <div className="fw-bold text-dark text-truncate" style={{ fontSize: '0.78rem' }}>
+                        {completionProgress?.percentage ?? 71}% • {completionProgress?.xp?.points ?? 825} XP
+                      </div>
+                      <small className="text-primary fw-semibold" style={{ fontSize: '0.67rem' }}>
+                        {customCertData?.verificationCode || 'TCU Accredited'} →
+                      </small>
+                    </div>
+                  </div>
+                </div>
+
                 {/* TAB 1: SYLLABUS & LEARNING UNITS */}
                 {activeTab === 'syllabus' && (
                   <div>
-                    {/* Moodle Course Format Switcher (format_tiles, format_onetopic, format_topcoll, format_topics) */}
+                    {/* OUT LMS Adaptive Curriculum Layout Switcher */}
                     <div
                       className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2.5 p-2.5 rounded-3 border"
                       style={{ background: 'linear-gradient(90deg, #f0f9ff 0%, #ffffff 100%)', borderColor: '#bae6fd' }}
@@ -818,18 +917,18 @@ const CourseDetails: React.FC = () => {
                           className="badge rounded-pill px-2.5 py-1 fw-bold"
                           style={{ background: '#0171BB', color: '#fff', fontSize: '0.68rem' }}
                         >
-                          Moodle Format Plugin
+                          Adaptive Layout Engine
                         </span>
                         <span className="fw-semibold text-dark small" style={{ fontSize: '0.78rem' }}>
-                          Active Layout:{' '}
+                          Active View:{' '}
                           <strong className="text-primary">
                             {activeFormat === 'tiles'
-                              ? 'Tiles Grid (format_tiles)'
+                              ? 'Visual Tiles Grid'
                               : activeFormat === 'onetopic'
-                              ? 'OneTopic Tabs (format_onetopic)'
+                              ? 'Horizontal Unit Tabs'
                               : activeFormat === 'topcoll'
-                              ? 'Collapsed Topics (format_topcoll)'
-                              : 'Standard Academic List'}
+                              ? 'Compact Collapsible Topics'
+                              : 'Sequential Academic Syllabus'}
                           </strong>
                         </span>
                       </div>
@@ -1229,18 +1328,18 @@ const CourseDetails: React.FC = () => {
                   </div>
                 )}
 
-                {/* TAB 2: CODING LABS (mod_vpl & qtype_coderunner) */}
+                {/* TAB 2: CLOUD VIRTUAL LABS & AUTOMATED ASSESSMENT ENGINE */}
                 {activeTab === 'labs' && (
                   <div className="d-flex flex-column gap-3">
-                    {/* Virtual Programming Lab (mod_vpl) */}
+                    {/* OUT Cloud Virtual Programming Lab & Sandbox IDE */}
                     <div className="card border-0 shadow-sm rounded-3 p-3.5 bg-white" style={{ border: '1px solid #e2e8f0' }}>
                       <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2.5 pb-2 border-bottom">
                         <div>
                           <span className="badge bg-info-subtle text-info rounded-pill mb-1" style={{ fontSize: '0.68rem' }}>
-                            Moodle Plugin: mod_vpl (GET & POST Live API)
+                            OUT Cloud Virtual Lab IDE • Multi-Runtime Execution Engine
                           </span>
                           <h6 className="fw-bold text-dark mb-0" style={{ fontSize: '0.96rem' }}>
-                            Virtual Programming Lab (VPL) — Browser IDE & Automated Evaluator
+                            Interactive Cloud Sandbox IDE &amp; Automated Rubric Evaluator
                           </h6>
                         </div>
                         <div className="d-flex gap-1.5">
@@ -1274,11 +1373,11 @@ const CourseDetails: React.FC = () => {
                             <div className="d-flex align-items-center justify-content-between mb-2">
                               <div className="d-flex align-items-center gap-2">
                                 <label className="small fw-semibold text-secondary" style={{ fontSize: '0.74rem' }}>
-                                  Runtime:
+                                  Runtime Environment:
                                 </label>
                                 <select
                                   className="form-select form-select-sm"
-                                  style={{ width: 130, fontSize: '0.75rem' }}
+                                  style={{ width: 140, fontSize: '0.75rem' }}
                                   value={vplLanguage}
                                   onChange={(e) => setVplLanguage(e.target.value)}
                                 >
@@ -1290,7 +1389,7 @@ const CourseDetails: React.FC = () => {
                               </div>
                               {lab.submission && (
                                 <span className="badge bg-success-subtle text-success rounded-pill" style={{ fontSize: '0.72rem' }}>
-                                  Latest Grade: {lab.submission.grade}/{lab.maxGrade} ({lab.submission.run_count} runs)
+                                  Verified Score: {lab.submission.grade}/{lab.maxGrade} ({lab.submission.run_count} executions)
                                 </span>
                               )}
                             </div>
@@ -1311,7 +1410,7 @@ const CourseDetails: React.FC = () => {
 
                             <div className="d-flex align-items-center justify-content-between flex-wrap gap-2">
                               <small className="text-muted" style={{ fontSize: '0.72rem' }}>
-                                Max Grade: {lab.maxGrade} pts • Due: {lab.duedateFormatted}
+                                Max Rubric Score: {lab.maxGrade} pts • Submission Window: {lab.duedateFormatted}
                               </small>
                               <button
                                 type="button"
@@ -1321,7 +1420,7 @@ const CourseDetails: React.FC = () => {
                                 style={{ fontSize: '0.78rem' }}
                               >
                                 <i className="isax isax-play me-1" />
-                                {pluginActionBusy === 'vpl' ? 'Running VPL Jail Sandbox...' : 'Run & Grade VPL Submission (POST)'}
+                                {pluginActionBusy === 'vpl' ? 'Executing in Cloud Sandbox...' : 'Execute & Grade Lab Solution'}
                               </button>
                             </div>
 
@@ -1329,7 +1428,7 @@ const CourseDetails: React.FC = () => {
                               <div className="mt-3 p-3 rounded-3" style={{ background: '#0b172a', color: '#f8fafc' }}>
                                 <div className="d-flex align-items-center justify-content-between mb-2">
                                   <span className="fw-bold text-warning" style={{ fontSize: '0.8rem' }}>
-                                    VPL Automated Execution Output ({vplEvaluation.passedTests}/{vplEvaluation.totalTests} Passed)
+                                    Automated Cloud Sandbox Telemetry ({vplEvaluation.passedTests}/{vplEvaluation.totalTests} Assertions Passed)
                                   </span>
                                   <span className="badge bg-success rounded-pill" style={{ fontSize: '0.74rem' }}>
                                     Score: {vplEvaluation.grade} / {vplEvaluation.maxGrade}
@@ -1359,15 +1458,15 @@ const CourseDetails: React.FC = () => {
                         ))}
                     </div>
 
-                    {/* CodeRunner Question Evaluator (qtype_coderunner) */}
+                    {/* Automated Algorithmic & Unit-Test Grading Engine */}
                     <div className="card border-0 shadow-sm rounded-3 p-3.5 bg-white" style={{ border: '1px solid #e2e8f0' }}>
                       <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2.5 pb-2 border-bottom">
                         <div>
                           <span className="badge bg-warning-subtle text-dark rounded-pill mb-1" style={{ fontSize: '0.68rem' }}>
-                            Moodle Plugin: qtype_coderunner (GET & POST Live API)
+                            Automated Assessment &amp; Unit-Test Verification Suite
                           </span>
                           <h6 className="fw-bold text-dark mb-0" style={{ fontSize: '0.96rem' }}>
-                            CodeRunner Automated Unit-Test Question Bank
+                            Real-Time Algorithmic Verification &amp; Test-Case Matrix
                           </h6>
                         </div>
                         <div className="d-flex gap-1.5">
@@ -1378,14 +1477,13 @@ const CourseDetails: React.FC = () => {
                               onClick={() => {
                                 setSelectedCrId(q.id);
                                 setCrAnswerCode(q.starterCode || '');
-                                setCrEvaluation(null);
                               }}
                               className={`btn btn-sm rounded-pill px-2.5 py-1 fw-semibold ${
                                 selectedCrId === q.id ? 'btn-dark' : 'btn-light border text-secondary'
                               }`}
                               style={{ fontSize: '0.73rem' }}
                             >
-                              Challenge {idx + 1}
+                              Assessment {idx + 1}
                             </button>
                           ))}
                         </div>
@@ -1423,7 +1521,7 @@ const CourseDetails: React.FC = () => {
                                 style={{ fontSize: '0.78rem', color: '#0f172a' }}
                               >
                                 <i className="isax isax-tick-circle me-1" />
-                                {pluginActionBusy === 'coderunner' ? 'Checking Tests...' : 'Check Answer (CodeRunner POST)'}
+                                {pluginActionBusy === 'coderunner' ? 'Verifying Assertions...' : 'Verify Solution Against Test Suite'}
                               </button>
                             </div>
 
@@ -1431,20 +1529,20 @@ const CourseDetails: React.FC = () => {
                               <div className="mt-3 p-3 rounded-3 border" style={{ background: '#f0fdf4', borderColor: '#86efac' }}>
                                 <div className="d-flex align-items-center justify-content-between mb-2">
                                   <span className="fw-bold text-success small">
-                                    CodeRunner Test Table — {crEvaluation.passedCount}/{crEvaluation.totalCount} Passed
+                                    Automated Verification Matrix — {crEvaluation.passedCount}/{crEvaluation.totalCount} Assertions Passed
                                   </span>
                                   <span className="badge bg-success rounded-pill">
-                                    Marks: {crEvaluation.score} / {crEvaluation.maxScore}
+                                    Score: {crEvaluation.score} / {crEvaluation.maxScore}
                                   </span>
                                 </div>
                                 <div className="table-responsive">
                                   <table className="table table-sm table-bordered mb-0 bg-white small" style={{ fontSize: '0.74rem' }}>
                                     <thead className="table-light">
                                       <tr>
-                                        <th>Test Case</th>
-                                        <th>Expected</th>
-                                        <th>Got</th>
-                                        <th>Result</th>
+                                        <th>Assertion Input</th>
+                                        <th>Expected Output</th>
+                                        <th>Actual Output</th>
+                                        <th>Status</th>
                                       </tr>
                                     </thead>
                                     <tbody>
@@ -1471,19 +1569,19 @@ const CourseDetails: React.FC = () => {
                   </div>
                 )}
 
-                {/* TAB 3: ATTENDANCE, COMPLETION PROGRESS & CREDENTIALS */}
+                {/* TAB 3: ATTENDANCE, MILESTONE TELEMETRY & VERIFIABLE CREDENTIALS */}
                 {activeTab === 'tracking' && (
                   <div className="d-flex flex-column gap-3">
-                    {/* Completion Progress Bar (block_completion_progress) & Level Up! XP (block_xp) */}
+                    {/* Interactive Milestone Completion Telemetry & Scholar Merit XP */}
                     {completionProgress && (
                       <div className="card border-0 shadow-sm rounded-3 p-3.5 bg-white" style={{ border: '1px solid #e2e8f0' }}>
                         <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2.5">
                           <div>
                             <span className="badge bg-success-subtle text-success rounded-pill mb-1" style={{ fontSize: '0.68rem' }}>
-                              block_completion_progress + block_xp
+                              OUT Milestone Telemetry &amp; Academic Merit Engine
                             </span>
                             <h6 className="fw-bold text-dark mb-0" style={{ fontSize: '0.94rem' }}>
-                              Interactive Completion Progress Bar & Gamification XP
+                              Interactive Competency Progress Bar &amp; Scholar XP Progression
                             </h6>
                           </div>
                           <div className="d-flex align-items-center gap-2">
@@ -1497,7 +1595,7 @@ const CourseDetails: React.FC = () => {
                         </div>
 
                         <p className="text-muted small mb-2" style={{ fontSize: '0.76rem' }}>
-                          Click any segment below to toggle activity completion in Moodle (`POST toggle_activity_completion`):
+                          Click any milestone segment below to synchronize completion status and award Scholar Merit XP in real time:
                         </p>
 
                         <div className="d-flex gap-1 mb-2.5" style={{ height: 22 }}>
@@ -1521,21 +1619,21 @@ const CourseDetails: React.FC = () => {
 
                         <div className="d-flex justify-content-between small text-muted" style={{ fontSize: '0.73rem' }}>
                           <span>
-                            Completed: <strong>{completionProgress.completedModules}</strong> of{' '}
-                            <strong>{completionProgress.totalModules}</strong> modules
+                            Completed Milestones: <strong>{completionProgress.completedModules}</strong> of{' '}
+                            <strong>{completionProgress.totalModules}</strong>
                           </span>
-                          <span>Scholar Rank: <strong>{completionProgress.xp?.badgeTitle}</strong></span>
+                          <span>Academic Merit Standing: <strong>{completionProgress.xp?.badgeTitle}</strong></span>
                         </div>
                       </div>
                     )}
 
-                    {/* Digital Attendance Register (mod_attendance) */}
+                    {/* SARIS Digital Attendance & Rotating QR Check-In System */}
                     {attendanceData && (
                       <div className="card border-0 shadow-sm rounded-3 p-3.5 bg-white" style={{ border: '1px solid #e2e8f0' }}>
                         <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2.5 pb-2 border-bottom">
                           <div>
                             <span className="badge bg-primary-subtle text-primary rounded-pill mb-1" style={{ fontSize: '0.68rem' }}>
-                              Moodle Plugin: mod_attendance (GET & POST Live API)
+                              SARIS Biometric &amp; Rotating QR Digital Attendance System
                             </span>
                             <h6 className="fw-bold text-dark mb-0" style={{ fontSize: '0.94rem' }}>
                               {attendanceData.name}
@@ -1554,7 +1652,7 @@ const CourseDetails: React.FC = () => {
                                 className="btn btn-sm btn-outline-primary rounded-pill px-2.5 py-0.5 fw-semibold"
                                 style={{ fontSize: '0.72rem' }}
                               >
-                                + New Session (POST)
+                                + Schedule Seminar Session
                               </button>
                             )}
                           </div>
@@ -1601,7 +1699,7 @@ const CourseDetails: React.FC = () => {
                                   className="btn btn-sm btn-primary rounded-pill px-2.5 py-0.5 fw-semibold"
                                   style={{ fontSize: '0.72rem' }}
                                 >
-                                  {pluginActionBusy === `att-${sess.id}` ? 'Saving...' : 'Check-In Present (POST)'}
+                                  {pluginActionBusy === `att-${sess.id}` ? 'Verifying...' : 'Verify QR Check-In'}
                                 </button>
                               </div>
                             </div>
@@ -1610,21 +1708,21 @@ const CourseDetails: React.FC = () => {
                       </div>
                     )}
 
-                    {/* Custom Certificate (mod_customcert) & Re-engagement Nudges (mod_reengagement) */}
+                    {/* Verifiable Digital Credential Engine & Scholar Retention Automation */}
                     <div className="row g-3">
                       <div className="col-md-6">
                         <div className="card h-100 border-0 shadow-sm rounded-3 p-3.5 bg-white" style={{ border: '1px solid #e2e8f0' }}>
                           <span className="badge bg-warning-subtle text-dark rounded-pill mb-1 align-self-start" style={{ fontSize: '0.68rem' }}>
-                            mod_customcert (Verifiable PDF)
+                            TCU &amp; SARIS Verifiable Credential Engine
                           </span>
                           <h6 className="fw-bold text-dark mb-1" style={{ fontSize: '0.9rem' }}>
-                            {customCertData?.name || `${course.shortname} Accredited Certificate`}
+                            {customCertData?.name || `${course.shortname} Accredited Digital Certificate`}
                           </h6>
                           <p className="text-muted small mb-2" style={{ fontSize: '0.75rem' }}>
-                            Recipient: <strong>{customCertData?.recipientName || 'OUT Scholar'}</strong>
+                            Scholar: <strong>{customCertData?.recipientName || 'Baraka Mkwawa'}</strong>
                             <br />
-                            Verification Code:{' '}
-                            <code className="fw-bold text-primary">{customCertData?.verificationCode || 'OUT-2026-CERT'}</code>
+                            Cryptographic Serial:{' '}
+                            <code className="fw-bold text-primary">{customCertData?.verificationCode || 'OUT-2026-CRED'}</code>
                           </p>
                           <div className="d-flex gap-1.5 mt-auto">
                             <button
@@ -1634,7 +1732,7 @@ const CourseDetails: React.FC = () => {
                               className="btn btn-sm btn-primary rounded-pill px-3 py-1 fw-semibold"
                               style={{ fontSize: '0.73rem' }}
                             >
-                              {pluginActionBusy === 'cert' ? 'Issuing...' : 'Issue Certificate (POST)'}
+                              {pluginActionBusy === 'cert' ? 'Generating...' : 'Generate / Re-Issue Credential'}
                             </button>
                             {customCertData?.verifyUrl && (
                               <Link
@@ -1642,7 +1740,7 @@ const CourseDetails: React.FC = () => {
                                 className="btn btn-sm btn-outline-secondary rounded-pill px-2.5 py-1 fw-semibold"
                                 style={{ fontSize: '0.73rem' }}
                               >
-                                Verify QR
+                                Verify Serial
                               </Link>
                             )}
                           </div>
@@ -1652,14 +1750,14 @@ const CourseDetails: React.FC = () => {
                       <div className="col-md-6">
                         <div className="card h-100 border-0 shadow-sm rounded-3 p-3.5 bg-white" style={{ border: '1px solid #e2e8f0' }}>
                           <span className="badge bg-info-subtle text-info rounded-pill mb-1 align-self-start" style={{ fontSize: '0.68rem' }}>
-                            mod_reengagement (Retention Engine)
+                            Intelligent Scholar Retention Engine
                           </span>
                           <h6 className="fw-bold text-dark mb-1" style={{ fontSize: '0.9rem' }}>
-                            {reengagementNudges[0]?.name || `${course.shortname} Automated Study Nudge`}
+                            {reengagementNudges[0]?.name || `${course.shortname} Study Momentum Automation`}
                           </h6>
                           <p className="text-muted small mb-2" style={{ fontSize: '0.75rem' }}>
-                            Cycle: Every <strong>{reengagementNudges[0]?.durationDays || 7} days</strong> • Dispatched:{' '}
-                            <strong>{reengagementNudges[0]?.remindercount || 1} nudges</strong>
+                            Cadence: Every <strong>{reengagementNudges[0]?.durationDays || 7} days</strong> • Dispatched:{' '}
+                            <strong>{reengagementNudges[0]?.remindercount || 3} cohort alerts</strong>
                           </p>
                           <div className="mt-auto">
                             <button
@@ -1669,7 +1767,7 @@ const CourseDetails: React.FC = () => {
                               className="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 fw-semibold"
                               style={{ fontSize: '0.73rem' }}
                             >
-                              {pluginActionBusy === 'reeng' ? 'Dispatching...' : 'Trigger Retention Nudge (POST)'}
+                              {pluginActionBusy === 'reeng' ? 'Dispatching...' : 'Dispatch Momentum Alert'}
                             </button>
                           </div>
                         </div>
@@ -1987,12 +2085,12 @@ const CourseDetails: React.FC = () => {
                       onChange={(e) => setModuleForm({ ...moduleForm, modname: e.target.value })}
                     >
                       <option value="page">Lecture Notes / Reading Page</option>
-                      <option value="quiz">Assessment Quiz (with CodeRunner support)</option>
+                      <option value="quiz">Automated Assessment &amp; Unit-Test Quiz</option>
                       <option value="assign">Coursework Assignment</option>
-                      <option value="vpl">Virtual Programming Lab (mod_vpl)</option>
-                      <option value="attendance">Digital Attendance &amp; QR Check-In (mod_attendance)</option>
-                      <option value="customcert">Verifiable Custom Certificate (mod_customcert)</option>
-                      <option value="reengagement">Automated Retention Nudge (mod_reengagement)</option>
+                      <option value="vpl">OUT Cloud Virtual Programming Lab IDE</option>
+                      <option value="attendance">SARIS Digital Attendance &amp; QR Check-In Register</option>
+                      <option value="customcert">TCU &amp; SARIS Verifiable Digital Credential</option>
+                      <option value="reengagement">Automated Scholar Retention &amp; Momentum Alert</option>
                       <option value="forum">Discussion Seminar Forum</option>
                       <option value="url">External Academic Resource Link</option>
                     </select>

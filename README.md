@@ -41,7 +41,7 @@ The fastest and most portable deployment method. Automatically provisions MariaD
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/Rb-tech-byte/lms.git
+git clone https://lms.out.ac.tz/git/lms.git
 cd lms
 
 # 2. Copy environment template

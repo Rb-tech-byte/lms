@@ -1,68 +1,92 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "OUT LMS \u2014 The Open University of Tanzania REST API",
-    "summary": "Official Academic & Administrative Web Services Engine",
-    "description": "### \ud83c\udfdb\ufe0f The Open University of Tanzania (Chuo Kikuu Huria cha Tanzania)\n**TCU & SARIS Accredited National Distance & Blended Learning Ecosystem**\n\nThis API documentation serves as the central reference for the OUT LMS headless REST API engine, bridging **Moodle 5.x core**, **MariaDB academic tables**, and **Pesapal 3.0** payment services with modern reactive client applications.\n\n#### \ud83d\ude80 Key Features:\n- **100% Dynamic Real Data**: Real-time queries against course catalogs, enrollments, and academic transcripts.\n- **National & International Payments**: Integrated Pesapal 3.0 for Tanzanian Mobile Money (M-Pesa, Airtel Money, Tigo Pesa, HaloPesa) and international credit/debit cards.\n- **Verifiable Credentials**: Instant SARIS & TCU accredited certificate verification.\n- **Secure Role-Based Access**: Multi-tier authentication for Scholars, Instructors, Faculty Deans, and Super Administrators.\n",
-    "version": "1.0.0",
+    "title": "OUT LMS \u2014 Enterprise REST & Web Services API",
+    "summary": "Unified Academic, Administrative & Moodle Core Web Services Engine",
+    "description": "### \ud83c\udfdb\ufe0f The Open University of Tanzania (Chuo Kikuu Huria cha Tanzania)\n**TCU & SARIS Accredited National Distance & Blended Learning Ecosystem**\n\nEnterprise API Gateway documentation providing complete interactive visualization of:\n1. **Public Academic & Discovery APIs**: Live course catalog, faculties, syllabi, fee structures, and verified instructor profiles.\n2. **Admissions & Student Self-Service**: User registration, password resets, inquiries, and application workflows.\n3. **Payments & Checkout Engine**: Pesapal 3.0 Mobile Money (M-Pesa, Airtel Money, Tigo Pesa, HaloPesa) & Card gateway.\n4. **Accredited Digital Credentials**: SARIS & TCU verifiable digital certificates with unique verification codes.\n5. **Course & Faculty Administration**: Full CUD operations for courses, learning activity modules, categories, and groups.\n6. **Instructor Console Services**: Teaching dashboard, assignments, grading rubrics, quizzes, announcements, and earnings.\n7. **System & Telemetry Operations**: Configuration, cache management, telemetry, and platform diagnostics.\n8. **SSO & Authentication**: Single Sign-On and security token generation.\n9. **Moodle Core Web Services**: Standard Moodle REST protocol endpoints (`/webservice/rest/server.php`).\n",
+    "version": "1.0.0-enterprise",
     "contact": {
-      "name": "OUT Directorate of Information & Communication Technology (DICT)",
-      "url": "https://www.out.ac.tz",
+      "name": "OUT Directorate of Information and Communication Technology (DICT)",
+      "url": "https://lms.out.ac.tz",
       "email": "dict@out.ac.tz"
     },
     "license": {
-      "name": "Proprietary & Confidential \u2014 Open University of Tanzania",
-      "url": "https://www.out.ac.tz/policies"
+      "name": "The Open University of Tanzania Institutional License",
+      "url": "https://lms.out.ac.tz/terms"
     }
   },
   "servers": [
     {
       "url": "http://localhost:3000",
-      "description": "Frontend Application & API Reverse Proxy (Port 3000)"
+      "description": "Unified Gateway & Reverse Proxy (Port 3000)"
     },
     {
       "url": "http://localhost:8080",
-      "description": "Direct Moodle Core Apache Server (Port 8080)"
+      "description": "Direct Backend Application Server (Port 8080)"
+    },
+    {
+      "url": "https://lms.out.ac.tz",
+      "description": "Institutional Production Cloud Gateway"
     }
   ],
   "tags": [
     {
-      "name": "Public Catalog",
-      "description": "Publicly accessible endpoints for academic course discovery, faculties, short courses, and MOOCs."
+      "name": "Public Academic Catalog",
+      "description": "Course discovery, degree programmes, short courses (PSC), MOOCs, and syllabi."
     },
     {
-      "name": "Course Details & Syllabus",
-      "description": "In-depth syllabus, learning activity modules, instructor profiles, and fees."
+      "name": "Admissions & Onboarding",
+      "description": "Student self-service registration, password recovery, and inquiry forms."
     },
     {
       "name": "Payments & Checkout",
-      "description": "Pesapal 3.0 payment gateway integration, order creation, IPN status checks, and enrollment fees."
+      "description": "Pesapal 3.0, Tanzanian Mobile Money (M-Pesa, Airtel, Tigo, HaloPesa) & Cards."
     },
     {
       "name": "Digital Credentials",
-      "description": "Verification and issuance of tamper-proof TCU & SARIS accredited certificates."
+      "description": "TCU & SARIS verifiable certificates and QR validation."
     },
     {
-      "name": "Authentication & Scholars",
-      "description": "Scholar self-registration, Single Sign-On (SSO), and account management."
+      "name": "Course & Curriculum Management",
+      "description": "Full administrative course CUD, sections, learning activities, and enrolments."
+    },
+    {
+      "name": "Faculties & Categories",
+      "description": "University faculties, academic departments, and category hierarchies."
+    },
+    {
+      "name": "User & Group Governance",
+      "description": "Scholar and staff directory, role assignments, and tutorial study groups."
     },
     {
       "name": "Instructor Console",
-      "description": "Faculty management endpoints for assignments, submissions, grading rubrics, and announcements."
+      "description": "Faculty teaching console, grading rubrics, assignments, quizzes, and payouts."
     },
     {
-      "name": "System Administration",
-      "description": "Platform settings, cache purge, Moodle diagnostics, and user telemetry."
+      "name": "Gamification & Live Sessions",
+      "description": "Scholar XP points, badges, leaderboards, and virtual live classrooms."
+    },
+    {
+      "name": "System & Telemetry",
+      "description": "Cache purge, performance metrics, site settings, and CMS branding."
+    },
+    {
+      "name": "SSO & Security Tokens",
+      "description": "Single Sign-On authentication and Moodle mobile/web service tokens."
+    },
+    {
+      "name": "Moodle Core Web Services",
+      "description": "Standard Moodle REST web services protocol (`/webservice/rest/server.php`)."
     }
   ],
   "paths": {
     "/admin_api.php?action=public_catalog": {
       "get": {
         "tags": [
-          "Public Catalog"
+          "Public Academic Catalog"
         ],
         "summary": "Retrieve Public Course Catalog",
-        "description": "Queries live Moodle database tables to return the complete catalog of published academic degree courses, professional short courses (PSC), and MOOCs, complete with dynamic fee structures, real faculty instructor profiles, enrollment counts, and themed SVG covers.",
+        "description": "Queries live MariaDB tables to return the complete catalog of published academic degree courses, professional short courses (PSC), and MOOCs with fees, real faculty instructors, and themed SVG covers.",
         "operationId": "getPublicCatalog",
         "parameters": [
           {
@@ -71,12 +95,8 @@
             "required": true,
             "schema": {
               "type": "string",
-              "default": "public_catalog",
-              "enum": [
-                "public_catalog"
-              ]
-            },
-            "description": "API action identifier."
+              "default": "public_catalog"
+            }
           },
           {
             "name": "category",
@@ -85,76 +105,36 @@
             "schema": {
               "type": "integer"
             },
-            "description": "Optional category ID filter (e.g. 6 for IEMT Short Courses, 7 for MOOCs)."
+            "description": "Category ID filter (e.g. 6 for PSC, 7 for MOOCs)."
           }
         ],
         "responses": {
           "200": {
-            "description": "Course catalog retrieved successfully with all active courses and categories.",
+            "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "": "#/components/schemas/PublicCatalogResponse"
-                },
-                "example": {
-                  "success": true,
-                  "courses": [
-                    {
-                      "id": 7,
-                      "fullname": "Cybersecurity & Network Defense Fundamentals",
-                      "shortname": "PSC-CYBER",
-                      "summary": "Comprehensive enterprise cybersecurity short course covering perimeter defense, threat detection, vulnerability analysis, and incident response.",
-                      "categoryid": 6,
-                      "categoryName": "IEMT Professional Short Courses",
-                      "categoryCode": "IEMT-PSC",
-                      "programType": "short_course",
-                      "isPSC": true,
-                      "isMOOC": false,
-                      "tuitionFee": 220000,
-                      "feeEnrolId": 63,
-                      "priceFormatted": "TZS 220,000",
-                      "tuitionFeeUSD": 85,
-                      "priceUSDFormatted": "",
-                      "duration": "6 Weeks",
-                      "cpdCredits": 20,
-                      "deliveryMode": "100% Online (Self-Paced + Live Webinars)",
-                      "difficultyLevel": "Foundational",
-                      "sectionsCount": 4,
-                      "modulesCount": 8,
-                      "enrolledCount": 18,
-                      "instructorName": "Dr. Emmanuel Michael",
-                      "instructorAvatar": "/assets/img/user/user-01.jpg",
-                      "instructor": {
-                        "id": 5,
-                        "fullname": "Dr. Emmanuel Michael",
-                        "role": "Director, IEMT & Senior Lecturer in Cybersecurity",
-                        "department": "IEMT Cybersecurity & Networking",
-                        "email": "emmanuel.michael@out.ac.tz",
-                        "avatar": "/assets/img/user/user-01.jpg"
-                      },
-                      "courseImage": "/assets/img/course/thumbnails/course-7-psc-cyber.svg?v=2",
-                      "accentColor": "#dc2626",
-                      "badgeText": "Professional Short Course",
-                      "rating": "4.9",
-                      "reviewsCount": 77,
-                      "hasCertificate": true,
-                      "hasLiveClassroom": true,
-                      "accreditation": "SARIS & TCU Verified \u2022 IEMT Certified"
-                    }
-                  ],
-                  "categories": [
-                    {
-                      "id": 6,
-                      "name": "IEMT Professional Short Courses",
-                      "idnumber": "IEMT-PSC",
-                      "coursecount": 7
-                    }
-                  ],
-                  "stats": {
-                    "totalCourses": 19,
-                    "totalStudents": 452,
-                    "totalInstructors": 12
-                  }
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -165,10 +145,10 @@
     "/admin_api.php?action=public_course_details": {
       "get": {
         "tags": [
-          "Course Details & Syllabus"
+          "Public Academic Catalog"
         ],
-        "summary": "Retrieve Single Course Details & Modules",
-        "description": "Returns detailed course syllabus, curriculum sections, learning activity items (quizzes, assignments, SCORM packages), teacher bio, and fee payment details for a specific course ID.",
+        "summary": "Get Detailed Course Syllabus & Modules",
+        "description": "Retrieves full course curriculum, sections, learning activities, lecturer bio, and fee details for a specific course ID.",
         "operationId": "getPublicCourseDetails",
         "parameters": [
           {
@@ -187,24 +167,36 @@
             "schema": {
               "type": "integer"
             },
-            "description": "Moodle Course primary key ID (e.g. 7 or 12)."
+            "description": "Course primary key ID (e.g. 7 or 12)."
           }
         ],
         "responses": {
           "200": {
-            "description": "Detailed course information returned successfully.",
+            "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean"
-                    },
-                    "course": {
-                      "": "#/components/schemas/CourseDetail"
-                    }
-                  }
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -215,10 +207,10 @@
     "/admin_api.php?action=public_instructors": {
       "get": {
         "tags": [
-          "Public Catalog"
+          "Public Academic Catalog"
         ],
-        "summary": "List University Instructors & Faculty Directors",
-        "description": "Fetches all registered academic lecturers, department heads, and course directors with their faculty affiliation, active courses, and bios.",
+        "summary": "List Faculty Members & Senior Lecturers",
+        "description": "Returns university course directors, department chairs, and lecturers with their biographies, faculties, and assigned courses.",
         "operationId": "getPublicInstructors",
         "parameters": [
           {
@@ -233,7 +225,521 @@
         ],
         "responses": {
           "200": {
-            "description": "Instructors list returned successfully."
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=get_short_courses_catalog": {
+      "get": {
+        "tags": [
+          "Public Academic Catalog"
+        ],
+        "summary": "List Professional Short Courses (PSC)",
+        "description": "Returns specialized vocational and professional certification short courses offered by IEMT and Faculty of Science & Technology.",
+        "operationId": "getShortCoursesCatalog",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "get_short_courses_catalog"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=register_user": {
+      "post": {
+        "tags": [
+          "Admissions & Onboarding"
+        ],
+        "summary": "Student Self-Service Registration",
+        "description": "Creates a verified scholar account in Moodle core with automatic student role assignment and faculty department onboarding.",
+        "operationId": "registerUser",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "register_user"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "password",
+                  "firstname",
+                  "lastname"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "scholar@out.ac.tz"
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 6,
+                    "example": "Study@2026"
+                  },
+                  "firstname": {
+                    "type": "string",
+                    "example": "Baraka"
+                  },
+                  "lastname": {
+                    "type": "string",
+                    "example": "Mollel"
+                  },
+                  "phone": {
+                    "type": "string",
+                    "example": "+255712000111"
+                  },
+                  "department": {
+                    "type": "string",
+                    "example": "Faculty of Science, Technology & Environmental Studies"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=request_password_reset": {
+      "post": {
+        "tags": [
+          "Admissions & Onboarding"
+        ],
+        "summary": "Request or Complete Password Reset",
+        "description": "Initiates self-service password recovery or sets a new password using a verified reset token.",
+        "operationId": "requestPasswordReset",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "request_password_reset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "scholar@out.ac.tz"
+                  },
+                  "token": {
+                    "type": "string",
+                    "description": "Verification token sent via email/SMS."
+                  },
+                  "new_password": {
+                    "type": "string",
+                    "minLength": 6
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=submit_contact_inquiry": {
+      "post": {
+        "tags": [
+          "Admissions & Onboarding"
+        ],
+        "summary": "Submit University Contact Inquiry",
+        "description": "Directs prospective student queries to the appropriate faculty dean or admissions coordinator.",
+        "operationId": "submitContactInquiry",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "submit_contact_inquiry"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "email",
+                  "message"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Fatma Juma"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "fatma.juma@gmail.com"
+                  },
+                  "subject": {
+                    "type": "string",
+                    "example": "Inquiry regarding PSC-CYBER enrollment"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Kindly advise on the start date for cohort 2."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=paygw_pesapal_create_order": {
+      "post": {
+        "tags": [
+          "Payments & Checkout"
+        ],
+        "summary": "Initiate Pesapal 3.0 Payment Order",
+        "description": "Generates a Pesapal 3.0 transaction reference supporting Tanzanian Mobile Money (M-Pesa, Airtel, Tigo, HaloPesa) and International Cards.",
+        "operationId": "createPesapalOrder",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "paygw_pesapal_create_order"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "courseid",
+                  "amount",
+                  "currency",
+                  "email",
+                  "phonenumber"
+                ],
+                "properties": {
+                  "courseid": {
+                    "type": "integer",
+                    "example": 12
+                  },
+                  "enrolid": {
+                    "type": "integer",
+                    "example": 68
+                  },
+                  "amount": {
+                    "type": "number",
+                    "example": 220000
+                  },
+                  "currency": {
+                    "type": "string",
+                    "enum": [
+                      "TZS",
+                      "USD"
+                    ],
+                    "default": "TZS"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "scholar@out.ac.tz"
+                  },
+                  "phonenumber": {
+                    "type": "string",
+                    "example": "+255754123456"
+                  },
+                  "firstname": {
+                    "type": "string",
+                    "example": "Juma"
+                  },
+                  "lastname": {
+                    "type": "string",
+                    "example": "Rashid"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=paygw_pesapal_check_status": {
+      "get": {
+        "tags": [
+          "Payments & Checkout"
+        ],
+        "summary": "Query Pesapal 3.0 Order Status",
+        "description": "Queries Pesapal IPN status to verify whether transaction completed, pending, or failed, automatically enrolling scholar on success.",
+        "operationId": "checkPesapalStatus",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "paygw_pesapal_check_status"
+            }
+          },
+          {
+            "name": "order_tracking_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -244,7 +750,7 @@
           "Digital Credentials"
         ],
         "summary": "Verify TCU & SARIS Accredited Certificate",
-        "description": "Validates a digital certificate by its serial number or QR code verification hash, confirming scholar identity, completion date, course grade, and official accreditation.",
+        "description": "Validates authenticity of a digital graduation certificate using its unique serial verification code.",
         "operationId": "verifyCertificate",
         "parameters": [
           {
@@ -263,76 +769,36 @@
             "schema": {
               "type": "string"
             },
-            "description": "Unique certificate code (e.g. OUT-CERT-2026-CS101-7890)."
+            "example": "OUT-CERT-2026-CS101-7890"
           }
         ],
         "responses": {
           "200": {
-            "description": "Certificate verification result."
-          }
-        }
-      }
-    },
-    "/admin_api.php?action=paygw_pesapal_create_order": {
-      "post": {
-        "tags": [
-          "Payments & Checkout"
-        ],
-        "summary": "Initiate Pesapal 3.0 Payment Order",
-        "description": "Generates a secure Pesapal 3.0 transaction tracking reference for course enrolment. Supports Tanzanian Mobile Money (M-Pesa, Tigo Pesa, Airtel Money, HaloPesa) and international Visa/Mastercard.",
-        "operationId": "createPesapalOrder",
-        "parameters": [
-          {
-            "name": "action",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "default": "paygw_pesapal_create_order"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "": "#/components/schemas/PesapalOrderRequest"
-              },
-              "example": {
-                "courseid": 12,
-                "enrolid": 68,
-                "amount": 220000,
-                "currency": "TZS",
-                "email": "scholar@out.ac.tz",
-                "phonenumber": "+255712345678",
-                "firstname": "Amani",
-                "lastname": "Bakari"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Pesapal order initialized with payment redirect URL.",
+            "description": "Successful response",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": {
-                      "type": "boolean"
-                    },
-                    "order_tracking_id": {
-                      "type": "string"
-                    },
-                    "merchant_reference": {
-                      "type": "string"
-                    },
-                    "redirect_url": {
-                      "type": "string"
-                    }
-                  }
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -340,14 +806,14 @@
         }
       }
     },
-    "/admin_api.php?action=register_user": {
-      "post": {
+    "/admin_api.php?action=get_certificate": {
+      "get": {
         "tags": [
-          "Authentication & Scholars"
+          "Digital Credentials"
         ],
-        "summary": "Student Self-Service Registration",
-        "description": "Creates a new student account in Moodle core with automatic student role assignment, faculty department allocation, and welcome notification.",
-        "operationId": "registerUser",
+        "summary": "Retrieve Scholar Certificate Details",
+        "description": "Fetches certificate metadata, student name, course title, grade, date issued, and official verification QR code.",
+        "operationId": "getCertificate",
         "parameters": [
           {
             "name": "action",
@@ -355,10 +821,161 @@
             "required": true,
             "schema": {
               "type": "string",
-              "default": "register_user"
+              "default": "get_certificate"
+            }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
             }
           }
         ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=get_courses": {
+      "get": {
+        "tags": [
+          "Course & Curriculum Management"
+        ],
+        "summary": "List All Courses (Administrative CUD)",
+        "description": "Returns complete courses list with enrollment statistics, category hierarchy, format, and visibility toggles.",
+        "operationId": "adminGetCourses",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "get_courses"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/admin_api.php?action=create_course": {
+      "post": {
+        "tags": [
+          "Course & Curriculum Management"
+        ],
+        "summary": "Create New Academic Course",
+        "description": "Provisions a new course container in Moodle database with specified shortname, category, syllabus sections, and course format.",
+        "operationId": "adminCreateCourse",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "create_course"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
         "requestBody": {
           "required": true,
           "content": {
@@ -366,30 +983,291 @@
               "schema": {
                 "type": "object",
                 "required": [
-                  "email",
-                  "password",
-                  "firstname",
-                  "lastname"
+                  "fullname",
+                  "shortname",
+                  "category"
                 ],
                 "properties": {
-                  "email": {
+                  "fullname": {
                     "type": "string",
-                    "format": "email"
+                    "example": "Artificial Intelligence in Legal Practice"
                   },
-                  "password": {
+                  "shortname": {
                     "type": "string",
-                    "minLength": 6
+                    "example": "LAW-AI-401"
                   },
-                  "firstname": {
+                  "category": {
+                    "type": "integer",
+                    "example": 2
+                  },
+                  "summary": {
+                    "type": "string",
+                    "example": "Exploration of modern legaltech and AI in jurisprudence."
+                  },
+                  "format": {
+                    "type": "string",
+                    "default": "topics"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/admin_api.php?action=update_course_settings": {
+      "post": {
+        "tags": [
+          "Course & Curriculum Management"
+        ],
+        "summary": "Update Course Settings",
+        "description": "Modifies course title, visibility, description summary, or category placement.",
+        "operationId": "adminUpdateCourseSettings",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "update_course_settings"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "id"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "fullname": {
                     "type": "string"
                   },
-                  "lastname": {
+                  "shortname": {
                     "type": "string"
                   },
-                  "phone": {
+                  "visible": {
+                    "type": "integer",
+                    "enum": [
+                      0,
+                      1
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/admin_api.php?action=delete_course": {
+      "post": {
+        "tags": [
+          "Course & Curriculum Management"
+        ],
+        "summary": "Delete or Archive Course",
+        "description": "Permanently deletes or hides a course from the active university directory.",
+        "operationId": "adminDeleteCourse",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "delete_course"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "id"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/admin_api.php?action=add_activity": {
+      "post": {
+        "tags": [
+          "Course & Curriculum Management"
+        ],
+        "summary": "Add Learning Activity Module",
+        "description": "Attaches a Quiz, Assignment, Page, or File Resource to a specific course section.",
+        "operationId": "adminAddActivity",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "add_activity"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "course_id",
+                  "section_num",
+                  "module_type",
+                  "name"
+                ],
+                "properties": {
+                  "course_id": {
+                    "type": "integer"
+                  },
+                  "section_num": {
+                    "type": "integer"
+                  },
+                  "module_type": {
+                    "type": "string",
+                    "enum": [
+                      "quiz",
+                      "assign",
+                      "page",
+                      "resource"
+                    ]
+                  },
+                  "name": {
                     "type": "string"
                   },
-                  "department": {
+                  "intro": {
                     "type": "string"
                   }
                 }
@@ -397,20 +1275,703 @@
             }
           }
         },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/admin_api.php?action=get_categories": {
+      "get": {
+        "tags": [
+          "Faculties & Categories"
+        ],
+        "summary": "List Faculties & Academic Categories",
+        "description": "Returns all faculty departments (IEMT, Science, Business, Law, Education) and their course counts.",
+        "operationId": "adminGetCategories",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "get_categories"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "User successfully registered."
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
-        }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/admin_api.php?action=add_category": {
+      "post": {
+        "tags": [
+          "Faculties & Categories"
+        ],
+        "summary": "Create New Academic Category",
+        "description": "Adds a new faculty department or programme cluster.",
+        "operationId": "adminAddCategory",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "add_category"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Faculty of Agriculture & Food Security"
+                  },
+                  "idnumber": {
+                    "type": "string",
+                    "example": "FAFS"
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/admin_api.php?action=get_users": {
+      "get": {
+        "tags": [
+          "User & Group Governance"
+        ],
+        "summary": "Query User Directory",
+        "description": "Returns users with RBAC role assignments, faculty department, last login, and account status.",
+        "operationId": "adminGetUsers",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "get_users"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/admin_api.php?action=create_user": {
+      "post": {
+        "tags": [
+          "User & Group Governance"
+        ],
+        "summary": "Administrative User Provisioning",
+        "description": "Creates a user account with explicit role (student, teacher, manager, admin).",
+        "operationId": "adminCreateUser",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "create_user"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "username",
+                  "email",
+                  "firstname",
+                  "lastname",
+                  "password",
+                  "role"
+                ],
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "firstname": {
+                    "type": "string"
+                  },
+                  "lastname": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "role": {
+                    "type": "string",
+                    "enum": [
+                      "student",
+                      "teacher",
+                      "manager",
+                      "admin"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/admin_api.php?action=instructor_dashboard": {
+      "get": {
+        "tags": [
+          "Instructor Console"
+        ],
+        "summary": "Get Instructor Dashboard Telemetry",
+        "description": "Returns teaching metrics: active courses, enrolled scholars, pending assignment submissions, and average grading turn-around.",
+        "operationId": "getInstructorDashboard",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "instructor_dashboard"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/admin_api.php?action=instructor_assignments": {
+      "get": {
+        "tags": [
+          "Instructor Console"
+        ],
+        "summary": "List Instructor Assignments & Submissions",
+        "description": "Fetches all course assignments, submission counts, graded rubrics, and deadlines.",
+        "operationId": "getInstructorAssignments",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "instructor_assignments"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/admin_api.php?action=instructor_announcements": {
+      "get": {
+        "tags": [
+          "Instructor Console"
+        ],
+        "summary": "List Course Announcements",
+        "description": "Fetches instructor broadcast announcements dispatched to enrolled course scholars.",
+        "operationId": "getInstructorAnnouncements",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "instructor_announcements"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/admin_api.php?action=instructor_earnings": {
+      "get": {
+        "tags": [
+          "Instructor Console"
+        ],
+        "summary": "View Instructor Remuneration & Royalties",
+        "description": "Calculates course enrollment royalties, tuition shares, and historical payouts.",
+        "operationId": "getInstructorEarnings",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "instructor_earnings"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/admin_api.php?action=purge_cache": {
+      "post": {
+        "tags": [
+          "System & Telemetry"
+        ],
+        "summary": "Purge System Cache Stores",
+        "description": "Flushes specified or all internal caches (MUC, theme, lang, JS, OPcache).",
+        "operationId": "adminPurgeCache",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "purge_cache"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "target": {
+                    "type": "string",
+                    "enum": [
+                      "all",
+                      "theme",
+                      "muc",
+                      "lang",
+                      "js",
+                      "opcache"
+                    ],
+                    "default": "all"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/admin_api.php?action=get_cache_status": {
+      "get": {
+        "tags": [
+          "System & Telemetry"
+        ],
+        "summary": "System Cache & Memory Diagnostics",
+        "description": "Returns memory utilization, OPcache hit ratio, and database query statistics.",
+        "operationId": "adminGetCacheStatus",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "get_cache_status"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
       }
     },
     "/admin_api.php?action=get_cms_config": {
       "get": {
         "tags": [
-          "System Administration"
+          "System & Telemetry"
         ],
-        "summary": "Get University CMS Branding & Config",
-        "description": "Retrieves homepage hero headings, announcement banners, contact numbers, and social links dynamically stored in Moodle config tables.",
+        "summary": "Get Public Portal CMS Branding",
+        "description": "Retrieves homepage hero headings, announcement banners, contact phone numbers, and official branding assets.",
         "operationId": "getCmsConfig",
         "parameters": [
           {
@@ -425,248 +1986,711 @@
         ],
         "responses": {
           "200": {
-            "description": "CMS configuration payload returned."
-          }
-        }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "PublicCatalogResponse": {
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean"
-          },
-          "courses": {
-            "type": "array",
-            "items": {
-              "": "#/components/schemas/CourseSummary"
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
             }
           },
-          "categories": {
-            "type": "array",
-            "items": {
-              "": "#/components/schemas/CategorySummary"
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
             }
           },
-          "stats": {
-            "type": "object",
-            "properties": {
-              "totalCourses": {
-                "type": "integer"
-              },
-              "totalStudents": {
-                "type": "integer"
-              },
-              "totalInstructors": {
-                "type": "integer"
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
         }
-      },
-      "CourseSummary": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "description": "Moodle Course ID"
+      }
+    },
+    "/sso.php": {
+      "post": {
+        "tags": [
+          "SSO & Security Tokens"
+        ],
+        "summary": "Single Sign-On (SSO) Authentication",
+        "description": "Authenticates user credentials against Moodle core database, generating secure session and redirect state.",
+        "operationId": "ssoAuthenticate",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
           },
-          "fullname": {
-            "type": "string",
-            "description": "Official course title"
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           },
-          "shortname": {
-            "type": "string",
-            "description": "Course discipline code"
-          },
-          "summary": {
-            "type": "string",
-            "description": "Course description overview"
-          },
-          "categoryid": {
-            "type": "integer"
-          },
-          "categoryName": {
-            "type": "string"
-          },
-          "categoryCode": {
-            "type": "string"
-          },
-          "programType": {
-            "type": "string",
-            "enum": [
-              "academic",
-              "short_course",
-              "mooc"
-            ]
-          },
-          "isPSC": {
-            "type": "boolean"
-          },
-          "isMOOC": {
-            "type": "boolean"
-          },
-          "tuitionFee": {
-            "type": "number",
-            "description": "Fee amount in TZS"
-          },
-          "feeEnrolId": {
-            "type": "integer",
-            "description": "Moodle enrol table fee instance ID"
-          },
-          "priceFormatted": {
-            "type": "string",
-            "example": "TZS 220,000"
-          },
-          "tuitionFeeUSD": {
-            "type": "number"
-          },
-          "priceUSDFormatted": {
-            "type": "string"
-          },
-          "duration": {
-            "type": "string",
-            "example": "6 Weeks"
-          },
-          "cpdCredits": {
-            "type": "integer",
-            "example": 20
-          },
-          "deliveryMode": {
-            "type": "string"
-          },
-          "difficultyLevel": {
-            "type": "string"
-          },
-          "sectionsCount": {
-            "type": "integer"
-          },
-          "modulesCount": {
-            "type": "integer"
-          },
-          "enrolledCount": {
-            "type": "integer"
-          },
-          "instructorName": {
-            "type": "string"
-          },
-          "instructorAvatar": {
-            "type": "string"
-          },
-          "courseImage": {
-            "type": "string"
-          },
-          "accentColor": {
-            "type": "string",
-            "example": "#dc2626"
-          },
-          "badgeText": {
-            "type": "string"
-          },
-          "rating": {
-            "type": "string",
-            "example": "4.9"
-          },
-          "reviewsCount": {
-            "type": "integer"
-          },
-          "hasCertificate": {
-            "type": "boolean"
-          },
-          "accreditation": {
-            "type": "string"
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
-        }
-      },
-      "CategorySummary": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer"
-          },
-          "name": {
-            "type": "string"
-          },
-          "idnumber": {
-            "type": "string"
-          },
-          "coursecount": {
-            "type": "integer"
-          }
-        }
-      },
-      "CourseDetail": {
-        "allOf": [
-          {
-            "": "#/components/schemas/CourseSummary"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "curriculum": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "sectionId": {
-                      "type": "integer"
-                    },
-                    "sectionName": {
-                      "type": "string"
-                    },
-                    "summary": {
-                      "type": "string"
-                    },
-                    "activitiesCount": {
-                      "type": "integer"
-                    }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "username",
+                  "password"
+                ],
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "example": "admin"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "Admin@123"
                   }
                 }
               }
             }
           }
-        ]
-      },
-      "PesapalOrderRequest": {
-        "type": "object",
-        "required": [
-          "amount",
-          "currency",
-          "email",
-          "phonenumber"
+        }
+      }
+    },
+    "/login/token.php": {
+      "post": {
+        "tags": [
+          "SSO & Security Tokens"
         ],
+        "summary": "Generate Moodle Web Service Token",
+        "description": "Moodle core service token generator for external mobile apps, headless portals, and API integrations.",
+        "operationId": "generateMoodleToken",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "username",
+                  "password",
+                  "service"
+                ],
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "example": "teacher"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "Teacher@123"
+                  },
+                  "service": {
+                    "type": "string",
+                    "default": "moodle_mobile_app",
+                    "example": "moodle_mobile_app"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webservice/rest/server.php?wsfunction=core_course_get_courses": {
+      "post": {
+        "tags": [
+          "Moodle Core Web Services"
+        ],
+        "summary": "Moodle WS: core_course_get_courses",
+        "description": "Standard Moodle Core Web Service to query course records by specified IDs or retrieve all visible courses.",
+        "operationId": "wsCoreCourseGetCourses",
+        "parameters": [
+          {
+            "name": "wstoken",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Web service token"
+          },
+          {
+            "name": "moodlewsrestformat",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          },
+          {
+            "name": "wsfunction",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "core_course_get_courses"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "MoodleWsToken": []
+          }
+        ]
+      }
+    },
+    "/webservice/rest/server.php?wsfunction=core_course_get_contents": {
+      "post": {
+        "tags": [
+          "Moodle Core Web Services"
+        ],
+        "summary": "Moodle WS: core_course_get_contents",
+        "description": "Returns full course sections, activities, learning resources, and completion requirements.",
+        "operationId": "wsCoreCourseGetContents",
+        "parameters": [
+          {
+            "name": "wstoken",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "moodlewsrestformat",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          },
+          {
+            "name": "wsfunction",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "core_course_get_contents"
+            }
+          },
+          {
+            "name": "courseid",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 7
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "MoodleWsToken": []
+          }
+        ]
+      }
+    },
+    "/webservice/rest/server.php?wsfunction=core_enrol_get_users_courses": {
+      "post": {
+        "tags": [
+          "Moodle Core Web Services"
+        ],
+        "summary": "Moodle WS: core_enrol_get_users_courses",
+        "description": "Returns all courses that a specific scholar is enrolled in, along with progress percentage and last access date.",
+        "operationId": "wsCoreEnrolGetUsersCourses",
+        "parameters": [
+          {
+            "name": "wstoken",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "moodlewsrestformat",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          },
+          {
+            "name": "wsfunction",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "core_enrol_get_users_courses"
+            }
+          },
+          {
+            "name": "userid",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 3
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "MoodleWsToken": []
+          }
+        ]
+      }
+    },
+    "/webservice/rest/server.php?wsfunction=core_enrol_get_enrolled_users": {
+      "post": {
+        "tags": [
+          "Moodle Core Web Services"
+        ],
+        "summary": "Moodle WS: core_enrol_get_enrolled_users",
+        "description": "Fetches list of all scholars and faculty enrolled in a given course container.",
+        "operationId": "wsCoreEnrolGetEnrolledUsers",
+        "parameters": [
+          {
+            "name": "wstoken",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "moodlewsrestformat",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          },
+          {
+            "name": "wsfunction",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "core_enrol_get_enrolled_users"
+            }
+          },
+          {
+            "name": "courseid",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 7
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "MoodleWsToken": []
+          }
+        ]
+      }
+    },
+    "/webservice/rest/server.php?wsfunction=gradereport_user_get_grade_items": {
+      "post": {
+        "tags": [
+          "Moodle Core Web Services"
+        ],
+        "summary": "Moodle WS: gradereport_user_get_grade_items",
+        "description": "Returns official academic gradebook items, calculated weights, feedback, and percentage scores for a course.",
+        "operationId": "wsGradereportUserGetGradeItems",
+        "parameters": [
+          {
+            "name": "wstoken",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "moodlewsrestformat",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          },
+          {
+            "name": "wsfunction",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "gradereport_user_get_grade_items"
+            }
+          },
+          {
+            "name": "courseid",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 7
+          },
+          {
+            "name": "userid",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 3
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "MoodleWsToken": []
+          }
+        ]
+      }
+    },
+    "/webservice/rest/server.php?wsfunction=core_webservice_get_site_info": {
+      "post": {
+        "tags": [
+          "Moodle Core Web Services"
+        ],
+        "summary": "Moodle WS: core_webservice_get_site_info",
+        "description": "Returns institutional site information, enabled functions, username, user ID, and active capabilities.",
+        "operationId": "wsCoreWebserviceGetSiteInfo",
+        "parameters": [
+          {
+            "name": "wstoken",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "moodlewsrestformat",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          },
+          {
+            "name": "wsfunction",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "core_webservice_get_site_info"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "MoodleWsToken": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Bearer token or Moodle session authentication header."
+      },
+      "MoodleWsToken": {
+        "type": "apiKey",
+        "in": "query",
+        "name": "wstoken",
+        "description": "Moodle Web Service Security Token obtained via /login/token.php."
+      }
+    },
+    "schemas": {
+      "StandardSuccessResponse": {
+        "type": "object",
         "properties": {
-          "courseid": {
-            "type": "integer"
+          "success": {
+            "type": "boolean"
           },
-          "enrolid": {
-            "type": "integer"
-          },
-          "amount": {
-            "type": "number"
-          },
-          "currency": {
-            "type": "string",
-            "default": "TZS",
-            "enum": [
-              "TZS",
-              "USD"
-            ]
-          },
-          "email": {
-            "type": "string",
-            "format": "email"
-          },
-          "phonenumber": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
             "type": "string"
           },
-          "firstname": {
+          "errorcode": {
             "type": "string"
           },
-          "lastname": {
+          "message": {
             "type": "string"
           }
         }

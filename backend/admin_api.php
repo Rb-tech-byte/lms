@@ -19,6 +19,9 @@ require_once $CFG->dirroot . '/group/lib.php';
 require_once $CFG->libdir . '/gradelib.php';
 require_once $CFG->dirroot . '/user/lib.php';
 
+@header_remove('X-Powered-By');
+header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: SAMEORIGIN');
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');

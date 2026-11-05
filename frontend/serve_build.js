@@ -90,6 +90,15 @@ function proxyRequestToBackend(req, res, targetUrl) {
     delete responseHeaders['Access-Control-Allow-Methods'];
     delete responseHeaders['Access-Control-Allow-Headers'];
 
+    // Security sanitization: strip server version disclosure headers
+    delete responseHeaders['x-powered-by'];
+    delete responseHeaders['X-Powered-By'];
+    delete responseHeaders['server'];
+    delete responseHeaders['Server'];
+    responseHeaders['Server'] = 'OUT-LMS-Gateway';
+    responseHeaders['X-Content-Type-Options'] = 'nosniff';
+    responseHeaders['X-Frame-Options'] = 'SAMEORIGIN';
+
     responseHeaders['Access-Control-Allow-Origin'] = '*';
     responseHeaders['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS, PUT, DELETE';
     responseHeaders['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, X-Requested-With';

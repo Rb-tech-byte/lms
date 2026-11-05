@@ -574,9 +574,19 @@ export const CourseSettingsStudio: React.FC<CourseSettingsStudioProps> = ({
                                   onChange={(e) => setForm({ ...form, format: e.target.value })}
                                 >
                                   <option value="topics">Topical / Academic Study Units</option>
+                                  <option value="kickstart">Kickstart Course Wizard & Starter Templates</option>
+                                  <option value="tiles">Tiles Visual Cards Grid</option>
+                                  <option value="onetopic">OneTopic Horizontal Tabs</option>
+                                  <option value="topcoll">Collapsed Topics Accordion</option>
                                   <option value="weeks">Weekly Semester Schedule</option>
                                   <option value="singleactivity">Single Modular Activity</option>
                                 </select>
+                                {form.format === 'kickstart' && (
+                                  <div className="form-text text-primary mt-1" style={{ fontSize: '0.78rem' }}>
+                                    <i className="feather-info me-1"></i>
+                                    Kickstart template wizard enabled: course opens with pre-built institutional templates and student placeholder pages.
+                                  </div>
+                                )}
                               </div>
                               <div className="col-md-6">
                                 <label className="form-label small fw-semibold">Course Layout Mode</label>

@@ -1,0 +1,101 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template format_kickstart/course_template_list
+
+    Template for the course template list displayed to teachers.
+
+    Example context (json):
+    {
+        "has_pro": true,
+        "templates": [{
+            "id": "2",
+            "title": "Test",
+            "description_formatted": "This is a test template",
+            "hashtags": "#tag1 #tag2",
+            "isplaceholder": false,
+            "restricted": false,
+            "link": "https://example.com/test/"
+        }]
+    }
+}}
+
+{{^ajaxscript}}
+    {{{teacherinstructions}}}
+{{/ajaxscript}}
+
+<div class="template-list {{templateclass}}">
+    {{#notemplates}}
+        <p class="alert alert-warning">{{#str}} notemplates, format_kickstart {{/str}}</p>
+    {{/notemplates}}
+    {{#templates}}
+            <div class="mb-2 templates-block">
+                {{^isplaceholder}}
+                    <div class="card" data-templatename="{{title}}">
+                        <div class="card-body">
+                            {{#isbackimages}}
+                            <div class="image-block">
+                                <div id="carousel-template-{{id}}" class="carousel slide" {{dataride}}="carousel" {{datainterval}}="2000">
+                                    {{#showimageindicators}}
+                                    <div class="carousel-indicators">
+                                        {{#backimages}}
+                                        <button type="button" {{datatarget}}="#carousel-template-{{id}}" {{dataslideto}}="{{pos}}"{{#active}} class="active" aria-current="true"{{/active}} aria-label="{{slidelabel}}"></button>
+                                        {{/backimages}}
+                                    </div>
+                                    {{/showimageindicators}}
+                                    <div class="carousel-inner">
+                                        {{#backimages}}
+                                        <div class="carousel-item {{#active}}active{{/active}}">
+                                            <img class="d-block w-100" src="{{{image}}}">
+                                        </div>
+                                        {{/backimages}}
+                                    </div>
+                                </div>
+                            </div>
+                            {{/isbackimages}}
+                            <div class="card-content">
+                                <h5 class="card-title">{{{title}}}{{#restricted}} <span class="kickstart-restricted-badge" title="{{#str}} restrictedtemplate_title, format_kickstart {{/str}}">{{#str}} restrictedtemplate, format_kickstart {{/str}}</span>{{/restricted}}</h5>
+                                <p class="card-text">{{{description_formatted}}}</p>
+                                <small class="text-muted">{{hashtags}}</small>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            {{^waitingadhoctask}}
+                                <a href="{{{link}}}" data-template="{{id}}" data-templatename="{{title}}" class="btn btn-primary use-template">{{#str}} usetemplate, format_kickstart {{/str}}</a>
+                            {{/waitingadhoctask}}
+                            {{#waitingadhoctask}}
+                                <span class="template-wait-info"> {{#str}} waitingadhoctasktemplate, format_kickstart {{/str}}</span>
+                            {{/waitingadhoctask}}
+                            {{#preview_url}}
+                                <a href="{{preview_url}}" target="_blank" class="btn btn-outline-primary float-end">{{#str}} preview {{/str}}</a>
+                            {{/preview_url}}
+                        </div>
+                    </div>
+                {{/isplaceholder}}
+                {{#isplaceholder}}
+                    <div class="card bg-secondary">
+                        <div class="card-body d-flex">
+                            <div class="align-self-center text-center w-100">
+                                <p class="card-text">{{{title}}}</p>
+                                <a href="{{{link}}}" target="_blank" class="btn btn-dark">{{#str}} learnmore, format_kickstart {{/str}}</a>
+                            </div>
+                        </div>
+                    </div>
+                {{/isplaceholder}}
+            </div>
+    {{/templates}}
+</div>

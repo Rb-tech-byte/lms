@@ -831,6 +831,27 @@ export const courseService = {
   async callMoodleWsBridge(wsfunction: string, params: Record<string, any> = {}, method: 'GET' | 'POST' = 'GET'): Promise<any> {
     return callInternalApi<any>('moodle_ws_bridge', { wsfunction, ...params }, method);
   },
+
+  async getCourseEnterpriseSuites(courseId: number, suite?: string): Promise<any> {
+    return callInternalApi<any>(
+      'get_course_enterprise_suites',
+      { course_id: courseId, ...(suite ? { suite } : {}) },
+      'GET'
+    );
+  },
+
+  async executeEnterpriseFeature(params: {
+    course_id: number;
+    component?: string;
+    feature_code?: string;
+    suite?: string;
+    prompt?: string;
+    actor?: string;
+    action_name?: string;
+  }): Promise<any> {
+    const action = params.action_name || 'execute_enterprise_feature';
+    return callInternalApi<any>(action, params, 'POST');
+  },
 };
 
 

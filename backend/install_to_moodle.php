@@ -49,7 +49,13 @@ if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'instructor_storage.json')) {
 if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'openapi.json')) {
     copy(__DIR__ . DIRECTORY_SEPARATOR . 'openapi.json', $targetMoodle . DIRECTORY_SEPARATOR . 'openapi.json');
 }
-echo "[OK] Installed admin_api.php, sso.php, instructor_storage, and openapi.json\n";
+if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'seed_system_features.php')) {
+    copy(__DIR__ . DIRECTORY_SEPARATOR . 'seed_system_features.php', $targetMoodle . DIRECTORY_SEPARATOR . 'seed_system_features.php');
+}
+if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'seed_65_marketplace_features.php')) {
+    copy(__DIR__ . DIRECTORY_SEPARATOR . 'seed_65_marketplace_features.php', $targetMoodle . DIRECTORY_SEPARATOR . 'seed_65_marketplace_features.php');
+}
+echo "[OK] Installed admin_api.php, sso.php, instructor_storage, seeders, and openapi.json\n";
 
 // Also copy to public/ if Moodle 5.x router structure exists
 if (is_dir($targetMoodle . DIRECTORY_SEPARATOR . 'public')) {
@@ -64,7 +70,13 @@ if (is_dir($targetMoodle . DIRECTORY_SEPARATOR . 'public')) {
     if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'openapi.json')) {
         copy(__DIR__ . DIRECTORY_SEPARATOR . 'openapi.json', $targetMoodle . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'openapi.json');
     }
-    echo "[OK] Installed admin_api.php, sso.php, instructor_storage, and openapi.json to public/ webroot\n";
+    if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'seed_system_features.php')) {
+        copy(__DIR__ . DIRECTORY_SEPARATOR . 'seed_system_features.php', $targetMoodle . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'seed_system_features.php');
+    }
+    if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'seed_65_marketplace_features.php')) {
+        copy(__DIR__ . DIRECTORY_SEPARATOR . 'seed_65_marketplace_features.php', $targetMoodle . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'seed_65_marketplace_features.php');
+    }
+    echo "[OK] Installed admin_api.php, sso.php, instructor_storage, seeders, and openapi.json to public/ webroot\n";
 }
 
 // 2. Overlay plugins into Moodle directory structure

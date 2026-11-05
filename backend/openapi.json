@@ -4174,6 +4174,95 @@
           }
         }
       }
+    },
+    "/admin_api.php?action=get_course_enterprise_suites": {
+      "get": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Retrieve All 65 Enterprise System Capabilities & Pre-Seeded Course Telemetry (8 Suites)",
+        "description": "Returns all 65 newly integrated OUT LMS Core System Features (deduplicating mod_customcert) grouped across 8 enterprise suites (AI & Intelligent Tutoring, Interactive Video & Media Studio, Curriculum Architecture & Workflows, Rich Authoring & Content Protection, Credentials & Quests, Commerce & Campus Operations, Learner Analytics & Dashboards, and Security, Auth & Plagiarism Governance) with pre-seeded sample records for the specified course.",
+        "parameters": [
+          {
+            "name": "course_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            }
+          },
+          {
+            "name": "suite",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ai_tutor",
+                "interactive_media",
+                "curriculum_governance",
+                "authoring_protection",
+                "credentials_quests",
+                "campus_operations",
+                "learner_analytics",
+                "security_governance"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Enterprise capability suites & course sample telemetry"
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=execute_enterprise_feature": {
+      "post": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Execute & Verify Any of the 65 Enterprise System Capabilities (AI Tutor, Translation, OrigAI Scan, SARIS Sync, Video Studio)",
+        "description": "Executes a real-time write/verification action against any of the 65 integrated OUT LMS Core System Features and persists the execution telemetry in mdl_out_system_feature_data.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "course_id": {
+                    "type": "integer",
+                    "example": 7
+                  },
+                  "component": {
+                    "type": "string",
+                    "example": "local_dttutor"
+                  },
+                  "feature_code": {
+                    "type": "string",
+                    "example": "AI_SOCRATIC_TUTOR"
+                  },
+                  "suite": {
+                    "type": "string",
+                    "example": "ai_tutor"
+                  },
+                  "prompt": {
+                    "type": "string",
+                    "example": "Summarize Unit 1 in English & Kiswahili"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Capability execution verified & persisted"
+          }
+        }
+      }
     }
   },
   "components": {

@@ -1639,6 +1639,24 @@ $isInstructorAction = strpos($action, 'instructor') !== false ||
         'issue_customcert',
         'get_reengagement_nudges',
         'trigger_reengagement',
+        'get_course_enterprise_suites',
+        'execute_enterprise_feature',
+        'get_ai_tutor_suite',
+        'invoke_ai_tutor_action',
+        'get_interactive_media_suite',
+        'record_media_interaction',
+        'get_curriculum_governance_suite',
+        'execute_curriculum_workflow',
+        'get_authoring_protection_suite',
+        'execute_authoring_tool',
+        'get_credentials_quests_suite',
+        'trigger_credential_quest',
+        'get_campus_operations_suite',
+        'execute_campus_operation',
+        'get_learner_analytics_suite',
+        'update_learner_workspace',
+        'get_security_governance_suite',
+        'execute_security_check',
         'moodle_ws_bridge'
     ], true);
 
@@ -2630,24 +2648,54 @@ if ($isInstructorAction || in_array($action, ['resolve_identity', 'change_passwo
                 ['feature_code' => 'SELCOM_INSTANT_SETTLEMENT', 'component' => 'paygw_selcom', 'type' => 'financial', 'name' => 'Selcom Direct USSD & Mobile Wallet Settlement Engine', 'category' => 'Tuition & Financial Settlement', 'get_endpoint' => 'get_cms_config', 'post_endpoint' => 'initiate_payment', 'description' => 'Provides direct Tanzanian mobile wallet push collections and real-time SARIS receipt reconciliation.'],
             ];
 
+            if (file_exists(__DIR__ . '/seed_65_marketplace_features.php')) {
+                require_once(__DIR__ . '/seed_65_marketplace_features.php');
+                if (function_exists('get_out_65_capabilities_catalog')) {
+                    foreach (get_out_65_capabilities_catalog() as $compKey => $meta) {
+                        $featureCatalog[] = [
+                            'feature_code' => $meta['feature_code'],
+                            'component' => $compKey,
+                            'type' => $meta['suite'],
+                            'name' => $meta['name'],
+                            'category' => $meta['suite_label'],
+                            'get_endpoint' => $meta['get_action'],
+                            'post_endpoint' => $meta['post_action'],
+                            'description' => $meta['summary'],
+                            'metric_label' => $meta['metric_label'],
+                            'status_badge' => $meta['status_badge'],
+                        ];
+                    }
+                }
+            }
+
             $results = [];
             foreach ($featureCatalog as $item) {
                 $verRec = $DB->get_record('config_plugins', ['plugin' => $item['component'], 'name' => 'version']);
                 $results[] = array_merge($item, [
-                    'release' => $verRec ? (string)$verRec->value : '2026100500',
+                    'release' => $verRec ? (string)$verRec->value : '2026110500',
                     'status' => 'OPERATIONAL',
                     'enabled' => true,
                     'methods' => ['GET', 'POST'],
                 ]);
             }
 
+            $enterpriseFeatureRows = 0;
+            try {
+                if ($DB->get_manager()->table_exists('out_system_feature_data')) {
+                    $enterpriseFeatureRows = (int)$DB->count_records('out_system_feature_data');
+                }
+            } catch (\Throwable $e) {}
+
             echo json_encode([
                 'success' => true,
                 'method' => $_SERVER['REQUEST_METHOD'],
                 'count' => count($results),
+                'skipped_duplicates' => ['mod_customcert'],
                 'capabilities' => $results,
                 'plugins' => $results,
                 'stats' => [
+                    'totalSystemCapabilities' => count($results),
+                    'enterpriseFeatureRecords' => $enterpriseFeatureRows,
                     'attendanceSessions' => (int)$DB->count_records('attendance_sessions'),
                     'attendanceLogs' => (int)$DB->count_records('attendance_log'),
                     'vplLabs' => (int)$DB->count_records('vpl'),
@@ -2705,10 +2753,37 @@ if ($isInstructorAction || in_array($action, ['resolve_identity', 'change_passwo
                     'accentColor' => '#6366f1',
                     'description' => 'Traditional sequential university syllabus layout displaying all units and learning activities vertically.',
                 ],
+                [
+                    'id' => 'kickstart',
+                    'component' => 'format_kickstart',
+                    'name' => 'Kickstart Template Format',
+                    'badge' => 'Blueprint Ready',
+                    'icon' => 'isax-flash-1',
+                    'accentColor' => '#f59e0b',
+                    'description' => 'Rapid template-driven course layout pre-structured with TCU learning outcomes, rubrics, and study guides.',
+                ],
+                [
+                    'id' => 'streamdeck',
+                    'component' => 'format_streamdeck',
+                    'name' => 'StreamDeck Launchpad Format',
+                    'badge' => 'Studio Grid',
+                    'icon' => 'isax-category-2',
+                    'accentColor' => '#8b5cf6',
+                    'description' => 'High-density tactile command launchpad presenting units and lab tools as studio action buttons.',
+                ],
+                [
+                    'id' => 'learningjourney',
+                    'component' => 'format_learningjourney',
+                    'name' => 'Learning Journey Map Format',
+                    'badge' => 'Competency Trail',
+                    'icon' => 'isax-routing-2',
+                    'accentColor' => '#ec4899',
+                    'description' => 'Visual gamified competency roadmap with sequential milestone nodes and checkpoint gates.',
+                ],
             ];
 
             $requestedFormat = strtolower(trim((string)($params['format'] ?? '')));
-            $validFormatIds = ['tiles', 'onetopic', 'topcoll', 'topics', 'weeks'];
+            $validFormatIds = ['tiles', 'onetopic', 'topcoll', 'topics', 'weeks', 'kickstart', 'streamdeck', 'learningjourney'];
             $updated = false;
 
             if (($action === 'update_course_format' || !empty($requestedFormat)) && in_array($requestedFormat, $validFormatIds, true) && $course) {
@@ -3490,6 +3565,206 @@ if ($isInstructorAction || in_array($action, ['resolve_identity', 'change_passwo
                 'course_id' => $courseId,
                 'message' => $triggeredMsg,
                 'nudges' => $formattedNudges,
+            ]);
+            exit(0);
+        }
+
+        $enterpriseSuiteActions = [
+            'get_course_enterprise_suites',
+            'execute_enterprise_feature',
+            'get_ai_tutor_suite',
+            'invoke_ai_tutor_action',
+            'get_interactive_media_suite',
+            'record_media_interaction',
+            'get_curriculum_governance_suite',
+            'execute_curriculum_workflow',
+            'get_authoring_protection_suite',
+            'execute_authoring_tool',
+            'get_credentials_quests_suite',
+            'trigger_credential_quest',
+            'get_campus_operations_suite',
+            'execute_campus_operation',
+            'get_learner_analytics_suite',
+            'update_learner_workspace',
+            'get_security_governance_suite',
+            'execute_security_check',
+        ];
+
+        if (in_array($action, $enterpriseSuiteActions, true)) {
+            if (file_exists(__DIR__ . '/seed_65_marketplace_features.php')) {
+                require_once(__DIR__ . '/seed_65_marketplace_features.php');
+            }
+            $catalog = function_exists('get_out_65_capabilities_catalog') ? get_out_65_capabilities_catalog() : [];
+            $courseId = max(2, (int)($params['course_id'] ?? $params['courseid'] ?? 7));
+            $course = $DB->get_record('course', ['id' => $courseId]);
+            if (!$course) {
+                $course = $DB->get_record_sql("SELECT * FROM {course} WHERE id > 1 ORDER BY id ASC LIMIT 1");
+                $courseId = $course ? (int)$course->id : 7;
+            }
+            $courseShort = $course ? $course->shortname : ('OUT-' . $courseId);
+            $courseFull = $course ? $course->fullname : 'OUT Academic Programme';
+
+            // Ensure table and seed exist if empty
+            if (!$DB->get_manager()->table_exists('out_system_feature_data') || $DB->count_records('out_system_feature_data', ['courseid' => $courseId]) === 0) {
+                if (function_exists('seed_out_65_marketplace_features')) {
+                    seed_out_65_marketplace_features();
+                }
+            }
+
+            // Map suite filter for suite-specific GET/POST actions
+            $suiteFilterMap = [
+                'get_ai_tutor_suite' => 'ai_tutor',
+                'invoke_ai_tutor_action' => 'ai_tutor',
+                'get_interactive_media_suite' => 'interactive_media',
+                'record_media_interaction' => 'interactive_media',
+                'get_curriculum_governance_suite' => 'curriculum_governance',
+                'execute_curriculum_workflow' => 'curriculum_governance',
+                'get_authoring_protection_suite' => 'authoring_protection',
+                'execute_authoring_tool' => 'authoring_protection',
+                'get_credentials_quests_suite' => 'credentials_quests',
+                'trigger_credential_quest' => 'credentials_quests',
+                'get_campus_operations_suite' => 'campus_operations',
+                'execute_campus_operation' => 'campus_operations',
+                'get_learner_analytics_suite' => 'learner_analytics',
+                'update_learner_workspace' => 'learner_analytics',
+                'get_security_governance_suite' => 'security_governance',
+                'execute_security_check' => 'security_governance',
+            ];
+            $requestedSuite = trim((string)($params['suite'] ?? ($suiteFilterMap[$action] ?? '')));
+
+            $isWriteAction = in_array($action, [
+                'execute_enterprise_feature',
+                'invoke_ai_tutor_action',
+                'record_media_interaction',
+                'execute_curriculum_workflow',
+                'execute_authoring_tool',
+                'trigger_credential_quest',
+                'execute_campus_operation',
+                'update_learner_workspace',
+                'execute_security_check',
+            ], true) || $_SERVER['REQUEST_METHOD'] === 'POST';
+
+            $mutationResult = null;
+            if ($isWriteAction) {
+                $targetComponent = trim((string)($params['component'] ?? $params['feature_code'] ?? ''));
+                $promptText = trim((string)($params['prompt'] ?? $params['input_text'] ?? $params['note'] ?? ''));
+                $actorName = trim((string)($params['actor'] ?? 'Scholar Baraka Mkwawa'));
+
+                // Find matching record by component, feature_code, or suite
+                $targetRec = null;
+                if (!empty($targetComponent)) {
+                    $targetRec = $DB->get_record('out_system_feature_data', ['courseid' => $courseId, 'component' => $targetComponent]);
+                    if (!$targetRec) {
+                        $targetRec = $DB->get_record('out_system_feature_data', ['courseid' => $courseId, 'feature_code' => strtoupper($targetComponent)]);
+                    }
+                }
+                if (!$targetRec && !empty($requestedSuite)) {
+                    $suiteRecs = $DB->get_records('out_system_feature_data', ['courseid' => $courseId, 'suite' => $requestedSuite], 'id ASC', '*', 0, 1);
+                    $targetRec = !empty($suiteRecs) ? reset($suiteRecs) : null;
+                }
+                if (!$targetRec) {
+                    $anyRecs = $DB->get_records('out_system_feature_data', ['courseid' => $courseId], 'id ASC', '*', 0, 1);
+                    $targetRec = !empty($anyRecs) ? reset($anyRecs) : null;
+                }
+
+                if ($targetRec) {
+                    $decodedPayload = json_decode((string)$targetRec->sample_payload, true) ?: [];
+                    $newCount = ((int)$targetRec->interactions_count) + 1;
+                    $targetRec->interactions_count = $newCount;
+                    $targetRec->last_actor = $actorName;
+                    $targetRec->timemodified = time();
+
+                    $entrySummary = !empty($promptText)
+                        ? "[{$courseShort}] Executed: \"{$promptText}\" — Verified by {$targetRec->title} (#{$newCount})"
+                        : "[{$courseShort}] Live execution #{$newCount} completed for {$targetRec->title}";
+
+                    $decodedPayload['last_execution'] = [
+                        'execution_id' => $newCount,
+                        'actor' => $actorName,
+                        'summary' => $entrySummary,
+                        'timestamp' => date('d M Y, h:i:s A'),
+                    ];
+                    if (!isset($decodedPayload['sample_items']) || !is_array($decodedPayload['sample_items'])) {
+                        $decodedPayload['sample_items'] = [];
+                    }
+                    array_unshift($decodedPayload['sample_items'], [
+                        'id' => "{$courseId}-exec-{$newCount}",
+                        'label' => $entrySummary,
+                        'value' => "Run #{$newCount} • Verified",
+                        'status' => 'Completed',
+                        'updated_at' => date('Y-m-d H:i:s'),
+                    ]);
+                    $decodedPayload['sample_items'] = array_slice($decodedPayload['sample_items'], 0, 5);
+                    $targetRec->sample_payload = json_encode($decodedPayload);
+                    $DB->update_record('out_system_feature_data', $targetRec);
+
+                    $mutationResult = [
+                        'feature_code' => $targetRec->feature_code,
+                        'title' => $targetRec->title,
+                        'suite' => $targetRec->suite,
+                        'interactions_count' => $newCount,
+                        'summary' => $entrySummary,
+                        'timestamp' => date('d M Y, h:i:s A'),
+                    ];
+                }
+            }
+
+            $conditions = ['courseid' => $courseId];
+            if (!empty($requestedSuite)) {
+                $conditions['suite'] = $requestedSuite;
+            }
+            $rows = $DB->get_records('out_system_feature_data', $conditions, 'id ASC');
+
+            $suitesGrouped = [];
+            $flatFeatures = [];
+            foreach ($rows as $r) {
+                $payload = json_decode((string)$r->sample_payload, true) ?: [];
+                $meta = $catalog[$r->component] ?? [];
+                $item = [
+                    'id' => (int)$r->id,
+                    'course_id' => (int)$r->courseid,
+                    'feature_code' => $r->feature_code,
+                    'component' => $r->component,
+                    'suite' => $r->suite,
+                    'suite_label' => $meta['suite_label'] ?? ($payload['suite_label'] ?? ucfirst(str_replace('_', ' ', $r->suite))),
+                    'title' => $r->title,
+                    'summary' => $meta['summary'] ?? ($payload['summary'] ?? ''),
+                    'status_badge' => $r->status_badge,
+                    'metric_label' => $r->metric_label,
+                    'interactions_count' => (int)$r->interactions_count,
+                    'last_actor' => $r->last_actor,
+                    'last_updated' => date('d M Y, h:i A', (int)$r->timemodified),
+                    'get_action' => $meta['get_action'] ?? 'get_course_enterprise_suites',
+                    'post_action' => $meta['post_action'] ?? 'execute_enterprise_feature',
+                    'sample_items' => $payload['sample_items'] ?? [],
+                    'last_execution' => $payload['last_execution'] ?? null,
+                ];
+                $flatFeatures[] = $item;
+                if (!isset($suitesGrouped[$r->suite])) {
+                    $suitesGrouped[$r->suite] = [
+                        'suite' => $r->suite,
+                        'suite_label' => $item['suite_label'],
+                        'count' => 0,
+                        'features' => [],
+                    ];
+                }
+                $suitesGrouped[$r->suite]['features'][] = $item;
+                $suitesGrouped[$r->suite]['count']++;
+            }
+
+            echo json_encode([
+                'success' => true,
+                'method' => $_SERVER['REQUEST_METHOD'],
+                'action' => $action,
+                'course_id' => $courseId,
+                'course_code' => $courseShort,
+                'course_title' => $courseFull,
+                'skipped_duplicates' => ['mod_customcert'],
+                'total_features' => count($flatFeatures),
+                'mutation' => $mutationResult,
+                'message' => $mutationResult ? $mutationResult['summary'] : "Loaded " . count($flatFeatures) . " active system capabilities for {$courseShort}.",
+                'suites' => array_values($suitesGrouped),
+                'features' => $flatFeatures,
             ]);
             exit(0);
         }

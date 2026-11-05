@@ -106,11 +106,13 @@ const CourseDetails: React.FC = () => {
   const validInitialTab =
     initialTabParam === 'labs' ||
     initialTabParam === 'tracking' ||
+    initialTabParam === 'ai-media' ||
+    initialTabParam === 'enterprise' ||
     initialTabParam === 'overview' ||
     initialTabParam === 'lecturer'
       ? initialTabParam
       : 'syllabus';
-  const [activeTab, setActiveTab] = useState<'syllabus' | 'labs' | 'tracking' | 'overview' | 'lecturer'>(validInitialTab);
+  const [activeTab, setActiveTab] = useState<'syllabus' | 'labs' | 'tracking' | 'ai-media' | 'enterprise' | 'overview' | 'lecturer'>(validInitialTab);
   const [activitySearch, setActivitySearch] = useState<string>('');
   const [activityTypeFilter, setActivityTypeFilter] = useState<string>('all');
   const [feedback, setFeedback] = useState<{ type: 'success' | 'danger'; message: string } | null>(null);
@@ -132,6 +134,12 @@ const CourseDetails: React.FC = () => {
   const [completionProgress, setCompletionProgress] = useState<any | null>(null);
   const [customCertData, setCustomCertData] = useState<any | null>(null);
   const [reengagementNudges, setReengagementNudges] = useState<any[]>([]);
+  const [enterpriseSuites, setEnterpriseSuites] = useState<any[]>([]);
+  const [enterpriseFeatures, setEnterpriseFeatures] = useState<any[]>([]);
+  const [aiPromptInput, setAiPromptInput] = useState<string>(
+    'Summarize Unit 1 core concepts in English & Kiswahili and generate 2 Socratic review questions.'
+  );
+  const [selectedEnterpriseSuiteFilter, setSelectedEnterpriseSuiteFilter] = useState<string>('all');
   const [pluginActionBusy, setPluginActionBusy] = useState<string | null>(null);
 
   // Staff inline curriculum management modal states
@@ -153,6 +161,8 @@ const CourseDetails: React.FC = () => {
       tabParam === 'syllabus' ||
       tabParam === 'labs' ||
       tabParam === 'tracking' ||
+      tabParam === 'ai-media' ||
+      tabParam === 'enterprise' ||
       tabParam === 'overview' ||
       tabParam === 'lecturer'
     ) {
@@ -173,6 +183,7 @@ const CourseDetails: React.FC = () => {
         compRes,
         certRes,
         reengRes,
+        entRes,
       ] = await Promise.all([
         courseService.getPublicCourseDetails(targetId),
         courseService.getPublicCatalog(),
@@ -183,6 +194,7 @@ const CourseDetails: React.FC = () => {
         courseService.getCompletionProgress(targetId, resolvedUserId).catch(() => null),
         courseService.getCustomCertTemplates(targetId, resolvedUserId).catch(() => null),
         courseService.getReengagementNudges(targetId).catch(() => null),
+        courseService.getCourseEnterpriseSuites(targetId).catch(() => null),
       ]);
       setCourse(detailData);
       setAllCourses(catalogData.courses || []);
@@ -227,6 +239,10 @@ const CourseDetails: React.FC = () => {
       if (reengRes?.success && Array.isArray(reengRes.nudges)) {
         setReengagementNudges(reengRes.nudges);
       }
+      if (entRes?.success) {
+        setEnterpriseSuites(entRes.suites || []);
+        setEnterpriseFeatures(entRes.features || []);
+      }
 
       if (detailData?.sections?.length) {
         const initialExpanded: Record<number, boolean> = {};
@@ -258,6 +274,39 @@ const CourseDetails: React.FC = () => {
       }
     } catch {
       // Visual switch remains active
+    } finally {
+      setPluginActionBusy(null);
+    }
+  };
+
+  const handleExecuteEnterpriseFeature = async (feature: any, customPrompt?: string) => {
+    if (!course) return;
+    const busyKey = `ent-${feature.component}`;
+    setPluginActionBusy(busyKey);
+    try {
+      const res = await courseService.executeEnterpriseFeature({
+        course_id: course.id,
+        component: feature.component,
+        feature_code: feature.feature_code,
+        suite: feature.suite,
+        action_name: feature.post_action || 'execute_enterprise_feature',
+        prompt: customPrompt || `Live execution & verification of ${feature.title}`,
+        actor: (user as any)?.fullname || (user as any)?.name || 'Scholar Baraka Mkwawa',
+      });
+      if (res?.success) {
+        // Refresh full 65-feature dataset for this course
+        const refreshed = await courseService.getCourseEnterpriseSuites(course.id).catch(() => null);
+        if (refreshed?.success) {
+          setEnterpriseSuites(refreshed.suites || []);
+          setEnterpriseFeatures(refreshed.features || []);
+        }
+        setFeedback({
+          type: 'success',
+          message: res.message || `Executed "${feature.title}" successfully.`,
+        });
+      }
+    } catch (err: any) {
+      setFeedback({ type: 'danger', message: err?.message || 'Action failed.' });
     } finally {
       setPluginActionBusy(null);
     }
@@ -787,6 +836,28 @@ const CourseDetails: React.FC = () => {
                     >
                       <i className="isax isax-calendar-tick me-1" />
                       Attendance & Progress
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('ai-media')}
+                      className={`btn btn-sm rounded-pill px-3 fw-semibold ${
+                        activeTab === 'ai-media' ? 'btn-primary' : 'btn-light text-secondary'
+                      }`}
+                      style={{ fontSize: '0.78rem' }}
+                    >
+                      <i className="isax isax-cpu-charge me-1" />
+                      AI Tutor & Media (29)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('enterprise')}
+                      className={`btn btn-sm rounded-pill px-3 fw-semibold ${
+                        activeTab === 'enterprise' ? 'btn-primary' : 'btn-light text-secondary'
+                      }`}
+                      style={{ fontSize: '0.78rem' }}
+                    >
+                      <i className="isax isax-shield-tick me-1" />
+                      Enterprise & Security (36)
                     </button>
                     <button
                       type="button"
@@ -1791,6 +1862,360 @@ const CourseDetails: React.FC = () => {
                         </div>
                       </div>
                     </div>
+                  </div>
+                )}
+
+                {/* TAB 3B: AI TUTOR, INTERACTIVE VIDEO STUDIO & RICH AUTHORING (29 CAPABILITIES) */}
+                {activeTab === 'ai-media' && (
+                  <div className="d-flex flex-column gap-3">
+                    {/* Interactive AI Socratic Tutor & Bilingual Translator Console */}
+                    <div
+                      className="card border-0 shadow-sm rounded-3 p-3.5"
+                      style={{
+                        background: 'linear-gradient(135deg, #071F38 0%, #0d325c 100%)',
+                        color: '#fff',
+                        border: '1px solid #1e3a5f',
+                      }}
+                    >
+                      <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                        <div>
+                          <span
+                            className="badge rounded-pill px-2.5 py-1 mb-1"
+                            style={{ background: '#FFD200', color: '#071F38', fontSize: '0.68rem', fontWeight: 700 }}
+                          >
+                            OUT Sovereign AI Socratic Tutor • Bilingual EN/SW Translator • Multi-Model LLM Hub
+                          </span>
+                          <h6 className="fw-bold text-white mb-0" style={{ fontSize: '0.96rem' }}>
+                            Interactive AI Academic Co-Pilot &amp; Media Synthesis Console — {course.shortname}
+                          </h6>
+                        </div>
+                        <span className="badge bg-success rounded-pill px-2.5 py-1" style={{ fontSize: '0.71rem' }}>
+                          29 Active Capabilities • Pre-Seeded Sample Data
+                        </span>
+                      </div>
+                      <p className="mb-2.5" style={{ fontSize: '0.77rem', color: 'rgba(255,255,255,0.85)' }}>
+                        Execute real-time Socratic tutoring, English ↔ Kiswahili neural curriculum translation, AI rubric synthesis, or interactive video annotation directly against the OUT LMS backend:
+                      </p>
+                      <div className="d-flex gap-2 flex-wrap">
+                        <input
+                          type="text"
+                          value={aiPromptInput}
+                          onChange={(e) => setAiPromptInput(e.target.value)}
+                          className="form-control form-control-sm flex-grow-1"
+                          placeholder="Ask the AI Socratic Tutor or request Kiswahili/English translation..."
+                          style={{
+                            background: 'rgba(255,255,255,0.12)',
+                            border: '1px solid rgba(255,255,255,0.28)',
+                            color: '#fff',
+                            fontSize: '0.8rem',
+                          }}
+                        />
+                        <button
+                          type="button"
+                          disabled={pluginActionBusy === 'ent-local_dttutor'}
+                          onClick={() => {
+                            const tutorFeat = enterpriseFeatures.find((f) => f.component === 'local_dttutor') || {
+                              component: 'local_dttutor',
+                              feature_code: 'AI_SOCRATIC_TUTOR',
+                              suite: 'ai_tutor',
+                              title: '24/7 AI Socratic Digital Tutor & Scholar Mentor',
+                              post_action: 'invoke_ai_tutor_action',
+                            };
+                            handleExecuteEnterpriseFeature(tutorFeat, aiPromptInput);
+                          }}
+                          className="btn btn-warning btn-sm rounded-pill px-3 fw-bold"
+                          style={{ fontSize: '0.76rem', color: '#071F38' }}
+                        >
+                          {pluginActionBusy === 'ent-local_dttutor' ? 'Synthesizing...' : 'Run AI Socratic Tutor (POST)'}
+                        </button>
+                        <button
+                          type="button"
+                          disabled={pluginActionBusy === 'ent-local_coursetranslate'}
+                          onClick={() => {
+                            const transFeat = enterpriseFeatures.find((f) => f.component === 'local_coursetranslate') || {
+                              component: 'local_coursetranslate',
+                              feature_code: 'NEURAL_BILINGUAL_TRANSLATOR',
+                              suite: 'ai_tutor',
+                              title: 'Instant Neural English ↔ Kiswahili Curriculum Translator',
+                              post_action: 'invoke_ai_tutor_action',
+                            };
+                            handleExecuteEnterpriseFeature(
+                              transFeat,
+                              `Translate ${course.shortname} Unit 1 & 2 into Kiswahili with academic glossary parity`
+                            );
+                          }}
+                          className="btn btn-outline-light btn-sm rounded-pill px-3 fw-semibold"
+                          style={{ fontSize: '0.76rem' }}
+                        >
+                          Translate EN ↔ Kiswahili
+                        </button>
+                      </div>
+                    </div>
+
+                    {['ai_tutor', 'interactive_media', 'authoring_protection'].map((suiteKey) => {
+                      const suiteObj = enterpriseSuites.find((s) => s.suite === suiteKey);
+                      const featuresList = suiteObj?.features || enterpriseFeatures.filter((f) => f.suite === suiteKey);
+                      if (!featuresList || featuresList.length === 0) return null;
+
+                      const suiteMeta: Record<string, { badge: string; accent: string; subtitle: string }> = {
+                        ai_tutor: {
+                          badge: 'Suite 1 • 9 Active Capabilities',
+                          accent: '#0171BB',
+                          subtitle:
+                            'Socratic Tutoring, AI Syllabus Synthesis, Adaptive Recommendations, Virtual Avatar Presenter, Bilingual Translation & Multi-LLM Routing',
+                        },
+                        interactive_media: {
+                          badge: 'Suite 2 • 11 Active Capabilities',
+                          accent: '#0d9488',
+                          subtitle:
+                            'Granular Watch-Time Heatmaps, Time-Stamped Annoto Notes, Viva Reflections, Live Sentiment Reactions, Gatekeeper Checkpoints & OTTFlix 4K VOD',
+                        },
+                        authoring_protection: {
+                          badge: 'Suite 4 • 9 Active Capabilities',
+                          accent: '#7c3aed',
+                          subtitle:
+                            '3D Page-Flipping Textbooks, AES-256 Watermarked DRM PDFs, Collaborative Vector Whiteboards, PowerPoint Book Importer & Pedagogical Callouts',
+                        },
+                      };
+                      const meta = suiteMeta[suiteKey] || { badge: 'Active Suite', accent: '#0171BB', subtitle: '' };
+
+                      return (
+                        <div
+                          key={suiteKey}
+                          className="card border-0 shadow-sm rounded-3 p-3.5 bg-white"
+                          style={{ border: '1px solid #e2e8f0', borderTop: `3px solid ${meta.accent}` }}
+                        >
+                          <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2.5 pb-2 border-bottom">
+                            <div>
+                              <span
+                                className="badge rounded-pill px-2.5 py-0.5 mb-1"
+                                style={{ background: `${meta.accent}18`, color: meta.accent, fontSize: '0.68rem', fontWeight: 700 }}
+                              >
+                                {meta.badge}
+                              </span>
+                              <h6 className="fw-bold text-dark mb-0" style={{ fontSize: '0.94rem' }}>
+                                {suiteObj?.suite_label || suiteKey}
+                              </h6>
+                              <small className="text-muted" style={{ fontSize: '0.73rem' }}>
+                                {meta.subtitle}
+                              </small>
+                            </div>
+                          </div>
+
+                          <div className="row g-2.5">
+                            {featuresList.map((feat: any) => {
+                              const isBusy = pluginActionBusy === `ent-${feat.component}`;
+                              const latestSample = (feat.sample_items || [])[0];
+                              return (
+                                <div className="col-md-6" key={feat.component}>
+                                  <div
+                                    className="p-2.5 rounded-3 border h-100 d-flex flex-column justify-content-between"
+                                    style={{ background: '#f8fafc' }}
+                                  >
+                                    <div>
+                                      <div className="d-flex align-items-center justify-content-between gap-1 mb-1">
+                                        <span
+                                          className="badge bg-white border text-primary fw-bold"
+                                          style={{ fontSize: '0.64rem' }}
+                                        >
+                                          {feat.status_badge}
+                                        </span>
+                                        <span
+                                          className="badge bg-success-subtle text-success rounded-pill"
+                                          style={{ fontSize: '0.64rem' }}
+                                        >
+                                          {feat.metric_label}
+                                        </span>
+                                      </div>
+                                      <div className="fw-bold text-dark mb-1" style={{ fontSize: '0.82rem' }}>
+                                        {feat.title}
+                                      </div>
+                                      <p className="text-muted mb-1.5" style={{ fontSize: '0.73rem', lineHeight: 1.45 }}>
+                                        {feat.summary}
+                                      </p>
+                                      {latestSample && (
+                                        <div
+                                          className="p-1.5 rounded-2 bg-white border mb-2"
+                                          style={{ fontSize: '0.69rem', color: '#334155' }}
+                                        >
+                                          <strong className="text-primary">Sample Record:</strong> {latestSample.label}
+                                        </div>
+                                      )}
+                                    </div>
+                                    <div className="d-flex align-items-center justify-content-between pt-1 border-top">
+                                      <small className="text-muted" style={{ fontSize: '0.67rem' }}>
+                                        Verified Runs: <strong>{feat.interactions_count}</strong>
+                                      </small>
+                                      <button
+                                        type="button"
+                                        disabled={isBusy}
+                                        onClick={() => handleExecuteEnterpriseFeature(feat)}
+                                        className="btn btn-sm btn-primary rounded-pill px-2.5 py-0.5 fw-semibold"
+                                        style={{ fontSize: '0.69rem' }}
+                                      >
+                                        {isBusy ? 'Running...' : 'Execute & Verify (POST)'}
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* TAB 3C: ENTERPRISE GOVERNANCE, ANALYTICS, COMMERCE & SECURITY HUB (36 CAPABILITIES) */}
+                {activeTab === 'enterprise' && (
+                  <div className="d-flex flex-column gap-3">
+                    {/* Suite Filter Bar */}
+                    <div className="card border-0 shadow-sm rounded-3 p-3 bg-white" style={{ border: '1px solid #e2e8f0' }}>
+                      <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                        <div>
+                          <span className="badge bg-primary-subtle text-primary rounded-pill mb-1" style={{ fontSize: '0.68rem' }}>
+                            OUT LMS Core System Features • Zero Third-Party Branding • Full GET &amp; POST API Coverage
+                          </span>
+                          <h6 className="fw-bold text-dark mb-0" style={{ fontSize: '0.95rem' }}>
+                            Enterprise Governance, Learner Analytics, SARIS Commerce &amp; Security Hub — {course.shortname}
+                          </h6>
+                        </div>
+                        <span className="badge bg-dark rounded-pill px-2.5 py-1" style={{ fontSize: '0.7rem' }}>
+                          36 Active Governance &amp; Analytics Capabilities
+                        </span>
+                      </div>
+
+                      <div className="d-flex gap-1.5 flex-wrap">
+                        {[
+                          { id: 'all', label: 'All Suites (36)' },
+                          { id: 'learner_analytics', label: 'Learner Analytics & KPIs (9)' },
+                          { id: 'curriculum_governance', label: 'Curriculum & Senate QA (9)' },
+                          { id: 'campus_operations', label: 'SARIS & Tuition Commerce (7)' },
+                          { id: 'security_governance', label: 'OrigAI & Security Shield (7)' },
+                          { id: 'credentials_quests', label: 'Blockchain Badges & Quests (4)' },
+                        ].map((tabItem) => (
+                          <button
+                            key={tabItem.id}
+                            type="button"
+                            onClick={() => setSelectedEnterpriseSuiteFilter(tabItem.id)}
+                            className={`btn btn-sm rounded-pill px-2.5 py-0.5 fw-semibold ${
+                              selectedEnterpriseSuiteFilter === tabItem.id
+                                ? 'btn-primary'
+                                : 'btn-light border text-secondary'
+                            }`}
+                            style={{ fontSize: '0.72rem' }}
+                          >
+                            {tabItem.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {[
+                      'learner_analytics',
+                      'curriculum_governance',
+                      'campus_operations',
+                      'security_governance',
+                      'credentials_quests',
+                    ]
+                      .filter((sk) => selectedEnterpriseSuiteFilter === 'all' || selectedEnterpriseSuiteFilter === sk)
+                      .map((suiteKey) => {
+                        const suiteObj = enterpriseSuites.find((s) => s.suite === suiteKey);
+                        const featuresList = suiteObj?.features || enterpriseFeatures.filter((f) => f.suite === suiteKey);
+                        if (!featuresList || featuresList.length === 0) return null;
+
+                        const suiteColors: Record<string, string> = {
+                          learner_analytics: '#0284c7',
+                          curriculum_governance: '#d97706',
+                          campus_operations: '#059669',
+                          security_governance: '#dc2626',
+                          credentials_quests: '#4f46e5',
+                        };
+                        const accent = suiteColors[suiteKey] || '#0171BB';
+
+                        return (
+                          <div
+                            key={suiteKey}
+                            className="card border-0 shadow-sm rounded-3 p-3.5 bg-white"
+                            style={{ border: '1px solid #e2e8f0', borderTop: `3px solid ${accent}` }}
+                          >
+                            <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2.5 pb-2 border-bottom">
+                              <div>
+                                <span
+                                  className="badge rounded-pill px-2.5 py-0.5 mb-1"
+                                  style={{ background: `${accent}18`, color: accent, fontSize: '0.68rem', fontWeight: 700 }}
+                                >
+                                  {featuresList.length} Active Capabilities • Pre-Seeded Course Telemetry
+                                </span>
+                                <h6 className="fw-bold text-dark mb-0" style={{ fontSize: '0.94rem' }}>
+                                  {suiteObj?.suite_label || suiteKey}
+                                </h6>
+                              </div>
+                            </div>
+
+                            <div className="row g-2.5">
+                              {featuresList.map((feat: any) => {
+                                const isBusy = pluginActionBusy === `ent-${feat.component}`;
+                                const latestSample = (feat.sample_items || [])[0];
+                                return (
+                                  <div className="col-md-6" key={feat.component}>
+                                    <div
+                                      className="p-2.5 rounded-3 border h-100 d-flex flex-column justify-content-between"
+                                      style={{ background: '#f8fafc' }}
+                                    >
+                                      <div>
+                                        <div className="d-flex align-items-center justify-content-between gap-1 mb-1">
+                                          <span
+                                            className="badge bg-white border text-dark fw-bold"
+                                            style={{ fontSize: '0.64rem' }}
+                                          >
+                                            {feat.status_badge}
+                                          </span>
+                                          <span
+                                            className="badge bg-primary-subtle text-primary rounded-pill"
+                                            style={{ fontSize: '0.64rem' }}
+                                          >
+                                            {feat.metric_label}
+                                          </span>
+                                        </div>
+                                        <div className="fw-bold text-dark mb-1" style={{ fontSize: '0.82rem' }}>
+                                          {feat.title}
+                                        </div>
+                                        <p className="text-muted mb-1.5" style={{ fontSize: '0.73rem', lineHeight: 1.45 }}>
+                                          {feat.summary}
+                                        </p>
+                                        {latestSample && (
+                                          <div
+                                            className="p-1.5 rounded-2 bg-white border mb-2"
+                                            style={{ fontSize: '0.69rem', color: '#334155' }}
+                                          >
+                                            <strong style={{ color: accent }}>Sample Telemetry:</strong> {latestSample.label}
+                                          </div>
+                                        )}
+                                      </div>
+                                      <div className="d-flex align-items-center justify-content-between pt-1 border-top">
+                                        <small className="text-muted" style={{ fontSize: '0.67rem' }}>
+                                          Verified Runs: <strong>{feat.interactions_count}</strong>
+                                        </small>
+                                        <button
+                                          type="button"
+                                          disabled={isBusy}
+                                          onClick={() => handleExecuteEnterpriseFeature(feat)}
+                                          className="btn btn-sm btn-outline-primary rounded-pill px-2.5 py-0.5 fw-semibold"
+                                          style={{ fontSize: '0.69rem' }}
+                                        >
+                                          {isBusy ? 'Executing...' : 'Trigger Live Action (POST)'}
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      })}
                   </div>
                 )}
 

@@ -420,6 +420,12 @@ foreach ($courses as $course) {
     echo "  [OK] Seeded Course #{$courseId} ({$short}) — Format: {$targetFormat}, Modules: {$totalCms}\n";
 }
 
+if (file_exists(__DIR__ . '/seed_65_marketplace_features.php')) {
+    require_once(__DIR__ . '/seed_65_marketplace_features.php');
+    $extRes = seed_out_65_marketplace_features();
+    echo "  [OK] Provisioned {$extRes['unique_new_capabilities']} additional capabilities across {$extRes['courses_count']} courses (Total rows: {$extRes['total_feature_rows']})\n";
+}
+
 purge_all_caches();
 if (function_exists('opcache_reset')) {
     @opcache_reset();

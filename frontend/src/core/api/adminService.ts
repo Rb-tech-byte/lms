@@ -521,6 +521,27 @@ export const adminService = {
   },
 
   /**
+   * Enables 100% of installed Moodle plugins and OUT LMS System Capabilities across all 18 categories
+   */
+  async enableAllPlugins(): Promise<any> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl()}?action=enable_all_plugins&token=${encodeURIComponent(token)}`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ token }),
+    });
+    const data = await parseSafeJson(res, 'adminService');
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to enable all plugins');
+    }
+    return data;
+  },
+
+  /**
    * Uninstalls/deactivates a Moodle plugin
    */
   async uninstallPlugin(component: string): Promise<any> {

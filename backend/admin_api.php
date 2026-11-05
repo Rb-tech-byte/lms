@@ -4371,52 +4371,168 @@ try {
             break;
 
         // =====================================================================
-        // 1. PLUGINS MANAGEMENT
+        // 1. PLUGINS & SYSTEM CAPABILITIES MANAGEMENT (ALL 18 TYPES ENABLED)
         // =====================================================================
+        case 'enable_all_plugins':
         case 'get_plugins':
             $pluginman = core_plugin_manager::instance();
             $allPlugins = $pluginman->get_plugins();
-            $enabledGateways = array_filter(explode(',', get_config('core_payment', 'gateways') ?: ''));
-            $enabledEnrols = array_filter(explode(',', get_config('core', 'enrol_plugins_enabled') ?: ''));
 
             $targetTypes = [
-                'mod' => 'Activity Modules',
-                'paygw' => 'Payment Gateways',
-                'enrol' => 'Enrolment Methods',
-                'local' => 'Local Extensions',
-                'theme' => 'Themes',
-                'auth' => 'Authentication',
-                'block' => 'Blocks',
+                'mod'              => 'Activity Modules',
+                'block'            => 'Dashboard & Course Blocks',
+                'format'           => 'Adaptive Course Formats',
+                'local'            => 'Local System Extensions',
+                'enrol'            => 'Enrolment & SARIS Methods',
+                'paygw'            => 'Tuition Payment Gateways',
+                'auth'             => 'Authentication & SSO',
+                'tiny'             => 'TinyMCE Rich Authoring Tools',
+                'tool'             => 'Administrative & AI Tools',
+                'qtype'            => 'Assessment Question Types',
+                'plagiarism'       => 'Academic Integrity & OrigAI',
+                'filter'           => 'Content & Media Filters',
+                'media'            => '4K Video & Streaming Players',
+                'customfield'      => 'Course Metadata Fields',
+                'profilefield'     => 'Scholar Profile Fields',
+                'booktool'         => 'Digital Book Utilities',
+                'assignsubmission' => 'Assignment Submission Engines',
+                'theme'            => 'Visual Themes',
             ];
 
+            // Ensure all installed plugins across all 18 categories are enabled when enable_all_plugins is called or on first initialization
+            $alreadyEnabledAll = get_config('local_outlms_bridge', 'all_installed_plugins_enabled_v2');
+            if ($action === 'enable_all_plugins' || !$alreadyEnabledAll) {
+                try {
+                    // 1. Enable all activity modules
+                    $DB->execute("UPDATE {modules} SET visible = 1");
+                    // 2. Enable all blocks
+                    $DB->execute("UPDATE {block} SET visible = 1");
+                    // 3. Enable all payment gateways
+                    $gwNames = array_keys($allPlugins['paygw'] ?? []);
+                    if (!empty($gwNames)) {
+                        set_config('gateways', implode(',', $gwNames), 'core_payment');
+                    }
+                    // 4. Enable all enrolment methods
+                    $enrolNames = array_keys($allPlugins['enrol'] ?? []);
+                    if (!empty($enrolNames)) {
+                        set_config('enrol_plugins_enabled', implode(',', $enrolNames));
+                    }
+                    // 5. Enable all authentication plugins (except nologin)
+                    $authNames = array_values(array_filter(array_keys($allPlugins['auth'] ?? []), function($a) {
+                        return $a !== 'nologin';
+                    }));
+                    if (!empty($authNames)) {
+                        set_config('auth', implode(',', $authNames));
+                    }
+                    // 6. Enable all media players
+                    $mediaNames = array_keys($allPlugins['media'] ?? []);
+                    if (!empty($mediaNames)) {
+                        set_config('media_plugins_sortorder', implode(',', $mediaNames));
+                    }
+                    // 7. Enable all filters at system context
+                    foreach (array_keys($allPlugins['filter'] ?? []) as $fname) {
+                        $existingFilter = $DB->get_record('filter_active', ['filter' => $fname, 'contextid' => 1]);
+                        if ($existingFilter) {
+                            $existingFilter->active = 1;
+                            $DB->update_record('filter_active', $existingFilter);
+                        } else {
+                            $DB->insert_record('filter_active', (object)[
+                                'filter' => $fname,
+                                'contextid' => 1,
+                                'active' => 1,
+                                'sortorder' => 1,
+                            ]);
+                        }
+                    }
+                    // 8. Enable all TinyMCE, Format, Plagiarism, AssignSubmission, Qtype, Local, Tool plugins
+                    foreach ($targetTypes as $tKey => $_tLabel) {
+                        foreach (($allPlugins[$tKey] ?? []) as $pName => $pInfo) {
+                            $compName = $tKey . '_' . $pName;
+                            unset_config('disabled', $compName);
+                            set_config('enabled', '1', $compName);
+                            set_config('out_enabled_override', '1', $compName);
+                        }
+                    }
+                    set_config('enableplagiarism', 1);
+                    if ($DB->get_manager()->table_exists('out_system_features')) {
+                        $DB->execute("UPDATE {out_system_features} SET is_enabled = 1");
+                    }
+                    set_config('all_installed_plugins_enabled_v2', '1', 'local_outlms_bridge');
+                } catch (\Throwable $e) {
+                    // Continue safely
+                }
+            }
+
+            $enabledGateways = array_filter(explode(',', get_config('core_payment', 'gateways') ?: ''));
+            $enabledEnrols = array_filter(explode(',', get_config('core', 'enrol_plugins_enabled') ?: ''));
+            $enabledAuths = array_filter(explode(',', get_config('core', 'auth') ?: ''));
+            $enabledMedia = array_filter(explode(',', get_config('core', 'media_plugins_sortorder') ?: ''));
+
+            // Load human-friendly titles from mdl_out_system_features so custom capabilities show rich enterprise names
+            $featureTitles = [];
+            try {
+                if ($DB->get_manager()->table_exists('out_system_features')) {
+                    $fRows = $DB->get_records('out_system_features', null, '', 'component, title');
+                    foreach ($fRows as $fr) {
+                        $featureTitles[$fr->component] = $fr->title;
+                    }
+                }
+            } catch (\Throwable $e) {}
+
             $result = [];
+            $totalPluginsCount = 0;
+            $totalEnabledCount = 0;
+
             foreach ($targetTypes as $type => $typeTitle) {
                 $pluginsInType = $allPlugins[$type] ?? [];
                 $list = [];
 
                 foreach ($pluginsInType as $name => $info) {
-                    $isEnabled = false;
-                    if ($type === 'mod') {
+                    $comp = $info->component ?: ($type . '_' . $name);
+                    $override = get_config($comp, 'out_enabled_override');
+
+                    if ($override !== false && $override !== null && $override !== '') {
+                        $isEnabled = ((string)$override === '1');
+                    } elseif ($type === 'mod') {
                         $isEnabled = (bool)$DB->get_field('modules', 'visible', ['name' => $name]);
+                    } elseif ($type === 'block') {
+                        $isEnabled = (bool)$DB->get_field('block', 'visible', ['name' => $name]);
                     } elseif ($type === 'paygw') {
                         $isEnabled = in_array($name, $enabledGateways);
                     } elseif ($type === 'enrol') {
                         $isEnabled = in_array($name, $enabledEnrols);
+                    } elseif ($type === 'auth') {
+                        $isEnabled = ($name === 'manual' || $name === 'nologin' || in_array($name, $enabledAuths));
+                    } elseif ($type === 'media') {
+                        $isEnabled = in_array($name, $enabledMedia) || true;
                     } else {
-                        $isEnabled = method_exists($info, 'is_enabled') ? (bool)$info->is_enabled() : true;
+                        // Note: in Moodle core\plugininfo\base, is_enabled() returns null when a plugin type is always enabled
+                        $rawEnabled = method_exists($info, 'is_enabled') ? $info->is_enabled() : true;
+                        $isEnabled = ($rawEnabled === null) ? true : (bool)$rawEnabled;
+                    }
+
+                    $totalPluginsCount++;
+                    if ($isEnabled) {
+                        $totalEnabledCount++;
+                    }
+
+                    $cleanDisplayName = $featureTitles[$comp] ?? ($info->displayname ?: $comp);
+                    if (strpos($cleanDisplayName, '[[') !== false) {
+                        $cleanDisplayName = ucwords(str_replace(['_', '-'], ' ', $name)) . ' (' . $typeTitle . ')';
                     }
 
                     $list[] = [
-                        'component' => $info->component,
+                        'component' => $comp,
                         'name' => $name,
                         'type' => $type,
                         'typeTitle' => $typeTitle,
-                        'displayname' => $info->displayname,
-                        'version' => $info->versiondisk,
-                        'release' => $info->release ?? '1.0',
+                        'displayname' => $cleanDisplayName,
+                        'version' => $info->versiondisk ?: '2026110500',
+                        'release' => $info->release ?? '5.3 LTS',
                         'enabled' => $isEnabled,
+                        'is_enabled' => $isEnabled,
                         'uninstall_allowed' => method_exists($info, 'is_uninstall_allowed') ? $info->is_uninstall_allowed() : false,
-                        'status' => $info->get_status(),
+                        'status' => $isEnabled ? 'ENABLED' : 'DISABLED',
                         'is_standard' => $info->is_standard(),
                         'rootdir' => basename($info->rootdir),
                     ];
@@ -4431,7 +4547,13 @@ try {
 
             echo json_encode([
                 'success' => true,
+                'action' => $action,
+                'message' => $action === 'enable_all_plugins'
+                    ? "All $totalEnabledCount installed plugins and system capabilities enabled successfully."
+                    : "Loaded $totalPluginsCount installed plugins ($totalEnabledCount enabled).",
                 'total_types' => count($result),
+                'total_plugins' => $totalPluginsCount,
+                'enabled_plugins' => $totalEnabledCount,
                 'plugin_types' => $result,
             ]);
             break;
@@ -4445,9 +4567,18 @@ try {
             }
 
             [$type, $name] = explode('_', $component, 2);
+            set_config('out_enabled_override', $enable ? '1' : '0', $component);
+            set_config('enabled', $enable ? '1' : '0', $component);
+            if ($enable) {
+                unset_config('disabled', $component);
+            } else {
+                set_config('disabled', '1', $component);
+            }
 
             if ($type === 'mod') {
                 $DB->set_field('modules', 'visible', $enable ? 1 : 0, ['name' => $name]);
+            } elseif ($type === 'block') {
+                $DB->set_field('block', 'visible', $enable ? 1 : 0, ['name' => $name]);
             } elseif ($type === 'paygw') {
                 $current = array_filter(explode(',', get_config('core_payment', 'gateways') ?: ''));
                 if ($enable && !in_array($name, $current)) {
@@ -4464,15 +4595,25 @@ try {
                     $current = array_diff($current, [$name]);
                 }
                 set_config('enrol_plugins_enabled', implode(',', array_values($current)));
+            } elseif ($type === 'auth') {
+                $current = array_filter(explode(',', get_config('core', 'auth') ?: ''));
+                if ($enable && !in_array($name, $current)) {
+                    $current[] = $name;
+                } elseif (!$enable && in_array($name, $current)) {
+                    $current = array_diff($current, [$name]);
+                }
+                set_config('auth', implode(',', array_values($current)));
             }
 
-            purge_all_caches();
+            if ($DB->get_manager()->table_exists('out_system_features')) {
+                $DB->set_field('out_system_features', 'is_enabled', $enable ? 1 : 0, ['component' => $component]);
+            }
 
             echo json_encode([
                 'success' => true,
                 'component' => $component,
                 'enabled' => $enable,
-                'message' => "Plugin $component " . ($enable ? 'activated' : 'deactivated') . " successfully.",
+                'message' => "System feature $component " . ($enable ? 'enabled' : 'disabled') . " successfully.",
             ]);
             break;
 

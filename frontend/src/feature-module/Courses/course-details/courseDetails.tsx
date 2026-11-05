@@ -292,7 +292,7 @@ const CourseDetails: React.FC = () => {
         suite: feature.suite,
         action_name: feature.post_action || 'execute_enterprise_feature',
         prompt: customPrompt || `Live execution & verification of ${feature.title}`,
-        actor: (user as any)?.fullname || (user as any)?.name || 'Scholar Baraka Mkwawa',
+        actor: user?.fullname || 'Scholar Baraka Mkwawa',
       });
       if (res?.success) {
         // Refresh full 65-feature dataset for this course
@@ -1798,10 +1798,10 @@ const CourseDetails: React.FC = () => {
                               <div className="d-flex align-items-center gap-1.5">
                                 <span
                                   className={`badge rounded-pill px-2.5 py-1 ${sess.statusAcronym === 'P'
-                                      ? 'bg-success'
-                                      : sess.statusAcronym === 'L' || sess.statusAcronym === 'E'
-                                        ? 'bg-warning text-dark'
-                                        : 'bg-secondary'
+                                    ? 'bg-success'
+                                    : sess.statusAcronym === 'L' || sess.statusAcronym === 'E'
+                                      ? 'bg-warning text-dark'
+                                      : 'bg-secondary'
                                     }`}
                                   style={{ fontSize: '0.7rem' }}
                                 >

@@ -703,7 +703,7 @@ export const adminService = {
   async addActivity(activityData: {
     course_id: number;
     section: number;
-    mod_type: 'page' | 'quiz' | 'assign' | 'resource';
+    mod_type: 'page' | 'quiz' | 'assign' | 'resource' | 'attendance' | 'vpl' | 'customcert' | 'reengagement' | string;
     name: string;
     content?: string;
   }): Promise<any> {

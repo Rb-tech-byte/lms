@@ -69,26 +69,38 @@ if (is_dir($targetMoodle . DIRECTORY_SEPARATOR . 'public')) {
 
 // 2. Overlay plugins into Moodle directory structure
 $pluginsSrc = __DIR__ . DIRECTORY_SEPARATOR . 'plugins';
-$moodleRoot = is_dir($targetMoodle . DIRECTORY_SEPARATOR . 'public') ? $targetMoodle . DIRECTORY_SEPARATOR . 'public' : $targetMoodle;
 
 $mappings = [
     'payment/gateway/pesapal' => 'payment/gateway/pesapal',
     'payment/gateway/selcom'  => 'payment/gateway/selcom',
-    'payment/gateway/stripe'  => 'payment/gateway/stripe',
     'local/outlms_bridge'     => 'local/outlms_bridge',
     'blocks/completion_progress' => 'blocks/completion_progress',
     'blocks/xp'               => 'blocks/xp',
     'mod/customcert'          => 'mod/customcert',
     'mod/reengagement'        => 'mod/reengagement',
+    'mod/attendance'          => 'mod/attendance',
+    'mod/vpl'                 => 'mod/vpl',
+    'course/format/tiles'     => 'course/format/tiles',
+    'course/format/onetopic'  => 'course/format/onetopic',
+    'course/format/topcoll'   => 'course/format/topcoll',
+    'question/type/coderunner'=> 'question/type/coderunner',
     'webservice/restful'      => 'webservice/restful',
 ];
 
 foreach ($mappings as $srcSub => $dstSub) {
     $from = $pluginsSrc . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $srcSub);
-    $to = $moodleRoot . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $dstSub);
+    $to = $targetMoodle . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $dstSub);
     if (is_dir($from)) {
         copyFolder($from, $to);
         echo "[OK] Installed plugin: {$dstSub}\n";
+    }
+    // Also copy to public/ if Moodle 5.x router structure exists
+    if (is_dir($targetMoodle . DIRECTORY_SEPARATOR . 'public')) {
+        $toPublic = $targetMoodle . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $dstSub);
+        if (is_dir($from)) {
+            copyFolder($from, $toPublic);
+            echo "[OK] Installed plugin to public: {$dstSub}\n";
+        }
     }
 }
 

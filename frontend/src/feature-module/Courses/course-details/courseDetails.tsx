@@ -70,6 +70,14 @@ const getModuleMeta = (modname: string) => {
       return { icon: 'isax-document-text', color: '#059669', bg: '#ecfdf5', label: 'Study Guide' };
     case 'url':
       return { icon: 'isax-link-21', color: '#2563eb', bg: '#eff6ff', label: 'Resource Link' };
+    case 'vpl':
+      return { icon: 'isax-code', color: '#0284c7', bg: '#e0f2fe', label: 'Virtual Programming Lab' };
+    case 'attendance':
+      return { icon: 'isax-calendar-tick', color: '#0d9488', bg: '#ccfbf1', label: 'Digital Attendance' };
+    case 'customcert':
+      return { icon: 'isax-award', color: '#b45309', bg: '#fef3c7', label: 'Verifiable Certificate' };
+    case 'reengagement':
+      return { icon: 'isax-notification-bing', color: '#9333ea', bg: '#f3e8ff', label: 'Retention Nudge' };
     default:
       return { icon: 'isax-teacher', color: '#475569', bg: '#f8fafc', label: 'Learning Activity' };
   }
@@ -79,6 +87,12 @@ const CourseDetails: React.FC = () => {
   const routes = all_routes;
   const { user, role } = useAuth();
   const isStaff = role === 'admin' || role === 'instructor';
+  const resolvedUserId = useMemo(() => {
+    if (!user) return 3;
+    const raw = (user as any).userid || (user as any).id;
+    const parsed = Number(String(raw).replace(/[^0-9]/g, ''));
+    return parsed > 1 ? parsed : 3;
+  }, [user]);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const initialCourseId = Number(searchParams.get('id') || searchParams.get('course_id') || 8);
@@ -88,10 +102,29 @@ const CourseDetails: React.FC = () => {
   const [allCourses, setAllCourses] = useState<PublicCatalogCourse[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [expandedSections, setExpandedSections] = useState<Record<number, boolean>>({});
-  const [activeTab, setActiveTab] = useState<'syllabus' | 'overview' | 'lecturer'>('syllabus');
+  const [activeTab, setActiveTab] = useState<'syllabus' | 'labs' | 'tracking' | 'overview' | 'lecturer'>('syllabus');
   const [activitySearch, setActivitySearch] = useState<string>('');
   const [activityTypeFilter, setActivityTypeFilter] = useState<string>('all');
   const [feedback, setFeedback] = useState<{ type: 'success' | 'danger'; message: string } | null>(null);
+
+  // Moodle Marketplace Plugin States (Course Formats, VPL, CodeRunner, Attendance, Completion Progress, XP, CustomCert, Reengagement)
+  const [activeFormat, setActiveFormat] = useState<string>('tiles');
+  const [availableFormats, setAvailableFormats] = useState<any[]>([]);
+  const [selectedOneTopicIdx, setSelectedOneTopicIdx] = useState<number>(0);
+  const [vplLabs, setVplLabs] = useState<any[]>([]);
+  const [selectedVplId, setSelectedVplId] = useState<number>(0);
+  const [vplCode, setVplCode] = useState<string>('');
+  const [vplLanguage, setVplLanguage] = useState<string>('python');
+  const [vplEvaluation, setVplEvaluation] = useState<any | null>(null);
+  const [codeRunnerQuestions, setCodeRunnerQuestions] = useState<any[]>([]);
+  const [selectedCrId, setSelectedCrId] = useState<number>(0);
+  const [crAnswerCode, setCrAnswerCode] = useState<string>('');
+  const [crEvaluation, setCrEvaluation] = useState<any | null>(null);
+  const [attendanceData, setAttendanceData] = useState<any | null>(null);
+  const [completionProgress, setCompletionProgress] = useState<any | null>(null);
+  const [customCertData, setCustomCertData] = useState<any | null>(null);
+  const [reengagementNudges, setReengagementNudges] = useState<any[]>([]);
+  const [pluginActionBusy, setPluginActionBusy] = useState<string | null>(null);
 
   // Staff inline curriculum management modal states
   const [showSectionModal, setShowSectionModal] = useState(false);
@@ -112,12 +145,64 @@ const CourseDetails: React.FC = () => {
   const loadCourseData = useCallback(async (targetId: number) => {
     setLoading(true);
     try {
-      const [detailData, catalogData] = await Promise.all([
+      const [
+        detailData,
+        catalogData,
+        formatRes,
+        attRes,
+        vplRes,
+        crRes,
+        compRes,
+        certRes,
+        reengRes,
+      ] = await Promise.all([
         courseService.getPublicCourseDetails(targetId),
         courseService.getPublicCatalog(),
+        courseService.getCourseFormats(targetId).catch(() => null),
+        courseService.getAttendance(targetId, resolvedUserId).catch(() => null),
+        courseService.getVplLabs(targetId, resolvedUserId).catch(() => null),
+        courseService.getCodeRunnerQuestions(targetId).catch(() => null),
+        courseService.getCompletionProgress(targetId, resolvedUserId).catch(() => null),
+        courseService.getCustomCertTemplates(targetId, resolvedUserId).catch(() => null),
+        courseService.getReengagementNudges(targetId).catch(() => null),
       ]);
       setCourse(detailData);
       setAllCourses(catalogData.courses || []);
+
+      if (formatRes?.success) {
+        setActiveFormat(formatRes.current_format || detailData?.format || 'tiles');
+        setAvailableFormats(formatRes.available_formats || []);
+      } else if (detailData?.format) {
+        setActiveFormat(detailData.format);
+      }
+
+      if (attRes?.success) {
+        setAttendanceData(attRes);
+      }
+      if (vplRes?.success && Array.isArray(vplRes.labs)) {
+        setVplLabs(vplRes.labs);
+        if (vplRes.labs.length > 0) {
+          setSelectedVplId(vplRes.labs[0].id);
+          setVplCode(vplRes.labs[0].starterCode || '');
+          setVplLanguage(vplRes.labs[0].language || 'python');
+        }
+      }
+      if (crRes?.success && Array.isArray(crRes.questions)) {
+        setCodeRunnerQuestions(crRes.questions);
+        if (crRes.questions.length > 0) {
+          setSelectedCrId(crRes.questions[0].id);
+          setCrAnswerCode(crRes.questions[0].starterCode || '');
+        }
+      }
+      if (compRes?.success) {
+        setCompletionProgress(compRes);
+      }
+      if (certRes?.success && certRes.certificate) {
+        setCustomCertData(certRes.certificate);
+      }
+      if (reengRes?.success && Array.isArray(reengRes.nudges)) {
+        setReengagementNudges(reengRes.nudges);
+      }
 
       if (detailData?.sections?.length) {
         const initialExpanded: Record<number, boolean> = {};
@@ -125,17 +210,181 @@ const CourseDetails: React.FC = () => {
           initialExpanded[s.id] = i < 2;
         });
         setExpandedSections(initialExpanded);
+        setSelectedOneTopicIdx(0);
       }
     } catch (err: any) {
       setFeedback({ type: 'danger', message: err?.message || 'Unable to load programme details.' });
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [resolvedUserId]);
 
   useEffect(() => {
     loadCourseData(courseId);
   }, [courseId, loadCourseData]);
+
+  const handleSwitchCourseFormat = async (newFormat: string) => {
+    if (!course) return;
+    setActiveFormat(newFormat);
+    setPluginActionBusy('format');
+    try {
+      const res = await courseService.updateCourseFormat(course.id, newFormat);
+      if (res?.success) {
+        setFeedback({ type: 'success', message: `Course layout format switched to "${newFormat.toUpperCase()}" (persisted via Moodle format_${newFormat}).` });
+      }
+    } catch {
+      // Visual switch remains active
+    } finally {
+      setPluginActionBusy(null);
+    }
+  };
+
+  const handleRunVplCode = async () => {
+    if (!course || !selectedVplId) return;
+    setPluginActionBusy('vpl');
+    try {
+      const res = await courseService.submitVplCode({
+        course_id: course.id,
+        vpl_id: selectedVplId,
+        user_id: resolvedUserId,
+        language: vplLanguage,
+        source_code: vplCode,
+      });
+      if (res?.success) {
+        setVplLabs(res.labs || vplLabs);
+        setVplEvaluation(res.evaluation || null);
+        setFeedback({
+          type: 'success',
+          message: `VPL Lab evaluated: ${res.evaluation?.passedTests}/${res.evaluation?.totalTests} unit tests passed — Grade: ${res.evaluation?.grade}/100.`,
+        });
+      }
+    } catch (err: any) {
+      setFeedback({ type: 'danger', message: err?.message || 'VPL code evaluation failed.' });
+    } finally {
+      setPluginActionBusy(null);
+    }
+  };
+
+  const handleEvaluateCodeRunner = async () => {
+    if (!course || !selectedCrId) return;
+    setPluginActionBusy('coderunner');
+    try {
+      const res = await courseService.evaluateCodeRunner({
+        course_id: course.id,
+        question_id: selectedCrId,
+        user_id: resolvedUserId,
+        answer_code: crAnswerCode,
+      });
+      if (res?.success && res.evaluation) {
+        setCrEvaluation(res.evaluation);
+        setFeedback({
+          type: 'success',
+          message: `CodeRunner graded: ${res.evaluation.passedCount}/${res.evaluation.totalCount} test cases passed (${res.evaluation.score}/${res.evaluation.maxScore} marks).`,
+        });
+      }
+    } catch (err: any) {
+      setFeedback({ type: 'danger', message: err?.message || 'CodeRunner evaluation failed.' });
+    } finally {
+      setPluginActionBusy(null);
+    }
+  };
+
+  const handleAttendanceCheckIn = async (sessionId: number, statusAcronym: string = 'P') => {
+    if (!course) return;
+    setPluginActionBusy(`att-${sessionId}`);
+    try {
+      const res = await courseService.recordAttendance({
+        course_id: course.id,
+        user_id: resolvedUserId,
+        session_id: sessionId,
+        status: statusAcronym,
+        remarks: 'Verified via OUT LMS Digital Attendance & QR Check-in',
+      });
+      if (res?.success) {
+        setAttendanceData(res);
+        setFeedback({ type: 'success', message: res.message || 'Attendance recorded in Moodle database.' });
+      }
+    } catch (err: any) {
+      setFeedback({ type: 'danger', message: err?.message || 'Failed to record attendance.' });
+    } finally {
+      setPluginActionBusy(null);
+    }
+  };
+
+  const handleCreateAttendanceSession = async () => {
+    if (!course) return;
+    setPluginActionBusy('att-create');
+    try {
+      const res = await courseService.recordAttendance({
+        course_id: course.id,
+        user_id: resolvedUserId,
+        subaction: 'create_session',
+        description: `Live Interactive Seminar (${course.shortname}) — ${new Date().toLocaleDateString()}`,
+      });
+      if (res?.success) {
+        setAttendanceData(res);
+        setFeedback({ type: 'success', message: 'Created new Digital Attendance session with QR check-in enabled.' });
+      }
+    } catch (err: any) {
+      setFeedback({ type: 'danger', message: err?.message || 'Failed to create attendance session.' });
+    } finally {
+      setPluginActionBusy(null);
+    }
+  };
+
+  const handleToggleModuleCompletion = async (cmid: number) => {
+    if (!course) return;
+    setPluginActionBusy(`comp-${cmid}`);
+    try {
+      const res = await courseService.toggleActivityCompletion(course.id, cmid, resolvedUserId);
+      if (res?.success) {
+        setCompletionProgress(res);
+        setFeedback({
+          type: 'success',
+          message: `Updated activity completion (${res.completedModules}/${res.totalModules} completed • ${res.xp?.points} XP).`,
+        });
+      }
+    } catch (err: any) {
+      setFeedback({ type: 'danger', message: err?.message || 'Failed to toggle completion.' });
+    } finally {
+      setPluginActionBusy(null);
+    }
+  };
+
+  const handleIssueCustomCertificate = async () => {
+    if (!course) return;
+    setPluginActionBusy('cert');
+    try {
+      const res = await courseService.issueCustomCert(course.id, resolvedUserId);
+      if (res?.success && res.certificate) {
+        setCustomCertData(res.certificate);
+        setFeedback({
+          type: 'success',
+          message: `Verifiable Custom Certificate issued (Code: ${res.certificate.verificationCode}).`,
+        });
+      }
+    } catch (err: any) {
+      setFeedback({ type: 'danger', message: err?.message || 'Failed to issue certificate.' });
+    } finally {
+      setPluginActionBusy(null);
+    }
+  };
+
+  const handleTriggerReengagement = async () => {
+    if (!course) return;
+    setPluginActionBusy('reeng');
+    try {
+      const res = await courseService.triggerReengagement(course.id);
+      if (res?.success) {
+        setReengagementNudges(res.nudges || reengagementNudges);
+        setFeedback({ type: 'success', message: res.message || 'Re-engagement nudge dispatched.' });
+      }
+    } catch (err: any) {
+      setFeedback({ type: 'danger', message: err?.message || 'Failed to trigger re-engagement nudge.' });
+    } finally {
+      setPluginActionBusy(null);
+    }
+  };
 
   const handleSelectCourse = (newId: number) => {
     setCourseId(newId);
@@ -208,9 +457,9 @@ const CourseDetails: React.FC = () => {
       await adminService.addActivity({
         course_id: course.id,
         section: targetSectionNum,
-        mod_type: (['page', 'quiz', 'assign', 'resource'].includes(moduleForm.modname)
+        mod_type: (['page', 'quiz', 'assign', 'resource', 'attendance', 'vpl', 'customcert', 'reengagement'].includes(moduleForm.modname)
           ? moduleForm.modname
-          : 'page') as 'page' | 'quiz' | 'assign' | 'resource',
+          : 'page'),
         name: moduleForm.name.trim(),
         content: moduleForm.content || moduleForm.intro,
       });
@@ -495,6 +744,28 @@ const CourseDetails: React.FC = () => {
                     </button>
                     <button
                       type="button"
+                      onClick={() => setActiveTab('labs')}
+                      className={`btn btn-sm rounded-pill px-3 fw-semibold ${
+                        activeTab === 'labs' ? 'btn-primary' : 'btn-light text-secondary'
+                      }`}
+                      style={{ fontSize: '0.78rem' }}
+                    >
+                      <i className="isax isax-code me-1" />
+                      Coding Labs ({vplLabs.length + codeRunnerQuestions.length})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('tracking')}
+                      className={`btn btn-sm rounded-pill px-3 fw-semibold ${
+                        activeTab === 'tracking' ? 'btn-primary' : 'btn-light text-secondary'
+                      }`}
+                      style={{ fontSize: '0.78rem' }}
+                    >
+                      <i className="isax isax-calendar-tick me-1" />
+                      Attendance & Progress
+                    </button>
+                    <button
+                      type="button"
                       onClick={() => setActiveTab('overview')}
                       className={`btn btn-sm rounded-pill px-3 fw-semibold ${
                         activeTab === 'overview' ? 'btn-primary' : 'btn-light text-secondary'
@@ -502,7 +773,7 @@ const CourseDetails: React.FC = () => {
                       style={{ fontSize: '0.78rem' }}
                     >
                       <i className="isax isax-document-text me-1" />
-                      Programme Overview
+                      Overview
                     </button>
                     <button
                       type="button"
@@ -513,7 +784,7 @@ const CourseDetails: React.FC = () => {
                       style={{ fontSize: '0.78rem' }}
                     >
                       <i className="isax isax-teacher me-1" />
-                      Course Coordinator
+                      Coordinator
                     </button>
                   </div>
 
@@ -537,6 +808,58 @@ const CourseDetails: React.FC = () => {
                 {/* TAB 1: SYLLABUS & LEARNING UNITS */}
                 {activeTab === 'syllabus' && (
                   <div>
+                    {/* Moodle Course Format Switcher (format_tiles, format_onetopic, format_topcoll, format_topics) */}
+                    <div
+                      className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2.5 p-2.5 rounded-3 border"
+                      style={{ background: 'linear-gradient(90deg, #f0f9ff 0%, #ffffff 100%)', borderColor: '#bae6fd' }}
+                    >
+                      <div className="d-flex align-items-center gap-2">
+                        <span
+                          className="badge rounded-pill px-2.5 py-1 fw-bold"
+                          style={{ background: '#0171BB', color: '#fff', fontSize: '0.68rem' }}
+                        >
+                          Moodle Format Plugin
+                        </span>
+                        <span className="fw-semibold text-dark small" style={{ fontSize: '0.78rem' }}>
+                          Active Layout:{' '}
+                          <strong className="text-primary">
+                            {activeFormat === 'tiles'
+                              ? 'Tiles Grid (format_tiles)'
+                              : activeFormat === 'onetopic'
+                              ? 'OneTopic Tabs (format_onetopic)'
+                              : activeFormat === 'topcoll'
+                              ? 'Collapsed Topics (format_topcoll)'
+                              : 'Standard Academic List'}
+                          </strong>
+                        </span>
+                      </div>
+
+                      <div className="d-flex align-items-center gap-1 flex-wrap">
+                        {(availableFormats.length > 0
+                          ? availableFormats
+                          : [
+                              { id: 'tiles', name: 'Tiles Grid' },
+                              { id: 'onetopic', name: 'OneTopic Tabs' },
+                              { id: 'topcoll', name: 'Collapsed Topics' },
+                              { id: 'topics', name: 'Standard List' },
+                            ]
+                        ).map((fmt: any) => (
+                          <button
+                            key={fmt.id}
+                            type="button"
+                            disabled={pluginActionBusy === 'format'}
+                            onClick={() => handleSwitchCourseFormat(fmt.id)}
+                            className={`btn btn-sm rounded-pill px-2.5 py-0.5 fw-semibold ${
+                              activeFormat === fmt.id ? 'btn-primary shadow-sm' : 'btn-light border text-secondary'
+                            }`}
+                            style={{ fontSize: '0.71rem' }}
+                          >
+                            {fmt.name.replace(' Format', '')}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
                     {/* Activity Real-Time Filter & Search */}
                     <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3 p-2 bg-white rounded-3 border">
                       <div className="input-group input-group-sm" style={{ maxWidth: 260 }}>
@@ -594,12 +917,124 @@ const CourseDetails: React.FC = () => {
                         >
                           Assignments
                         </button>
+                        {activeFormat === 'topcoll' && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const allOpen = filteredSections.every((s) => expandedSections[s.id]);
+                              const next: Record<number, boolean> = {};
+                              filteredSections.forEach((s) => {
+                                next[s.id] = !allOpen;
+                              });
+                              setExpandedSections(next);
+                            }}
+                            className="btn btn-sm btn-outline-success rounded-pill px-2.5 py-0.5 fw-semibold"
+                            style={{ fontSize: '0.71rem' }}
+                          >
+                            Toggle All Topics
+                          </button>
+                        )}
                       </div>
                     </div>
 
+                    {/* OneTopic Horizontal Tab Bar (when activeFormat === 'onetopic') */}
+                    {activeFormat === 'onetopic' && filteredSections.length > 0 && (
+                      <div className="d-flex gap-1.5 overflow-auto pb-2 mb-3">
+                        {filteredSections.map((sec, idx) => (
+                          <button
+                            key={sec.id}
+                            type="button"
+                            onClick={() => setSelectedOneTopicIdx(idx)}
+                            className={`btn btn-sm rounded-3 px-3 py-1.5 fw-semibold flex-shrink-0 ${
+                              selectedOneTopicIdx === idx ? 'btn-info text-white shadow-sm' : 'btn-white border text-dark'
+                            }`}
+                            style={{ fontSize: '0.76rem' }}
+                          >
+                            Unit {sec.section === 0 ? '00' : String(sec.section).padStart(2, '0')}:{' '}
+                            {sec.name.length > 26 ? `${sec.name.slice(0, 26)}...` : sec.name}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Tiles Visual Grid View (when activeFormat === 'tiles') */}
+                    {activeFormat === 'tiles' && (
+                      <div className="row g-3 mb-3">
+                        {filteredSections.map((sec) => {
+                          const isOpen = !!expandedSections[sec.id];
+                          return (
+                            <div className="col-md-6" key={`tile-${sec.id}`}>
+                              <div
+                                className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden"
+                                style={{
+                                  border: isOpen ? '2px solid #0171BB' : '1px solid #e2e8f0',
+                                  cursor: 'pointer',
+                                  transition: 'transform 0.15s ease',
+                                }}
+                                onClick={() => toggleSection(sec.id)}
+                              >
+                                <div
+                                  className="p-3"
+                                  style={{
+                                    background: isOpen
+                                      ? 'linear-gradient(135deg, #005B97 0%, #0171BB 100%)'
+                                      : 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+                                    color: isOpen ? '#fff' : '#0f172a',
+                                    borderBottom: isOpen ? '2px solid #FFD200' : '1px solid #e2e8f0',
+                                  }}
+                                >
+                                  <div className="d-flex align-items-center justify-content-between mb-1.5">
+                                    <span
+                                      className="badge rounded-pill px-2.5 py-1"
+                                      style={{
+                                        background: isOpen ? '#FFD200' : '#0171BB',
+                                        color: isOpen ? '#071F38' : '#fff',
+                                        fontSize: '0.68rem',
+                                        fontWeight: 700,
+                                      }}
+                                    >
+                                      TILE {sec.section === 0 ? '00' : String(sec.section).padStart(2, '0')}
+                                    </span>
+                                    <span className="small fw-semibold" style={{ fontSize: '0.72rem', opacity: 0.9 }}>
+                                      {sec.modules.length} {sec.modules.length === 1 ? 'Activity' : 'Activities'}
+                                    </span>
+                                  </div>
+                                  <h6 className="fw-bold mb-1" style={{ fontSize: '0.9rem', color: isOpen ? '#fff' : '#0f172a' }}>
+                                    {sec.name}
+                                  </h6>
+                                  <p
+                                    className="mb-0 small"
+                                    style={{
+                                      fontSize: '0.75rem',
+                                      opacity: 0.85,
+                                      display: '-webkit-box',
+                                      WebkitLineClamp: 2,
+                                      WebkitBoxOrient: 'vertical',
+                                      overflow: 'hidden',
+                                    }}
+                                  >
+                                    {sec.summary || `Interactive learning tile for ${sec.name}.`}
+                                  </p>
+                                </div>
+                                <div className="card-body p-2.5 bg-white d-flex align-items-center justify-content-between">
+                                  <span className="small text-primary fw-semibold" style={{ fontSize: '0.74rem' }}>
+                                    {isOpen ? 'Hide Tile Activities' : 'Click Tile to Open Activities'}
+                                  </span>
+                                  <i className={`fa-solid fa-chevron-${isOpen ? 'up' : 'down'} text-primary small`} />
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+
                     <div className="d-flex flex-column gap-2.5">
-                      {filteredSections.map((sec) => {
-                        const isOpen = !!expandedSections[sec.id];
+                      {(activeFormat === 'onetopic'
+                        ? filteredSections.filter((_, idx) => idx === selectedOneTopicIdx)
+                        : filteredSections
+                      ).map((sec) => {
+                        const isOpen = activeFormat === 'onetopic' ? true : !!expandedSections[sec.id];
                         return (
                           <div
                             key={sec.id}
@@ -712,12 +1147,26 @@ const CourseDetails: React.FC = () => {
                                   <div className="d-flex flex-column gap-1.5 mt-2">
                                     {sec.modules.map((mod) => {
                                       const meta = getModuleMeta(mod.modname);
+                                      const isDone = completionProgress?.items?.some(
+                                        (it: any) => it.cmid === mod.id && it.completed
+                                      );
                                       return (
                                         <div
                                           key={mod.id}
                                           className="d-flex align-items-center justify-content-between p-2 rounded-2 bg-white border"
                                         >
                                           <div className="d-flex align-items-center gap-2 overflow-hidden">
+                                            <button
+                                              type="button"
+                                              onClick={() => handleToggleModuleCompletion(mod.id)}
+                                              title={isDone ? 'Completed (Click to toggle)' : 'Mark activity complete'}
+                                              className={`btn btn-sm rounded-circle p-0 d-inline-flex align-items-center justify-content-center flex-shrink-0 ${
+                                                isDone ? 'btn-success text-white' : 'btn-outline-secondary'
+                                              }`}
+                                              style={{ width: 22, height: 22, fontSize: 11 }}
+                                            >
+                                              {isDone ? '✓' : ''}
+                                            </button>
                                             <span
                                               className="rounded-2 d-inline-flex align-items-center justify-content-center flex-shrink-0"
                                               style={{
@@ -780,7 +1229,456 @@ const CourseDetails: React.FC = () => {
                   </div>
                 )}
 
-                {/* TAB 2: PROGRAMME OVERVIEW */}
+                {/* TAB 2: CODING LABS (mod_vpl & qtype_coderunner) */}
+                {activeTab === 'labs' && (
+                  <div className="d-flex flex-column gap-3">
+                    {/* Virtual Programming Lab (mod_vpl) */}
+                    <div className="card border-0 shadow-sm rounded-3 p-3.5 bg-white" style={{ border: '1px solid #e2e8f0' }}>
+                      <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2.5 pb-2 border-bottom">
+                        <div>
+                          <span className="badge bg-info-subtle text-info rounded-pill mb-1" style={{ fontSize: '0.68rem' }}>
+                            Moodle Plugin: mod_vpl (GET & POST Live API)
+                          </span>
+                          <h6 className="fw-bold text-dark mb-0" style={{ fontSize: '0.96rem' }}>
+                            Virtual Programming Lab (VPL) — Browser IDE & Automated Evaluator
+                          </h6>
+                        </div>
+                        <div className="d-flex gap-1.5">
+                          {vplLabs.map((lab) => (
+                            <button
+                              key={lab.id}
+                              type="button"
+                              onClick={() => {
+                                setSelectedVplId(lab.id);
+                                setVplCode(lab.starterCode || '');
+                                setVplLanguage(lab.language || 'python');
+                              }}
+                              className={`btn btn-sm rounded-pill px-2.5 py-1 fw-semibold ${
+                                selectedVplId === lab.id ? 'btn-primary' : 'btn-light border text-secondary'
+                              }`}
+                              style={{ fontSize: '0.73rem' }}
+                            >
+                              {lab.name.split(':')[0]}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {vplLabs
+                        .filter((l) => l.id === selectedVplId)
+                        .map((lab) => (
+                          <div key={lab.id}>
+                            <p className="text-muted small mb-2.5" style={{ fontSize: '0.8rem' }}>
+                              <strong>{lab.name}:</strong> {lab.shortdescription}
+                            </p>
+                            <div className="d-flex align-items-center justify-content-between mb-2">
+                              <div className="d-flex align-items-center gap-2">
+                                <label className="small fw-semibold text-secondary" style={{ fontSize: '0.74rem' }}>
+                                  Runtime:
+                                </label>
+                                <select
+                                  className="form-select form-select-sm"
+                                  style={{ width: 130, fontSize: '0.75rem' }}
+                                  value={vplLanguage}
+                                  onChange={(e) => setVplLanguage(e.target.value)}
+                                >
+                                  <option value="python">Python 3.12</option>
+                                  <option value="javascript">Node.js (ES2024)</option>
+                                  <option value="sql">SQL (MariaDB)</option>
+                                  <option value="php">PHP 8.4</option>
+                                </select>
+                              </div>
+                              {lab.submission && (
+                                <span className="badge bg-success-subtle text-success rounded-pill" style={{ fontSize: '0.72rem' }}>
+                                  Latest Grade: {lab.submission.grade}/{lab.maxGrade} ({lab.submission.run_count} runs)
+                                </span>
+                              )}
+                            </div>
+
+                            <textarea
+                              className="form-control font-monospace mb-2.5"
+                              rows={7}
+                              value={vplCode}
+                              onChange={(e) => setVplCode(e.target.value)}
+                              style={{
+                                background: '#0f172a',
+                                color: '#e2e8f0',
+                                fontSize: '0.79rem',
+                                borderRadius: 10,
+                                padding: 12,
+                              }}
+                            />
+
+                            <div className="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                              <small className="text-muted" style={{ fontSize: '0.72rem' }}>
+                                Max Grade: {lab.maxGrade} pts • Due: {lab.duedateFormatted}
+                              </small>
+                              <button
+                                type="button"
+                                disabled={pluginActionBusy === 'vpl'}
+                                onClick={handleRunVplCode}
+                                className="btn btn-sm btn-primary rounded-pill px-3.5 py-1.5 fw-bold"
+                                style={{ fontSize: '0.78rem' }}
+                              >
+                                <i className="isax isax-play me-1" />
+                                {pluginActionBusy === 'vpl' ? 'Running VPL Jail Sandbox...' : 'Run & Grade VPL Submission (POST)'}
+                              </button>
+                            </div>
+
+                            {vplEvaluation && (
+                              <div className="mt-3 p-3 rounded-3" style={{ background: '#0b172a', color: '#f8fafc' }}>
+                                <div className="d-flex align-items-center justify-content-between mb-2">
+                                  <span className="fw-bold text-warning" style={{ fontSize: '0.8rem' }}>
+                                    VPL Automated Execution Output ({vplEvaluation.passedTests}/{vplEvaluation.totalTests} Passed)
+                                  </span>
+                                  <span className="badge bg-success rounded-pill" style={{ fontSize: '0.74rem' }}>
+                                    Score: {vplEvaluation.grade} / {vplEvaluation.maxGrade}
+                                  </span>
+                                </div>
+                                <pre className="small mb-2 text-info" style={{ fontSize: '0.74rem', whiteSpace: 'pre-wrap' }}>
+                                  {vplEvaluation.stdout}
+                                </pre>
+                                <div className="row g-2">
+                                  {(vplEvaluation.tests || []).map((tc: any, idx: number) => (
+                                    <div className="col-sm-6" key={idx}>
+                                      <div
+                                        className="p-2 rounded-2 d-flex align-items-center justify-content-between"
+                                        style={{ background: 'rgba(255,255,255,0.06)', fontSize: '0.73rem' }}
+                                      >
+                                        <span className="text-truncate me-2">{tc.name}</span>
+                                        <span className={`badge ${tc.passed ? 'bg-success' : 'bg-danger'}`}>
+                                          {tc.passed ? `PASS (${tc.timeMs}ms)` : 'FAIL'}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                    </div>
+
+                    {/* CodeRunner Question Evaluator (qtype_coderunner) */}
+                    <div className="card border-0 shadow-sm rounded-3 p-3.5 bg-white" style={{ border: '1px solid #e2e8f0' }}>
+                      <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2.5 pb-2 border-bottom">
+                        <div>
+                          <span className="badge bg-warning-subtle text-dark rounded-pill mb-1" style={{ fontSize: '0.68rem' }}>
+                            Moodle Plugin: qtype_coderunner (GET & POST Live API)
+                          </span>
+                          <h6 className="fw-bold text-dark mb-0" style={{ fontSize: '0.96rem' }}>
+                            CodeRunner Automated Unit-Test Question Bank
+                          </h6>
+                        </div>
+                        <div className="d-flex gap-1.5">
+                          {codeRunnerQuestions.map((q, idx) => (
+                            <button
+                              key={q.id}
+                              type="button"
+                              onClick={() => {
+                                setSelectedCrId(q.id);
+                                setCrAnswerCode(q.starterCode || '');
+                                setCrEvaluation(null);
+                              }}
+                              className={`btn btn-sm rounded-pill px-2.5 py-1 fw-semibold ${
+                                selectedCrId === q.id ? 'btn-dark' : 'btn-light border text-secondary'
+                              }`}
+                              style={{ fontSize: '0.73rem' }}
+                            >
+                              Challenge {idx + 1}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {codeRunnerQuestions
+                        .filter((q) => q.id === selectedCrId)
+                        .map((q) => (
+                          <div key={q.id}>
+                            <p className="text-dark small fw-semibold mb-1" style={{ fontSize: '0.82rem' }}>
+                              {q.name}
+                            </p>
+                            <p className="text-muted small mb-2.5" style={{ fontSize: '0.78rem' }}>
+                              {q.prompt}
+                            </p>
+                            <textarea
+                              className="form-control font-monospace mb-2.5"
+                              rows={5}
+                              value={crAnswerCode}
+                              onChange={(e) => setCrAnswerCode(e.target.value)}
+                              style={{
+                                background: '#1e293b',
+                                color: '#f8fafc',
+                                fontSize: '0.79rem',
+                                borderRadius: 10,
+                                padding: 12,
+                              }}
+                            />
+                            <div className="d-flex justify-content-end">
+                              <button
+                                type="button"
+                                disabled={pluginActionBusy === 'coderunner'}
+                                onClick={handleEvaluateCodeRunner}
+                                className="btn btn-sm btn-warning fw-bold rounded-pill px-3.5 py-1.5"
+                                style={{ fontSize: '0.78rem', color: '#0f172a' }}
+                              >
+                                <i className="isax isax-tick-circle me-1" />
+                                {pluginActionBusy === 'coderunner' ? 'Checking Tests...' : 'Check Answer (CodeRunner POST)'}
+                              </button>
+                            </div>
+
+                            {crEvaluation && (
+                              <div className="mt-3 p-3 rounded-3 border" style={{ background: '#f0fdf4', borderColor: '#86efac' }}>
+                                <div className="d-flex align-items-center justify-content-between mb-2">
+                                  <span className="fw-bold text-success small">
+                                    CodeRunner Test Table — {crEvaluation.passedCount}/{crEvaluation.totalCount} Passed
+                                  </span>
+                                  <span className="badge bg-success rounded-pill">
+                                    Marks: {crEvaluation.score} / {crEvaluation.maxScore}
+                                  </span>
+                                </div>
+                                <div className="table-responsive">
+                                  <table className="table table-sm table-bordered mb-0 bg-white small" style={{ fontSize: '0.74rem' }}>
+                                    <thead className="table-light">
+                                      <tr>
+                                        <th>Test Case</th>
+                                        <th>Expected</th>
+                                        <th>Got</th>
+                                        <th>Result</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {(crEvaluation.testResults || []).map((tr: any) => (
+                                        <tr key={tr.index}>
+                                          <td className="font-monospace">{tr.testcode}</td>
+                                          <td className="font-monospace">{tr.expected}</td>
+                                          <td className="font-monospace">{tr.got}</td>
+                                          <td>
+                                            <span className={`badge ${tr.passed ? 'bg-success' : 'bg-danger'}`}>
+                                              {tr.passed ? '✓ PASS' : '✗ FAIL'}
+                                            </span>
+                                          </td>
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB 3: ATTENDANCE, COMPLETION PROGRESS & CREDENTIALS */}
+                {activeTab === 'tracking' && (
+                  <div className="d-flex flex-column gap-3">
+                    {/* Completion Progress Bar (block_completion_progress) & Level Up! XP (block_xp) */}
+                    {completionProgress && (
+                      <div className="card border-0 shadow-sm rounded-3 p-3.5 bg-white" style={{ border: '1px solid #e2e8f0' }}>
+                        <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2.5">
+                          <div>
+                            <span className="badge bg-success-subtle text-success rounded-pill mb-1" style={{ fontSize: '0.68rem' }}>
+                              block_completion_progress + block_xp
+                            </span>
+                            <h6 className="fw-bold text-dark mb-0" style={{ fontSize: '0.94rem' }}>
+                              Interactive Completion Progress Bar & Gamification XP
+                            </h6>
+                          </div>
+                          <div className="d-flex align-items-center gap-2">
+                            <span className="badge rounded-pill px-3 py-1" style={{ background: '#071F38', color: '#FFD200', fontSize: '0.74rem' }}>
+                              Level {completionProgress.xp?.level} • {completionProgress.xp?.points} XP
+                            </span>
+                            <span className="badge bg-primary rounded-pill px-2.5 py-1" style={{ fontSize: '0.74rem' }}>
+                              {completionProgress.percentage}% Complete
+                            </span>
+                          </div>
+                        </div>
+
+                        <p className="text-muted small mb-2" style={{ fontSize: '0.76rem' }}>
+                          Click any segment below to toggle activity completion in Moodle (`POST toggle_activity_completion`):
+                        </p>
+
+                        <div className="d-flex gap-1 mb-2.5" style={{ height: 22 }}>
+                          {(completionProgress.items || []).map((item: any) => (
+                            <div
+                              key={item.cmid}
+                              onClick={() => handleToggleModuleCompletion(item.cmid)}
+                              title={`${item.name} — ${item.statusLabel} (Click to toggle)`}
+                              className="flex-grow-1 rounded-1 d-flex align-items-center justify-content-center text-white fw-bold"
+                              style={{
+                                background: item.completed ? '#10b981' : '#0171BB',
+                                cursor: 'pointer',
+                                fontSize: '0.65rem',
+                                opacity: pluginActionBusy === `comp-${item.cmid}` ? 0.5 : 1,
+                              }}
+                            >
+                              {item.completed ? '✓' : '•'}
+                            </div>
+                          ))}
+                        </div>
+
+                        <div className="d-flex justify-content-between small text-muted" style={{ fontSize: '0.73rem' }}>
+                          <span>
+                            Completed: <strong>{completionProgress.completedModules}</strong> of{' '}
+                            <strong>{completionProgress.totalModules}</strong> modules
+                          </span>
+                          <span>Scholar Rank: <strong>{completionProgress.xp?.badgeTitle}</strong></span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Digital Attendance Register (mod_attendance) */}
+                    {attendanceData && (
+                      <div className="card border-0 shadow-sm rounded-3 p-3.5 bg-white" style={{ border: '1px solid #e2e8f0' }}>
+                        <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2.5 pb-2 border-bottom">
+                          <div>
+                            <span className="badge bg-primary-subtle text-primary rounded-pill mb-1" style={{ fontSize: '0.68rem' }}>
+                              Moodle Plugin: mod_attendance (GET & POST Live API)
+                            </span>
+                            <h6 className="fw-bold text-dark mb-0" style={{ fontSize: '0.94rem' }}>
+                              {attendanceData.name}
+                            </h6>
+                          </div>
+                          <div className="d-flex align-items-center gap-2">
+                            <span className="badge bg-success-subtle text-success rounded-pill px-2.5 py-1" style={{ fontSize: '0.73rem' }}>
+                              Attendance Rate: {attendanceData.summary?.attendanceRate}% ({attendanceData.summary?.earnedPoints}/
+                              {attendanceData.summary?.maxPoints} pts)
+                            </span>
+                            {isStaff && (
+                              <button
+                                type="button"
+                                disabled={pluginActionBusy === 'att-create'}
+                                onClick={handleCreateAttendanceSession}
+                                className="btn btn-sm btn-outline-primary rounded-pill px-2.5 py-0.5 fw-semibold"
+                                style={{ fontSize: '0.72rem' }}
+                              >
+                                + New Session (POST)
+                              </button>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="d-flex flex-column gap-2">
+                          {(attendanceData.sessions || []).map((sess: any) => (
+                            <div
+                              key={sess.id}
+                              className="p-2.5 rounded-3 border d-flex align-items-center justify-content-between flex-wrap gap-2 bg-light bg-opacity-50"
+                            >
+                              <div>
+                                <div className="fw-semibold text-dark" style={{ fontSize: '0.82rem' }}>
+                                  {sess.description}
+                                </div>
+                                <div className="d-flex align-items-center gap-2 flex-wrap mt-0.5">
+                                  <small className="text-muted" style={{ fontSize: '0.72rem' }}>
+                                    <i className="isax isax-calendar-1 me-1" />
+                                    {sess.dateFormatted} ({sess.durationMinutes} mins)
+                                  </small>
+                                  <span className="badge bg-white border text-secondary" style={{ fontSize: '0.66rem' }}>
+                                    QR Passkey: {sess.qrPasskey}
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div className="d-flex align-items-center gap-1.5">
+                                <span
+                                  className={`badge rounded-pill px-2.5 py-1 ${
+                                    sess.statusAcronym === 'P'
+                                      ? 'bg-success'
+                                      : sess.statusAcronym === 'L' || sess.statusAcronym === 'E'
+                                      ? 'bg-warning text-dark'
+                                      : 'bg-secondary'
+                                  }`}
+                                  style={{ fontSize: '0.7rem' }}
+                                >
+                                  {sess.statusDescription} ({sess.points}/{sess.maxPoints} pts)
+                                </span>
+                                <button
+                                  type="button"
+                                  disabled={pluginActionBusy === `att-${sess.id}`}
+                                  onClick={() => handleAttendanceCheckIn(sess.id, 'P')}
+                                  className="btn btn-sm btn-primary rounded-pill px-2.5 py-0.5 fw-semibold"
+                                  style={{ fontSize: '0.72rem' }}
+                                >
+                                  {pluginActionBusy === `att-${sess.id}` ? 'Saving...' : 'Check-In Present (POST)'}
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Custom Certificate (mod_customcert) & Re-engagement Nudges (mod_reengagement) */}
+                    <div className="row g-3">
+                      <div className="col-md-6">
+                        <div className="card h-100 border-0 shadow-sm rounded-3 p-3.5 bg-white" style={{ border: '1px solid #e2e8f0' }}>
+                          <span className="badge bg-warning-subtle text-dark rounded-pill mb-1 align-self-start" style={{ fontSize: '0.68rem' }}>
+                            mod_customcert (Verifiable PDF)
+                          </span>
+                          <h6 className="fw-bold text-dark mb-1" style={{ fontSize: '0.9rem' }}>
+                            {customCertData?.name || `${course.shortname} Accredited Certificate`}
+                          </h6>
+                          <p className="text-muted small mb-2" style={{ fontSize: '0.75rem' }}>
+                            Recipient: <strong>{customCertData?.recipientName || 'OUT Scholar'}</strong>
+                            <br />
+                            Verification Code:{' '}
+                            <code className="fw-bold text-primary">{customCertData?.verificationCode || 'OUT-2026-CERT'}</code>
+                          </p>
+                          <div className="d-flex gap-1.5 mt-auto">
+                            <button
+                              type="button"
+                              disabled={pluginActionBusy === 'cert'}
+                              onClick={handleIssueCustomCertificate}
+                              className="btn btn-sm btn-primary rounded-pill px-3 py-1 fw-semibold"
+                              style={{ fontSize: '0.73rem' }}
+                            >
+                              {pluginActionBusy === 'cert' ? 'Issuing...' : 'Issue Certificate (POST)'}
+                            </button>
+                            {customCertData?.verifyUrl && (
+                              <Link
+                                to={customCertData.verifyUrl}
+                                className="btn btn-sm btn-outline-secondary rounded-pill px-2.5 py-1 fw-semibold"
+                                style={{ fontSize: '0.73rem' }}
+                              >
+                                Verify QR
+                              </Link>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="col-md-6">
+                        <div className="card h-100 border-0 shadow-sm rounded-3 p-3.5 bg-white" style={{ border: '1px solid #e2e8f0' }}>
+                          <span className="badge bg-info-subtle text-info rounded-pill mb-1 align-self-start" style={{ fontSize: '0.68rem' }}>
+                            mod_reengagement (Retention Engine)
+                          </span>
+                          <h6 className="fw-bold text-dark mb-1" style={{ fontSize: '0.9rem' }}>
+                            {reengagementNudges[0]?.name || `${course.shortname} Automated Study Nudge`}
+                          </h6>
+                          <p className="text-muted small mb-2" style={{ fontSize: '0.75rem' }}>
+                            Cycle: Every <strong>{reengagementNudges[0]?.durationDays || 7} days</strong> • Dispatched:{' '}
+                            <strong>{reengagementNudges[0]?.remindercount || 1} nudges</strong>
+                          </p>
+                          <div className="mt-auto">
+                            <button
+                              type="button"
+                              disabled={pluginActionBusy === 'reeng'}
+                              onClick={handleTriggerReengagement}
+                              className="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 fw-semibold"
+                              style={{ fontSize: '0.73rem' }}
+                            >
+                              {pluginActionBusy === 'reeng' ? 'Dispatching...' : 'Trigger Retention Nudge (POST)'}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB 4: PROGRAMME OVERVIEW */}
                 {activeTab === 'overview' && (
                   <div className="card border-0 shadow-sm rounded-3 p-4 bg-white" style={{ border: '1px solid #e2e8f0' }}>
                     <h5 className="fw-bold text-dark mb-2" style={{ fontSize: '1.05rem' }}>About {course.fullname}</h5>
@@ -1089,8 +1987,12 @@ const CourseDetails: React.FC = () => {
                       onChange={(e) => setModuleForm({ ...moduleForm, modname: e.target.value })}
                     >
                       <option value="page">Lecture Notes / Reading Page</option>
-                      <option value="quiz">Assessment Quiz</option>
+                      <option value="quiz">Assessment Quiz (with CodeRunner support)</option>
                       <option value="assign">Coursework Assignment</option>
+                      <option value="vpl">Virtual Programming Lab (mod_vpl)</option>
+                      <option value="attendance">Digital Attendance &amp; QR Check-In (mod_attendance)</option>
+                      <option value="customcert">Verifiable Custom Certificate (mod_customcert)</option>
+                      <option value="reengagement">Automated Retention Nudge (mod_reengagement)</option>
                       <option value="forum">Discussion Seminar Forum</option>
                       <option value="url">External Academic Resource Link</option>
                     </select>

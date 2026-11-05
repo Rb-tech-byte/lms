@@ -1,9 +1,9 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "OUT LMS \u2014 Enterprise REST & Web Services API",
+    "title": "OUT LMS — Enterprise REST & Web Services API",
     "summary": "Unified Academic, Administrative & Moodle Core Web Services Engine",
-    "description": "### \ud83c\udfdb\ufe0f The Open University of Tanzania (Chuo Kikuu Huria cha Tanzania)\n**TCU & SARIS Accredited National Distance & Blended Learning Ecosystem**\n\nEnterprise API Gateway documentation providing complete interactive visualization of:\n1. **Public Academic & Discovery APIs**: Live course catalog, faculties, syllabi, fee structures, and verified instructor profiles.\n2. **Admissions & Student Self-Service**: User registration, password resets, inquiries, and application workflows.\n3. **Payments & Checkout Engine**: Pesapal 3.0 Mobile Money (M-Pesa, Airtel Money, Tigo Pesa, HaloPesa) & Card gateway.\n4. **Accredited Digital Credentials**: SARIS & TCU verifiable digital certificates with unique verification codes.\n5. **Course & Faculty Administration**: Full CUD operations for courses, learning activity modules, categories, and groups.\n6. **Instructor Console Services**: Teaching dashboard, assignments, grading rubrics, quizzes, announcements, and earnings.\n7. **System & Telemetry Operations**: Configuration, cache management, telemetry, and platform diagnostics.\n8. **SSO & Authentication**: Single Sign-On and security token generation.\n9. **Moodle Core Web Services**: Standard Moodle REST protocol endpoints (`/webservice/rest/server.php`).\n",
+    "description": "### 🏛️ The Open University of Tanzania (Chuo Kikuu Huria cha Tanzania)\n**TCU & SARIS Accredited National Distance & Blended Learning Ecosystem**\n\nEnterprise API Gateway documentation providing complete interactive visualization of:\n1. **Public Academic & Discovery APIs**: Live course catalog, faculties, syllabi, fee structures, and verified instructor profiles.\n2. **Admissions & Student Self-Service**: User registration, password resets, inquiries, and application workflows.\n3. **Payments & Checkout Engine**: Pesapal 3.0 Mobile Money (M-Pesa, Airtel Money, Tigo Pesa, HaloPesa) & Card gateway.\n4. **Accredited Digital Credentials**: SARIS & TCU verifiable digital certificates with unique verification codes.\n5. **Course & Faculty Administration**: Full CUD operations for courses, learning activity modules, categories, and groups.\n6. **Instructor Console Services**: Teaching dashboard, assignments, grading rubrics, quizzes, announcements, and earnings.\n7. **System & Telemetry Operations**: Configuration, cache management, telemetry, and platform diagnostics.\n8. **SSO & Authentication**: Single Sign-On and security token generation.\n9. **Moodle Core Web Services**: Standard Moodle REST protocol endpoints (`/webservice/rest/server.php`).\n",
     "version": "1.0.0-enterprise",
     "contact": {
       "name": "OUT Directorate of Information and Communication Technology (DICT)",
@@ -30,6 +30,10 @@
     }
   ],
   "tags": [
+    {
+      "name": "Moodle Marketplace Plugins (GET & POST)",
+      "description": "Full-stack GET & POST endpoints for installed Moodle Marketplace plugins: format_tiles, format_onetopic, format_topcoll, qtype_coderunner, mod_vpl, mod_attendance, mod_customcert, mod_reengagement, block_completion_progress, and block_xp."
+    },
     {
       "name": "Public Academic Catalog",
       "description": "Course discovery, degree programmes, short courses (PSC), MOOCs, and syllabi."
@@ -2652,6 +2656,1523 @@
             "MoodleWsToken": []
           }
         ]
+      }
+    },
+    "/admin_api.php?action=get_installed_plugins_summary": {
+      "get": {
+        "tags": [
+          "Moodle Marketplace Plugins (GET & POST)"
+        ],
+        "summary": "List Installed Moodle Marketplace Plugins & Live Stats (GET)",
+        "description": "Returns all 12 active Moodle Marketplace plugins with versions from mdl_config_plugins, live database row counts, and supported GET/POST actions.",
+        "operationId": "get_get_installed_plugins_summary",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "get_installed_plugins_summary"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful plugin API response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Moodle Marketplace Plugins (GET & POST)"
+        ],
+        "summary": "List Installed Moodle Marketplace Plugins & Live Stats (POST)",
+        "description": "Returns all 12 active Moodle Marketplace plugins with versions from mdl_config_plugins, live database row counts, and supported GET/POST actions.",
+        "operationId": "post_get_installed_plugins_summary",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "get_installed_plugins_summary"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "action": "get_installed_plugins_summary"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful plugin POST mutation / evaluation response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=get_course_formats": {
+      "get": {
+        "tags": [
+          "Moodle Marketplace Plugins (GET & POST)"
+        ],
+        "summary": "Get Course Format Plugins (Tiles, OneTopic, Collapsed Topics) (GET)",
+        "description": "Retrieves current course format from mdl_course and available Moodle format plugins (format_tiles, format_onetopic, format_topcoll, format_topics).",
+        "operationId": "get_get_course_formats",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "get_course_formats"
+            }
+          },
+          {
+            "name": "course_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful plugin API response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Moodle Marketplace Plugins (GET & POST)"
+        ],
+        "summary": "Get Course Format Plugins (Tiles, OneTopic, Collapsed Topics) (POST)",
+        "description": "Retrieves current course format from mdl_course and available Moodle format plugins (format_tiles, format_onetopic, format_topcoll, format_topics).",
+        "operationId": "post_get_course_formats",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "get_course_formats"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "action": "get_course_formats",
+                  "course_id": 7
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful plugin POST mutation / evaluation response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=update_course_format": {
+      "get": {
+        "tags": [
+          "Moodle Marketplace Plugins (GET & POST)"
+        ],
+        "summary": "Switch Course Format Layout (tiles | onetopic | topcoll | topics) (GET)",
+        "description": "Updates mdl_course.format in MariaDB for the specified course_id and returns updated layout metadata.",
+        "operationId": "get_update_course_format",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "update_course_format"
+            }
+          },
+          {
+            "name": "course_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "tiles"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful plugin API response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Moodle Marketplace Plugins (GET & POST)"
+        ],
+        "summary": "Switch Course Format Layout (tiles | onetopic | topcoll | topics) (POST)",
+        "description": "Updates mdl_course.format in MariaDB for the specified course_id and returns updated layout metadata.",
+        "operationId": "post_update_course_format",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "update_course_format"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "action": "update_course_format",
+                  "course_id": 7,
+                  "format": "tiles"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful plugin POST mutation / evaluation response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=get_attendance": {
+      "get": {
+        "tags": [
+          "Moodle Marketplace Plugins (GET & POST)"
+        ],
+        "summary": "Get Digital Attendance Sessions & QR Passkeys (mod_attendance) (GET)",
+        "description": "Queries mdl_attendance, mdl_attendance_statuses, mdl_attendance_sessions, and mdl_attendance_log for a course and scholar.",
+        "operationId": "get_get_attendance",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "get_attendance"
+            }
+          },
+          {
+            "name": "course_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 3
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful plugin API response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Moodle Marketplace Plugins (GET & POST)"
+        ],
+        "summary": "Get Digital Attendance Sessions & QR Passkeys (mod_attendance) (POST)",
+        "description": "Queries mdl_attendance, mdl_attendance_statuses, mdl_attendance_sessions, and mdl_attendance_log for a course and scholar.",
+        "operationId": "post_get_attendance",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "get_attendance"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "action": "get_attendance",
+                  "course_id": 7,
+                  "user_id": 3
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful plugin POST mutation / evaluation response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=record_attendance": {
+      "get": {
+        "tags": [
+          "Moodle Marketplace Plugins (GET & POST)"
+        ],
+        "summary": "Record Scholar Attendance Check-In or Create Session (mod_attendance) (GET)",
+        "description": "Records student check-in (P, L, E, A) in mdl_attendance_log or creates a new QR-enabled session in mdl_attendance_sessions.",
+        "operationId": "get_record_attendance",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "record_attendance"
+            }
+          },
+          {
+            "name": "course_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 3
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "P"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful plugin API response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Moodle Marketplace Plugins (GET & POST)"
+        ],
+        "summary": "Record Scholar Attendance Check-In or Create Session (mod_attendance) (POST)",
+        "description": "Records student check-in (P, L, E, A) in mdl_attendance_log or creates a new QR-enabled session in mdl_attendance_sessions.",
+        "operationId": "post_record_attendance",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "record_attendance"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "action": "record_attendance",
+                  "course_id": 7,
+                  "user_id": 3,
+                  "status": "P",
+                  "remarks": "Verified via QR Portal"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful plugin POST mutation / evaluation response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=get_vpl_labs": {
+      "get": {
+        "tags": [
+          "Moodle Marketplace Plugins (GET & POST)"
+        ],
+        "summary": "Get Virtual Programming Labs & Submissions (mod_vpl) (GET)",
+        "description": "Queries mdl_vpl and mdl_vpl_submissions for a course, returning starter code, runtime config, and latest grades.",
+        "operationId": "get_get_vpl_labs",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "get_vpl_labs"
+            }
+          },
+          {
+            "name": "course_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 3
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful plugin API response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Moodle Marketplace Plugins (GET & POST)"
+        ],
+        "summary": "Get Virtual Programming Labs & Submissions (mod_vpl) (POST)",
+        "description": "Queries mdl_vpl and mdl_vpl_submissions for a course, returning starter code, runtime config, and latest grades.",
+        "operationId": "post_get_vpl_labs",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "get_vpl_labs"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "action": "get_vpl_labs",
+                  "course_id": 7,
+                  "user_id": 3
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful plugin POST mutation / evaluation response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=submit_vpl_code": {
+      "get": {
+        "tags": [
+          "Moodle Marketplace Plugins (GET & POST)"
+        ],
+        "summary": "Submit & Grade Code in Virtual Programming Lab (mod_vpl) (GET)",
+        "description": "Executes and grades student code against automated VPL unit assertions, storing the submission and score in mdl_vpl_submissions.",
+        "operationId": "get_submit_vpl_code",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "submit_vpl_code"
+            }
+          },
+          {
+            "name": "course_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            }
+          },
+          {
+            "name": "vpl_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "python"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful plugin API response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Moodle Marketplace Plugins (GET & POST)"
+        ],
+        "summary": "Submit & Grade Code in Virtual Programming Lab (mod_vpl) (POST)",
+        "description": "Executes and grades student code against automated VPL unit assertions, storing the submission and score in mdl_vpl_submissions.",
+        "operationId": "post_submit_vpl_code",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "submit_vpl_code"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "action": "submit_vpl_code",
+                  "course_id": 7,
+                  "vpl_id": 1,
+                  "user_id": 3,
+                  "language": "python",
+                  "source_code": "def solve_out_lab(items):\n    return sum(x for x in items if x > 0)\n"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful plugin POST mutation / evaluation response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=get_coderunner_questions": {
+      "get": {
+        "tags": [
+          "Moodle Marketplace Plugins (GET & POST)"
+        ],
+        "summary": "Get CodeRunner Automated Grading Questions (qtype_coderunner) (GET)",
+        "description": "Retrieves CodeRunner programming challenges with function signatures, starter templates, and visible unit test cases.",
+        "operationId": "get_get_coderunner_questions",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "get_coderunner_questions"
+            }
+          },
+          {
+            "name": "course_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful plugin API response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Moodle Marketplace Plugins (GET & POST)"
+        ],
+        "summary": "Get CodeRunner Automated Grading Questions (qtype_coderunner) (POST)",
+        "description": "Retrieves CodeRunner programming challenges with function signatures, starter templates, and visible unit test cases.",
+        "operationId": "post_get_coderunner_questions",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "get_coderunner_questions"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "action": "get_coderunner_questions",
+                  "course_id": 7
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful plugin POST mutation / evaluation response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=evaluate_coderunner": {
+      "get": {
+        "tags": [
+          "Moodle Marketplace Plugins (GET & POST)"
+        ],
+        "summary": "Evaluate CodeRunner Answer Against Test Suite (qtype_coderunner) (GET)",
+        "description": "Runs student code against CodeRunner test cases and returns expected vs actual output table and score.",
+        "operationId": "get_evaluate_coderunner",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "evaluate_coderunner"
+            }
+          },
+          {
+            "name": "course_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            }
+          },
+          {
+            "name": "question_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 571
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful plugin API response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Moodle Marketplace Plugins (GET & POST)"
+        ],
+        "summary": "Evaluate CodeRunner Answer Against Test Suite (qtype_coderunner) (POST)",
+        "description": "Runs student code against CodeRunner test cases and returns expected vs actual output table and score.",
+        "operationId": "post_evaluate_coderunner",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "evaluate_coderunner"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "action": "evaluate_coderunner",
+                  "course_id": 7,
+                  "question_id": 571,
+                  "answer_code": "def classify_out_grade(score: int) -> str:\n    return \"Distinction\" if score >= 70 else (\"Credit\" if score >= 50 else \"Supplement\")\n"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful plugin POST mutation / evaluation response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=get_completion_progress": {
+      "get": {
+        "tags": [
+          "Moodle Marketplace Plugins (GET & POST)"
+        ],
+        "summary": "Get Completion Progress Bar & Gamification XP (block_completion_progress & block_xp) (GET)",
+        "description": "Queries mdl_course_modules_completion to build the color-coded completion bar and calculates scholar XP level and badge.",
+        "operationId": "get_get_completion_progress",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "get_completion_progress"
+            }
+          },
+          {
+            "name": "course_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 3
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful plugin API response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Moodle Marketplace Plugins (GET & POST)"
+        ],
+        "summary": "Get Completion Progress Bar & Gamification XP (block_completion_progress & block_xp) (POST)",
+        "description": "Queries mdl_course_modules_completion to build the color-coded completion bar and calculates scholar XP level and badge.",
+        "operationId": "post_get_completion_progress",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "get_completion_progress"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "action": "get_completion_progress",
+                  "course_id": 7,
+                  "user_id": 3
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful plugin POST mutation / evaluation response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=toggle_activity_completion": {
+      "get": {
+        "tags": [
+          "Moodle Marketplace Plugins (GET & POST)"
+        ],
+        "summary": "Toggle Activity Completion & Award XP (block_completion_progress & block_xp) (GET)",
+        "description": "Toggles completionstate in mdl_course_modules_completion for a course module and recalculates XP points.",
+        "operationId": "get_toggle_activity_completion",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "toggle_activity_completion"
+            }
+          },
+          {
+            "name": "course_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            }
+          },
+          {
+            "name": "cmid",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 22
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 3
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful plugin API response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Moodle Marketplace Plugins (GET & POST)"
+        ],
+        "summary": "Toggle Activity Completion & Award XP (block_completion_progress & block_xp) (POST)",
+        "description": "Toggles completionstate in mdl_course_modules_completion for a course module and recalculates XP points.",
+        "operationId": "post_toggle_activity_completion",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "toggle_activity_completion"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "action": "toggle_activity_completion",
+                  "course_id": 7,
+                  "cmid": 22,
+                  "user_id": 3
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful plugin POST mutation / evaluation response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=get_customcert_templates": {
+      "get": {
+        "tags": [
+          "Moodle Marketplace Plugins (GET & POST)"
+        ],
+        "summary": "Get Verifiable Custom Certificate Template & Issue (mod_customcert) (GET)",
+        "description": "Queries mdl_customcert and mdl_customcert_issues for verifiable PDF certificate metadata and QR verification code.",
+        "operationId": "get_get_customcert_templates",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "get_customcert_templates"
+            }
+          },
+          {
+            "name": "course_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 3
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful plugin API response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Moodle Marketplace Plugins (GET & POST)"
+        ],
+        "summary": "Get Verifiable Custom Certificate Template & Issue (mod_customcert) (POST)",
+        "description": "Queries mdl_customcert and mdl_customcert_issues for verifiable PDF certificate metadata and QR verification code.",
+        "operationId": "post_get_customcert_templates",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "get_customcert_templates"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "action": "get_customcert_templates",
+                  "course_id": 7,
+                  "user_id": 3
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful plugin POST mutation / evaluation response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=issue_customcert": {
+      "get": {
+        "tags": [
+          "Moodle Marketplace Plugins (GET & POST)"
+        ],
+        "summary": "Issue Verifiable Digital Certificate (mod_customcert) (GET)",
+        "description": "Issues a uniquely coded verifiable certificate in mdl_customcert_issues and returns verification URL and serial code.",
+        "operationId": "get_issue_customcert",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "issue_customcert"
+            }
+          },
+          {
+            "name": "course_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 3
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful plugin API response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Moodle Marketplace Plugins (GET & POST)"
+        ],
+        "summary": "Issue Verifiable Digital Certificate (mod_customcert) (POST)",
+        "description": "Issues a uniquely coded verifiable certificate in mdl_customcert_issues and returns verification URL and serial code.",
+        "operationId": "post_issue_customcert",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "issue_customcert"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "action": "issue_customcert",
+                  "course_id": 7,
+                  "user_id": 3
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful plugin POST mutation / evaluation response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=get_reengagement_nudges": {
+      "get": {
+        "tags": [
+          "Moodle Marketplace Plugins (GET & POST)"
+        ],
+        "summary": "Get Automated Retention Nudges (mod_reengagement) (GET)",
+        "description": "Queries mdl_reengagement for active scholar retention and deadline reminder campaigns.",
+        "operationId": "get_get_reengagement_nudges",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "get_reengagement_nudges"
+            }
+          },
+          {
+            "name": "course_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful plugin API response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Moodle Marketplace Plugins (GET & POST)"
+        ],
+        "summary": "Get Automated Retention Nudges (mod_reengagement) (POST)",
+        "description": "Queries mdl_reengagement for active scholar retention and deadline reminder campaigns.",
+        "operationId": "post_get_reengagement_nudges",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "get_reengagement_nudges"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "action": "get_reengagement_nudges",
+                  "course_id": 7
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful plugin POST mutation / evaluation response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=trigger_reengagement": {
+      "get": {
+        "tags": [
+          "Moodle Marketplace Plugins (GET & POST)"
+        ],
+        "summary": "Trigger Automated Retention Nudge Campaign (mod_reengagement) (GET)",
+        "description": "Dispatches a retention nudge for a course and increments remindercount in mdl_reengagement.",
+        "operationId": "get_trigger_reengagement",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "trigger_reengagement"
+            }
+          },
+          {
+            "name": "course_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful plugin API response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Moodle Marketplace Plugins (GET & POST)"
+        ],
+        "summary": "Trigger Automated Retention Nudge Campaign (mod_reengagement) (POST)",
+        "description": "Dispatches a retention nudge for a course and increments remindercount in mdl_reengagement.",
+        "operationId": "post_trigger_reengagement",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "trigger_reengagement"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "action": "trigger_reengagement",
+                  "course_id": 7,
+                  "emailsubject": "[PSC-CYBER] Keep Your Academic Streak Going at OUT!"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful plugin POST mutation / evaluation response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=moodle_ws_bridge": {
+      "get": {
+        "tags": [
+          "Moodle Marketplace Plugins (GET & POST)"
+        ],
+        "summary": "Unified Moodle Core Web Services JSON Bridge (GET & POST) (GET)",
+        "description": "Executes Moodle Core Web Service functions (core_webservice_get_site_info, core_course_get_courses, core_course_get_categories) with JSON output.",
+        "operationId": "get_moodle_ws_bridge",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "moodle_ws_bridge"
+            }
+          },
+          {
+            "name": "wsfunction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "core_webservice_get_site_info"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful plugin API response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Moodle Marketplace Plugins (GET & POST)"
+        ],
+        "summary": "Unified Moodle Core Web Services JSON Bridge (GET & POST) (POST)",
+        "description": "Executes Moodle Core Web Service functions (core_webservice_get_site_info, core_course_get_courses, core_course_get_categories) with JSON output.",
+        "operationId": "post_moodle_ws_bridge",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "moodle_ws_bridge"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "action": "moodle_ws_bridge",
+                  "wsfunction": "core_webservice_get_site_info"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful plugin POST mutation / evaluation response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
       }
     }
   },

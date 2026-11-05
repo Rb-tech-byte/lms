@@ -290,7 +290,12 @@ export async function callInternalApi<T = any>(
   const token = localStorage.getItem('out_lms_ws_token') || '';
   const baseUrl = `${getDynamicMoodleUrl()}/admin_api.php`;
 
-  const queryParams = new URLSearchParams({ action });
+  const parts = action.split('&');
+  const queryParams = new URLSearchParams({ action: parts[0] });
+  for (let i = 1; i < parts.length; i++) {
+    const [k, v] = parts[i].split('=');
+    if (k) queryParams.set(decodeURIComponent(k), v ? decodeURIComponent(v) : '');
+  }
   if (token && method === 'GET') {
     queryParams.set('token', token);
   }

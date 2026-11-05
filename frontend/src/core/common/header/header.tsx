@@ -151,47 +151,108 @@ const Header: React.FC = () => {
               </Link>
             </div>
 
-            {/* Dynamic Desktop Navigation Links */}
-            <nav className="d-none d-lg-flex align-items-center gap-1" style={{ whiteSpace: 'nowrap' }}>
-              {visibleNavItems.map((item) => {
+            {/* Dynamic Color-Coded Desktop Navigation Links */}
+            <nav className="d-none d-lg-flex align-items-center gap-1 flex-wrap" style={{ whiteSpace: 'nowrap' }}>
+              {visibleNavItems.map((item, idx) => {
                 const isActive =
                   location.pathname === item.route ||
                   (item.route === '/index' && location.pathname === '/');
+                const navPalette = [
+                  { color: '#0171BB', bg: 'rgba(1,113,187,0.12)', activeBg: '#0171BB', border: 'rgba(1,113,187,0.3)', icon: 'isax-home-2' },
+                  { color: '#059669', bg: 'rgba(5,150,105,0.12)', activeBg: '#059669', border: 'rgba(5,150,105,0.3)', icon: 'isax-book-1' },
+                  { color: '#7c3aed', bg: 'rgba(124,58,237,0.12)', activeBg: '#7c3aed', border: 'rgba(124,58,237,0.3)', icon: 'isax-courthouse' },
+                  { color: '#d97706', bg: 'rgba(217,119,6,0.12)', activeBg: '#d97706', border: 'rgba(217,119,6,0.3)', icon: 'isax-teacher' },
+                  { color: '#e11d48', bg: 'rgba(225,29,72,0.12)', activeBg: '#e11d48', border: 'rgba(225,29,72,0.3)', icon: 'isax-notification-bing' },
+                  { color: '#0d9488', bg: 'rgba(13,148,136,0.12)', activeBg: '#0d9488', border: 'rgba(13,148,136,0.3)', icon: 'isax-info-circle' },
+                  { color: '#4f46e5', bg: 'rgba(79,70,229,0.12)', activeBg: '#4f46e5', border: 'rgba(79,70,229,0.3)', icon: 'isax-call' },
+                ];
+                const theme = navPalette[idx % navPalette.length];
                 return (
                   <Link
                     key={item.id}
                     to={item.route}
-                    className="px-2 py-1 rounded-2 text-decoration-none fw-semibold"
+                    className="px-2 py-1 rounded-pill text-decoration-none fw-bold d-inline-flex align-items-center gap-1"
                     style={{
-                      fontSize: '13.5px',
+                      fontSize: '12.5px',
                       whiteSpace: 'nowrap',
                       flexShrink: 0,
-                      color: isActive
-                        ? '#0171BB'
-                        : dataTheme === 'dark-mode'
-                          ? '#e2e8f0'
-                          : '#334155',
-                      background: isActive ? 'rgba(1,113,187,0.1)' : 'transparent',
+                      color: isActive ? '#ffffff' : theme.color,
+                      background: isActive ? theme.activeBg : theme.bg,
+                      border: `1px solid ${isActive ? theme.activeBg : theme.border}`,
+                      boxShadow: isActive ? `0 3px 8px ${theme.border}` : 'none',
+                      transition: 'all 0.18s ease',
                     }}
                   >
-                    {item.label}
+                    <i className={`isax ${item.icon || theme.icon}`} style={{ fontSize: '13px' }} />
+                    <span>{item.label}</span>
                   </Link>
                 );
               })}
 
+              {/* Colorful Quick-Access Pills for Diploma Studio, API Docs & Headless Admin Console */}
+              <Link
+                to="/pages/verify-certificate?code=OUT-35CB03BB3C"
+                className="px-2 py-1 rounded-pill text-decoration-none fw-bold d-inline-flex align-items-center gap-1"
+                style={{
+                  fontSize: '12.5px',
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0,
+                  color: location.pathname.includes('verify-certificate') ? '#071F38' : '#b45309',
+                  background: location.pathname.includes('verify-certificate') ? '#FFD200' : 'rgba(245,158,11,0.15)',
+                  border: '1px solid rgba(245,158,11,0.45)',
+                }}
+              >
+                <i className="isax isax-medal-star" style={{ fontSize: '13px' }} />
+                <span>Diplomas</span>
+              </Link>
+
+              <Link
+                to="/pages/api-docs"
+                className="px-2 py-1 rounded-pill text-decoration-none fw-bold d-inline-flex align-items-center gap-1"
+                style={{
+                  fontSize: '12.5px',
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0,
+                  color: location.pathname.includes('api-docs') ? '#ffffff' : '#0284c7',
+                  background: location.pathname.includes('api-docs') ? '#0284c7' : 'rgba(2,132,199,0.13)',
+                  border: '1px solid rgba(2,132,199,0.35)',
+                }}
+              >
+                <i className="isax isax-code-circle" style={{ fontSize: '13px' }} />
+                <span>API Hub</span>
+              </Link>
+
+              <Link
+                to="/admin/dashboard?tab=api-gateway"
+                className="px-2 py-1 rounded-pill text-decoration-none fw-bold d-inline-flex align-items-center gap-1"
+                style={{
+                  fontSize: '12.5px',
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0,
+                  color: location.pathname.includes('/admin') ? '#ffffff' : '#9333ea',
+                  background: location.pathname.includes('/admin') ? 'linear-gradient(135deg, #9333ea 0%, #6366f1 100%)' : 'rgba(147,51,234,0.13)',
+                  border: '1px solid rgba(147,51,234,0.4)',
+                }}
+              >
+                <i className="isax isax-Hierarchy-2" style={{ fontSize: '13px' }} />
+                <span>Admin &amp; APIs</span>
+              </Link>
+
               {isAuthenticated && user && (
                 <Link
                   to={user.dashboardUrl}
-                  className="px-2 py-1 rounded-2 text-decoration-none fw-semibold ms-1"
+                  className="px-2 py-1 rounded-pill text-decoration-none fw-bold ms-1 d-inline-flex align-items-center gap-1"
                   style={{
-                    fontSize: '13px',
+                    fontSize: '12.5px',
                     whiteSpace: 'nowrap',
                     flexShrink: 0,
-                    color: '#059669',
-                    background: 'rgba(5,150,105,0.08)',
+                    color: '#ffffff',
+                    background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
+                    border: '1px solid #059669',
                   }}
                 >
-                  Dashboard
+                  <i className="isax isax-element-4" style={{ fontSize: '13px' }} />
+                  <span>Dashboard</span>
                 </Link>
               )}
             </nav>

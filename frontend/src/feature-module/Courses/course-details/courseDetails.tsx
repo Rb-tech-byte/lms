@@ -4,6 +4,7 @@ import { all_routes } from '../../router/all_routes';
 import { courseService, PublicCatalogCourse } from '../../../core/api/courseService';
 import { adminService } from '../../../core/api/adminService';
 import { useAuth } from '../../../core/auth/authContext';
+import { BeautifulCertificateStudio } from '../../../core/common/BeautifulCertificateStudio';
 
 interface DynamicModule {
   id: number;
@@ -105,11 +106,11 @@ const CourseDetails: React.FC = () => {
   const initialTabParam = searchParams.get('tab');
   const validInitialTab =
     initialTabParam === 'labs' ||
-    initialTabParam === 'tracking' ||
-    initialTabParam === 'ai-media' ||
-    initialTabParam === 'enterprise' ||
-    initialTabParam === 'overview' ||
-    initialTabParam === 'lecturer'
+      initialTabParam === 'tracking' ||
+      initialTabParam === 'ai-media' ||
+      initialTabParam === 'enterprise' ||
+      initialTabParam === 'overview' ||
+      initialTabParam === 'lecturer'
       ? initialTabParam
       : 'syllabus';
   const [activeTab, setActiveTab] = useState<'syllabus' | 'labs' | 'tracking' | 'ai-media' | 'enterprise' | 'overview' | 'lecturer'>(validInitialTab);
@@ -801,86 +802,100 @@ const CourseDetails: React.FC = () => {
             <div className="row g-4">
               {/* Left Column: Tabs + Dynamic Syllabus + Overview + Lecturer */}
               <div className="col-lg-8">
-                {/* Compact Navigation Pills Bar */}
-                <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 bg-white p-2 rounded-3 shadow-sm border mb-3">
-                  <div className="d-flex gap-1 flex-wrap">
-                    <button
-                      type="button"
-                      onClick={() => setActiveTab('syllabus')}
-                      className={`btn btn-sm rounded-pill px-3 fw-semibold ${
-                        activeTab === 'syllabus' ? 'btn-primary' : 'btn-light text-secondary'
-                      }`}
-                      style={{ fontSize: '0.78rem' }}
-                    >
-                      <i className="isax isax-book-saved me-1" />
-                      Syllabus & Units ({course.sections.length})
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setActiveTab('labs')}
-                      className={`btn btn-sm rounded-pill px-3 fw-semibold ${
-                        activeTab === 'labs' ? 'btn-primary' : 'btn-light text-secondary'
-                      }`}
-                      style={{ fontSize: '0.78rem' }}
-                    >
-                      <i className="isax isax-code me-1" />
-                      Coding Labs ({vplLabs.length + codeRunnerQuestions.length})
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setActiveTab('tracking')}
-                      className={`btn btn-sm rounded-pill px-3 fw-semibold ${
-                        activeTab === 'tracking' ? 'btn-primary' : 'btn-light text-secondary'
-                      }`}
-                      style={{ fontSize: '0.78rem' }}
-                    >
-                      <i className="isax isax-calendar-tick me-1" />
-                      Attendance & Progress
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setActiveTab('ai-media')}
-                      className={`btn btn-sm rounded-pill px-3 fw-semibold ${
-                        activeTab === 'ai-media' ? 'btn-primary' : 'btn-light text-secondary'
-                      }`}
-                      style={{ fontSize: '0.78rem' }}
-                    >
-                      <i className="isax isax-cpu-charge me-1" />
-                      AI Tutor & Media (29)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setActiveTab('enterprise')}
-                      className={`btn btn-sm rounded-pill px-3 fw-semibold ${
-                        activeTab === 'enterprise' ? 'btn-primary' : 'btn-light text-secondary'
-                      }`}
-                      style={{ fontSize: '0.78rem' }}
-                    >
-                      <i className="isax isax-shield-tick me-1" />
-                      Enterprise & Security (36)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setActiveTab('overview')}
-                      className={`btn btn-sm rounded-pill px-3 fw-semibold ${
-                        activeTab === 'overview' ? 'btn-primary' : 'btn-light text-secondary'
-                      }`}
-                      style={{ fontSize: '0.78rem' }}
-                    >
-                      <i className="isax isax-document-text me-1" />
-                      Overview
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setActiveTab('lecturer')}
-                      className={`btn btn-sm rounded-pill px-3 fw-semibold ${
-                        activeTab === 'lecturer' ? 'btn-primary' : 'btn-light text-secondary'
-                      }`}
-                      style={{ fontSize: '0.78rem' }}
-                    >
-                      <i className="isax isax-teacher me-1" />
-                      Coordinator
-                    </button>
+                {/* Vibrant Color-Coded Navigation Pills Bar */}
+                <div
+                  className="d-flex align-items-center justify-content-between flex-wrap gap-2 p-2.5 rounded-4 shadow-sm mb-3"
+                  style={{
+                    background: 'linear-gradient(135deg, #071F38 0%, #0F172A 100%)',
+                    border: '2px solid #FFD200',
+                  }}
+                >
+                  <div className="d-flex gap-1.5 flex-wrap">
+                    {[
+                      {
+                        id: 'syllabus' as const,
+                        label: `Syllabus & Units (${course.sections.length})`,
+                        icon: 'isax-book-saved',
+                        color: '#38bdf8',
+                        activeBg: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
+                        idleBg: 'rgba(56,189,248,0.16)',
+                        border: '#38bdf8',
+                      },
+                      {
+                        id: 'labs' as const,
+                        label: `Coding Labs (${vplLabs.length + codeRunnerQuestions.length})`,
+                        icon: 'isax-code',
+                        color: '#34d399',
+                        activeBg: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
+                        idleBg: 'rgba(52,211,153,0.16)',
+                        border: '#34d399',
+                      },
+                      {
+                        id: 'tracking' as const,
+                        label: 'Attendance & Diplomas',
+                        icon: 'isax-medal-star',
+                        color: '#fbbf24',
+                        activeBg: 'linear-gradient(135deg, #d97706 0%, #b45309 100%)',
+                        idleBg: 'rgba(251,191,36,0.18)',
+                        border: '#fbbf24',
+                      },
+                      {
+                        id: 'ai-media' as const,
+                        label: 'AI Tutor & Media (29)',
+                        icon: 'isax-cpu-charge',
+                        color: '#c084fc',
+                        activeBg: 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)',
+                        idleBg: 'rgba(192,132,252,0.18)',
+                        border: '#c084fc',
+                      },
+                      {
+                        id: 'enterprise' as const,
+                        label: 'Enterprise & Security (36)',
+                        icon: 'isax-shield-tick',
+                        color: '#fb7185',
+                        activeBg: 'linear-gradient(135deg, #e11d48 0%, #be123c 100%)',
+                        idleBg: 'rgba(251,113,133,0.18)',
+                        border: '#fb7185',
+                      },
+                      {
+                        id: 'overview' as const,
+                        label: 'Overview',
+                        icon: 'isax-document-text',
+                        color: '#2dd4bf',
+                        activeBg: 'linear-gradient(135deg, #0d9488 0%, #0f766e 100%)',
+                        idleBg: 'rgba(45,212,191,0.16)',
+                        border: '#2dd4bf',
+                      },
+                      {
+                        id: 'lecturer' as const,
+                        label: 'Coordinator',
+                        icon: 'isax-teacher',
+                        color: '#818cf8',
+                        activeBg: 'linear-gradient(135deg, #4f46e5 0%, #4338ca 100%)',
+                        idleBg: 'rgba(129,140,248,0.16)',
+                        border: '#818cf8',
+                      },
+                    ].map((tabBtn) => {
+                      const isAct = activeTab === tabBtn.id;
+                      return (
+                        <button
+                          key={tabBtn.id}
+                          type="button"
+                          onClick={() => setActiveTab(tabBtn.id)}
+                          className="btn btn-sm rounded-pill px-3 py-1.5 fw-bold transition-all"
+                          style={{
+                            fontSize: '0.77rem',
+                            background: isAct ? tabBtn.activeBg : tabBtn.idleBg,
+                            color: isAct ? '#ffffff' : tabBtn.color,
+                            border: isAct ? '2px solid #FFD200' : `1px solid ${tabBtn.border}`,
+                            boxShadow: isAct ? '0 4px 14px rgba(0,0,0,0.35)' : 'none',
+                          }}
+                        >
+                          <i className={`isax ${tabBtn.icon} me-1`} />
+                          {tabBtn.label}
+                        </button>
+                      );
+                    })}
                   </div>
 
                   {isStaff && (
@@ -918,10 +933,10 @@ const CourseDetails: React.FC = () => {
                         {activeFormat === 'tiles'
                           ? 'Visual Tiles Grid'
                           : activeFormat === 'onetopic'
-                          ? 'Horizontal Unit Tabs'
-                          : activeFormat === 'topcoll'
-                          ? 'Compact Accordions'
-                          : 'Sequential Syllabus'}
+                            ? 'Horizontal Unit Tabs'
+                            : activeFormat === 'topcoll'
+                              ? 'Compact Accordions'
+                              : 'Sequential Syllabus'}
                       </div>
                       <small className="text-primary" style={{ fontSize: '0.67rem' }}>
                         {course.sections.length} Active Units →
@@ -1014,10 +1029,10 @@ const CourseDetails: React.FC = () => {
                             {activeFormat === 'tiles'
                               ? 'Visual Tiles Grid'
                               : activeFormat === 'onetopic'
-                              ? 'Horizontal Unit Tabs'
-                              : activeFormat === 'topcoll'
-                              ? 'Compact Collapsible Topics'
-                              : 'Sequential Academic Syllabus'}
+                                ? 'Horizontal Unit Tabs'
+                                : activeFormat === 'topcoll'
+                                  ? 'Compact Collapsible Topics'
+                                  : 'Sequential Academic Syllabus'}
                           </strong>
                         </span>
                       </div>
@@ -1026,25 +1041,45 @@ const CourseDetails: React.FC = () => {
                         {(availableFormats.length > 0
                           ? availableFormats
                           : [
-                              { id: 'tiles', name: 'Tiles Grid' },
-                              { id: 'onetopic', name: 'OneTopic Tabs' },
-                              { id: 'topcoll', name: 'Collapsed Topics' },
-                              { id: 'topics', name: 'Standard List' },
-                            ]
-                        ).map((fmt: any) => (
-                          <button
-                            key={fmt.id}
-                            type="button"
-                            disabled={pluginActionBusy === 'format'}
-                            onClick={() => handleSwitchCourseFormat(fmt.id)}
-                            className={`btn btn-sm rounded-pill px-2.5 py-0.5 fw-semibold ${
-                              activeFormat === fmt.id ? 'btn-primary shadow-sm' : 'btn-light border text-secondary'
-                            }`}
-                            style={{ fontSize: '0.71rem' }}
-                          >
-                            {fmt.name.replace(' Format', '')}
-                          </button>
-                        ))}
+                            { id: 'tiles', name: 'Tiles Grid' },
+                            { id: 'onetopic', name: 'OneTopic Tabs' },
+                            { id: 'topcoll', name: 'Collapsed Topics' },
+                            { id: 'kickstart', name: 'Kickstart Pro' },
+                            { id: 'streamdeck', name: 'StreamDeck Cards' },
+                            { id: 'learningjourney', name: 'Learning Journey' },
+                            { id: 'topics', name: 'Standard List' },
+                          ]
+                        ).map((fmt: any, fIdx: number) => {
+                          const fmtColors = [
+                            { bg: '#e0f2fe', text: '#0369a1', active: '#0284c7' },
+                            { bg: '#dcfce7', text: '#15803d', active: '#16a34a' },
+                            { bg: '#fef3c7', text: '#b45309', active: '#d97706' },
+                            { bg: '#f3e8ff', text: '#6d28d9', active: '#7c3aed' },
+                            { bg: '#ffe4e6', text: '#be123c', active: '#e11d48' },
+                            { bg: '#ccfbf1', text: '#0f766e', active: '#0d9488' },
+                            { bg: '#e0e7ff', text: '#4338ca', active: '#4f46e5' },
+                          ];
+                          const fc = fmtColors[fIdx % fmtColors.length];
+                          const isFmtActive = activeFormat === fmt.id;
+                          return (
+                            <button
+                              key={fmt.id}
+                              type="button"
+                              disabled={pluginActionBusy === 'format'}
+                              onClick={() => handleSwitchCourseFormat(fmt.id)}
+                              className="btn btn-sm rounded-pill px-2.5 py-0.5 fw-bold"
+                              style={{
+                                fontSize: '0.71rem',
+                                background: isFmtActive ? fc.active : fc.bg,
+                                color: isFmtActive ? '#ffffff' : fc.text,
+                                border: `1px solid ${fc.active}`,
+                                boxShadow: isFmtActive ? '0 2px 8px rgba(0,0,0,0.18)' : 'none',
+                              }}
+                            >
+                              {fmt.name.replace(' Format', '')}
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
 
@@ -1068,9 +1103,8 @@ const CourseDetails: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => setActivityTypeFilter('all')}
-                          className={`btn btn-sm rounded-pill px-2.5 py-0.5 ${
-                            activityTypeFilter === 'all' ? 'btn-dark fw-semibold' : 'btn-light text-muted'
-                          }`}
+                          className={`btn btn-sm rounded-pill px-2.5 py-0.5 ${activityTypeFilter === 'all' ? 'btn-dark fw-semibold' : 'btn-light text-muted'
+                            }`}
                           style={{ fontSize: '0.72rem' }}
                         >
                           All
@@ -1078,9 +1112,8 @@ const CourseDetails: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => setActivityTypeFilter('page')}
-                          className={`btn btn-sm rounded-pill px-2.5 py-0.5 ${
-                            activityTypeFilter === 'page' ? 'btn-primary fw-semibold' : 'btn-light text-muted'
-                          }`}
+                          className={`btn btn-sm rounded-pill px-2.5 py-0.5 ${activityTypeFilter === 'page' ? 'btn-primary fw-semibold' : 'btn-light text-muted'
+                            }`}
                           style={{ fontSize: '0.72rem' }}
                         >
                           Lectures
@@ -1088,9 +1121,8 @@ const CourseDetails: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => setActivityTypeFilter('quiz')}
-                          className={`btn btn-sm rounded-pill px-2.5 py-0.5 ${
-                            activityTypeFilter === 'quiz' ? 'btn-danger fw-semibold' : 'btn-light text-muted'
-                          }`}
+                          className={`btn btn-sm rounded-pill px-2.5 py-0.5 ${activityTypeFilter === 'quiz' ? 'btn-danger fw-semibold' : 'btn-light text-muted'
+                            }`}
                           style={{ fontSize: '0.72rem' }}
                         >
                           Quizzes
@@ -1098,9 +1130,8 @@ const CourseDetails: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => setActivityTypeFilter('assign')}
-                          className={`btn btn-sm rounded-pill px-2.5 py-0.5 ${
-                            activityTypeFilter === 'assign' ? 'btn-warning text-dark fw-semibold' : 'btn-light text-muted'
-                          }`}
+                          className={`btn btn-sm rounded-pill px-2.5 py-0.5 ${activityTypeFilter === 'assign' ? 'btn-warning text-dark fw-semibold' : 'btn-light text-muted'
+                            }`}
                           style={{ fontSize: '0.72rem' }}
                         >
                           Assignments
@@ -1133,9 +1164,8 @@ const CourseDetails: React.FC = () => {
                             key={sec.id}
                             type="button"
                             onClick={() => setSelectedOneTopicIdx(idx)}
-                            className={`btn btn-sm rounded-3 px-3 py-1.5 fw-semibold flex-shrink-0 ${
-                              selectedOneTopicIdx === idx ? 'btn-info text-white shadow-sm' : 'btn-white border text-dark'
-                            }`}
+                            className={`btn btn-sm rounded-3 px-3 py-1.5 fw-semibold flex-shrink-0 ${selectedOneTopicIdx === idx ? 'btn-info text-white shadow-sm' : 'btn-white border text-dark'
+                              }`}
                             style={{ fontSize: '0.76rem' }}
                           >
                             Unit {sec.section === 0 ? '00' : String(sec.section).padStart(2, '0')}:{' '}
@@ -1348,9 +1378,8 @@ const CourseDetails: React.FC = () => {
                                               type="button"
                                               onClick={() => handleToggleModuleCompletion(mod.id)}
                                               title={isDone ? 'Completed (Click to toggle)' : 'Mark activity complete'}
-                                              className={`btn btn-sm rounded-circle p-0 d-inline-flex align-items-center justify-content-center flex-shrink-0 ${
-                                                isDone ? 'btn-success text-white' : 'btn-outline-secondary'
-                                              }`}
+                                              className={`btn btn-sm rounded-circle p-0 d-inline-flex align-items-center justify-content-center flex-shrink-0 ${isDone ? 'btn-success text-white' : 'btn-outline-secondary'
+                                                }`}
                                               style={{ width: 22, height: 22, fontSize: 11 }}
                                             >
                                               {isDone ? '✓' : ''}
@@ -1441,9 +1470,8 @@ const CourseDetails: React.FC = () => {
                                 setVplCode(lab.starterCode || '');
                                 setVplLanguage(lab.language || 'python');
                               }}
-                              className={`btn btn-sm rounded-pill px-2.5 py-1 fw-semibold ${
-                                selectedVplId === lab.id ? 'btn-primary' : 'btn-light border text-secondary'
-                              }`}
+                              className={`btn btn-sm rounded-pill px-2.5 py-1 fw-semibold ${selectedVplId === lab.id ? 'btn-primary' : 'btn-light border text-secondary'
+                                }`}
                               style={{ fontSize: '0.73rem' }}
                             >
                               {lab.name.split(':')[0]}
@@ -1567,9 +1595,8 @@ const CourseDetails: React.FC = () => {
                                 setSelectedCrId(q.id);
                                 setCrAnswerCode(q.starterCode || '');
                               }}
-                              className={`btn btn-sm rounded-pill px-2.5 py-1 fw-semibold ${
-                                selectedCrId === q.id ? 'btn-dark' : 'btn-light border text-secondary'
-                              }`}
+                              className={`btn btn-sm rounded-pill px-2.5 py-1 fw-semibold ${selectedCrId === q.id ? 'btn-dark' : 'btn-light border text-secondary'
+                                }`}
                               style={{ fontSize: '0.73rem' }}
                             >
                               Assessment {idx + 1}
@@ -1770,13 +1797,12 @@ const CourseDetails: React.FC = () => {
 
                               <div className="d-flex align-items-center gap-1.5">
                                 <span
-                                  className={`badge rounded-pill px-2.5 py-1 ${
-                                    sess.statusAcronym === 'P'
+                                  className={`badge rounded-pill px-2.5 py-1 ${sess.statusAcronym === 'P'
                                       ? 'bg-success'
                                       : sess.statusAcronym === 'L' || sess.statusAcronym === 'E'
-                                      ? 'bg-warning text-dark'
-                                      : 'bg-secondary'
-                                  }`}
+                                        ? 'bg-warning text-dark'
+                                        : 'bg-secondary'
+                                    }`}
                                   style={{ fontSize: '0.7rem' }}
                                 >
                                   {sess.statusDescription} ({sess.points}/{sess.maxPoints} pts)
@@ -1862,6 +1888,17 @@ const CourseDetails: React.FC = () => {
                         </div>
                       </div>
                     </div>
+
+                    {/* Ornate Multi-Theme Beautiful Certificate & Vector Diploma Studio */}
+                    <BeautifulCertificateStudio
+                      courseId={course.id}
+                      courseTitle={course.fullname}
+                      courseCode={course.shortname}
+                      studentName={(user as any)?.fullname || (user as any)?.name || customCertData?.recipientName || 'Baraka Mkwawa'}
+                      studentRegNo={(user as any)?.regNumber || 'OUT/REG/2026/0003'}
+                      serialCode={customCertData?.verificationCode || 'OUT-35CB03BB3C'}
+                      compact
+                    />
                   </div>
                 )}
 
@@ -2088,29 +2125,45 @@ const CourseDetails: React.FC = () => {
 
                       <div className="d-flex gap-1.5 flex-wrap">
                         {[
-                          { id: 'all', label: 'All Suites (36)' },
-                          { id: 'learner_analytics', label: 'Learner Analytics & KPIs (9)' },
-                          { id: 'curriculum_governance', label: 'Curriculum & Senate QA (9)' },
-                          { id: 'campus_operations', label: 'SARIS & Tuition Commerce (7)' },
-                          { id: 'security_governance', label: 'OrigAI & Security Shield (7)' },
-                          { id: 'credentials_quests', label: 'Blockchain Badges & Quests (4)' },
-                        ].map((tabItem) => (
-                          <button
-                            key={tabItem.id}
-                            type="button"
-                            onClick={() => setSelectedEnterpriseSuiteFilter(tabItem.id)}
-                            className={`btn btn-sm rounded-pill px-2.5 py-0.5 fw-semibold ${
-                              selectedEnterpriseSuiteFilter === tabItem.id
-                                ? 'btn-primary'
-                                : 'btn-light border text-secondary'
-                            }`}
-                            style={{ fontSize: '0.72rem' }}
-                          >
-                            {tabItem.label}
-                          </button>
-                        ))}
+                          { id: 'all', label: 'All Suites (36)', color: '#0171BB', bg: '#e0f2fe' },
+                          { id: 'learner_analytics', label: 'Learner Analytics & KPIs (9)', color: '#0284c7', bg: '#e0f2fe' },
+                          { id: 'curriculum_governance', label: 'Curriculum & Senate QA (9)', color: '#d97706', bg: '#fef3c7' },
+                          { id: 'campus_operations', label: 'SARIS & Tuition Commerce (7)', color: '#059669', bg: '#dcfce7' },
+                          { id: 'security_governance', label: 'OrigAI & Security Shield (7)', color: '#dc2626', bg: '#fee2e2' },
+                          { id: 'credentials_quests', label: 'Beautiful Diplomas & Quests (4)', color: '#7c3aed', bg: '#f3e8ff' },
+                        ].map((tabItem) => {
+                          const isSuiteAct = selectedEnterpriseSuiteFilter === tabItem.id;
+                          return (
+                            <button
+                              key={tabItem.id}
+                              type="button"
+                              onClick={() => setSelectedEnterpriseSuiteFilter(tabItem.id)}
+                              className="btn btn-sm rounded-pill px-2.5 py-1 fw-bold"
+                              style={{
+                                fontSize: '0.72rem',
+                                background: isSuiteAct ? tabItem.color : tabItem.bg,
+                                color: isSuiteAct ? '#ffffff' : tabItem.color,
+                                border: `1px solid ${tabItem.color}`,
+                              }}
+                            >
+                              {tabItem.label}
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
+
+                    {(selectedEnterpriseSuiteFilter === 'all' || selectedEnterpriseSuiteFilter === 'credentials_quests') && (
+                      <BeautifulCertificateStudio
+                        courseId={course.id}
+                        courseTitle={course.fullname}
+                        courseCode={course.shortname}
+                        studentName={(user as any)?.fullname || (user as any)?.name || customCertData?.recipientName || 'Baraka Mkwawa'}
+                        studentRegNo={(user as any)?.regNumber || 'OUT/REG/2026/0003'}
+                        serialCode={customCertData?.verificationCode || 'OUT-35CB03BB3C'}
+                        compact
+                      />
+                    )}
 
                     {[
                       'learner_analytics',

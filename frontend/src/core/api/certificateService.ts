@@ -239,7 +239,7 @@ export const certificateService = {
     };
   }> {
     try {
-      const res = await callInternalApi<any>(`verify_certificate&code=${encodeURIComponent(code)}`, undefined, 'GET');
+      const res = await callInternalApi<any>('verify_certificate', { code }, 'GET');
       if (res && res.success) {
         return {
           verified: Boolean(res.verified),

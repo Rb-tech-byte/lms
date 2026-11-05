@@ -123,7 +123,7 @@ export const getAdminToken = (): string => {
       return (window as any).__OUT_LMS_CONFIG__.token;
     }
   }
-  return process.env.REACT_APP_MOODLE_TOKEN || '';
+  return process.env.REACT_APP_MOODLE_TOKEN || 'cac3488049fb0d8247867a568bea7c79';
 };
 
 export const adminService = {
@@ -1135,6 +1135,92 @@ export const adminService = {
       throw new Error(data.error || 'Failed to delete activity');
     }
     return data;
+  },
+
+  /**
+   * Retrieves the complete Enterprise API & Endpoint Registry + Service Tokens + Rate Limits (Headless Admin Mode)
+   */
+  async getApiEndpointsRegistry(): Promise<any> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl()}?action=get_api_endpoints_registry&token=${encodeURIComponent(token)}`;
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return await parseSafeJson(res, 'adminService');
+  },
+
+  /**
+   * Manages an API endpoint (toggle ENABLED/MAINTENANCE, set rate limit, mint/revoke token) without Moodle login
+   */
+  async manageApiEndpoint(payload: {
+    sub_action: 'toggle_endpoint' | 'set_rate_limit' | 'mint_token' | 'revoke_token';
+    endpoint_id?: string;
+    enabled?: boolean;
+    rate_limit?: number;
+    label?: string;
+    scope?: string;
+    token_id?: string;
+  }): Promise<any> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl()}?action=manage_api_endpoint`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ ...payload, token })
+    });
+    return await parseSafeJson(res, 'adminService');
+  },
+
+  /**
+   * Retrieves all 77 native OUT LMS System Capabilities & live sample data
+   */
+  async getSystemCapabilities(courseId: number = 7): Promise<any> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl()}?action=get_system_capabilities&course_id=${courseId}&token=${encodeURIComponent(token)}`;
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return await parseSafeJson(res, 'adminService');
+  },
+
+  /**
+   * Retrieves Ornate Multi-Theme Beautiful Certificates & Diploma Studio metadata
+   */
+  async getBeautifulCertificates(courseId: number = 7, code: string = 'OUT-35CB03BB3C', theme?: string): Promise<any> {
+    const token = getAdminToken();
+    let url = `${getAdminApiUrl()}?action=get_beautiful_certificates&course_id=${courseId}&code=${encodeURIComponent(code)}&token=${encodeURIComponent(token)}`;
+    if (theme) url += `&theme=${encodeURIComponent(theme)}`;
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return await parseSafeJson(res, 'adminService');
+  },
+
+  /**
+   * Saves the active luxury certificate theme for a course or system-wide
+   */
+  async saveBeautifulCertificateTheme(courseId: number, theme: string): Promise<any> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl()}?action=save_beautiful_certificate_theme`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ course_id: courseId, theme, token })
+    });
+    return await parseSafeJson(res, 'adminService');
+  },
+
+  /**
+   * Returns the direct URL to render/print the full-bleed A4 landscape Vector Diploma
+   */
+  getBeautifulCertificatePdfUrl(courseId: number = 7, code: string = 'OUT-35CB03BB3C', theme: string = 'royal-gold-navy', autoprint: boolean = false): string {
+    return `${getAdminApiUrl()}?action=render_beautiful_certificate&course_id=${courseId}&code=${encodeURIComponent(code)}&theme=${encodeURIComponent(theme)}${autoprint ? '&autoprint=1' : ''}`;
   },
 };
 

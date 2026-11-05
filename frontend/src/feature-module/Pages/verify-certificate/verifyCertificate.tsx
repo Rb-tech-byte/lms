@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { certificateService } from '../../../core/api/certificateService';
 import { all_routes } from '../../router/all_routes';
+import { BeautifulCertificateStudio } from '../../../core/common/BeautifulCertificateStudio';
 
 export const VerifyCertificate: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -139,7 +140,7 @@ export const VerifyCertificate: React.FC = () => {
         {/* Verification Result Display */}
         {searched && (
           <div className="row justify-content-center">
-            <div className="col-lg-9">
+            <div className="col-lg-12">
               {result?.verified && result.certificate ? (
                 /* VERIFIED CREDENTIAL CARD */
                 <div
@@ -154,9 +155,9 @@ export const VerifyCertificate: React.FC = () => {
                     <div className="d-flex align-items-center gap-2">
                       <i className="feather-check-circle fs-22" />
                       <div>
-                        <div className="fw-bold fs-16">OFFICIALLY VERIFIED &amp; AUTHENTIC CREDENTIAL</div>
+                        <div className="fw-bold fs-16">OFFICIALLY VERIFIED &amp; AUTHENTIC CREDENTIAL — BEAUTIFUL VECTOR DIPLOMA</div>
                         <div className="small text-white text-opacity-90" style={{ fontSize: '0.76rem' }}>
-                          Registered in The Open University of Tanzania Central Academic Registry
+                          Registered in The Open University of Tanzania Central Academic Registry • 6 Ornate Foil Guilloche Themes Available
                         </div>
                       </div>
                     </div>
@@ -167,124 +168,19 @@ export const VerifyCertificate: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Certificate Body (Formal OUT Certificate Layout) */}
-                  <div className="p-4 p-md-5">
-                    <div
-                      className="p-4 p-md-5 rounded-4 text-center position-relative"
-                      style={{
-                        border: '8px double #cbd5e1',
-                        background: '#fcfcfd',
-                      }}
-                    >
-                      {/* University Header Crest & Branding */}
-                      <div className="mb-4">
-                        <img
-                          src="/assets/img/out-logo.png"
-                          alt="The Open University of Tanzania"
-                          style={{ height: 68, objectFit: 'contain' }}
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = '/assets/img/logo.svg';
-                          }}
-                        />
-                        <h4 className="fw-bold text-dark mt-2 mb-0" style={{ letterSpacing: '0.04em' }}>
-                          THE OPEN UNIVERSITY OF TANZANIA
-                        </h4>
-                        <div className="text-muted small fw-semibold text-uppercase" style={{ letterSpacing: '0.06em' }}>
-                          Institute of Educational and Management Technologies (IEMT)
-                        </div>
-                      </div>
-
-                      <div className="mb-4">
-                        <span className="text-muted fst-italic small d-block mb-1">
-                          This is to certify that the Senate has officially conferred upon
-                        </span>
-                        <h2 className="fw-bold text-dark mb-1" style={{ fontSize: 'clamp(1.4rem, 2.8vw, 2.2rem)' }}>
-                          {result.certificate.scholarName}
-                        </h2>
-                        <span className="badge bg-light text-dark border px-3 py-1 fw-semibold small">
-                          Student Reg No: {result.certificate.regNumber}
-                        </span>
-                      </div>
-
-                      <div className="mb-4">
-                        <span className="text-muted fst-italic small d-block mb-1">
-                          the official qualification of
-                        </span>
-                        <h4 className="fw-bold text-primary mb-1">
-                          {result.certificate.courseName}
-                        </h4>
-                        <span className="badge bg-warning-subtle text-dark border border-warning px-2.5 py-1 fw-bold small">
-                          Course Code: {result.certificate.courseCode} • {result.certificate.cpdCredits} CPD Credits
-                        </span>
-                      </div>
-
-                      <div className="mb-4">
-                        <span className="text-muted fst-italic small d-block mb-1">
-                          having satisfied all examination, practical coursework, and academic requirements with
-                        </span>
-                        <div className="fw-bold text-dark fs-18">
-                          {result.certificate.grade}
-                        </div>
-                      </div>
-
-                      {/* Signatories & Verification QR Block */}
-                      <div className="row align-items-end g-3 pt-4 border-top mt-4 text-start">
-                        <div className="col-sm-4 text-center text-sm-start">
-                          <div className="fw-bold text-dark small border-bottom pb-1 mb-1" style={{ width: 170 }}>
-                            Dr. Emmanuel Michael
-                          </div>
-                          <span className="text-muted d-block small" style={{ fontSize: '0.74rem' }}>
-                            Director, IEMT
-                          </span>
-                          <span className="text-muted small" style={{ fontSize: '0.72rem' }}>
-                            Open University of Tanzania
-                          </span>
-                        </div>
-
-                        <div className="col-sm-4 text-center">
-                          {/* Centered QR Seal */}
-                          <div
-                            className="d-inline-flex flex-column align-items-center p-2 rounded-3 bg-white border shadow-sm"
-                            style={{ width: 120 }}
-                          >
-                            <img
-                              src={`https://api.qrserver.com/v1/create-qr-code/?size=95x95&data=${encodeURIComponent(
-                                result.certificate.verificationUrl
-                              )}`}
-                              alt="Verification QR Code"
-                              style={{ width: 95, height: 95 }}
-                            />
-                            <span className="fw-bold text-dark mt-1" style={{ fontSize: '0.64rem' }}>
-                              SCAN TO VERIFY
-                            </span>
-                          </div>
-                        </div>
-
-                        <div className="col-sm-4 text-center text-sm-end">
-                          <div className="fw-bold text-dark small border-bottom pb-1 mb-1 ms-auto" style={{ width: 170 }}>
-                            Prof. Elifas T. Bisanda
-                          </div>
-                          <span className="text-muted d-block small" style={{ fontSize: '0.74rem' }}>
-                            Vice Chancellor
-                          </span>
-                          <span className="text-muted small" style={{ fontSize: '0.72rem' }}>
-                            Conferred: {result.certificate.issueDate}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="mt-4 pt-3 border-top text-center">
-                        <span className="small text-muted" style={{ fontSize: '0.72rem' }}>
-                          Official Credential Identifier: <strong>{result.certificate.code}</strong> • Verification URL:{' '}
-                          <a href={result.certificate.verificationUrl} className="text-primary text-decoration-none">
-                            {result.certificate.verificationUrl}
-                          </a>
-                        </span>
-                      </div>
-                    </div>
+                  {/* Ornate Multi-Theme Beautiful Certificate & Vector Diploma Studio */}
+                  <div className="p-3 p-md-4">
+                    <BeautifulCertificateStudio
+                      courseId={result.certificate.courseId || 7}
+                      courseTitle={result.certificate.courseName}
+                      courseCode={result.certificate.courseCode}
+                      studentName={result.certificate.scholarName}
+                      studentRegNo={result.certificate.regNumber}
+                      serialCode={result.certificate.code}
+                    />
 
                     {/* Bottom Action Bar */}
-                    <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-4 pt-2">
+                    <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-3 pt-2">
                       <Link to={all_routes.courseGrid} className="btn btn-outline-secondary rounded-pill px-3 py-2 small">
                         <i className="feather-arrow-left me-1" /> Browse Academic Catalog
                       </Link>
@@ -299,13 +195,14 @@ export const VerifyCertificate: React.FC = () => {
                         >
                           <i className="feather-copy me-1" /> Copy Verification Link
                         </button>
-                        <button
-                          type="button"
+                        <a
+                          href={`/moodle-backend/admin_api.php?action=render_beautiful_certificate&course_id=${result.certificate.courseId || 7}&code=${encodeURIComponent(result.certificate.code)}&autoprint=1`}
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className="btn btn-primary rounded-pill px-4 py-2 fw-semibold"
-                          onClick={() => window.print()}
                         >
-                          <i className="feather-printer me-1" /> Print / Save PDF
-                        </button>
+                          <i className="feather-printer me-1" /> Print / Export Full-Bleed Vector PDF
+                        </a>
                       </div>
                     </div>
                   </div>

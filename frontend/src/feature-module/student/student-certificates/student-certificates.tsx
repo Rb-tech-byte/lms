@@ -9,6 +9,7 @@ import {
   StudentCertificate,
   CourseGradeReport,
 } from "../../../core/api/certificateService";
+import { BeautifulCertificateStudio } from "../../../core/common/BeautifulCertificateStudio";
 
 const StudentCertificates: React.FC = () => {
   const { user } = useAuth();
@@ -238,25 +239,36 @@ const StudentCertificates: React.FC = () => {
                                   onClick={() => setSelectedCert(cert)}
                                 >
                                   <i className="isax isax-eye" />
-                                  <span>View Certificate</span>
+                                  <span>Preview Studio</span>
                                 </button>
 
-                                <button
-                                  type="button"
+                                <a
+                                  href={`/moodle-backend/admin_api.php?action=render_beautiful_certificate&course_id=${cert.id || 7}&code=${encodeURIComponent(cert.verificationCode || 'OUT-35CB03BB3C')}&autoprint=1`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
                                   className="btn btn-primary rounded-pill px-3 d-inline-flex align-items-center gap-1"
-                                  onClick={() => {
-                                    setSelectedCert(cert);
-                                    setTimeout(handlePrint, 300);
-                                  }}
                                 >
                                   <i className="isax isax-printer" />
-                                  <span>Print / PDF</span>
-                                </button>
+                                  <span>Print Vector PDF</span>
+                                </a>
                               </div>
                             </div>
                           </div>
                         </div>
                       ))}
+
+                      {/* Interactive Beautiful Certificate Studio */}
+                      {selectedCert && (
+                        <BeautifulCertificateStudio
+                          courseId={selectedCert.id || 7}
+                          courseTitle={selectedCert.courseName}
+                          courseCode={selectedCert.courseCode}
+                          studentName={selectedCert.studentName}
+                          studentRegNo={selectedCert.regNumber}
+                          serialCode={selectedCert.verificationCode || "OUT-35CB03BB3C"}
+                          compact
+                        />
+                      )}
                     </div>
                   )}
                 </div>

@@ -15,6 +15,26 @@ import StudentQuizQuestion from "../student/student-quiz-question/studentQuizQue
 
 // Instructor Components
 import InstructorDashboard from "../Instructor/instructor-dashboard/instructorDashboard";
+import InstructorCourse from "../Instructor/instructor-course/instructorCourse";
+import InstructorAnnouncements from "../Instructor/instructor-announcements/instructorAnnouncements";
+import InstructorAssignment from "../Instructor/instructor-assignment/instructorAssignment";
+import StudentList from "../Instructor/student-list/studentList";
+import InstructorQuiz from "../Instructor/instructor-quiz/instructorQuiz";
+import InstructorQuizResult from "../Instructor/instructor-quiz-result/instructorQuizResult";
+import InstructorCertificate from "../Instructor/instructor-certificate/instructorCertificate";
+import InstructorEarning from "../Instructor/instructor-earning/instructorEarning";
+import InstructorPayout from "../Instructor/instructor-payout/instructorPayout";
+import InstructorStatement from "../Instructor/instructor-statement/instructorStatement";
+import InstructorMessage from "../Instructor/instructor-message/instructorMessage";
+import InstructorTickets from "../Instructor/instructor-tickets/instructorTickets";
+import InstructorProfile from "../Instructor/instructor-settings/instructor-profile-settings/instructorProfile";
+import InstructorChangePassword from "../Instructor/instructor-settings/instructor-change-password/instructorChangePassoword";
+import InstructorSocialprofileSettings from "../Instructor/instructor-settings/instructor-socialprofile-settings/instructorSocialprofileSettings";
+import InstructorLinkedAccounts from "../Instructor/instructor-settings/instructor-linked-accounts/instructorLinkedAccounts";
+import InstructorNotification from "../Instructor/instructor-settings/instructor-notification/instructorNotification";
+import InstructorIntegrations from "../Instructor/instructor-settings/instructor-integrations/instructorIntegrations";
+import InstructorWithdraw from "../Instructor/instructor-settings/instructor-withdraw/instructorWithdraw";
+import InstructorPlanSettings from "../Instructor/instructor-settings/instructor-plans-settings/instructorPlanSettings";
 
 // Admin Components
 import AdminDashboard from "../admin/adminDashboard";
@@ -219,6 +239,77 @@ export const publicRoutes = [
     element: <InstructorDetails />,
     route: Route,
   },
+  // Route aliases to prevent 404s on legacy/alternative URLs
+  {
+    path: "/home",
+    element: <Home />,
+    route: Route,
+  },
+  {
+    path: "/course",
+    element: <CourseGrid />,
+    route: Route,
+  },
+  {
+    path: "/courses",
+    element: <CourseGrid />,
+    route: Route,
+  },
+  {
+    path: "/courses/course-grid",
+    element: <CourseGrid />,
+    route: Route,
+  },
+  {
+    path: "/courses/course-list",
+    element: <CourseList />,
+    route: Route,
+  },
+  {
+    path: "/courses/course-category",
+    element: <CourseCategory />,
+    route: Route,
+  },
+  {
+    path: "/courses/course-details",
+    element: <CourseDetails />,
+    route: Route,
+  },
+  {
+    path: "/course-grid",
+    element: <CourseGrid />,
+    route: Route,
+  },
+  {
+    path: "/course-list",
+    element: <CourseList />,
+    route: Route,
+  },
+  {
+    path: "/course-category",
+    element: <CourseCategory />,
+    route: Route,
+  },
+  {
+    path: "/pages/coming-soon",
+    element: <Navigate to="/index" replace />,
+    route: Route,
+  },
+  {
+    path: "/pages/under-construction",
+    element: <Navigate to="/index" replace />,
+    route: Route,
+  },
+  {
+    path: "/pages/terms-conditions",
+    element: <TermsCondition />,
+    route: Route,
+  },
+  {
+    path: "/pages/verify-certificate",
+    element: <VerifyCertificate />,
+    route: Route,
+  },
 ];
 
 /**
@@ -338,132 +429,132 @@ export const instructorProtectedRoutes = [
   },
   {
     path: routes.instructorCourse,
-    element: <Navigate to="/instructor/instructor-dashboard?tab=courses" replace />,
+    element: <InstructorCourse />,
     route: Route,
   },
   {
     path: routes.instructorCourseGrid,
-    element: <Navigate to="/instructor/instructor-dashboard?tab=courses" replace />,
+    element: <InstructorCourse />,
     route: Route,
   },
   {
     path: routes.addNewCourse,
-    element: <Navigate to="/instructor/instructor-dashboard?tab=courses" replace />,
+    element: <InstructorCourse />,
     route: Route,
   },
   {
     path: routes.instructorProfile,
-    element: <Navigate to="/instructor/instructor-dashboard?tab=profile" replace />,
+    element: <InstructorProfile />,
     route: Route,
   },
   {
     path: routes.instructorsettings,
-    element: <Navigate to="/instructor/instructor-dashboard?tab=settings" replace />,
+    element: <InstructorProfile />,
     route: Route,
   },
   {
     path: routes.instructorChangePassword,
-    element: <Navigate to="/instructor/instructor-dashboard?tab=settings" replace />,
+    element: <InstructorChangePassword />,
     route: Route,
   },
   {
     path: routes.instructorAnnouncements,
-    element: <Navigate to="/instructor/instructor-dashboard?tab=announcements" replace />,
+    element: <InstructorAnnouncements />,
     route: Route,
   },
   {
     path: routes.instructorAssignment,
-    element: <Navigate to="/instructor/instructor-dashboard?tab=assignments" replace />,
+    element: <InstructorAssignment />,
     route: Route,
   },
   {
     path: routes.studentsList,
-    element: <Navigate to="/instructor/instructor-dashboard?tab=students" replace />,
+    element: <StudentList />,
     route: Route,
   },
   {
     path: routes.studentsGrid,
-    element: <Navigate to="/instructor/instructor-dashboard?tab=students" replace />,
+    element: <StudentList />,
     route: Route,
   },
   {
     path: routes.studentsDetails,
-    element: <Navigate to="/instructor/instructor-dashboard?tab=students" replace />,
+    element: <StudentList />,
     route: Route,
   },
   {
     path: routes.instructorQuiz,
-    element: <Navigate to="/instructor/instructor-dashboard?tab=quiz" replace />,
+    element: <InstructorQuiz />,
     route: Route,
   },
   {
     path: routes.instructorQuizResult,
-    element: <Navigate to="/instructor/instructor-dashboard?tab=quiz-results" replace />,
+    element: <InstructorQuizResult />,
     route: Route,
   },
   {
     path: routes.instructorQA,
-    element: <Navigate to="/instructor/instructor-dashboard?tab=quiz" replace />,
+    element: <InstructorQuiz />,
     route: Route,
   },
   {
     path: routes.instructorCertificate,
-    element: <Navigate to="/instructor/instructor-dashboard?tab=certificates" replace />,
+    element: <InstructorCertificate />,
     route: Route,
   },
   {
     path: routes.instructorEarning,
-    element: <Navigate to="/instructor/instructor-dashboard?tab=earnings" replace />,
+    element: <InstructorEarning />,
     route: Route,
   },
   {
     path: routes.instructorPayout,
-    element: <Navigate to="/instructor/instructor-dashboard?tab=payout" replace />,
+    element: <InstructorPayout />,
     route: Route,
   },
   {
     path: routes.instructorStatements,
-    element: <Navigate to="/instructor/instructor-dashboard?tab=statements" replace />,
+    element: <InstructorStatement />,
     route: Route,
   },
   {
     path: routes.instructorMessage,
-    element: <Navigate to="/instructor/instructor-dashboard?tab=messages" replace />,
+    element: <InstructorMessage />,
     route: Route,
   },
   {
     path: routes.instructorTickets,
-    element: <Navigate to="/instructor/instructor-dashboard?tab=tickets" replace />,
+    element: <InstructorTickets />,
     route: Route,
   },
   {
     path: routes.instructorPlan,
-    element: <Navigate to="/instructor/instructor-dashboard?tab=settings" replace />,
+    element: <InstructorPlanSettings />,
     route: Route,
   },
   {
     path: routes.instructorSocialProfiles,
-    element: <Navigate to="/instructor/instructor-dashboard?tab=settings" replace />,
+    element: <InstructorSocialprofileSettings />,
     route: Route,
   },
   {
     path: routes.instructorLinkedAccounts,
-    element: <Navigate to="/instructor/instructor-dashboard?tab=settings" replace />,
+    element: <InstructorLinkedAccounts />,
     route: Route,
   },
   {
     path: routes.instructorNotification,
-    element: <Navigate to="/instructor/instructor-dashboard?tab=settings" replace />,
+    element: <InstructorNotification />,
     route: Route,
   },
   {
     path: routes.instructorIntegrations,
-    element: <Navigate to="/instructor/instructor-dashboard?tab=settings" replace />,
+    element: <InstructorIntegrations />,
     route: Route,
   },
   {
     path: routes.instructorWithdraw,
-    element: <Navigate to="/instructor/instructor-dashboard?tab=payout" replace />,
+    element: <InstructorWithdraw />,
     route: Route,
   },
 ];

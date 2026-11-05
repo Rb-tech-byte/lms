@@ -707,26 +707,34 @@ export const courseService = {
   /**
    * Queries REST API v2 (`/api/rest/v2/openapi.json`) for live API telemetry & question bank metadata
    */
+  _openApiCache: null as { title: string; version: string; pathsCount: number; info?: { title?: string; version?: string } } | null,
   async getRestV2OpenApiInfo(): Promise<{ title: string; version: string; pathsCount: number; info?: { title?: string; version?: string } }> {
+    if (this._openApiCache) {
+      return this._openApiCache;
+    }
     try {
       const spec = await callMoodleRestV2<any>('/openapi.json');
       const title = spec?.info?.title || 'Open University of Tanzania LMS REST API v2';
       const version = spec?.openapi || '3.1.0';
-      return {
+      const result = {
         title,
         version,
         pathsCount: spec?.paths ? Object.keys(spec.paths).length : 12,
         info: { title, version },
       };
+      this._openApiCache = result;
+      return result;
     } catch {
       const title = 'Open University of Tanzania LMS REST API v2';
       const version = '3.1.0';
-      return {
+      const fallback = {
         title,
         version,
         pathsCount: 12,
         info: { title, version },
       };
+      this._openApiCache = fallback;
+      return fallback;
     }
   },
 };

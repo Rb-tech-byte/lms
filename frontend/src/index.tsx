@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import "./style/css/feather.css";
 import "./style/css/iconsax.css";
 import ALLRoutes from './feature-module/router/router';
 import { BrowserRouter } from 'react-router-dom';

@@ -258,6 +258,95 @@
 .ins-btn-warn:hover { background: #e5bd00; color: #051426; }
 .ins-btn-sm { padding: 4px 11px; font-size: 11px; }
 .ins-btn:disabled { opacity: 0.6; }
+.ins-btn i { font-size: 13px; line-height: 1; display: inline-block; vertical-align: middle; }
+
+/* Dedicated Action Icon Buttons */
+.ins-action-btn {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid var(--ins-border);
+  background: #fff;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.ins-action-btn i { font-size: 13px; }
+.ins-action-btn:hover { background: #f8fafc; color: #0f172a; }
+.ins-action-btn.is-edit,
+.ins-action-btn.btn-edit {
+  color: #0171bb;
+  background: #e8f4fc;
+  border-color: #bfdbfe;
+}
+.ins-action-btn.is-edit:hover,
+.ins-action-btn.btn-edit:hover {
+  background: #0171bb;
+  color: #ffffff;
+}
+.ins-action-btn.is-delete,
+.ins-action-btn.btn-delete {
+  color: #ef4444;
+  background: #fee2e2;
+  border-color: #fecaca;
+}
+.ins-action-btn.is-delete:hover,
+.ins-action-btn.btn-delete:hover {
+  background: #ef4444;
+  color: #ffffff;
+}
+.ins-action-btn.is-view,
+.ins-action-btn.btn-view {
+  color: #059669;
+  background: #d1fae5;
+  border-color: #a7f3d0;
+}
+.ins-action-btn.is-view:hover,
+.ins-action-btn.btn-view:hover {
+  background: #059669;
+  color: #ffffff;
+}
+
+/* Settings navigation tabs */
+.ins-settings-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 6px;
+  background: #f8fafc;
+  border: 1px solid var(--ins-border);
+  border-radius: 12px;
+  margin-bottom: 22px;
+  scrollbar-width: thin;
+}
+.ins-settings-nav::-webkit-scrollbar { height: 4px; }
+.ins-settings-nav::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+.ins-settings-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #475569;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+.ins-settings-tab i { font-size: 14px; }
+.ins-settings-tab:hover { background: #e2e8f0; color: #0f172a; }
+.ins-settings-tab.active {
+  background: #0171bb;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(1, 113, 187, 0.25);
+}
 
 /* Responsive table → stacked cards on phones */
 .ins-table-wrap { border: 1px solid #edf1f7; border-radius: 12px; overflow: hidden; }

@@ -512,7 +512,7 @@ const InstructorDashboard: React.FC = () => {
                           <Link to={`${all_routes.courseWatch}?courseId=${c.id}`} className="ins-btn ins-btn-accent ins-btn-sm">
                             Classroom
                           </Link>
-                          <button type="button" className="ins-btn ins-btn-ghost ins-btn-sm" onClick={() => openEdit(c)} title="Edit course">
+                          <button type="button" className="ins-action-btn is-edit" onClick={() => openEdit(c)} title="Edit course">
                             <i className="feather-edit-2" />
                           </button>
                         </div>

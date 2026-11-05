@@ -42,7 +42,7 @@
     "react-sticky-box": "^2.0.5",
     "sass": "^1.83.1",
     "slick-carousel": "^1.8.1",
-    "swiper": "^11.2.5",
+    "swiper": "^14.4.0",
     "web-vitals": "^4.2.4",
     "yet-another-react-lightbox": "^3.21.7"
   },

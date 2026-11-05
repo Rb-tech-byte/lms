@@ -32,23 +32,10 @@ export const getDynamicMoodleUrl = (): string => {
     if (window.__OUT_LMS_CONFIG__?.moodleUrl) {
       return window.__OUT_LMS_CONFIG__.moodleUrl.replace(/\/+$/, '');
     }
-    const { protocol, hostname, host, port, pathname } = window.location;
-    // When running on dev/SPA port 3000, connect directly to WAMP Apache backend on the same host
-    if (port === '3000') {
-      return `${protocol}//${hostname}/outlmstheme/moodle-backend`;
-    }
-    const pathParts = pathname.split('/').filter(Boolean);
-    const knownAppRoutes = [
-      'admin', 'course', 'courses', 'student', 'instructor',
-      'pages', 'home', 'login', 'register', 'dashboard', 'static', 'build', 'blog', 'index'
-    ];
-    const appBase =
-      pathParts.length > 0 && !knownAppRoutes.includes(pathParts[0].toLowerCase())
-        ? `/${pathParts[0]}`
-        : '/outlmstheme';
-    return `${protocol}//${host}${appBase}/moodle-backend`;
+    const { protocol, host } = window.location;
+    return `${protocol}//${host}`;
   }
-  return 'http://localhost/outlmstheme/moodle-backend';
+  return 'http://localhost:3000';
 };
 
 export const MOODLE_BASE_URL = getDynamicMoodleUrl();

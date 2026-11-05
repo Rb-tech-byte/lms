@@ -520,9 +520,9 @@ export const quizService = {
       const token = localStorage.getItem('out_lms_ws_token') || '';
       const courseId = quizId === 1 ? 2 : quizId === 2 ? 3 : 4;
       const apiBase =
-        typeof window !== 'undefined' && window.location.port === '3000'
+        typeof window !== 'undefined'
           ? `${window.location.origin}/admin_api.php`
-          : '/outlmstheme/moodle-backend/admin_api.php';
+          : '/admin_api.php';
       await fetch(`${apiBase}?action=submit_quiz_grade`, {
         method: 'POST',
         headers: {

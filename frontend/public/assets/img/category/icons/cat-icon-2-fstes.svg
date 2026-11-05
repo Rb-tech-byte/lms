@@ -19,7 +19,7 @@
 
   <!-- Vector Illustration -->
   
-      <!-- Science Atom & Flask -->
+      <!-- Science Atom &amp; Flask -->
       <ellipse cx="64" cy="64" rx="42" ry="16" fill="none" stroke="#38bdf8" stroke-width="3" transform="rotate(30 64 64)" />
       <ellipse cx="64" cy="64" rx="42" ry="16" fill="none" stroke="#38bdf8" stroke-width="3" transform="rotate(-30 64 64)" />
       <ellipse cx="64" cy="64" rx="42" ry="16" fill="none" stroke="#38bdf8" stroke-width="3" transform="rotate(90 64 64)" />

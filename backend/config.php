@@ -39,12 +39,12 @@ $CFG->dblibrary = 'native';
 $CFG->dbhost    = getenv('MOODLE_DB_HOST') ?: '127.0.0.1';
 $CFG->dbname    = getenv('MOODLE_DB_NAME') ?: 'moodle_out';
 $CFG->dbuser    = getenv('MOODLE_DB_USER') ?: 'root';
-$CFG->dbpass    = getenv('MOODLE_DB_PASS') !== false ? (string)getenv('MOODLE_DB_PASS') : '';
+$CFG->dbpass    = getenv('MOODLE_DB_PASSWORD') !== false ? (string)getenv('MOODLE_DB_PASSWORD') : (getenv('MOODLE_DB_PASS') !== false ? (string)getenv('MOODLE_DB_PASS') : '');
 $CFG->prefix    = getenv('MOODLE_DB_PREFIX') ?: 'mdl_';
 
 $CFG->dboptions = [
     'dbpersist'   => 0,
-    'dbport'      => getenv('MOODLE_DB_PORT') ? (int)getenv('MOODLE_DB_PORT') : 3307,
+    'dbport'      => getenv('MOODLE_DB_PORT') ? (int)getenv('MOODLE_DB_PORT') : 3306,
     'dbsocket'    => getenv('MOODLE_DB_SOCKET') ?: '',
     'dbcollation' => getenv('MOODLE_DB_COLLATION') ?: 'utf8mb4_unicode_ci',
 ];
@@ -52,44 +52,16 @@ $CFG->dboptions = [
 // -----------------------------------------------------------------------------
 // Dynamic URL (wwwroot) Resolution
 // -----------------------------------------------------------------------------
-$envWwwroot = getenv('MOODLE_WWWROOT') ?: getenv('APP_URL');
-if (!empty($envWwwroot)) {
-    $CFG->wwwroot = rtrim($envWwwroot, '/');
+if (isset($_SERVER['HTTP_HOST'])) {
+    $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+        || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
+        || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443);
+    $protocol = $isHttps ? 'https://' : 'http://';
+    $host = $_SERVER['HTTP_HOST'];
+    $CFG->wwwroot = rtrim("{$protocol}{$host}", '/');
 } else {
-    // Dynamically calculate relative web path from DOCUMENT_ROOT or directory structure
-    $webPath = '';
-    $normalizedDir = str_replace('\\', '/', realpath(__DIR__) ?: __DIR__);
-
-    if (!empty($_SERVER['DOCUMENT_ROOT'])) {
-        $normalizedDocRoot = str_replace('\\', '/', realpath($_SERVER['DOCUMENT_ROOT']) ?: $_SERVER['DOCUMENT_ROOT']);
-        if (str_starts_with($normalizedDir, $normalizedDocRoot)) {
-            $webPath = substr($normalizedDir, strlen($normalizedDocRoot));
-        }
-    }
-
-    if (empty($webPath)) {
-        // In CLI or custom webserver setups, detect relative path from standard webroot indicators
-        if (preg_match('#/(?:www|public_html|htdocs|html)(/.*)$#i', $normalizedDir, $matches)) {
-            $webPath = $matches[1];
-        }
-    }
-
-    $webPath = '/' . trim(str_replace('\\', '/', $webPath), '/');
-    if ($webPath === '/') {
-        $webPath = '';
-    }
-
-    if (isset($_SERVER['HTTP_HOST'])) {
-        $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-            || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
-            || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443);
-        $protocol = $isHttps ? 'https://' : 'http://';
-        $host = $_SERVER['HTTP_HOST'];
-        $CFG->wwwroot = rtrim("{$protocol}{$host}{$webPath}", '/');
-    } else {
-        // CLI fallback
-        $CFG->wwwroot = rtrim("http://localhost{$webPath}", '/');
-    }
+    $envWwwroot = getenv('MOODLE_WWWROOT') ?: getenv('APP_URL');
+    $CFG->wwwroot = !empty($envWwwroot) ? rtrim($envWwwroot, '/') : 'http://localhost:8080';
 }
 
 // -----------------------------------------------------------------------------

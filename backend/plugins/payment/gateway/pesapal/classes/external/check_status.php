@@ -59,6 +59,17 @@ class check_status extends external_api {
             $itemid = 10;
         }
 
+        // Normalize and resolve itemid if component is enrol_fee (support both enrol instance ID and course ID)
+        if ($component === 'enrol_fee' && $paymentarea === 'fee') {
+            $enrolInstance = $DB->get_record('enrol', ['enrol' => 'fee', 'id' => $itemid]);
+            if (!$enrolInstance) {
+                $enrolInstance = $DB->get_record('enrol', ['enrol' => 'fee', 'courseid' => $itemid]);
+            }
+            if ($enrolInstance) {
+                $itemid = (int) $enrolInstance->id;
+            }
+        }
+
         $config = (object) helper::get_gateway_configuration($component, $paymentarea, $itemid, 'pesapal');
         $isSandbox = ($config->environment ?? 'sandbox') === 'sandbox';
 

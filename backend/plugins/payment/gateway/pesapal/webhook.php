@@ -60,6 +60,16 @@ $itemid = isset($parts[2]) ? (int) $parts[2] : 0;
 $component = 'enrol_fee';
 $paymentarea = 'fee';
 
+if ($component === 'enrol_fee' && $paymentarea === 'fee') {
+    $enrolInstance = $DB->get_record('enrol', ['enrol' => 'fee', 'id' => $itemid]);
+    if (!$enrolInstance) {
+        $enrolInstance = $DB->get_record('enrol', ['enrol' => 'fee', 'courseid' => $itemid]);
+    }
+    if ($enrolInstance) {
+        $itemid = (int) $enrolInstance->id;
+    }
+}
+
 try {
     $config = (object) helper::get_gateway_configuration($component, $paymentarea, $itemid, 'pesapal');
     $isSandbox = ($config->environment ?? 'sandbox') === 'sandbox';

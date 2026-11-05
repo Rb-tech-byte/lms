@@ -42,7 +42,7 @@
   <!-- Title -->
   <g transform="translate(48, 175)">
     <text font-family="'Segoe UI', Inter, sans-serif" font-size="30" font-weight="800" fill="#ffffff" letter-spacing="-0.5">
-      <tspan x="0" dy="0">Faculty of Education &</tspan><tspan x="0" dy="34">Instructional Pedagogy</tspan>
+      <tspan x="0" dy="0">Faculty of Education &amp;</tspan><tspan x="0" dy="34">Instructional Pedagogy</tspan>
     </text>
   </g>
 
@@ -57,7 +57,7 @@
     <rect width="190" height="260" rx="20" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.25" stroke-width="2" />
     <g transform="translate(31, 35)">
       
-      <!-- Open Book & Mortarboard -->
+      <!-- Open Book &amp; Mortarboard -->
       <polygon points="64,30 35,44 64,56 93,44" fill="#a855f7" stroke="#f3e8ff" stroke-width="2" />
       <path d="M48,50 L48,68 C48,78 80,78 80,68 L80,50" fill="#6d28d9" stroke="#f3e8ff" stroke-width="1.5" />
       <!-- Book pages below -->

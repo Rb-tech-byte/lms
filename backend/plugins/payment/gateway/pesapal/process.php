@@ -58,6 +58,16 @@ if ($itemid === 0) {
     $itemid = 10;
 }
 
+if ($component === 'enrol_fee' && $paymentarea === 'fee') {
+    $enrolInstance = $DB->get_record('enrol', ['enrol' => 'fee', 'id' => $itemid]);
+    if (!$enrolInstance) {
+        $enrolInstance = $DB->get_record('enrol', ['enrol' => 'fee', 'courseid' => $itemid]);
+    }
+    if ($enrolInstance) {
+        $itemid = (int) $enrolInstance->id;
+    }
+}
+
 $PAGE->set_url('/payment/gateway/pesapal/process.php', [
     'OrderTrackingId'        => $orderTrackingId,
     'OrderMerchantReference' => $merchantReference,

@@ -128,10 +128,16 @@ const server = http.createServer(async (req, res) => {
     urlPath = decodeURIComponent(urlPath);
   } catch {}
 
-  // Reverse-proxy /moodle-backend or /admin_api.php requests
-  if (urlPath.startsWith('/moodle-backend') || urlPath.startsWith('/admin_api.php')) {
-    const backendSubPath = urlPath.startsWith('/admin_api.php')
-      ? `/admin_api.php${reqUrl.includes('?') ? '?' + reqUrl.split('?')[1] : ''}`
+  // Reverse-proxy Moodle backend, API, or SSO requests
+  if (
+    urlPath.startsWith('/moodle-backend') ||
+    urlPath.startsWith('/admin_api.php') ||
+    urlPath.startsWith('/sso.php') ||
+    urlPath.startsWith('/webservice') ||
+    urlPath.startsWith('/login/token.php')
+  ) {
+    const backendSubPath = (urlPath.startsWith('/admin_api.php') || urlPath.startsWith('/sso.php') || urlPath.startsWith('/webservice') || urlPath.startsWith('/login/token.php'))
+      ? reqUrl
       : reqUrl.replace(/^\/moodle-backend/, '');
     const fullTarget = `${BACKEND_TARGET.replace(/\/+$/, '')}${backendSubPath.startsWith('/') ? backendSubPath : '/' + backendSubPath}`;
     return proxyRequestToBackend(req, res, fullTarget);

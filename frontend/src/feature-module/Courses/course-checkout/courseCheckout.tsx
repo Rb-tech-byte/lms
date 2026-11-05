@@ -169,8 +169,28 @@ export const CourseCheckout: React.FC = () => {
   const [paymentMode, setPaymentMode] = useState<'mobile' | 'card' | 'bank'>('mobile');
   const [showAddressFields, setShowAddressFields] = useState<boolean>(false);
 
+  // Sync selectedCourseId when URL param changes
+  useEffect(() => {
+    setSelectedCourseId(requestedCourseId);
+  }, [requestedCourseId]);
+
   // Fallback metadata lookup
-  const fallbackMeta = COURSE_CATALOG_FALLBACK[selectedCourseId] || COURSE_CATALOG_FALLBACK[8];
+  const fallbackMeta: CourseMetaInfo = COURSE_CATALOG_FALLBACK[selectedCourseId] || {
+    code: `COURSE-${selectedCourseId}`,
+    title: `Academic Programme #${selectedCourseId}`,
+    price: 'TZS 220,000',
+    rawAmount: '220000',
+    usdPrice: '$85',
+    itemId: selectedCourseId,
+    img: `/assets/img/course/thumbnails/course-12-psc-fintech.svg`,
+    cpdCredits: 20,
+    duration: '6 Weeks (Blended & Cohort)',
+    delivery: 'Live Interactive Webinars & Labs',
+    instructor: 'Dr. Emmanuel Michael',
+    instructorRole: 'Course Director & Senior Lecturer',
+    instructorAvatar: '/assets/img/user/user-01.jpg',
+    category: 'Accredited Programme',
+  };
 
   // Derived course display information
   const courseMeta: CourseMetaInfo = {
@@ -179,7 +199,7 @@ export const CourseCheckout: React.FC = () => {
     price: liveCourse?.priceFormatted || fallbackMeta.price,
     rawAmount: String(liveCourse?.tuitionFee || fallbackMeta.rawAmount),
     usdPrice: liveCourse?.priceUSDFormatted || fallbackMeta.usdPrice,
-    itemId: liveCourse?.id || fallbackMeta.itemId,
+    itemId: liveCourse?.feeEnrolId || liveCourse?.id || fallbackMeta.itemId,
     img: liveCourse?.courseImage || fallbackMeta.img,
     cpdCredits: liveCourse?.cpdCredits || fallbackMeta.cpdCredits,
     duration: liveCourse?.duration || fallbackMeta.duration,
@@ -217,11 +237,11 @@ export const CourseCheckout: React.FC = () => {
     }
   }, [user]);
 
-  // Load live course catalog from Moodle backend
+  // Load live course catalog from Moodle backend across all programmes
   useEffect(() => {
     let active = true;
     courseService
-      .getShortCoursesCatalog()
+      .getPublicCatalog()
       .then((data) => {
         if (!active) return;
         if (data && data.courses && data.courses.length > 0) {
@@ -232,7 +252,22 @@ export const CourseCheckout: React.FC = () => {
           }
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        // Fallback to short courses if public catalog fails
+        courseService
+          .getShortCoursesCatalog()
+          .then((data) => {
+            if (!active) return;
+            if (data && data.courses && data.courses.length > 0) {
+              setCatalogList(data.courses);
+              const found = data.courses.find((c) => c.id === selectedCourseId);
+              if (found) {
+                setLiveCourse(found);
+              }
+            }
+          })
+          .catch(() => {});
+      });
 
     return () => {
       active = false;

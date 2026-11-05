@@ -64,8 +64,8 @@ services:
       - backend
     environment:
       PORT: 3000
-      REACT_APP_API_URL: ${BACKEND_URL:-http://backend:80}
-      REACT_APP_MOODLE_URL: ${BACKEND_URL:-http://backend:80}
+      REACT_APP_API_URL: http://backend:80
+      REACT_APP_MOODLE_URL: http://backend:80
     ports:
       - "${FRONTEND_PORT:-3000}:3000"
 

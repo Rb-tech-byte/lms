@@ -1,9 +1,9 @@
 # -----------------------------------------------------------------------------
 # OUT LMS - Backend Production Dockerfile
-# PHP 8.2 + Apache with Moodle Core Extensions & Custom APIs
+# PHP 8.3 + Apache with Moodle Core Extensions & Custom APIs
 # -----------------------------------------------------------------------------
 
-FROM php:8.2-apache
+FROM php:8.3-apache
 
 # Install system dependencies & PHP extensions required for Moodle and APIs
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -43,15 +43,19 @@ RUN { \
 # Set working directory
 WORKDIR /var/www/html
 
+# Clone Moodle 5.3 Core Engine
+RUN git clone --depth 1 -b MOODLE_503_STABLE https://github.com/moodle/moodle.git /var/www/html
+
 # Create moodledata directory with permissive access
 RUN mkdir -p /var/www/moodledata && chown -R www-data:www-data /var/www/moodledata /var/www/html
 
 # Copy backend files and installer
 COPY backend/ /var/www/html/backend/
 
-# Place admin_api.php and sso.php at web root
-RUN cp /var/www/html/backend/admin_api.php /var/www/html/admin_api.php \
- && cp /var/www/html/backend/sso.php /var/www/html/sso.php
+# Run installer to overlay OUT LMS custom plugins and entry APIs
+RUN php /var/www/html/backend/install_to_moodle.php /var/www/html \
+ && cp /var/www/html/backend/config.php /var/www/html/config.php \
+ && chown -R www-data:www-data /var/www/html
 
 EXPOSE 80
 

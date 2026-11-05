@@ -27,7 +27,7 @@
   <!-- Top Gold Ribbon Bar -->
   <rect x="0" y="0" width="1440" height="6" fill="#FFD200"/>
 
-  <!-- Network Constellation & Academic Rays -->
+  <!-- Network Constellation &amp; Academic Rays -->
   <g stroke="rgba(254,242,7,0.28)" stroke-width="1.5" fill="none">
     <path d="M -50 200 Q 300 120 650 260 T 1490 180"/>
     <path d="M -50 420 Q 420 300 850 440 T 1490 320"/>

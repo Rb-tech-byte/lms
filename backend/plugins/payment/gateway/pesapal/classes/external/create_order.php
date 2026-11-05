@@ -51,6 +51,37 @@ class create_order extends external_api {
             'callback_url' => $callback_url,
         ]);
 
+        // Normalize and resolve itemid if component is enrol_fee (support both enrol instance ID and course ID)
+        if ($component === 'enrol_fee' && $paymentarea === 'fee') {
+            $enrolInstance = $DB->get_record('enrol', ['enrol' => 'fee', 'id' => $itemid]);
+            if (!$enrolInstance) {
+                // If itemid was passed as courseid, find active fee enrol instance
+                $enrolInstance = $DB->get_record('enrol', ['enrol' => 'fee', 'courseid' => $itemid]);
+                if (!$enrolInstance && $DB->record_exists('course', ['id' => $itemid])) {
+                    // Auto-provision fee enrol instance for this course
+                    $accountId = (int) $DB->get_field('payment_accounts', 'id', ['enabled' => 1, 'archived' => 0]) ?: 1;
+                    $cost = ($itemid == 2) ? 150000 : (($itemid == 3) ? 180000 : 220000);
+                    $newEnrol = new \stdClass();
+                    $newEnrol->enrol = 'fee';
+                    $newEnrol->status = 0;
+                    $newEnrol->courseid = $itemid;
+                    $newEnrol->sortorder = 3;
+                    $newEnrol->name = 'Pesapal Online Payment';
+                    $newEnrol->cost = $cost;
+                    $newEnrol->currency = 'TZS';
+                    $newEnrol->roleid = 5;
+                    $newEnrol->customint1 = $accountId;
+                    $newEnrol->timecreated = time();
+                    $newEnrol->timemodified = time();
+                    $newId = $DB->insert_record('enrol', $newEnrol);
+                    $enrolInstance = $DB->get_record('enrol', ['id' => $newId]);
+                }
+            }
+            if ($enrolInstance) {
+                $itemid = (int) $enrolInstance->id;
+            }
+        }
+
         $config = (object) helper::get_gateway_configuration($component, $paymentarea, $itemid, 'pesapal');
         $isSandbox = ($config->environment ?? 'sandbox') === 'sandbox';
 

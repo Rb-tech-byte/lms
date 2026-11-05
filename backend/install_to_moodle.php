@@ -73,5 +73,28 @@ foreach ($mappings as $srcSub => $dstSub) {
     }
 }
 
+// 3. PHP 8.2 Compatibility Patch: normalize PHP 8.3 typed constants if running under PHP < 8.3
+if (PHP_VERSION_ID < 80300) {
+    $scanDirs = [
+        $targetMoodle . DIRECTORY_SEPARATOR . 'public',
+        $targetMoodle . DIRECTORY_SEPARATOR . 'lib'
+    ];
+    foreach ($scanDirs as $sDir) {
+        if (!is_dir($sDir)) continue;
+        $dirIter = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($sDir));
+        foreach ($dirIter as $f) {
+            if ($f->isFile() && $f->getExtension() === 'php') {
+                $p = $f->getRealPath();
+                $c = file_get_contents($p);
+                $nc = preg_replace('/\b(public|protected|private)\s+const\s+(string|int|bool|float|array)\s+/', '$1 const ', $c);
+                if ($nc !== $c) {
+                    file_put_contents($p, $nc);
+                }
+            }
+        }
+    }
+    echo "[OK] Applied PHP 8.2 typed constants compatibility patch\n";
+}
+
 echo "[SUCCESS] All OUT LMS backend enhancements successfully deployed to Moodle!\n";
 

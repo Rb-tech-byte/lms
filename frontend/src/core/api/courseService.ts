@@ -80,6 +80,7 @@ export interface PublicCatalogCourse {
   sponsorshipEligible?: boolean;
   accentColor?: string;
   badgeText?: string;
+  feeEnrolId?: number;
 }
 
 export interface CourseCategory {
@@ -96,6 +97,7 @@ export interface CourseCategory {
   categoryCover?: string;
   accentColor?: string;
   badgeText?: string;
+  feeEnrolId?: number;
 }
 
 export type MoodleCategory = CourseCategory;

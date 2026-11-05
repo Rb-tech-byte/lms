@@ -19,7 +19,7 @@
 
   <!-- Vector Illustration -->
   
-      <!-- Open Book & Mortarboard -->
+      <!-- Open Book &amp; Mortarboard -->
       <polygon points="64,30 35,44 64,56 93,44" fill="#a855f7" stroke="#f3e8ff" stroke-width="2" />
       <path d="M48,50 L48,68 C48,78 80,78 80,68 L80,50" fill="#6d28d9" stroke="#f3e8ff" stroke-width="1.5" />
       <!-- Book pages below -->

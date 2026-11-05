@@ -371,7 +371,9 @@ const CourseDetails: React.FC = () => {
                       className="rounded-circle border border-2 border-warning"
                       style={{ width: 30, height: 30, objectFit: 'cover' }}
                       onError={(e) => {
-                        (e.target as HTMLImageElement).src = '/assets/img/user/user-01.jpg';
+                        const target = e.currentTarget;
+                        target.onerror = null;
+                        target.src = '/assets/img/user/user-01.jpg';
                       }}
                     />
                     <div>
@@ -844,7 +846,9 @@ const CourseDetails: React.FC = () => {
                         className="rounded-3 border"
                         style={{ width: 72, height: 72, objectFit: 'cover' }}
                         onError={(e) => {
-                          (e.target as HTMLImageElement).src = '/assets/img/user/user-01.jpg';
+                          const target = e.currentTarget;
+                          target.onerror = null;
+                          target.src = '/assets/img/user/user-01.jpg';
                         }}
                       />
                       <div>
@@ -886,12 +890,9 @@ const CourseDetails: React.FC = () => {
                     className="w-100 rounded-3 mb-3"
                     style={{ height: 155, objectFit: 'cover' }}
                     onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      const ownSlug = (course.shortname || `course-${course.id}`).toLowerCase().replace(/[^a-z0-9]/g, '-');
-                      const ownThumbnail = `/assets/img/course/thumbnails/course-${course.id}-${ownSlug}.svg`;
-                      if (target.src !== ownThumbnail && !target.src.endsWith(ownThumbnail)) {
-                        target.src = ownThumbnail;
-                      }
+                      const target = e.currentTarget;
+                      target.onerror = null;
+                      target.src = '/assets/img/course/thumbnails/course-2-cs101.svg';
                     }}
                   />
                   <h6 className="fw-bold text-dark mb-2.5" style={{ fontSize: '0.88rem' }}>Specifications</h6>
@@ -962,12 +963,9 @@ const CourseDetails: React.FC = () => {
                             className="rounded-2 flex-shrink-0"
                             style={{ width: 50, height: 42, objectFit: 'cover' }}
                             onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              const ownSlug = (rc.shortname || `course-${rc.id}`).toLowerCase().replace(/[^a-z0-9]/g, '-');
-                              const ownThumbnail = `/assets/img/course/thumbnails/course-${rc.id}-${ownSlug}.svg`;
-                              if (target.src !== ownThumbnail && !target.src.endsWith(ownThumbnail)) {
-                                target.src = ownThumbnail;
-                              }
+                              const target = e.currentTarget;
+                              target.onerror = null;
+                              target.src = '/assets/img/course/thumbnails/course-2-cs101.svg';
                             }}
                           />
                           <div className="flex-grow-1 overflow-hidden">

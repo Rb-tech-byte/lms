@@ -210,7 +210,9 @@ const CourseList: React.FC = () => {
                       alt=""
                       style={{ width: 14, height: 14, objectFit: 'contain' }}
                       onError={(e) => {
-                        (e.target as HTMLElement).style.display = 'none';
+                        const target = e.currentTarget;
+                        target.onerror = null;
+                        target.style.display = 'none';
                       }}
                     />
                   )}
@@ -324,15 +326,11 @@ const CourseList: React.FC = () => {
                               src={thumbUrl}
                               alt={c.fullname}
                               className="w-100 h-100 d-block"
-                              style={{ objectFit: 'cover' }}
+                              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                               onError={(e) => {
-                                const target = e.target as HTMLImageElement;
-                                const fallback = `/assets/img/course/thumbnails/course-${c.id}-${courseSlug}.svg`;
-                                if (target.src !== fallback && !target.src.endsWith(fallback)) {
-                                  target.src = fallback;
-                                } else {
-                                  target.src = '/assets/img/course/thumbnails/course-2-cs101.svg';
-                                }
+                                const target = e.currentTarget;
+                                target.onerror = null;
+                                target.src = '/assets/img/course/thumbnails/course-2-cs101.svg';
                               }}
                             />
                           </Link>

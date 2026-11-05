@@ -305,20 +305,25 @@ const CourseGrid: React.FC = () => {
                 >
                   {/* Category Cover Image Header */}
                   <div
-                    className="position-relative overflow-hidden"
+                    className="position-relative overflow-hidden w-100"
                     style={{
                       height: 60,
+                      minHeight: 60,
+                      maxHeight: 60,
                       background: `linear-gradient(135deg, ${accent}30 0%, ${accent}60 100%)`,
                       borderBottom: `2.5px solid ${accent}`,
+                      contain: 'paint layout',
                     }}
                   >
                     <img
                       src={coverImg}
                       alt={cat.name}
                       className="w-100 h-100 object-fit-cover d-block"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                       onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = `/assets/img/category/covers/cat-cover-2-fstes.svg`;
+                        const target = e.currentTarget;
+                        target.onerror = null;
+                        target.src = '/assets/img/category/covers/cat-cover-2-fstes.svg';
                       }}
                     />
                     {/* Faculty Icon Stamp */}
@@ -327,7 +332,16 @@ const CourseGrid: React.FC = () => {
                         className="position-absolute bottom-0 start-0 m-1 rounded-circle p-1 d-flex align-items-center justify-content-center bg-white shadow-sm"
                         style={{ width: 22, height: 22, border: `1px solid ${accent}` }}
                       >
-                        <img src={cat.icon} alt="" style={{ width: 14, height: 14 }} />
+                        <img
+                          src={cat.icon}
+                          alt=""
+                          style={{ width: 14, height: 14, objectFit: 'contain' }}
+                          onError={(e) => {
+                            const target = e.currentTarget;
+                            target.onerror = null;
+                            target.style.display = 'none';
+                          }}
+                        />
                       </div>
                     )}
                     {/* Badge Pill */}
@@ -539,7 +553,9 @@ const CourseGrid: React.FC = () => {
                                 alt=""
                                 style={{ width: 16, height: 16, objectFit: 'contain' }}
                                 onError={(e) => {
-                                  (e.target as HTMLElement).style.display = 'none';
+                                  const target = e.currentTarget;
+                                  target.onerror = null;
+                                  target.style.display = 'none';
                                 }}
                               />
                             )}
@@ -595,7 +611,9 @@ const CourseGrid: React.FC = () => {
                             className="rounded-circle flex-shrink-0"
                             style={{ width: 18, height: 18, objectFit: 'cover' }}
                             onError={(e) => {
-                              (e.target as HTMLImageElement).src = '/assets/img/user/user-01.jpg';
+                              const target = e.currentTarget;
+                              target.onerror = null;
+                              target.src = '/assets/img/user/user-01.jpg';
                             }}
                           />
                           <span className="text-truncate">{inst.fullname}</span>
@@ -639,14 +657,16 @@ const CourseGrid: React.FC = () => {
                   }}
                 >
                   <div className="row g-0 align-items-center">
-                    <div className="col-md-4 position-relative overflow-hidden" style={{ minHeight: 120, maxHeight: 140 }}>
+                    <div className="col-md-4 position-relative overflow-hidden" style={{ minHeight: 120, height: 130, maxHeight: 140, contain: 'paint layout' }}>
                       <img
                         src={activeCategory.cover || activeCategory.categoryCover || `/assets/img/category/covers/cat-cover-${activeCategory.id}-fstes.svg`}
                         alt={activeCategory.name}
                         className="w-100 h-100 d-block object-fit-cover"
-                        style={{ minHeight: 120 }}
+                        style={{ minHeight: 120, height: '100%', width: '100%', objectFit: 'cover', display: 'block' }}
                         onError={(e) => {
-                          (e.target as HTMLImageElement).src = '/assets/img/category/covers/cat-cover-2-fstes.svg';
+                          const target = e.currentTarget;
+                          target.onerror = null;
+                          target.src = '/assets/img/category/covers/cat-cover-2-fstes.svg';
                         }}
                       />
                       <span
@@ -784,8 +804,12 @@ const CourseGrid: React.FC = () => {
                                 className="position-relative overflow-hidden w-100"
                                 style={{
                                   height: '160px',
+                                  minHeight: '160px',
+                                  maxHeight: '160px',
+                                  aspectRatio: '16 / 9',
                                   background: `linear-gradient(135deg, ${accent}22 0%, ${accent}44 100%)`,
                                   borderBottom: '3px solid #FFD200',
+                                  contain: 'paint layout',
                                 }}
                               >
                                 <Link
@@ -797,18 +821,16 @@ const CourseGrid: React.FC = () => {
                                     alt={course.fullname}
                                     className="w-100 h-100 d-block"
                                     style={{
+                                      width: '100%',
+                                      height: '100%',
                                       objectFit: 'cover',
                                       objectPosition: 'center',
-                                      transition: 'transform 0.3s ease',
+                                      display: 'block',
                                     }}
                                     onError={(e) => {
-                                      const target = e.target as HTMLImageElement;
-                                      const fallback = `/assets/img/course/thumbnails/course-${course.id}-${courseSlug}.svg`;
-                                      if (target.src !== fallback && !target.src.endsWith(fallback)) {
-                                        target.src = fallback;
-                                      } else {
-                                        target.src = '/assets/img/course/thumbnails/course-2-cs101.svg';
-                                      }
+                                      const target = e.currentTarget;
+                                      target.onerror = null;
+                                      target.src = '/assets/img/course/thumbnails/course-2-cs101.svg';
                                     }}
                                   />
                                 </Link>
@@ -943,7 +965,9 @@ const CourseGrid: React.FC = () => {
                                   className="rounded-circle flex-shrink-0"
                                   style={{ width: 22, height: 22, objectFit: 'cover' }}
                                   onError={(e) => {
-                                    (e.target as HTMLImageElement).src = '/assets/img/user/user-01.jpg';
+                                    const target = e.currentTarget;
+                                    target.onerror = null;
+                                    target.src = '/assets/img/user/user-01.jpg';
                                   }}
                                 />
                                 <span className="text-dark fw-medium text-truncate" style={{ fontSize: '0.74rem', maxWidth: 110 }}>
@@ -1047,4 +1071,3 @@ const CourseGrid: React.FC = () => {
 };
 
 export default CourseGrid;
-                                                                                                                                                                                                                                                                                                       

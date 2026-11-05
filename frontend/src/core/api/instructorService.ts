@@ -129,9 +129,9 @@ export const instructorService = {
     try {
       const token = localStorage.getItem('out_lms_ws_token') || '';
       const apiBase =
-        typeof window !== 'undefined' && window.location.port === '3000'
+        typeof window !== 'undefined'
           ? `${window.location.origin}/admin_api.php`
-          : '/outlmstheme/moodle-backend/admin_api.php';
+          : '/admin_api.php';
 
       const url = `${apiBase}?action=get_instructor_dashboard_data&instructor_id=${instructorId}`;
       const res = await fetch(url, {
@@ -277,9 +277,9 @@ export const instructorService = {
     try {
       const token = localStorage.getItem('out_lms_ws_token') || '';
       const apiBase =
-        typeof window !== 'undefined' && window.location.port === '3000'
+        typeof window !== 'undefined'
           ? `${window.location.origin}/admin_api.php`
-          : '/outlmstheme/moodle-backend/admin_api.php';
+          : '/admin_api.php';
 
       const res = await fetch(`${apiBase}?action=create_instructor_announcement`, {
         method: 'POST',
@@ -584,9 +584,9 @@ export const instructorService = {
       const token = localStorage.getItem('out_lms_ws_token') || '';
       const numericScore = Number(params.score ?? params.grade ?? 85);
       const apiBase =
-        typeof window !== 'undefined' && window.location.port === '3000'
+        typeof window !== 'undefined'
           ? `${window.location.origin}/admin_api.php`
-          : '/outlmstheme/moodle-backend/admin_api.php';
+          : '/admin_api.php';
       const res = await fetch(`${apiBase}?action=grade_submission`, {
         method: 'POST',
         headers: {

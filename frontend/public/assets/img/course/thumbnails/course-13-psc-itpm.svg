@@ -68,14 +68,14 @@
   <!-- Course Title (Multline wrapped) -->
   <g transform="translate(48, 200)">
     <text font-family="'Segoe UI', Inter, sans-serif" font-size="28" font-weight="800" fill="#ffffff" letter-spacing="-0.5">
-      <tspan x="0" dy="0">IT Project Management &</tspan><tspan x="0" dy="34">Agile Methodologies</tspan>
+      <tspan x="0" dy="0">IT Project Management &amp;</tspan><tspan x="0" dy="34">Agile Methodologies</tspan>
     </text>
   </g>
 
   <!-- Key Syllabus Bullets / Subtitle -->
   <g transform="translate(48, 355)">
     <rect width="440" height="48" rx="8" fill="#000000" fill-opacity="0.3" stroke="#ffffff" stroke-opacity="0.15" stroke-width="1.2" />
-    <text x="18" y="28" font-family="'Segoe UI', Inter, sans-serif" font-size="12" font-weight="500" fill="#e2e8f0">Scrum Sprints, Kanban Boards, Risk Matrix & Team Leadership</text>
+    <text x="18" y="28" font-family="'Segoe UI', Inter, sans-serif" font-size="12" font-weight="500" fill="#e2e8f0">Scrum Sprints, Kanban Boards, Risk Matrix &amp; Team Leadership</text>
   </g>
 
   <!-- Right Visual Feature Showcase Card -->
@@ -86,7 +86,7 @@
     <!-- Topic Thematic Graphic -->
     <g transform="translate(-5, 20)">
       
-      <!-- Agile Kanban Columns & Milestone Flag -->
+      <!-- Agile Kanban Columns &amp; Milestone Flag -->
       <rect x="52" y="45" width="40" height="120" rx="5" fill="#500724" stroke="#fb7185" stroke-width="1.5" />
       <rect x="100" y="45" width="40" height="120" rx="5" fill="#500724" stroke="#fb7185" stroke-width="1.5" />
       <rect x="148" y="45" width="40" height="120" rx="5" fill="#500724" stroke="#fb7185" stroke-width="1.5" />

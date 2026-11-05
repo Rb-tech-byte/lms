@@ -68,14 +68,14 @@
   <!-- Course Title (Multline wrapped) -->
   <g transform="translate(48, 200)">
     <text font-family="'Segoe UI', Inter, sans-serif" font-size="28" font-weight="800" fill="#ffffff" letter-spacing="-0.5">
-      <tspan x="0" dy="0">Research Data Management &</tspan><tspan x="0" dy="34">Open Science Digital Archiving</tspan>
+      <tspan x="0" dy="0">Research Data Management &amp;</tspan><tspan x="0" dy="34">Open Science Digital Archiving</tspan>
     </text>
   </g>
 
   <!-- Key Syllabus Bullets / Subtitle -->
   <g transform="translate(48, 355)">
     <rect width="440" height="48" rx="8" fill="#000000" fill-opacity="0.3" stroke="#ffffff" stroke-opacity="0.15" stroke-width="1.2" />
-    <text x="18" y="28" font-family="'Segoe UI', Inter, sans-serif" font-size="12" font-weight="500" fill="#e2e8f0">FAIR Data Principles, Repository Depositing, Ethics & Data Dictionaries</text>
+    <text x="18" y="28" font-family="'Segoe UI', Inter, sans-serif" font-size="12" font-weight="500" fill="#e2e8f0">FAIR Data Principles, Repository Depositing, Ethics &amp; Data Dictionaries</text>
   </g>
 
   <!-- Right Visual Feature Showcase Card -->
@@ -86,7 +86,7 @@
     <!-- Topic Thematic Graphic -->
     <g transform="translate(-5, 20)">
       
-      <!-- Open Science Padlock & Archive Tubes -->
+      <!-- Open Science Padlock &amp; Archive Tubes -->
       <g transform="translate(75, 45)">
         <rect x="15" y="45" width="60" height="50" rx="8" fill="#047857" stroke="#34d399" stroke-width="2.5" />
         <!-- Unlocked Shackle (Open Science) -->

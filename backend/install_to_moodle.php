@@ -80,6 +80,7 @@ $mappings = [
     'blocks/xp'               => 'blocks/xp',
     'mod/customcert'          => 'mod/customcert',
     'mod/reengagement'        => 'mod/reengagement',
+    'webservice/restful'      => 'webservice/restful',
 ];
 
 foreach ($mappings as $srcSub => $dstSub) {

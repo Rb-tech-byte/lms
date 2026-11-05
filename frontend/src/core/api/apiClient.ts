@@ -133,7 +133,15 @@ function serializeMoodleParams(obj: Record<string, any>, prefix = ''): string[] 
 }
 
 /**
- * 1. Calls a Moodle Core Web Service function via REST (`/webservice/rest/server.php`)
+ * Cached availability flag for Catalyst webservice_restful protocol.
+ * null = untested, true = supported, false = fallback to standard rest/server.php
+ */
+let isRestfulProtocolAvailable: boolean | null = null;
+
+/**
+ * 1. Calls a Moodle Core Web Service function via adaptive REST protocol:
+ *    - Tries modern Catalyst RESTful endpoint (`/webservice/restful/server.php/{function}`) with Bearer auth & native JSON.
+ *    - Automatically falls back to standard RPC REST (`/webservice/rest/server.php`) if restful protocol is not enabled.
  */
 export async function callMoodleWs<T = any>(
   wsfunction: string,
@@ -141,9 +149,41 @@ export async function callMoodleWs<T = any>(
   customToken?: string
 ): Promise<T> {
   const token = customToken || localStorage.getItem('out_lms_ws_token') || PUBLIC_SERVICE_TOKEN;
-
   const baseUrl = getDynamicMoodleUrl();
-  // Moodle 5.x public directory support + root fallback
+
+  // Step A: Attempt modern RESTful protocol first if available
+  if (isRestfulProtocolAvailable !== false) {
+    try {
+      const restfulUrl = `${baseUrl}/webservice/restful/server.php/${wsfunction}`;
+      const hasParams = params && Object.keys(params).length > 0;
+
+      const res = await fetch(restfulUrl, {
+        method: hasParams ? 'POST' : 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: hasParams ? JSON.stringify(params) : undefined,
+      });
+
+      if (res.ok) {
+        const json = await parseSafeJson<any>(res, wsfunction);
+        if (json && !json.exception && !json.errorcode) {
+          isRestfulProtocolAvailable = true;
+          return json as T;
+        }
+      } else if (res.status === 404 || res.status === 403 || res.status === 501) {
+        // webservice_restful protocol not enabled or route not available
+        isRestfulProtocolAvailable = false;
+      }
+    } catch {
+      // Network or protocol issue; cleanly fallback to standard REST
+      isRestfulProtocolAvailable = false;
+    }
+  }
+
+  // Step B: Standard Moodle Core Web Service fallback (`/webservice/rest/server.php`)
   const endpoint = `${baseUrl}/webservice/rest/server.php`;
   const baseParams = [
     `wstoken=${encodeURIComponent(token)}`,

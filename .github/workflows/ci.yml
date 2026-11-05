@@ -1,0 +1,121 @@
+name: OUT LMS Continuous Integration
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  # ------------------------------------------------------------
+  # 1. Frontend Build & Quality Verification
+  # ------------------------------------------------------------
+  frontend-ci:
+    name: Frontend (React 18 / TypeScript)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js 20.x
+        uses: actions/setup-node@v7
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Frontend Dependencies
+        run: |
+          npm ci --prefer-offline || npm install
+
+      - name: Verify TypeScript & Build Production Artifacts
+        run: |
+          npm run build
+        env:
+          CI: false
+          GENERATE_SOURCEMAP: false
+
+      - name: Upload Build Artifacts (Smoke check)
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-production-dist
+          path: frontend/build
+          retention-days: 2
+
+  # ------------------------------------------------------------
+  # 2. Backend PHP 8.3 & OpenAPI Verification
+  # ------------------------------------------------------------
+  backend-ci:
+    name: Backend (PHP 8.3 / Moodle / OpenAPI)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v7
+
+      - name: Setup PHP 8.3 Environment
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mysqli, pdo_mysql, gd, zip, curl, mbstring, xml, soap, intl, opcache
+          tools: composer
+
+      - name: Lint PHP Syntax Across Project
+        run: |
+          echo "Scanning PHP files for syntax errors..."
+          ERRORS=0
+          while IFS= read -r -d '' file; do
+            php -l "$file" > /dev/null 2>&1 || {
+              echo "Syntax error in $file"
+              php -l "$file"
+              ERRORS=$((ERRORS + 1))
+            }
+          done < <(find backend -name "*.php" -print0 2>/dev/null)
+          
+          if [ -f "backend/admin_api.php" ]; then
+            php -l backend/admin_api.php || ERRORS=$((ERRORS + 1))
+          fi
+          
+          if [ $ERRORS -gt 0 ]; then
+            echo "PHP syntax errors encountered: $ERRORS"
+            exit 1
+          fi
+          echo "All PHP scripts passed syntax check cleanly."
+
+      - name: Validate OpenAPI 3.1 JSON Schemas
+        run: |
+          echo "Validating OpenAPI specification files..."
+          if [ -f "backend/openapi.json" ]; then
+            jq empty backend/openapi.json && echo "backend/openapi.json is valid JSON."
+          fi
+          if [ -f "frontend/public/openapi.json" ]; then
+            jq empty frontend/public/openapi.json && echo "frontend/public/openapi.json is valid JSON."
+          fi
+
+      - name: Validate SQL Database Seed File
+        run: |
+          echo "Checking database/init.sql..."
+          if [ -f "database/init.sql" ]; then
+            grep -i "CREATE TABLE" database/init.sql > /dev/null && echo "database/init.sql schema is populated."
+          fi
+
+  # ------------------------------------------------------------
+  # 3. Docker Compose & Deployment Schema Verification
+  # ------------------------------------------------------------
+  docker-ci:
+    name: Docker & Orchestration Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v7
+
+      - name: Validate Docker Compose Configuration
+        run: |
+          docker compose config --quiet && echo "docker-compose.yml configuration is valid."

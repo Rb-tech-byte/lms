@@ -1,0 +1,33 @@
+"area/frontend":
+  - changed-files:
+      - any-glob-to-any-file: "frontend/**/*"
+
+"area/backend":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "backend/**/*"
+          - "**/*.php"
+
+"area/database":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "database/**/*"
+          - "**/*.sql"
+
+"area/docker":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "docker/**/*"
+          - "docker-compose.yml"
+          - "**/Dockerfile*"
+
+"area/ci":
+  - changed-files:
+      - any-glob-to-any-file: ".github/**/*"
+
+"area/docs":
+  - changed-files:
+      - any-glob-to-any-file:
+          - "**/*.md"
+          - "**/docs/**/*"
+          - "**/openapi.json"

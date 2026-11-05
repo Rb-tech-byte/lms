@@ -102,7 +102,15 @@ const CourseDetails: React.FC = () => {
   const [allCourses, setAllCourses] = useState<PublicCatalogCourse[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [expandedSections, setExpandedSections] = useState<Record<number, boolean>>({});
-  const [activeTab, setActiveTab] = useState<'syllabus' | 'labs' | 'tracking' | 'overview' | 'lecturer'>('syllabus');
+  const initialTabParam = searchParams.get('tab');
+  const validInitialTab =
+    initialTabParam === 'labs' ||
+    initialTabParam === 'tracking' ||
+    initialTabParam === 'overview' ||
+    initialTabParam === 'lecturer'
+      ? initialTabParam
+      : 'syllabus';
+  const [activeTab, setActiveTab] = useState<'syllabus' | 'labs' | 'tracking' | 'overview' | 'lecturer'>(validInitialTab);
   const [activitySearch, setActivitySearch] = useState<string>('');
   const [activityTypeFilter, setActivityTypeFilter] = useState<string>('all');
   const [feedback, setFeedback] = useState<{ type: 'success' | 'danger'; message: string } | null>(null);
@@ -139,6 +147,16 @@ const CourseDetails: React.FC = () => {
     const paramId = Number(searchParams.get('id') || searchParams.get('course_id') || 0);
     if (paramId > 1 && paramId !== courseId) {
       setCourseId(paramId);
+    }
+    const tabParam = searchParams.get('tab');
+    if (
+      tabParam === 'syllabus' ||
+      tabParam === 'labs' ||
+      tabParam === 'tracking' ||
+      tabParam === 'overview' ||
+      tabParam === 'lecturer'
+    ) {
+      setActiveTab(tabParam);
     }
   }, [searchParams, courseId]);
 
@@ -1105,7 +1123,7 @@ const CourseDetails: React.FC = () => {
                                     className="mb-0 small"
                                     style={{
                                       fontSize: '0.75rem',
-                                      opacity: 0.85,
+                                      color: isOpen ? 'rgba(255, 255, 255, 0.92)' : '#475569',
                                       display: '-webkit-box',
                                       WebkitLineClamp: 2,
                                       WebkitBoxOrient: 'vertical',

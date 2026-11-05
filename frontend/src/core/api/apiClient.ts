@@ -29,10 +29,10 @@ export const getDynamicMoodleUrl = (): string => {
     if (window.__OUT_LMS_CONFIG__?.moodleUrl) {
       return window.__OUT_LMS_CONFIG__.moodleUrl.replace(/\/+$/, '');
     }
-    const { protocol, hostname, host, port, pathname } = window.location;
-    // When running on dev/SPA port 3000, connect directly to WAMP Apache backend on the same host
+    const { protocol, host, port, pathname } = window.location;
+    // When running on dev/SPA port 3000, route through the local gateway reverse proxy (/moodle-backend)
     if (port === '3000') {
-      return `${protocol}//${hostname}/outlmstheme/moodle-backend`;
+      return `${protocol}//${host}/moodle-backend`;
     }
     const pathParts = pathname.split('/').filter(Boolean);
     const knownAppRoutes = [

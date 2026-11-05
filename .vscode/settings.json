@@ -1,0 +1,10 @@
+{
+  "githubPullRequests.remotes": [
+    "origin"
+  ],
+  "githubPullRequests.defaultRemote": "origin",
+  "githubPullRequests.allowFetch": false,
+  "git.defaultBranch": "main",
+  "git.pushForce": false,
+  "git.confirmSync": false
+}

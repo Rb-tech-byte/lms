@@ -80,7 +80,7 @@
     },
     {
       "name": "Moodle Core Web Services",
-      "description": "Standard Moodle REST web services protocol (`/webservice/rest/server.php`)."
+      "description": "Adaptive Moodle web services supporting discrete RESTful protocol (`/webservice/restful/server.php/{function}` with Bearer token) and standard RPC protocol (`/webservice/rest/server.php`)."
     }
   ],
   "paths": {

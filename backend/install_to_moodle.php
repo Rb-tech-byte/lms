@@ -84,6 +84,7 @@ $mappings = [
     'course/format/onetopic'  => 'course/format/onetopic',
     'course/format/topcoll'   => 'course/format/topcoll',
     'question/type/coderunner'=> 'question/type/coderunner',
+    'webservice/restful'      => 'webservice/restful',
 ];
 
 foreach ($mappings as $srcSub => $dstSub) {

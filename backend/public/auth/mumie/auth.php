@@ -28,3 +28,4 @@ class auth_plugin_mumie extends auth_plugin_base {
         return false;
     }
 }
+

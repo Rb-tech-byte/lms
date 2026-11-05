@@ -28,3 +28,4 @@ class auth_plugin_magic extends auth_plugin_base {
         return false;
     }
 }
+

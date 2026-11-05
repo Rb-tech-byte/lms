@@ -4468,17 +4468,6 @@ try {
             $enabledAuths = array_filter(explode(',', get_config('core', 'auth') ?: ''));
             $enabledMedia = array_filter(explode(',', get_config('core', 'media_plugins_sortorder') ?: ''));
 
-            // Load human-friendly titles from mdl_out_system_features so custom capabilities show rich enterprise names
-            $featureTitles = [];
-            try {
-                if ($DB->get_manager()->table_exists('out_system_features')) {
-                    $fRows = $DB->get_records('out_system_features', null, '', 'component, title');
-                    foreach ($fRows as $fr) {
-                        $featureTitles[$fr->component] = $fr->title;
-                    }
-                }
-            } catch (\Throwable $e) {}
-
             $result = [];
             $totalPluginsCount = 0;
             $totalEnabledCount = 0;
@@ -4516,17 +4505,12 @@ try {
                         $totalEnabledCount++;
                     }
 
-                    $cleanDisplayName = $featureTitles[$comp] ?? ($info->displayname ?: $comp);
-                    if (strpos($cleanDisplayName, '[[') !== false) {
-                        $cleanDisplayName = ucwords(str_replace(['_', '-'], ' ', $name)) . ' (' . $typeTitle . ')';
-                    }
-
                     $list[] = [
                         'component' => $comp,
                         'name' => $name,
                         'type' => $type,
                         'typeTitle' => $typeTitle,
-                        'displayname' => $cleanDisplayName,
+                        'displayname' => $info->displayname ?: $comp,
                         'version' => $info->versiondisk ?: '2026110500',
                         'release' => $info->release ?? '5.3 LTS',
                         'enabled' => $isEnabled,

@@ -143,6 +143,32 @@ const server = http.createServer(async (req, res) => {
     return proxyRequestToBackend(req, res, fullTarget);
   }
 
+  // API Documentation Portal (Stoplight Elements)
+  if (urlPath === '/docs' || urlPath === '/docs/' || urlPath === '/api-docs' || urlPath === '/api-docs/') {
+    const docsFile = fs.existsSync(path.join(BUILD_DIR, 'docs', 'index.html'))
+      ? path.join(BUILD_DIR, 'docs', 'index.html')
+      : path.join(PUBLIC_DIR, 'docs', 'index.html');
+    if (fs.existsSync(docsFile)) {
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=UTF-8' });
+      fs.createReadStream(docsFile).pipe(res);
+      return;
+    }
+  }
+
+  if (urlPath === '/openapi.json') {
+    const specFile = fs.existsSync(path.join(BUILD_DIR, 'openapi.json'))
+      ? path.join(BUILD_DIR, 'openapi.json')
+      : path.join(PUBLIC_DIR, 'openapi.json');
+    if (fs.existsSync(specFile)) {
+      res.writeHead(200, {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Access-Control-Allow-Origin': '*'
+      });
+      fs.createReadStream(specFile).pipe(res);
+      return;
+    }
+  }
+
   const ext = path.extname(urlPath).toLowerCase();
   const isAssetRequest = ASSET_EXTENSIONS.has(ext) || urlPath.startsWith('/assets/') || urlPath.startsWith('/static/');
 

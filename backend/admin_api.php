@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$rawAction = $_GET['action'] ?? $input['action'] ?? 'get_settings';
+$rawAction = $_GET['action'] ?? $input['action'] ?? (!empty($_SERVER['PATH_INFO']) ? trim($_SERVER['PATH_INFO'], '/') : 'get_settings');
 $action = strtok(trim($rawAction), '?&');
 
 // -----------------------------------------------------------------------------
@@ -174,9 +174,18 @@ if (in_array($action, [
     'register_user', 'request_password_reset', 'public_catalog', 'public_course_details',
     'public_instructors', 'submit_contact_inquiry', 'submit_instructor_application', 'get_cms_config',
     'get_short_courses_catalog', 'verify_certificate', 'get_certificate', 'get_learner_xp',
-    'get_leaderboard', 'get_live_sessions', 'get_completion_timeline', 'manage_corporate_cohort'
+    'get_leaderboard', 'get_live_sessions', 'get_completion_timeline', 'manage_corporate_cohort', 'openapi'
 ], true)) {
     try {
+        if ($action === 'openapi') {
+            $specFile = __DIR__ . '/openapi.json';
+            if (file_exists($specFile)) {
+                header('Content-Type: application/json; charset=utf-8');
+                readfile($specFile);
+                exit(0);
+            }
+            throw new \RuntimeException("OpenAPI specification file not found.");
+        }
         if ($action === 'register_user') {
             $email = strtolower(trim($input['email'] ?? ''));
             $username = strtolower(trim($input['username'] ?? ''));

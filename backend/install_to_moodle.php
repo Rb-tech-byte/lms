@@ -46,7 +46,10 @@ if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'instructor_storage.php')) {
 if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'instructor_storage.json')) {
     copy(__DIR__ . DIRECTORY_SEPARATOR . 'instructor_storage.json', $targetMoodle . DIRECTORY_SEPARATOR . 'instructor_storage.json');
 }
-echo "[OK] Installed admin_api.php, sso.php, and instructor_storage files\n";
+if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'openapi.json')) {
+    copy(__DIR__ . DIRECTORY_SEPARATOR . 'openapi.json', $targetMoodle . DIRECTORY_SEPARATOR . 'openapi.json');
+}
+echo "[OK] Installed admin_api.php, sso.php, instructor_storage, and openapi.json\n";
 
 // Also copy to public/ if Moodle 5.x router structure exists
 if (is_dir($targetMoodle . DIRECTORY_SEPARATOR . 'public')) {
@@ -58,7 +61,10 @@ if (is_dir($targetMoodle . DIRECTORY_SEPARATOR . 'public')) {
     if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'instructor_storage.json')) {
         copy(__DIR__ . DIRECTORY_SEPARATOR . 'instructor_storage.json', $targetMoodle . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'instructor_storage.json');
     }
-    echo "[OK] Installed admin_api.php, sso.php, and instructor_storage files to public/ webroot\n";
+    if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'openapi.json')) {
+        copy(__DIR__ . DIRECTORY_SEPARATOR . 'openapi.json', $targetMoodle . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'openapi.json');
+    }
+    echo "[OK] Installed admin_api.php, sso.php, instructor_storage, and openapi.json to public/ webroot\n";
 }
 
 // 2. Overlay plugins into Moodle directory structure

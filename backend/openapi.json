@@ -1,0 +1,676 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "OUT LMS \u2014 The Open University of Tanzania REST API",
+    "summary": "Official Academic & Administrative Web Services Engine",
+    "description": "### \ud83c\udfdb\ufe0f The Open University of Tanzania (Chuo Kikuu Huria cha Tanzania)\n**TCU & SARIS Accredited National Distance & Blended Learning Ecosystem**\n\nThis API documentation serves as the central reference for the OUT LMS headless REST API engine, bridging **Moodle 5.x core**, **MariaDB academic tables**, and **Pesapal 3.0** payment services with modern reactive client applications.\n\n#### \ud83d\ude80 Key Features:\n- **100% Dynamic Real Data**: Real-time queries against course catalogs, enrollments, and academic transcripts.\n- **National & International Payments**: Integrated Pesapal 3.0 for Tanzanian Mobile Money (M-Pesa, Airtel Money, Tigo Pesa, HaloPesa) and international credit/debit cards.\n- **Verifiable Credentials**: Instant SARIS & TCU accredited certificate verification.\n- **Secure Role-Based Access**: Multi-tier authentication for Scholars, Instructors, Faculty Deans, and Super Administrators.\n",
+    "version": "1.0.0",
+    "contact": {
+      "name": "OUT Directorate of Information & Communication Technology (DICT)",
+      "url": "https://www.out.ac.tz",
+      "email": "dict@out.ac.tz"
+    },
+    "license": {
+      "name": "Proprietary & Confidential \u2014 Open University of Tanzania",
+      "url": "https://www.out.ac.tz/policies"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Frontend Application & API Reverse Proxy (Port 3000)"
+    },
+    {
+      "url": "http://localhost:8080",
+      "description": "Direct Moodle Core Apache Server (Port 8080)"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Public Catalog",
+      "description": "Publicly accessible endpoints for academic course discovery, faculties, short courses, and MOOCs."
+    },
+    {
+      "name": "Course Details & Syllabus",
+      "description": "In-depth syllabus, learning activity modules, instructor profiles, and fees."
+    },
+    {
+      "name": "Payments & Checkout",
+      "description": "Pesapal 3.0 payment gateway integration, order creation, IPN status checks, and enrollment fees."
+    },
+    {
+      "name": "Digital Credentials",
+      "description": "Verification and issuance of tamper-proof TCU & SARIS accredited certificates."
+    },
+    {
+      "name": "Authentication & Scholars",
+      "description": "Scholar self-registration, Single Sign-On (SSO), and account management."
+    },
+    {
+      "name": "Instructor Console",
+      "description": "Faculty management endpoints for assignments, submissions, grading rubrics, and announcements."
+    },
+    {
+      "name": "System Administration",
+      "description": "Platform settings, cache purge, Moodle diagnostics, and user telemetry."
+    }
+  ],
+  "paths": {
+    "/admin_api.php?action=public_catalog": {
+      "get": {
+        "tags": [
+          "Public Catalog"
+        ],
+        "summary": "Retrieve Public Course Catalog",
+        "description": "Queries live Moodle database tables to return the complete catalog of published academic degree courses, professional short courses (PSC), and MOOCs, complete with dynamic fee structures, real faculty instructor profiles, enrollment counts, and themed SVG covers.",
+        "operationId": "getPublicCatalog",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "public_catalog",
+              "enum": [
+                "public_catalog"
+              ]
+            },
+            "description": "API action identifier."
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Optional category ID filter (e.g. 6 for IEMT Short Courses, 7 for MOOCs)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Course catalog retrieved successfully with all active courses and categories.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/PublicCatalogResponse"
+                },
+                "example": {
+                  "success": true,
+                  "courses": [
+                    {
+                      "id": 7,
+                      "fullname": "Cybersecurity & Network Defense Fundamentals",
+                      "shortname": "PSC-CYBER",
+                      "summary": "Comprehensive enterprise cybersecurity short course covering perimeter defense, threat detection, vulnerability analysis, and incident response.",
+                      "categoryid": 6,
+                      "categoryName": "IEMT Professional Short Courses",
+                      "categoryCode": "IEMT-PSC",
+                      "programType": "short_course",
+                      "isPSC": true,
+                      "isMOOC": false,
+                      "tuitionFee": 220000,
+                      "feeEnrolId": 63,
+                      "priceFormatted": "TZS 220,000",
+                      "tuitionFeeUSD": 85,
+                      "priceUSDFormatted": "",
+                      "duration": "6 Weeks",
+                      "cpdCredits": 20,
+                      "deliveryMode": "100% Online (Self-Paced + Live Webinars)",
+                      "difficultyLevel": "Foundational",
+                      "sectionsCount": 4,
+                      "modulesCount": 8,
+                      "enrolledCount": 18,
+                      "instructorName": "Dr. Emmanuel Michael",
+                      "instructorAvatar": "/assets/img/user/user-01.jpg",
+                      "instructor": {
+                        "id": 5,
+                        "fullname": "Dr. Emmanuel Michael",
+                        "role": "Director, IEMT & Senior Lecturer in Cybersecurity",
+                        "department": "IEMT Cybersecurity & Networking",
+                        "email": "emmanuel.michael@out.ac.tz",
+                        "avatar": "/assets/img/user/user-01.jpg"
+                      },
+                      "courseImage": "/assets/img/course/thumbnails/course-7-psc-cyber.svg?v=2",
+                      "accentColor": "#dc2626",
+                      "badgeText": "Professional Short Course",
+                      "rating": "4.9",
+                      "reviewsCount": 77,
+                      "hasCertificate": true,
+                      "hasLiveClassroom": true,
+                      "accreditation": "SARIS & TCU Verified \u2022 IEMT Certified"
+                    }
+                  ],
+                  "categories": [
+                    {
+                      "id": 6,
+                      "name": "IEMT Professional Short Courses",
+                      "idnumber": "IEMT-PSC",
+                      "coursecount": 7
+                    }
+                  ],
+                  "stats": {
+                    "totalCourses": 19,
+                    "totalStudents": 452,
+                    "totalInstructors": 12
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=public_course_details": {
+      "get": {
+        "tags": [
+          "Course Details & Syllabus"
+        ],
+        "summary": "Retrieve Single Course Details & Modules",
+        "description": "Returns detailed course syllabus, curriculum sections, learning activity items (quizzes, assignments, SCORM packages), teacher bio, and fee payment details for a specific course ID.",
+        "operationId": "getPublicCourseDetails",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "public_course_details"
+            }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Moodle Course primary key ID (e.g. 7 or 12)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detailed course information returned successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "course": {
+                      "": "#/components/schemas/CourseDetail"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=public_instructors": {
+      "get": {
+        "tags": [
+          "Public Catalog"
+        ],
+        "summary": "List University Instructors & Faculty Directors",
+        "description": "Fetches all registered academic lecturers, department heads, and course directors with their faculty affiliation, active courses, and bios.",
+        "operationId": "getPublicInstructors",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "public_instructors"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Instructors list returned successfully."
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=verify_certificate": {
+      "get": {
+        "tags": [
+          "Digital Credentials"
+        ],
+        "summary": "Verify TCU & SARIS Accredited Certificate",
+        "description": "Validates a digital certificate by its serial number or QR code verification hash, confirming scholar identity, completion date, course grade, and official accreditation.",
+        "operationId": "verifyCertificate",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "verify_certificate"
+            }
+          },
+          {
+            "name": "code",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique certificate code (e.g. OUT-CERT-2026-CS101-7890)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Certificate verification result."
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=paygw_pesapal_create_order": {
+      "post": {
+        "tags": [
+          "Payments & Checkout"
+        ],
+        "summary": "Initiate Pesapal 3.0 Payment Order",
+        "description": "Generates a secure Pesapal 3.0 transaction tracking reference for course enrolment. Supports Tanzanian Mobile Money (M-Pesa, Tigo Pesa, Airtel Money, HaloPesa) and international Visa/Mastercard.",
+        "operationId": "createPesapalOrder",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "paygw_pesapal_create_order"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "": "#/components/schemas/PesapalOrderRequest"
+              },
+              "example": {
+                "courseid": 12,
+                "enrolid": 68,
+                "amount": 220000,
+                "currency": "TZS",
+                "email": "scholar@out.ac.tz",
+                "phonenumber": "+255712345678",
+                "firstname": "Amani",
+                "lastname": "Bakari"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Pesapal order initialized with payment redirect URL.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "order_tracking_id": {
+                      "type": "string"
+                    },
+                    "merchant_reference": {
+                      "type": "string"
+                    },
+                    "redirect_url": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=register_user": {
+      "post": {
+        "tags": [
+          "Authentication & Scholars"
+        ],
+        "summary": "Student Self-Service Registration",
+        "description": "Creates a new student account in Moodle core with automatic student role assignment, faculty department allocation, and welcome notification.",
+        "operationId": "registerUser",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "register_user"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "password",
+                  "firstname",
+                  "lastname"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 6
+                  },
+                  "firstname": {
+                    "type": "string"
+                  },
+                  "lastname": {
+                    "type": "string"
+                  },
+                  "phone": {
+                    "type": "string"
+                  },
+                  "department": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User successfully registered."
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=get_cms_config": {
+      "get": {
+        "tags": [
+          "System Administration"
+        ],
+        "summary": "Get University CMS Branding & Config",
+        "description": "Retrieves homepage hero headings, announcement banners, contact numbers, and social links dynamically stored in Moodle config tables.",
+        "operationId": "getCmsConfig",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "get_cms_config"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "CMS configuration payload returned."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "PublicCatalogResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "courses": {
+            "type": "array",
+            "items": {
+              "": "#/components/schemas/CourseSummary"
+            }
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "": "#/components/schemas/CategorySummary"
+            }
+          },
+          "stats": {
+            "type": "object",
+            "properties": {
+              "totalCourses": {
+                "type": "integer"
+              },
+              "totalStudents": {
+                "type": "integer"
+              },
+              "totalInstructors": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      },
+      "CourseSummary": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Moodle Course ID"
+          },
+          "fullname": {
+            "type": "string",
+            "description": "Official course title"
+          },
+          "shortname": {
+            "type": "string",
+            "description": "Course discipline code"
+          },
+          "summary": {
+            "type": "string",
+            "description": "Course description overview"
+          },
+          "categoryid": {
+            "type": "integer"
+          },
+          "categoryName": {
+            "type": "string"
+          },
+          "categoryCode": {
+            "type": "string"
+          },
+          "programType": {
+            "type": "string",
+            "enum": [
+              "academic",
+              "short_course",
+              "mooc"
+            ]
+          },
+          "isPSC": {
+            "type": "boolean"
+          },
+          "isMOOC": {
+            "type": "boolean"
+          },
+          "tuitionFee": {
+            "type": "number",
+            "description": "Fee amount in TZS"
+          },
+          "feeEnrolId": {
+            "type": "integer",
+            "description": "Moodle enrol table fee instance ID"
+          },
+          "priceFormatted": {
+            "type": "string",
+            "example": "TZS 220,000"
+          },
+          "tuitionFeeUSD": {
+            "type": "number"
+          },
+          "priceUSDFormatted": {
+            "type": "string"
+          },
+          "duration": {
+            "type": "string",
+            "example": "6 Weeks"
+          },
+          "cpdCredits": {
+            "type": "integer",
+            "example": 20
+          },
+          "deliveryMode": {
+            "type": "string"
+          },
+          "difficultyLevel": {
+            "type": "string"
+          },
+          "sectionsCount": {
+            "type": "integer"
+          },
+          "modulesCount": {
+            "type": "integer"
+          },
+          "enrolledCount": {
+            "type": "integer"
+          },
+          "instructorName": {
+            "type": "string"
+          },
+          "instructorAvatar": {
+            "type": "string"
+          },
+          "courseImage": {
+            "type": "string"
+          },
+          "accentColor": {
+            "type": "string",
+            "example": "#dc2626"
+          },
+          "badgeText": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "string",
+            "example": "4.9"
+          },
+          "reviewsCount": {
+            "type": "integer"
+          },
+          "hasCertificate": {
+            "type": "boolean"
+          },
+          "accreditation": {
+            "type": "string"
+          }
+        }
+      },
+      "CategorySummary": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "idnumber": {
+            "type": "string"
+          },
+          "coursecount": {
+            "type": "integer"
+          }
+        }
+      },
+      "CourseDetail": {
+        "allOf": [
+          {
+            "": "#/components/schemas/CourseSummary"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "curriculum": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "sectionId": {
+                      "type": "integer"
+                    },
+                    "sectionName": {
+                      "type": "string"
+                    },
+                    "summary": {
+                      "type": "string"
+                    },
+                    "activitiesCount": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "PesapalOrderRequest": {
+        "type": "object",
+        "required": [
+          "amount",
+          "currency",
+          "email",
+          "phonenumber"
+        ],
+        "properties": {
+          "courseid": {
+            "type": "integer"
+          },
+          "enrolid": {
+            "type": "integer"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string",
+            "default": "TZS",
+            "enum": [
+              "TZS",
+              "USD"
+            ]
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "phonenumber": {
+            "type": "string"
+          },
+          "firstname": {
+            "type": "string"
+          },
+          "lastname": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

@@ -95,6 +95,7 @@ $mappings = [
     'course/format/tiles'     => 'course/format/tiles',
     'course/format/onetopic'  => 'course/format/onetopic',
     'course/format/topcoll'   => 'course/format/topcoll',
+    'course/format/kickstart' => 'course/format/kickstart',
     'question/type/coderunner'=> 'question/type/coderunner',
     'webservice/restful'      => 'webservice/restful',
 ];

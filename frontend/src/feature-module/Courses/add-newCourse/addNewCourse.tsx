@@ -185,9 +185,19 @@ const AddNewCourse: React.FC = () => {
                         onChange={(e) => setFormat(e.target.value)}
                       >
                         <option value="topics">Custom Sections / Topics Format</option>
+                        <option value="kickstart">🚀 Kickstart Course Wizard & Templates</option>
+                        <option value="tiles">🎨 Tiles Visual Cards Grid</option>
+                        <option value="onetopic">📑 OneTopic Horizontal Tabs</option>
+                        <option value="topcoll">📂 Collapsed Topics Accordion</option>
                         <option value="weeks">Weekly Academic Schedule Format</option>
                         <option value="singleactivity">Single Activity Assessment Format</option>
                       </select>
+                      {format === 'kickstart' && (
+                        <div className="form-text text-primary mt-1" style={{ fontSize: '0.8rem' }}>
+                          <i className="feather-info me-1"></i>
+                          Kickstart will present course structure templates and an onboarding wizard on first launch.
+                        </div>
+                      )}
                     </div>
 
                     <div className="col-md-2">

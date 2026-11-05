@@ -32,7 +32,7 @@
   "tags": [
     {
       "name": "OUT LMS Core System Features & Functional Capabilities",
-      "description": "Enterprise system features and native functional modules of the Open University of Tanzania (OUT) LMS: Adaptive Curriculum Layout Engine (Visual Tiles, Tabbed Units, Collapsible Accordions), OUT Cloud Virtual Lab IDE, Automated Algorithmic & Unit-Test Grader, SARIS Biometric & Rotating QR Digital Attendance System, Milestone Completion Telemetry, Academic Merit & XP Engine, TCU & SARIS Verifiable Digital Credential Engine, and Intelligent Scholar Retention Automation."
+      "description": "Enterprise system features and native functional modules of the Open University of Tanzania (OUT) LMS: Adaptive Curriculum Layout Engine (Visual Tiles, Tabbed Units, Collapsible Accordions, Kickstart Template Wizard), OUT Cloud Virtual Lab IDE, Automated Algorithmic & Unit-Test Grader, SARIS Biometric & Rotating QR Digital Attendance System, Milestone Completion Telemetry, Academic Merit & XP Engine, TCU & SARIS Verifiable Digital Credential Engine, and Intelligent Scholar Retention Automation."
     },
     {
       "name": "Public Academic Catalog",
@@ -2238,6 +2238,61 @@
         ]
       }
     },
+    "/webservice/restful/server.php/format_kickstart_import_template": {
+      "post": {
+        "tags": [
+          "Moodle Core Web Services",
+          "Moodle Marketplace Plugins (GET & POST)"
+        ],
+        "summary": "Kickstart WS: Import Course Template (format_kickstart_import_template)",
+        "description": "Applies an institutional course backup or structure template to a specified course via Kickstart format engine.",
+        "operationId": "wsFormatKickstartImportTemplate",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "templateid",
+                  "courseid"
+                ],
+                "properties": {
+                  "templateid": {
+                    "type": "integer",
+                    "description": "Kickstart Template ID",
+                    "example": 1
+                  },
+                  "courseid": {
+                    "type": "integer",
+                    "description": "Target Moodle Course ID",
+                    "example": 7
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Template imported successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "boolean",
+                  "example": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/webservice/rest/server.php?wsfunction=core_course_get_contents": {
       "post": {
         "tags": [
@@ -2740,8 +2795,8 @@
         "tags": [
           "OUT LMS Core System Features & Functional Capabilities"
         ],
-        "summary": "Get Adaptive Curriculum Layout Modes (Tiles, Tabbed Units, Accordions) (GET)",
-        "description": "Retrieves the active curriculum layout configuration for a programme and lists all supported adaptive display modes (Visual Tiles Grid, Horizontal Unit Tabs, Compact Collapsible Topics, Sequential Syllabus).",
+        "summary": "Get Adaptive Curriculum Layout Modes (Tiles, Tabbed Units, Accordions, Kickstart Wizard) (GET)",
+        "description": "Retrieves the active curriculum layout configuration for a programme and lists all supported adaptive display modes (Visual Tiles Grid, Horizontal Unit Tabs, Compact Collapsible Topics, Kickstart Template Wizard, Sequential Syllabus).",
         "operationId": "get_get_course_formats",
         "parameters": [
           {
@@ -2780,8 +2835,8 @@
         "tags": [
           "OUT LMS Core System Features & Functional Capabilities"
         ],
-        "summary": "Get Adaptive Curriculum Layout Modes (Tiles, Tabbed Units, Accordions) (POST)",
-        "description": "Retrieves the active curriculum layout configuration for a programme and lists all supported adaptive display modes (Visual Tiles Grid, Horizontal Unit Tabs, Compact Collapsible Topics, Sequential Syllabus).",
+        "summary": "Get Adaptive Curriculum Layout Modes (Tiles, Tabbed Units, Accordions, Kickstart Wizard) (POST)",
+        "description": "Retrieves the active curriculum layout configuration for a programme and lists all supported adaptive display modes (Visual Tiles Grid, Horizontal Unit Tabs, Compact Collapsible Topics, Kickstart Template Wizard, Sequential Syllabus).",
         "operationId": "post_get_course_formats",
         "parameters": [
           {

@@ -2637,6 +2637,7 @@ if ($isInstructorAction || in_array($action, ['resolve_identity', 'change_passwo
                 ['feature_code' => 'ADAPTIVE_TILES_ENGINE', 'component' => 'format_tiles', 'type' => 'layout', 'name' => 'Visual Tiles Curriculum Layout Engine', 'category' => 'Adaptive Curriculum UX', 'get_endpoint' => 'get_course_formats', 'post_endpoint' => 'update_course_format', 'description' => 'Renders programme units as interactive visual cards with radial progress indicators and instant activity launchers.'],
                 ['feature_code' => 'ONETOPIC_TAB_ENGINE', 'component' => 'format_onetopic', 'type' => 'layout', 'name' => 'Horizontal Tabbed Unit Navigation Engine', 'category' => 'Adaptive Curriculum UX', 'get_endpoint' => 'get_course_formats', 'post_endpoint' => 'update_course_format', 'description' => 'Organizes study units into single-click horizontal workspace tabs to eliminate long-page scrolling.'],
                 ['feature_code' => 'COMPACT_ACCORDION_ENGINE', 'component' => 'format_topcoll', 'type' => 'layout', 'name' => 'High-Density Collapsible Syllabus Engine', 'category' => 'Adaptive Curriculum UX', 'get_endpoint' => 'get_course_formats', 'post_endpoint' => 'update_course_format', 'description' => 'Provides collapsible unit accordions with bulk expand/collapse controls and live activity counters.'],
+                ['feature_code' => 'KICKSTART_COURSE_WIZARD', 'component' => 'format_kickstart', 'type' => 'layout', 'name' => 'Kickstart Course Wizard & Template Engine', 'category' => 'Adaptive Curriculum UX', 'get_endpoint' => 'get_course_formats', 'post_endpoint' => 'update_course_format', 'description' => 'Solves the empty course problem by guiding educators through pre-configured faculty templates and displaying reassuring placeholder pages for enrolled scholars.'],
                 ['feature_code' => 'AUTOMATED_CODE_GRADER', 'component' => 'qtype_coderunner', 'type' => 'assessment', 'name' => 'Automated Algorithmic & Unit-Test Grading Engine', 'category' => 'Cloud Labs & Auto-Grading', 'get_endpoint' => 'get_coderunner_questions', 'post_endpoint' => 'evaluate_coderunner', 'description' => 'Executes scholar code submissions against multi-case unit assertions with real-time expected vs. actual output matrices.'],
                 ['feature_code' => 'CLOUD_VIRTUAL_LAB_IDE', 'component' => 'mod_vpl', 'type' => 'lab', 'name' => 'OUT Cloud Virtual Programming Lab & Sandbox IDE', 'category' => 'Cloud Labs & Auto-Grading', 'get_endpoint' => 'get_vpl_labs', 'post_endpoint' => 'submit_vpl_code', 'description' => 'Browser-based multi-language IDE (Python, Node.js, SQL, PHP) with sandboxed compilation and automated rubric scoring.'],
                 ['feature_code' => 'SARIS_QR_ATTENDANCE', 'component' => 'mod_attendance', 'type' => 'telemetry', 'name' => 'SARIS Digital Attendance & Rotating QR Check-In System', 'category' => 'Scholar Telemetry & Governance', 'get_endpoint' => 'get_attendance', 'post_endpoint' => 'record_attendance', 'description' => 'Tracks live seminar participation with rotating QR passkeys, self-check-in verification, and automated attendance grading.'],
@@ -2743,6 +2744,15 @@ if ($isInstructorAction || in_array($action, ['resolve_identity', 'change_passwo
                     'icon' => 'isax-row-vertical',
                     'accentColor' => '#10b981',
                     'description' => 'High-density collapsible topic toggles with expand-all/collapse-all controls and unit completion counters.',
+                ],
+                [
+                    'id' => 'kickstart',
+                    'component' => 'format_kickstart',
+                    'name' => 'Kickstart Course Wizard & Templates',
+                    'badge' => 'Course Templates',
+                    'icon' => 'isax-magicpen',
+                    'accentColor' => '#8b5cf6',
+                    'description' => 'Template-driven course onboarding engine allowing educators to populate courses instantly from institutionally approved backup templates with zero blank-page friction.',
                 ],
                 [
                     'id' => 'topics',

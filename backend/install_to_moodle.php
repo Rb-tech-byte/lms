@@ -40,13 +40,25 @@ function copyFolder(string $src, string $dst): void {
 // 1. Copy core entry APIs
 copy(__DIR__ . DIRECTORY_SEPARATOR . 'admin_api.php', $targetMoodle . DIRECTORY_SEPARATOR . 'admin_api.php');
 copy(__DIR__ . DIRECTORY_SEPARATOR . 'sso.php', $targetMoodle . DIRECTORY_SEPARATOR . 'sso.php');
-echo "[OK] Installed admin_api.php and sso.php\n";
+if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'instructor_storage.php')) {
+    copy(__DIR__ . DIRECTORY_SEPARATOR . 'instructor_storage.php', $targetMoodle . DIRECTORY_SEPARATOR . 'instructor_storage.php');
+}
+if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'instructor_storage.json')) {
+    copy(__DIR__ . DIRECTORY_SEPARATOR . 'instructor_storage.json', $targetMoodle . DIRECTORY_SEPARATOR . 'instructor_storage.json');
+}
+echo "[OK] Installed admin_api.php, sso.php, and instructor_storage files\n";
 
 // Also copy to public/ if Moodle 5.x router structure exists
 if (is_dir($targetMoodle . DIRECTORY_SEPARATOR . 'public')) {
     copy(__DIR__ . DIRECTORY_SEPARATOR . 'admin_api.php', $targetMoodle . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'admin_api.php');
     copy(__DIR__ . DIRECTORY_SEPARATOR . 'sso.php', $targetMoodle . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'sso.php');
-    echo "[OK] Installed admin_api.php and sso.php to public/ webroot\n";
+    if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'instructor_storage.php')) {
+        copy(__DIR__ . DIRECTORY_SEPARATOR . 'instructor_storage.php', $targetMoodle . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'instructor_storage.php');
+    }
+    if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'instructor_storage.json')) {
+        copy(__DIR__ . DIRECTORY_SEPARATOR . 'instructor_storage.json', $targetMoodle . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR . 'instructor_storage.json');
+    }
+    echo "[OK] Installed admin_api.php, sso.php, and instructor_storage files to public/ webroot\n";
 }
 
 // 2. Overlay plugins into Moodle directory structure

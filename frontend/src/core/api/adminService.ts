@@ -123,7 +123,8 @@ export const getAdminToken = (): string => {
       return (window as any).__OUT_LMS_CONFIG__.token;
     }
   }
-  return process.env.REACT_APP_MOODLE_TOKEN || 'cac3488049fb0d8247867a568bea7c79';
+  // No fallback: admin operations require a token issued at login.
+  return '';
 };
 
 export const adminService = {

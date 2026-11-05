@@ -50,12 +50,20 @@ $CFG->dboptions = [
 ];
 
 // -----------------------------------------------------------------------------
-// Dynamic URL (wwwroot) Resolution
+// Dynamic URL (wwwroot) & SSL Proxy Resolution
 // -----------------------------------------------------------------------------
+$CFG->reverseproxy = false;
 if (isset($_SERVER['HTTP_HOST'])) {
     $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-        || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
-        || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443);
+        || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https')
+        || (isset($_SERVER['SERVER_PORT']) && (int)$_SERVER['SERVER_PORT'] === 443);
+    if ($isHttps) {
+        $CFG->sslproxy = true;
+        $_SERVER['HTTPS'] = 'on';
+        $_SERVER['SERVER_PORT'] = 443;
+    } else {
+        $CFG->sslproxy = false;
+    }
     $protocol = $isHttps ? 'https://' : 'http://';
     $host = $_SERVER['HTTP_HOST'];
     $CFG->wwwroot = rtrim("{$protocol}{$host}", '/');

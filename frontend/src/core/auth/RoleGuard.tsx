@@ -17,11 +17,6 @@ export const RoleGuard: React.FC<RoleGuardProps> = ({ allowedRoles, children }) 
   const { isAuthenticated, role, user } = useAuth();
   const location = useLocation();
 
-  // Headless Zero-Login Admin & API Governance Mode: allow direct access to Admin Console & API Studio
-  if (allowedRoles.includes('admin') || location.pathname.startsWith('/admin')) {
-    return children;
-  }
-
   // 1. If not authenticated, redirect directly to Login with return URL
   if (!isAuthenticated || !user) {
     return <Navigate to={all_routes.login} state={{ from: location }} replace />;
@@ -34,8 +29,8 @@ export const RoleGuard: React.FC<RoleGuardProps> = ({ allowedRoles, children }) 
       role === 'admin'
         ? all_routes.adminDashboard
         : role === 'instructor'
-        ? all_routes.instructorDashboard
-        : all_routes.studentDashboard;
+          ? all_routes.instructorDashboard
+          : all_routes.studentDashboard;
 
     return <Navigate to={fallbackDashboard} replace />;
   }

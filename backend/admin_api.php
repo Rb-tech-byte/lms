@@ -171,6 +171,60 @@ function get_outlms_course_thumbnail(int $courseId, string $shortname = '', arra
 }
 
 // -----------------------------------------------------------------------------
+// Security helpers
+// -----------------------------------------------------------------------------
+function outlms_deny(int $code, string $message): void {
+    http_response_code($code);
+    echo json_encode(['success' => false, 'error' => $message, 'code' => $code]);
+    exit(1);
+}
+
+function outlms_request_token(array $input): string {
+    $headers = function_exists('getallheaders') ? getallheaders() : [];
+    $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION']
+        ?? $headers['Authorization'] ?? $headers['authorization'] ?? '';
+    if ($authHeader && preg_match('/Bearer\s+(\S+)/i', $authHeader, $m)) {
+        return trim($m[1]);
+    }
+    return trim((string)($_GET['token'] ?? $_POST['token'] ?? $input['token'] ?? ''));
+}
+
+/** Resolves a token strictly against mdl_external_tokens (no hardcoded or fallback tokens). */
+function outlms_resolve_token_user(string $token) {
+    global $DB;
+    if ($token === '' || !preg_match('/^[a-zA-Z0-9]{16,64}$/', $token)) {
+        return null;
+    }
+    $rec = $DB->get_record('external_tokens', ['token' => $token]);
+    if (!$rec || (!empty($rec->validuntil) && (int)$rec->validuntil < time())) {
+        return null;
+    }
+    // The public catalog token is embedded in the website bundle by design;
+    // it must never be accepted as a user session by this API.
+    $publicServiceId = $DB->get_field('external_services', 'id', ['shortname' => 'outlms_public_catalog']);
+    if ($publicServiceId && (int)$rec->externalserviceid === (int)$publicServiceId) {
+        return null;
+    }
+    $user = $DB->get_record('user', ['id' => $rec->userid, 'deleted' => 0, 'suspended' => 0]);
+    return $user ?: null;
+}
+
+function outlms_user_is_instructor(int $userId): bool {
+    global $DB;
+    if ($userId <= 0) {
+        return false;
+    }
+    if (is_siteadmin($userId)) {
+        return true;
+    }
+    return $DB->record_exists_sql(
+        "SELECT 1 FROM {role_assignments} ra JOIN {role} r ON r.id = ra.roleid
+          WHERE ra.userid = ? AND r.shortname IN ('editingteacher', 'teacher', 'manager', 'coursecreator')",
+        [$userId]
+    );
+}
+
+// -----------------------------------------------------------------------------
 // Public & Integrated Actions (Marketplace, Credential Verification, Gamification, Live Sessions, Corporate Cohorts)
 // -----------------------------------------------------------------------------
 if (in_array($action, [
@@ -1535,6 +1589,10 @@ if (in_array($action, [
         }
 
         if ($action === 'manage_corporate_cohort') {
+            $cohortViewer = outlms_resolve_token_user(outlms_request_token($input));
+            if (!$cohortViewer || !outlms_user_is_instructor((int)$cohortViewer->id)) {
+                outlms_deny($cohortViewer ? 403 : 401, 'Instructor or administrator role required.');
+            }
             $cohorts = $DB->get_records('cohort', ['visible' => 1]);
             $report = [];
             foreach ($cohorts as $coh) {
@@ -1665,49 +1723,44 @@ $isInstructorAction = strpos($action, 'instructor') !== false ||
         'moodle_ws_bridge'
     ], true);
 
-if (!$token) {
-    if ($isInstructorAction) {
-        $currentUser = $DB->get_record('user', ['id' => 4, 'deleted' => 0]);
-        if (!$currentUser) {
-            $currentUser = (object)['id' => 4, 'username' => 'instructor', 'firstname' => 'Amina', 'lastname' => 'Kilindo', 'email' => 'instructor@out.ac.tz'];
-        }
-    } else {
-        // Allow headless frontend Admin Console operations without requiring direct Moodle login
-        $currentUser = $DB->get_record('user', ['id' => 2, 'deleted' => 0]);
-        if (!$currentUser) {
-            $currentUser = function_exists('get_admin') ? get_admin() : null;
-        }
-        if (!$currentUser) {
-            $currentUser = (object)['id' => 2, 'username' => 'admin', 'firstname' => 'System', 'lastname' => 'Administrator', 'email' => 'admin@out.ac.tz'];
-        }
-    }
-} else {
-    $tokenRecord = $DB->get_record('external_tokens', ['token' => $token]);
-    if (!$tokenRecord) {
-        // Support known seeded tokens mapped strictly to their respective Moodle user IDs
-        $knownSeededTokens = [
-            'cac3488049fb0d8247867a568bea7c79' => 2, // admin
-            '5b923ba442be646d7371f5ae06fe350c' => 4, // instructor (Dr. Amina Kilindo)
-            '14ba63b0399a3c00f7ab62abad0e9e86' => 3, // student (Baraka Mkwawa)
-        ];
-        if (isset($knownSeededTokens[$token])) {
-            $tokenRecord = (object)['userid' => $knownSeededTokens[$token]];
-        } else if ($isInstructorAction) {
-            $tokenRecord = (object)['userid' => 4];
-        } else {
-            $tokenRecord = (object)['userid' => 2];
-        }
-    }
+// Actions that are intentionally public (no token) even though they are routed
+// through the authenticated section: certificate rendering for public verification links.
+$publicReadActions = ['render_beautiful_certificate', 'get_beautiful_certificates'];
 
-    $currentUser = $DB->get_record('user', ['id' => $tokenRecord->userid, 'deleted' => 0]);
-    if (!$currentUser || !empty($currentUser->suspended)) {
-        $currentUser = $DB->get_record('user', ['id' => 2, 'deleted' => 0]) ?: (object)['id' => 2, 'username' => 'admin', 'firstname' => 'System', 'lastname' => 'Administrator', 'email' => 'admin@out.ac.tz'];
+// Actions in the multi-role section that require an instructor (or site admin).
+$instructorOnlyActions = [
+    'grade_submission', 'update_course_format', 'record_attendance', 'issue_customcert',
+    'trigger_reengagement', 'execute_enterprise_feature', 'execute_curriculum_workflow',
+    'execute_authoring_tool', 'execute_campus_operation', 'execute_security_check',
+];
+// Actions in the multi-role section that require a site administrator.
+$adminOnlyActions = ['get_api_endpoints_registry', 'manage_api_endpoint', 'moodle_ws_bridge'];
+
+$currentUser = $token ? outlms_resolve_token_user($token) : null;
+
+if (!$currentUser) {
+    if (in_array($action, $publicReadActions, true)) {
+        // Anonymous, read-only access. Never elevated.
+        $currentUser = (object)['id' => 0, 'username' => 'guest', 'firstname' => 'Public', 'lastname' => 'Visitor', 'email' => ''];
+    } else {
+        outlms_deny(401, $token ? 'Invalid or expired token.' : 'Authentication required.');
     }
 }
 
 // -----------------------------------------------------------------------------
 // Authenticated Multi-Role Actions (Available to Student, Instructor & Admin)
 // -----------------------------------------------------------------------------
+if ((int)$currentUser->id > 0) {
+    if (in_array($action, $adminOnlyActions, true) && !is_siteadmin($currentUser->id)) {
+        outlms_deny(403, 'Administrator role required.');
+    }
+    $needsInstructor = in_array($action, $instructorOnlyActions, true)
+        || (strpos($action, 'instructor') !== false);
+    if ($needsInstructor && !outlms_user_is_instructor((int)$currentUser->id)) {
+        outlms_deny(403, 'Instructor role required.');
+    }
+}
+
 if ($isInstructorAction || in_array($action, ['resolve_identity', 'change_password', 'update_my_profile', 'submit_quiz_grade', 'grade_submission', 'get_instructor_dashboard_data', 'create_instructor_announcement'], true)) {
     try {
         if ($action === 'resolve_identity') {
@@ -4138,7 +4191,7 @@ if ($isInstructorAction || in_array($action, ['resolve_identity', 'change_passwo
                 [
                     'id' => 'tok-admin-primary',
                     'label' => 'OUT Sovereign Admin Gateway Token',
-                    'token' => 'cac3488049fb0d8247867a568bea7c79',
+                    'token' => 'revoked-' . substr(sha1('cac348'), 0, 24),
                     'scope' => 'Full Administrative & Governance Access (All 85+ Endpoints)',
                     'rate_limit' => '1200 req/min',
                     'status' => 'ACTIVE',
@@ -4147,7 +4200,7 @@ if ($isInstructorAction || in_array($action, ['resolve_identity', 'change_passwo
                 [
                     'id' => 'tok-instructor-faculty',
                     'label' => 'Faculty & Lecturer Console Token',
-                    'token' => '5b923ba442be646d7371f5ae06fe350c',
+                    'token' => 'revoked-' . substr(sha1('5b923b'), 0, 24),
                     'scope' => 'Curriculum, Grading, Attendance & Lab Execution',
                     'rate_limit' => '600 req/min',
                     'status' => 'ACTIVE',
@@ -4156,7 +4209,7 @@ if ($isInstructorAction || in_array($action, ['resolve_identity', 'change_passwo
                 [
                     'id' => 'tok-public-scholar',
                     'label' => 'Public Catalog & Scholar Portal Token',
-                    'token' => '14ba63b0399a3c00f7ab62abad0e9e86',
+                    'token' => 'revoked-' . substr(sha1('14ba63'), 0, 24),
                     'scope' => 'Catalog Discovery, Enrolment & Certificate Verification',
                     'rate_limit' => '300 req/min',
                     'status' => 'ACTIVE',
@@ -4252,8 +4305,12 @@ if ($isInstructorAction || in_array($action, ['resolve_identity', 'change_passwo
                 'message' => $mutationMsg ?: 'Loaded OUT LMS Enterprise API & Endpoint Registry.',
                 'total_endpoints' => count($enrichedEndpoints),
                 'total_system_capabilities' => 77,
-                'headless_admin_mode' => true,
-                'tokens' => $customTokens,
+                'headless_admin_mode' => false,
+                'tokens' => array_map(function ($t) {
+                    $raw = (string)($t['token'] ?? '');
+                    $t['token'] = strlen($raw) > 8 ? substr($raw, 0, 4) . str_repeat('•', 8) . substr($raw, -4) : '••••';
+                    return $t;
+                }, $customTokens),
                 'endpoints' => $enrichedEndpoints,
             ]);
             exit(0);
@@ -4315,13 +4372,10 @@ if ($isInstructorAction || in_array($action, ['resolve_identity', 'change_passwo
 }
 
 // -----------------------------------------------------------------------------
-// Headless Frontend Administrator Elevation for Governance Actions
+// Administrator-only Governance Actions (strict: no silent elevation)
 // -----------------------------------------------------------------------------
-if (!is_siteadmin($currentUser->id)) {
-    $adminAccount = $DB->get_record('user', ['id' => 2, 'deleted' => 0]);
-    if ($adminAccount) {
-        $currentUser = $adminAccount;
-    }
+if ((int)$currentUser->id <= 0 || !is_siteadmin($currentUser->id)) {
+    outlms_deny(403, 'Administrator role required.');
 }
 if (isset($USER) && is_object($currentUser)) {
     $USER = $currentUser;

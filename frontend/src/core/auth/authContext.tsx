@@ -230,44 +230,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.warn('Live token exchange fell back to verified credential check:', err);
     }
 
-    // 2. Strict password-verified fallback for seeded accounts
-    if (
-      (lower === 'admin' || lower === 'ict@out.ac.tz' || lower === 'admin@out.ac.tz') &&
-      (password === DEMO_USERS.admin.password || password === 'Admin@1234')
-    ) {
-      const fallbackToken = 'cac3488049fb0d8247867a568bea7c79';
-      const adminProfile: UserProfile = { ...DEMO_USERS.admin, dashboardUrl: '/admin/dashboard' };
-      localStorage.setItem(TOKEN_KEY, fallbackToken);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(adminProfile));
-      setToken(fallbackToken);
-      setUser(adminProfile);
-      return true;
-    }
-
-    if (
-      (lower === 'instructor' || lower === 'instructor@out.ac.tz') &&
-      (password === DEMO_USERS.instructor.password || password === 'Instructor@1234')
-    ) {
-      const fallbackToken = '5b923ba442be646d7371f5ae06fe350c';
-      localStorage.setItem(TOKEN_KEY, fallbackToken);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(DEMO_USERS.instructor));
-      setToken(fallbackToken);
-      setUser(DEMO_USERS.instructor);
-      return true;
-    }
-
-    if (
-      (lower === 'student' || lower === 'student@out.ac.tz') &&
-      (password === DEMO_USERS.student.password || password === 'Student@1234')
-    ) {
-      const fallbackToken = '14ba63b0399a3c00f7ab62abad0e9e86';
-      localStorage.setItem(TOKEN_KEY, fallbackToken);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(DEMO_USERS.student));
-      setToken(fallbackToken);
-      setUser(DEMO_USERS.student);
-      return true;
-    }
-
+    // No client-side credential fallbacks: authentication is decided by the server only.
     return false;
   };
 

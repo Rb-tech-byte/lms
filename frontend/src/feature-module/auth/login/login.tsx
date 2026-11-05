@@ -147,7 +147,11 @@ const Login: React.FC = () => {
                   { key: 'student' as const, label: 'Scholar', icon: 'isax-teacher', accent: '#0171BB' },
                   { key: 'instructor' as const, label: 'Lecturer', icon: 'isax-briefcase', accent: '#059669' },
                   { key: 'admin' as const, label: 'Admin', icon: 'isax-shield-tick', accent: '#071F38' },
-                ].map((item) => {
+                ]
+                  // Only roles explicitly allowed for public demo are shown (default: student only).
+                  // Privileged accounts must never be one-click accessible on a public deployment.
+                  .filter((item) => (process.env.REACT_APP_DEMO_ROLES || 'student').split(',').map((r) => r.trim()).includes(item.key))
+                  .map((item) => {
                   const isBusy = activeDemoRole === item.key;
                   return (
                     <div className="col-4" key={item.key}>

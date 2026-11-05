@@ -50,7 +50,9 @@ export const getDynamicMoodleUrl = (): string => {
 
 export const MOODLE_BASE_URL = getDynamicMoodleUrl();
 // Public read-only catalog service token fallback for unauthenticated visitors browsing courses/categories
-const PUBLIC_SERVICE_TOKEN = process.env.REACT_APP_MOODLE_TOKEN || '14ba63b0399a3c00f7ab62abad0e9e86';
+// Least-privilege token bound to the `outlms_public_catalog` service (read-only catalog functions only).
+// Rejected by admin_api.php as a user session. Override per environment with REACT_APP_PUBLIC_CATALOG_TOKEN.
+const PUBLIC_SERVICE_TOKEN = process.env.REACT_APP_PUBLIC_CATALOG_TOKEN || '6ac96cc49daa091ad9122d2dbfc9efe2';
 const USE_MOCK = process.env.REACT_APP_USE_MOCK === 'true';
 
 /**

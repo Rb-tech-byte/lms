@@ -50,6 +50,7 @@ import Notification from "../Pages/notification/notification";
 import BecomeInstructor from "../Pages/become-instructor/becomeInstructor";
 import Testimonials from "../Pages/testimonials/testimonials";
 import VerifyCertificate from "../Pages/verify-certificate/verifyCertificate";
+import ApiDocs from "../Pages/api-docs/apiDocs";
 import PricePlanning from "../Pages/price-planning/pricePlanning";
 import Faq from "../Pages/faq/faq";
 import TermsCondition from "../Pages/terms-condition/termsCondition";
@@ -308,6 +309,16 @@ export const publicRoutes = [
   {
     path: "/pages/verify-certificate",
     element: <VerifyCertificate />,
+    route: Route,
+  },
+  {
+    path: "/pages/api-docs",
+    element: <ApiDocs />,
+    route: Route,
+  },
+  {
+    path: "/api-docs",
+    element: <ApiDocs />,
     route: Route,
   },
 ];

@@ -105,6 +105,8 @@ export const all_routes = {
     notification: '/pages/notifications',
     testimonials: '/pages/testimonials',
     verifyCertificate: '/verify-certificate',
+    apiDocs: '/pages/api-docs',
+    apiDocsDirect: '/api-docs',
 
     // Canonical Blog Modules
     blogGrid: "/blog/blog-grid",

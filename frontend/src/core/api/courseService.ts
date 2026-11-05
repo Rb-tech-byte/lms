@@ -737,6 +737,101 @@ export const courseService = {
       return fallback;
     }
   },
+
+  /**
+   * Moodle Marketplace Plugins Full-Stack Integration (GET & POST)
+   */
+  async getInstalledPluginsSummary(): Promise<any> {
+    return callInternalApi<any>('get_installed_plugins_summary', undefined, 'GET');
+  },
+
+  async getCourseFormats(courseId: number): Promise<any> {
+    return callInternalApi<any>('get_course_formats', { course_id: courseId }, 'GET');
+  },
+
+  async updateCourseFormat(courseId: number, format: string): Promise<any> {
+    return callInternalApi<any>('update_course_format', { course_id: courseId, format }, 'POST');
+  },
+
+  async getAttendance(courseId: number, userId: number = 3): Promise<any> {
+    return callInternalApi<any>('get_attendance', { course_id: courseId, user_id: userId }, 'GET');
+  },
+
+  async recordAttendance(params: {
+    course_id: number;
+    user_id?: number;
+    session_id?: number;
+    status?: string;
+    remarks?: string;
+    subaction?: 'checkin' | 'create_session';
+    description?: string;
+  }): Promise<any> {
+    return callInternalApi<any>('record_attendance', params, 'POST');
+  },
+
+  async getVplLabs(courseId: number, userId: number = 3): Promise<any> {
+    return callInternalApi<any>('get_vpl_labs', { course_id: courseId, user_id: userId }, 'GET');
+  },
+
+  async submitVplCode(params: {
+    course_id: number;
+    vpl_id: number;
+    user_id?: number;
+    language: string;
+    source_code: string;
+  }): Promise<any> {
+    return callInternalApi<any>('submit_vpl_code', params, 'POST');
+  },
+
+  async getCodeRunnerQuestions(courseId: number): Promise<any> {
+    return callInternalApi<any>('get_coderunner_questions', { course_id: courseId }, 'GET');
+  },
+
+  async evaluateCodeRunner(params: {
+    course_id: number;
+    question_id: number;
+    user_id?: number;
+    answer_code: string;
+  }): Promise<any> {
+    return callInternalApi<any>('evaluate_coderunner', params, 'POST');
+  },
+
+  async getCompletionProgress(courseId: number, userId: number = 3): Promise<any> {
+    return callInternalApi<any>('get_completion_progress', { course_id: courseId, user_id: userId }, 'GET');
+  },
+
+  async toggleActivityCompletion(courseId: number, cmid: number, userId: number = 3, completed?: number): Promise<any> {
+    return callInternalApi<any>(
+      'toggle_activity_completion',
+      { course_id: courseId, cmid, user_id: userId, ...(typeof completed === 'number' ? { completed } : {}) },
+      'POST'
+    );
+  },
+
+  async getCustomCertTemplates(courseId: number, userId: number = 3): Promise<any> {
+    return callInternalApi<any>('get_customcert_templates', { course_id: courseId, user_id: userId }, 'GET');
+  },
+
+  async issueCustomCert(courseId: number, userId: number = 3): Promise<any> {
+    return callInternalApi<any>('issue_customcert', { course_id: courseId, user_id: userId }, 'POST');
+  },
+
+  async getReengagementNudges(courseId: number): Promise<any> {
+    return callInternalApi<any>('get_reengagement_nudges', { course_id: courseId }, 'GET');
+  },
+
+  async triggerReengagement(courseId: number, emailsubject?: string): Promise<any> {
+    return callInternalApi<any>(
+      'trigger_reengagement',
+      { course_id: courseId, ...(emailsubject ? { emailsubject } : {}) },
+      'POST'
+    );
+  },
+
+  async callMoodleWsBridge(wsfunction: string, params: Record<string, any> = {}, method: 'GET' | 'POST' = 'GET'): Promise<any> {
+    return callInternalApi<any>('moodle_ws_bridge', { wsfunction, ...params }, method);
+  },
 };
+
 
 

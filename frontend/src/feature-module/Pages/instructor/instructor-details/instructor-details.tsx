@@ -55,8 +55,8 @@ const InstructorDetails: React.FC = () => {
       <section
         className="py-4"
         style={{
-          background: 'linear-gradient(135deg, #005B97 0%, #0171BB 55%, #0082D6 100%)',
-          borderBottom: '3px solid #FFD200',
+          background: 'linear-gradient(135deg, #013BA6 0%, #013BA6 55%, #228DDD 100%)',
+          borderBottom: '3px solid #F4ED2D',
         }}
       >
         <div className="container">
@@ -116,7 +116,7 @@ const InstructorDetails: React.FC = () => {
                   <div className="mt-3 mt-sm-0">
                     <span
                       className="badge rounded-pill px-3 py-1 fw-bold mb-1"
-                      style={{ background: '#FFD200', color: '#051426', fontSize: '0.72rem' }}
+                      style={{ background: '#F4ED2D', color: '#051426', fontSize: '0.72rem' }}
                     >
                       {instructor.role}
                     </span>
@@ -255,7 +255,7 @@ const InstructorDetails: React.FC = () => {
                   <div className="d-flex align-items-center mb-3">
                     <span
                       className="rounded-3 d-inline-flex align-items-center justify-content-center me-3"
-                      style={{ width: 40, height: 40, background: '#eff6ff', color: '#0171BB' }}
+                      style={{ width: 40, height: 40, background: '#eff6ff', color: '#013BA6' }}
                     >
                       <i className="isax isax-teacher fs-5" />
                     </span>

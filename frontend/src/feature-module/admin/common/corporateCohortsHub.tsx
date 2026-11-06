@@ -97,7 +97,7 @@ export const CorporateCohortsHub: React.FC = () => {
               type="button"
               onClick={() => setActionAlert({ type: 'success', message: 'Corporate MoU intake registry opened for new enterprise engagement.' })}
               className="btn btn-primary btn-sm rounded-pill px-3 shadow-sm"
-              style={{ backgroundColor: '#0171BB' }}
+              style={{ backgroundColor: '#013BA6' }}
             >
               <i className="feather-plus me-1" /> New Enterprise MoU
             </button>
@@ -417,7 +417,7 @@ export const CorporateCohortsHub: React.FC = () => {
                 <button
                   type="button"
                   className="btn btn-primary rounded-pill px-4 shadow-sm"
-                  style={{ backgroundColor: '#0171BB' }}
+                  style={{ backgroundColor: '#013BA6' }}
                   onClick={() => {
                     setActionAlert({
                       type: 'success',

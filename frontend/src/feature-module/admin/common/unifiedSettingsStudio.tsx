@@ -169,7 +169,7 @@ export const UnifiedSettingsStudio: React.FC<UnifiedSettingsStudioProps> = ({
             value: '500+',
             badge: 'Verified Metric',
             icon: 'isax-award',
-            accent: '#0171BB',
+            accent: '#013BA6',
           },
         ],
       },
@@ -203,7 +203,7 @@ export const UnifiedSettingsStudio: React.FC<UnifiedSettingsStudioProps> = ({
               icon: 'isax-cpu-setting',
               badge: 'Digital Campus',
               route: '/course/course-grid',
-              accent: '#0171BB',
+              accent: '#013BA6',
             },
           ],
         },
@@ -241,7 +241,7 @@ export const UnifiedSettingsStudio: React.FC<UnifiedSettingsStudioProps> = ({
               date: 'November 2026',
               summary: 'Official university announcement regarding upcoming academic schedules and registration.',
               route: '/course/course-grid',
-              badgeColor: '#0171BB',
+              badgeColor: '#013BA6',
             },
           ],
         },
@@ -368,7 +368,7 @@ export const UnifiedSettingsStudio: React.FC<UnifiedSettingsStudioProps> = ({
               <h5 className="fw-bold mb-0 text-dark">Unified Platform Settings & Digital Campus Content Studio</h5>
               <span
                 className="badge rounded-pill"
-                style={{ backgroundColor: '#E8F4FC', color: '#005B97', fontSize: '11px', fontWeight: 700 }}
+                style={{ backgroundColor: '#E8F4FC', color: '#013BA6', fontSize: '11px', fontWeight: 700 }}
               >
                 All Settings in One Place
               </span>
@@ -429,7 +429,7 @@ export const UnifiedSettingsStudio: React.FC<UnifiedSettingsStudioProps> = ({
         <div className="card border-0 shadow-sm rounded-3 bg-white overflow-hidden">
           <div
             className="p-3.5 d-flex align-items-center justify-content-between flex-wrap gap-2"
-            style={{ background: 'linear-gradient(135deg, #005B97 0%, #0171BB 55%, #0082D6 100%)', color: '#ffffff' }}
+            style={{ background: 'linear-gradient(135deg, #013BA6 0%, #013BA6 55%, #228DDD 100%)', color: '#ffffff' }}
           >
             <div>
               <h6 className="mb-0.5 fw-bold text-white d-flex align-items-center gap-2">
@@ -588,7 +588,7 @@ export const UnifiedSettingsStudio: React.FC<UnifiedSettingsStudioProps> = ({
                       type="button"
                       onClick={addNavItem}
                       className="btn btn-sm btn-primary rounded-pill px-3 fw-semibold"
-                      style={{ backgroundColor: '#0171BB', borderColor: '#0171BB', fontSize: '11.5px' }}
+                      style={{ backgroundColor: '#013BA6', borderColor: '#013BA6', fontSize: '11.5px' }}
                     >
                       + Add Menu Link
                     </button>
@@ -1304,7 +1304,7 @@ export const UnifiedSettingsStudio: React.FC<UnifiedSettingsStudioProps> = ({
                 type="submit"
                 disabled={isSavingCms}
                 className="btn btn-primary btn-sm rounded-pill px-4 fw-bold shadow-sm"
-                style={{ backgroundColor: '#0171BB', borderColor: '#0171BB' }}
+                style={{ backgroundColor: '#013BA6', borderColor: '#013BA6' }}
               >
                 {isSavingCms ? 'Saving to API...' : 'Save Digital Campus Content Studio'}
               </button>
@@ -1330,7 +1330,7 @@ export const UnifiedSettingsStudio: React.FC<UnifiedSettingsStudioProps> = ({
                 type="submit"
                 disabled={isSavingGeneral}
                 className="btn btn-primary btn-sm rounded-pill px-4 fw-bold shadow-sm"
-                style={{ backgroundColor: '#0171BB', borderColor: '#0171BB' }}
+                style={{ backgroundColor: '#013BA6', borderColor: '#013BA6' }}
               >
                 {isSavingGeneral ? 'Saving...' : 'Save Institutional Profile'}
               </button>
@@ -1471,7 +1471,7 @@ export const UnifiedSettingsStudio: React.FC<UnifiedSettingsStudioProps> = ({
                 type="submit"
                 disabled={isSavingGeneral}
                 className="btn btn-primary btn-sm rounded-pill px-4 fw-bold shadow-sm"
-                style={{ backgroundColor: '#0171BB', borderColor: '#0171BB' }}
+                style={{ backgroundColor: '#013BA6', borderColor: '#013BA6' }}
               >
                 {isSavingGeneral ? 'Saving...' : 'Save Gateway Settings'}
               </button>
@@ -1607,7 +1607,7 @@ export const UnifiedSettingsStudio: React.FC<UnifiedSettingsStudioProps> = ({
                 type="submit"
                 disabled={isSavingDefaults}
                 className="btn btn-primary btn-sm rounded-pill px-4 fw-bold shadow-sm"
-                style={{ backgroundColor: '#0171BB', borderColor: '#0171BB' }}
+                style={{ backgroundColor: '#013BA6', borderColor: '#013BA6' }}
               >
                 {isSavingDefaults ? 'Saving...' : 'Save Course Defaults'}
               </button>

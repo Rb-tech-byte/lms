@@ -66,7 +66,7 @@ const getModuleMeta = (modname: string) => {
     case 'forum':
       return { icon: 'isax-messages-2', color: '#7c3aed', bg: '#f5f3ff', label: 'Discussion Forum' };
     case 'page':
-      return { icon: 'isax-book-1', color: '#0171BB', bg: '#f0f9ff', label: 'Lecture Notes' };
+      return { icon: 'isax-book-1', color: '#013BA6', bg: '#f0f9ff', label: 'Lecture Notes' };
     case 'resource':
       return { icon: 'isax-document-text', color: '#059669', bg: '#ecfdf5', label: 'Study Guide' };
     case 'url':
@@ -629,8 +629,8 @@ const CourseDetails: React.FC = () => {
       <section
         className="py-3.5"
         style={{
-          background: 'linear-gradient(135deg, #005B97 0%, #0171BB 55%, #0082D6 100%)',
-          borderBottom: '3px solid #FFD200',
+          background: 'linear-gradient(135deg, #013BA6 0%, #013BA6 55%, #228DDD 100%)',
+          borderBottom: '3px solid #F4ED2D',
         }}
       >
         <div className="container">
@@ -683,7 +683,7 @@ const CourseDetails: React.FC = () => {
                 <div className="d-flex flex-wrap align-items-center gap-2 mb-2">
                   <span
                     className="badge rounded-pill px-2.5 py-0.5 fw-bold"
-                    style={{ background: '#FFD200', color: '#051426', fontSize: '0.72rem' }}
+                    style={{ background: '#F4ED2D', color: '#051426', fontSize: '0.72rem' }}
                   >
                     {course.shortname}
                   </span>
@@ -800,7 +800,7 @@ const CourseDetails: React.FC = () => {
                       <Link
                         to={`${routes.courseCheckout}?id=${course.id}`}
                         className="btn btn-light btn-sm fw-semibold rounded-pill flex-grow-1 py-1"
-                        style={{ fontSize: '0.76rem', color: '#071F38' }}
+                        style={{ fontSize: '0.76rem', color: '#061838' }}
                       >
                         Enrol Now
                       </Link>
@@ -839,8 +839,8 @@ const CourseDetails: React.FC = () => {
                 <div
                   className="d-flex align-items-center justify-content-between flex-wrap gap-2 p-2.5 rounded-4 shadow-sm mb-3"
                   style={{
-                    background: 'linear-gradient(135deg, #071F38 0%, #0F172A 100%)',
-                    border: '2px solid #FFD200',
+                    background: 'linear-gradient(135deg, #061838 0%, #0F172A 100%)',
+                    border: '2px solid #F4ED2D',
                   }}
                 >
                   <div className="d-flex gap-1.5 flex-wrap">
@@ -920,7 +920,7 @@ const CourseDetails: React.FC = () => {
                             fontSize: '0.77rem',
                             background: isAct ? tabBtn.activeBg : tabBtn.idleBg,
                             color: isAct ? '#ffffff' : tabBtn.color,
-                            border: isAct ? '2px solid #FFD200' : `1px solid ${tabBtn.border}`,
+                            border: isAct ? '2px solid #F4ED2D' : `1px solid ${tabBtn.border}`,
                             boxShadow: isAct ? '0 4px 14px rgba(0,0,0,0.35)' : 'none',
                           }}
                         >
@@ -954,7 +954,7 @@ const CourseDetails: React.FC = () => {
                     <div
                       onClick={() => setActiveTab('syllabus')}
                       className="p-2.5 rounded-3 bg-white border shadow-sm h-100"
-                      style={{ cursor: 'pointer', borderLeft: '3px solid #0171BB' }}
+                      style={{ cursor: 'pointer', borderLeft: '3px solid #013BA6' }}
                     >
                       <div className="d-flex align-items-center justify-content-between mb-0.5">
                         <small className="text-muted fw-semibold" style={{ fontSize: '0.66rem' }}>
@@ -1054,7 +1054,7 @@ const CourseDetails: React.FC = () => {
                       <div className="d-flex align-items-center gap-2">
                         <span
                           className="badge rounded-pill px-2.5 py-1 fw-bold"
-                          style={{ background: '#0171BB', color: '#fff', fontSize: '0.68rem' }}
+                          style={{ background: '#013BA6', color: '#fff', fontSize: '0.68rem' }}
                         >
                           Adaptive Layout Engine
                         </span>
@@ -1315,7 +1315,7 @@ const CourseDetails: React.FC = () => {
                               <div
                                 className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden"
                                 style={{
-                                  border: isOpen ? '2px solid #0171BB' : '1px solid #e2e8f0',
+                                  border: isOpen ? '2px solid #013BA6' : '1px solid #e2e8f0',
                                   cursor: 'pointer',
                                   transition: 'transform 0.15s ease',
                                 }}
@@ -1325,18 +1325,18 @@ const CourseDetails: React.FC = () => {
                                   className="p-3"
                                   style={{
                                     background: isOpen
-                                      ? 'linear-gradient(135deg, #005B97 0%, #0171BB 100%)'
+                                      ? 'linear-gradient(135deg, #013BA6 0%, #013BA6 100%)'
                                       : 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
                                     color: isOpen ? '#fff' : '#0f172a',
-                                    borderBottom: isOpen ? '2px solid #FFD200' : '1px solid #e2e8f0',
+                                    borderBottom: isOpen ? '2px solid #F4ED2D' : '1px solid #e2e8f0',
                                   }}
                                 >
                                   <div className="d-flex align-items-center justify-content-between mb-1.5">
                                     <span
                                       className="badge rounded-pill px-2.5 py-1"
                                       style={{
-                                        background: isOpen ? '#FFD200' : '#0171BB',
-                                        color: isOpen ? '#071F38' : '#fff',
+                                        background: isOpen ? '#F4ED2D' : '#013BA6',
+                                        color: isOpen ? '#061838' : '#fff',
                                         fontSize: '0.68rem',
                                         fontWeight: 700,
                                       }}
@@ -1400,7 +1400,7 @@ const CourseDetails: React.FC = () => {
                                   style={{
                                     width: 32,
                                     height: 32,
-                                    background: isOpen ? '#071F38' : '#f1f5f9',
+                                    background: isOpen ? '#061838' : '#f1f5f9',
                                     color: isOpen ? '#fbbf24' : '#334155',
                                     fontSize: '0.78rem',
                                   }}
@@ -1831,7 +1831,7 @@ const CourseDetails: React.FC = () => {
                             </h6>
                           </div>
                           <div className="d-flex align-items-center gap-2">
-                            <span className="badge rounded-pill px-3 py-1" style={{ background: '#071F38', color: '#FFD200', fontSize: '0.74rem' }}>
+                            <span className="badge rounded-pill px-3 py-1" style={{ background: '#061838', color: '#F4ED2D', fontSize: '0.74rem' }}>
                               Level {completionProgress.xp?.level} • {completionProgress.xp?.points} XP
                             </span>
                             <span className="badge bg-primary rounded-pill px-2.5 py-1" style={{ fontSize: '0.74rem' }}>
@@ -1852,7 +1852,7 @@ const CourseDetails: React.FC = () => {
                               title={`${item.name} — ${item.statusLabel} (Click to toggle)`}
                               className="flex-grow-1 rounded-1 d-flex align-items-center justify-content-center text-white fw-bold"
                               style={{
-                                background: item.completed ? '#10b981' : '#0171BB',
+                                background: item.completed ? '#10b981' : '#013BA6',
                                 cursor: 'pointer',
                                 fontSize: '0.65rem',
                                 opacity: pluginActionBusy === `comp-${item.cmid}` ? 0.5 : 1,
@@ -2039,7 +2039,7 @@ const CourseDetails: React.FC = () => {
                     <div
                       className="card border-0 shadow-sm rounded-3 p-3.5"
                       style={{
-                        background: 'linear-gradient(135deg, #071F38 0%, #0d325c 100%)',
+                        background: 'linear-gradient(135deg, #061838 0%, #0d325c 100%)',
                         color: '#fff',
                         border: '1px solid #1e3a5f',
                       }}
@@ -2048,7 +2048,7 @@ const CourseDetails: React.FC = () => {
                         <div>
                           <span
                             className="badge rounded-pill px-2.5 py-1 mb-1"
-                            style={{ background: '#FFD200', color: '#071F38', fontSize: '0.68rem', fontWeight: 700 }}
+                            style={{ background: '#F4ED2D', color: '#061838', fontSize: '0.68rem', fontWeight: 700 }}
                           >
                             OUT Sovereign AI Socratic Tutor • Bilingual EN/SW Translator • Multi-Model LLM Hub
                           </span>
@@ -2091,7 +2091,7 @@ const CourseDetails: React.FC = () => {
                             handleExecuteEnterpriseFeature(tutorFeat, aiPromptInput);
                           }}
                           className="btn btn-warning btn-sm rounded-pill px-3 fw-bold"
-                          style={{ fontSize: '0.76rem', color: '#071F38' }}
+                          style={{ fontSize: '0.76rem', color: '#061838' }}
                         >
                           {pluginActionBusy === 'ent-local_dttutor' ? 'Synthesizing...' : 'Run AI Socratic Tutor (POST)'}
                         </button>
@@ -2127,7 +2127,7 @@ const CourseDetails: React.FC = () => {
                       const suiteMeta: Record<string, { badge: string; accent: string; subtitle: string }> = {
                         ai_tutor: {
                           badge: 'Suite 1 • 9 Active Capabilities',
-                          accent: '#0171BB',
+                          accent: '#013BA6',
                           subtitle:
                             'Socratic Tutoring, AI Syllabus Synthesis, Adaptive Recommendations, Virtual Avatar Presenter, Bilingual Translation & Multi-LLM Routing',
                         },
@@ -2144,7 +2144,7 @@ const CourseDetails: React.FC = () => {
                             '3D Page-Flipping Textbooks, AES-256 Watermarked DRM PDFs, Collaborative Vector Whiteboards, PowerPoint Book Importer & Pedagogical Callouts',
                         },
                       };
-                      const meta = suiteMeta[suiteKey] || { badge: 'Active Suite', accent: '#0171BB', subtitle: '' };
+                      const meta = suiteMeta[suiteKey] || { badge: 'Active Suite', accent: '#013BA6', subtitle: '' };
 
                       return (
                         <div
@@ -2255,7 +2255,7 @@ const CourseDetails: React.FC = () => {
 
                       <div className="d-flex gap-1.5 flex-wrap">
                         {[
-                          { id: 'all', label: 'All Suites (36)', color: '#0171BB', bg: '#e0f2fe' },
+                          { id: 'all', label: 'All Suites (36)', color: '#013BA6', bg: '#e0f2fe' },
                           { id: 'learner_analytics', label: 'Learner Analytics & KPIs (9)', color: '#0284c7', bg: '#e0f2fe' },
                           { id: 'curriculum_governance', label: 'Curriculum & Senate QA (9)', color: '#d97706', bg: '#fef3c7' },
                           { id: 'campus_operations', label: 'SARIS & Tuition Commerce (7)', color: '#059669', bg: '#dcfce7' },
@@ -2315,7 +2315,7 @@ const CourseDetails: React.FC = () => {
                           security_governance: '#dc2626',
                           credentials_quests: '#4f46e5',
                         };
-                        const accent = suiteColors[suiteKey] || '#0171BB';
+                        const accent = suiteColors[suiteKey] || '#013BA6';
 
                         return (
                           <div
@@ -2418,7 +2418,7 @@ const CourseDetails: React.FC = () => {
                           <div className="d-flex align-items-start gap-2 p-2.5 rounded-2 bg-light h-100">
                             <span
                               className="badge rounded-circle d-inline-flex align-items-center justify-content-center flex-shrink-0"
-                              style={{ width: 22, height: 22, background: '#071F38', color: '#fbbf24', fontSize: '0.7rem' }}
+                              style={{ width: 22, height: 22, background: '#061838', color: '#fbbf24', fontSize: '0.7rem' }}
                             >
                               {idx + 1}
                             </span>

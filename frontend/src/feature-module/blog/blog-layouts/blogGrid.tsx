@@ -72,8 +72,8 @@ const BlogGrid: React.FC = () => {
       <section
         className="py-4"
         style={{
-          background: 'linear-gradient(135deg, #005B97 0%, #0171BB 55%, #0082D6 100%)',
-          borderBottom: '3px solid #FFD200',
+          background: 'linear-gradient(135deg, #013BA6 0%, #013BA6 55%, #228DDD 100%)',
+          borderBottom: '3px solid #F4ED2D',
         }}
       >
         <div className="container">
@@ -81,7 +81,7 @@ const BlogGrid: React.FC = () => {
             <div className="col-lg-7">
               <span
                 className="badge rounded-pill px-3 py-1 fw-bold mb-2"
-                style={{ background: '#FFD200', color: '#051426', fontSize: '0.72rem' }}
+                style={{ background: '#F4ED2D', color: '#051426', fontSize: '0.72rem' }}
               >
                 {cms.sections?.bulletins?.eyebrow || 'OFFICIAL NOTICES & BULLETINS'}
               </span>

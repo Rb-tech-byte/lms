@@ -10,8 +10,8 @@ export const ApiDocs: React.FC = () => {
       <div
         className="py-4 text-white"
         style={{
-          background: 'linear-gradient(135deg, #071F38 0%, #0171BB 100%)',
-          borderBottom: '3px solid #FFD200',
+          background: 'linear-gradient(135deg, #061838 0%, #013BA6 100%)',
+          borderBottom: '3px solid #F4ED2D',
         }}
       >
         <div className="container-fluid px-lg-5">
@@ -20,7 +20,7 @@ export const ApiDocs: React.FC = () => {
               <div className="d-flex align-items-center gap-2 mb-2">
                 <span
                   className="badge rounded-pill px-3 py-1 fw-bold text-uppercase"
-                  style={{ background: '#FFD200', color: '#071F38', fontSize: '0.72rem', letterSpacing: '0.05em' }}
+                  style={{ background: '#F4ED2D', color: '#061838', fontSize: '0.72rem', letterSpacing: '0.05em' }}
                 >
                   Developer Gateway
                 </span>
@@ -47,7 +47,7 @@ export const ApiDocs: React.FC = () => {
               <Link
                 to="/admin/dashboard?tab=api-gateway"
                 className="btn btn-sm rounded-pill px-3 py-2 fw-semibold text-dark d-flex align-items-center gap-1.5"
-                style={{ background: '#FFD200', border: 'none', fontSize: '0.82rem' }}
+                style={{ background: '#F4ED2D', border: 'none', fontSize: '0.82rem' }}
               >
                 <i className="feather-sliders" /> Admin API Gateway Studio
               </Link>

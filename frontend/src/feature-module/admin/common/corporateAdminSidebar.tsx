@@ -74,7 +74,7 @@ export const CorporateAdminSidebar: React.FC<CorporateAdminSidebarProps> = ({
         width: sidebarWidth,
         minWidth: sidebarWidth,
         maxWidth: sidebarWidth,
-        background: 'linear-gradient(180deg, #005B97 0%, #0171BB 100%)',
+        background: 'linear-gradient(180deg, #013BA6 0%, #013BA6 100%)',
         height: '100vh',
         transition: 'width 0.2s ease, min-width 0.2s ease, max-width 0.2s ease',
         zIndex: 1040,
@@ -182,12 +182,12 @@ export const CorporateAdminSidebar: React.FC<CorporateAdminSidebarProps> = ({
                       } py-2 border-0 rounded-3 text-decoration-none`}
                       style={{
                         background: isActive
-                          ? item.activeGradient || 'linear-gradient(135deg, #0171BB 0%, #005B97 100%)'
+                          ? item.activeGradient || 'linear-gradient(135deg, #013BA6 0%, #013BA6 100%)'
                           : 'rgba(255,255,255,0.06)',
                         color: isActive ? '#ffffff' : '#f1f5f9',
                         fontWeight: isActive ? 700 : 600,
                         fontSize: '12.5px',
-                        borderLeft: `3px solid ${isActive ? '#FFD200' : item.accentColor || '#38bdf8'}`,
+                        borderLeft: `3px solid ${isActive ? '#F4ED2D' : item.accentColor || '#38bdf8'}`,
                         boxShadow: isActive ? '0 4px 12px rgba(0, 0, 0, 0.28)' : 'none',
                         transition: 'all 0.15s ease',
                       }}
@@ -200,7 +200,7 @@ export const CorporateAdminSidebar: React.FC<CorporateAdminSidebarProps> = ({
                           } flex-shrink-0`}
                           style={{
                             fontSize: '14px',
-                            color: isActive ? '#FFD200' : item.accentColor || '#38bdf8',
+                            color: isActive ? '#F4ED2D' : item.accentColor || '#38bdf8',
                           }}
                         />
                         {!collapsed && <span className="text-truncate">{item.title}</span>}
@@ -210,8 +210,8 @@ export const CorporateAdminSidebar: React.FC<CorporateAdminSidebarProps> = ({
                         <span
                           className="badge rounded-pill"
                           style={{
-                            background: isActive ? '#FFD200' : 'rgba(15,23,42,0.45)',
-                            color: isActive ? '#071F38' : item.accentColor || '#FFD200',
+                            background: isActive ? '#F4ED2D' : 'rgba(15,23,42,0.45)',
+                            color: isActive ? '#061838' : item.accentColor || '#F4ED2D',
                             fontSize: '9px',
                             fontWeight: 800,
                           }}

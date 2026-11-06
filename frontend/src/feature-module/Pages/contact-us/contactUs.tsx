@@ -54,14 +54,14 @@ const ContactUs: React.FC = () => {
       <section
         className="py-4"
         style={{
-          background: 'linear-gradient(135deg, #005B97 0%, #0171BB 55%, #0082D6 100%)',
-          borderBottom: '3px solid #FFD200',
+          background: 'linear-gradient(135deg, #013BA6 0%, #013BA6 55%, #228DDD 100%)',
+          borderBottom: '3px solid #F4ED2D',
         }}
       >
         <div className="container">
           <span
             className="badge rounded-pill px-3 py-1 fw-bold mb-2"
-            style={{ background: '#FFD200', color: '#051426', fontSize: '0.72rem' }}
+            style={{ background: '#F4ED2D', color: '#051426', fontSize: '0.72rem' }}
           >
             SCHOLAR SUPPORT & ADMISSIONS HELPDESK
           </span>
@@ -84,7 +84,7 @@ const ContactUs: React.FC = () => {
                   <div className="p-3 d-flex align-items-start gap-3">
                     <span
                       className="rounded-3 d-inline-flex align-items-center justify-content-center flex-shrink-0"
-                      style={{ width: 44, height: 44, background: '#eff6ff', color: '#0171BB' }}
+                      style={{ width: 44, height: 44, background: '#eff6ff', color: '#013BA6' }}
                     >
                       <i className="isax isax-location fs-4" />
                     </span>

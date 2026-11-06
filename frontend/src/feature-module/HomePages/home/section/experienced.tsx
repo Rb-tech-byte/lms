@@ -28,7 +28,7 @@ const Experienced: React.FC = () => {
           <div>
             <div
               className="text-uppercase fw-bold mb-1"
-              style={{ fontSize: '11px', color: '#0171BB', letterSpacing: '0.06em' }}
+              style={{ fontSize: '11px', color: '#013BA6', letterSpacing: '0.06em' }}
             >
               {instCfg.eyebrow}
             </div>
@@ -55,10 +55,10 @@ const Experienced: React.FC = () => {
               <div key={inst.id} className="col-lg-3 col-md-6">
                 <div
                   className="card h-100 border shadow-sm overflow-hidden"
-                  style={{ borderRadius: '12px', border: '1.5px solid #93C5FD', borderTop: '3px solid #0171BB', borderBottom: '3px solid #FFD200' }}
+                  style={{ borderRadius: '12px', border: '1.5px solid #93C5FD', borderTop: '3px solid #013BA6', borderBottom: '3px solid #F4ED2D' }}
                 >
                   {deptCover && (
-                    <div style={{ height: '70px', overflow: 'hidden', borderBottom: '2px solid #FFD200' }}>
+                    <div style={{ height: '70px', overflow: 'hidden', borderBottom: '2px solid #F4ED2D' }}>
                       <img
                         src={deptCover}
                         alt={inst.department}
@@ -137,7 +137,7 @@ const Experienced: React.FC = () => {
                     <Link
                       to={`${all_routes.instructorDetails}?id=${inst.id}`}
                       className="text-decoration-none fw-semibold"
-                      style={{ color: '#0171BB' }}
+                      style={{ color: '#013BA6' }}
                     >
                       Profile →
                     </Link>

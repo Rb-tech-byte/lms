@@ -600,14 +600,14 @@
 
   &.is-edit,
   &.btn-edit {
-    color: #0171bb !important;
+    color: #013ba6 !important;
     background: #e8f4fc !important;
     border-color: #bfdbfe !important;
 
     &:hover {
-      background: #0171bb !important;
+      background: #013ba6 !important;
       color: #ffffff !important;
-      border-color: #0171bb !important;
+      border-color: #013ba6 !important;
     }
   }
 
@@ -682,8 +682,8 @@
   }
 
   &.active {
-    background: #0171bb;
+    background: #013ba6;
     color: #ffffff;
-    box-shadow: 0 2px 6px rgba(1, 113, 187, 0.25);
+    box-shadow: 0 2px 6px rgba(1, 59, 166, 0.25);
   }
 }

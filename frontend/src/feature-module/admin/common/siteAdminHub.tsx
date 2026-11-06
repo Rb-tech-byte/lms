@@ -675,7 +675,7 @@ export const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
               <div className="d-flex align-items-center gap-2 mb-1.5 flex-wrap">
                 <span
                   className="badge rounded-pill px-2.5 py-1 text-uppercase fw-bold"
-                  style={{ backgroundColor: '#E8F4FC', color: '#0171BB', fontSize: '10px' }}
+                  style={{ backgroundColor: '#E8F4FC', color: '#013BA6', fontSize: '10px' }}
                 >
                   INSTITUTIONAL ADMINISTRATION
                 </span>
@@ -710,7 +710,7 @@ export const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
                 type="button"
                 onClick={() => setShowUserModal(true)}
                 className="btn btn-outline-primary btn-sm rounded-pill px-3 shadow-sm d-flex align-items-center gap-1.5 fw-medium"
-                style={{ borderColor: '#0171BB', color: '#0171BB' }}
+                style={{ borderColor: '#013BA6', color: '#013BA6' }}
                 title="Register student or staff user account"
               >
                 <i className="feather-user-plus fs-12" />
@@ -721,7 +721,7 @@ export const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
                 type="button"
                 onClick={() => setShowCourseModal(true)}
                 className="btn btn-primary btn-sm rounded-pill px-3 shadow-sm d-flex align-items-center gap-1.5 fw-semibold text-white"
-                style={{ backgroundColor: '#0171BB', borderColor: '#0171BB' }}
+                style={{ backgroundColor: '#013BA6', borderColor: '#013BA6' }}
                 title="Launch new course syllabus model"
               >
                 <i className="feather-plus-circle fs-12" />
@@ -751,7 +751,7 @@ export const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
           <li className="nav-item">
             <button
               className={`btn btn-sm rounded-pill px-3 fw-medium ${activeSubView === 'suite' ? 'btn-primary shadow-sm text-white' : 'btn-outline-secondary'}`}
-              style={activeSubView === 'suite' ? { backgroundColor: '#0171BB', borderColor: '#0171BB' } : {}}
+              style={activeSubView === 'suite' ? { backgroundColor: '#013BA6', borderColor: '#013BA6' } : {}}
               onClick={() => setActiveSubView('suite')}
             >
               <i className="feather-grid me-1 fs-12" />
@@ -761,7 +761,7 @@ export const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
           <li className="nav-item">
             <button
               className={`btn btn-sm rounded-pill px-3 fw-medium ${activeSubView === 'categories' ? 'btn-primary shadow-sm text-white' : 'btn-outline-secondary'}`}
-              style={activeSubView === 'categories' ? { backgroundColor: '#0171BB', borderColor: '#0171BB' } : {}}
+              style={activeSubView === 'categories' ? { backgroundColor: '#013BA6', borderColor: '#013BA6' } : {}}
               onClick={() => setActiveSubView('categories')}
             >
               <i className="feather-folder me-1 fs-12" />
@@ -771,7 +771,7 @@ export const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
           <li className="nav-item">
             <button
               className={`btn btn-sm rounded-pill px-3 fw-medium ${activeSubView === 'defaults' ? 'btn-primary shadow-sm text-white' : 'btn-outline-secondary'}`}
-              style={activeSubView === 'defaults' ? { backgroundColor: '#0171BB', borderColor: '#0171BB' } : {}}
+              style={activeSubView === 'defaults' ? { backgroundColor: '#013BA6', borderColor: '#013BA6' } : {}}
               onClick={() => setActiveSubView('defaults')}
             >
               <i className="feather-sliders me-1 fs-12" />
@@ -781,7 +781,7 @@ export const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
           <li className="nav-item">
             <button
               className={`btn btn-sm rounded-pill px-3 fw-medium ${activeSubView === 'groups' ? 'btn-primary shadow-sm text-white' : 'btn-outline-secondary'}`}
-              style={activeSubView === 'groups' ? { backgroundColor: '#0171BB', borderColor: '#0171BB' } : {}}
+              style={activeSubView === 'groups' ? { backgroundColor: '#013BA6', borderColor: '#013BA6' } : {}}
               onClick={() => setActiveSubView('groups')}
             >
               <i className="feather-users me-1 fs-12" />
@@ -791,7 +791,7 @@ export const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
           <li className="nav-item">
             <button
               className={`btn btn-sm rounded-pill px-3 fw-medium ${activeSubView === 'diagnostics' ? 'btn-primary shadow-sm text-white' : 'btn-outline-secondary'}`}
-              style={activeSubView === 'diagnostics' ? { backgroundColor: '#0171BB', borderColor: '#0171BB' } : {}}
+              style={activeSubView === 'diagnostics' ? { backgroundColor: '#013BA6', borderColor: '#013BA6' } : {}}
               onClick={() => {
                 setActiveSubView('diagnostics');
                 handleOpenDiagnostics();
@@ -849,7 +849,7 @@ export const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
                 <button
                   key={key}
                   className={`btn btn-sm rounded-pill px-3 fw-medium ${isSelected ? 'btn-primary text-white shadow-sm' : 'btn-light border text-dark'}`}
-                  style={isSelected ? { backgroundColor: '#0171BB', borderColor: '#0171BB' } : {}}
+                  style={isSelected ? { backgroundColor: '#013BA6', borderColor: '#013BA6' } : {}}
                   onClick={() => setSelectedCategoryKey(key)}
                 >
                   <i className={`${node.icon} me-1 fs-12`} />
@@ -880,7 +880,7 @@ export const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
                           style={{
                             width: '36px',
                             height: '36px',
-                            backgroundColor: isCourses ? '#0171BB' : '#0b1727',
+                            backgroundColor: isCourses ? '#013BA6' : '#0b1727',
                           }}
                         >
                           <i className={`${node.icon} fs-16`} />
@@ -909,7 +909,7 @@ export const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
                             type="button"
                             onClick={() => navigate('/instructor/instructor-course')}
                             className="btn btn-outline-primary btn-sm rounded-pill px-3 fw-medium d-flex align-items-center gap-1"
-                            style={{ borderColor: '#0171BB', color: '#0171BB' }}
+                            style={{ borderColor: '#013BA6', color: '#013BA6' }}
                           >
                             <i className="feather-book-open fs-12" />
                             <span>Course Directory & Studio</span>
@@ -919,7 +919,7 @@ export const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
                             type="button"
                             onClick={() => (onSelectTab ? onSelectTab('users') : navigate('/admin/dashboard?tab=users'))}
                             className="btn btn-outline-primary btn-sm rounded-pill px-3 fw-medium d-flex align-items-center gap-1"
-                            style={{ borderColor: '#0171BB', color: '#0171BB' }}
+                            style={{ borderColor: '#013BA6', color: '#013BA6' }}
                           >
                             <i className="feather-users fs-12" />
                             <span>Open User Registry</span>
@@ -981,7 +981,7 @@ export const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
                                       type="button"
                                       onClick={() => handleExecuteAction(sec, node.title)}
                                       className="btn btn-sm btn-outline-primary rounded-pill px-2.5 py-1 fw-semibold d-inline-flex align-items-center gap-1"
-                                      style={{ fontSize: '11px', borderColor: '#0171BB', color: '#0171BB' }}
+                                      style={{ fontSize: '11px', borderColor: '#013BA6', color: '#013BA6' }}
                                     >
                                       <span>Configure</span>
                                       <i className="feather-chevron-right fs-11" />
@@ -1037,7 +1037,7 @@ export const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
                 type="button"
                 onClick={() => setShowCategoryModal(true)}
                 className="btn btn-primary btn-sm rounded-pill px-3 shadow-sm text-white"
-                style={{ backgroundColor: '#0171BB', borderColor: '#0171BB' }}
+                style={{ backgroundColor: '#013BA6', borderColor: '#013BA6' }}
               >
                 <i className="feather-plus-circle me-1" /> + Add New Faculty / Category
               </button>
@@ -1076,7 +1076,7 @@ export const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
                                   width: '32px',
                                   height: '32px',
                                   backgroundColor: '#E8F4FC',
-                                  color: '#0171BB',
+                                  color: '#013BA6',
                                 }}
                               >
                                 <i className="feather-folder fs-14" />
@@ -1282,7 +1282,7 @@ export const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
                     type="submit"
                     disabled={isSavingDefaults}
                     className="btn btn-primary rounded-pill px-4 shadow-sm fw-semibold text-white"
-                    style={{ backgroundColor: '#0171BB', borderColor: '#0171BB' }}
+                    style={{ backgroundColor: '#013BA6', borderColor: '#013BA6' }}
                   >
                     {isSavingDefaults ? 'Saving Standards...' : 'Save Curriculum Defaults'}
                   </button>
@@ -1309,7 +1309,7 @@ export const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
               type="button"
               onClick={() => setShowGroupModal(true)}
               className="btn btn-primary btn-sm rounded-pill px-3 shadow-sm text-white"
-              style={{ backgroundColor: '#0171BB', borderColor: '#0171BB' }}
+              style={{ backgroundColor: '#013BA6', borderColor: '#013BA6' }}
             >
               <i className="feather-plus-circle me-1" /> + Create Cohort Group
             </button>
@@ -1344,7 +1344,7 @@ export const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
                   type="button"
                   onClick={() => setShowGroupModal(true)}
                   className="btn btn-outline-primary btn-sm rounded-pill px-3"
-                  style={{ borderColor: '#0171BB', color: '#0171BB' }}
+                  style={{ borderColor: '#013BA6', color: '#013BA6' }}
                 >
                   Create First Group
                 </button>
@@ -1493,7 +1493,7 @@ export const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
           <div className="modal-dialog modal-dialog-centered modal-lg">
             <div className="modal-content border-0 shadow-lg rounded-3">
               <form onSubmit={handleCreateUserSubmit}>
-                <div className="modal-header bg-primary text-white py-3 px-4" style={{ backgroundColor: '#0171BB' }}>
+                <div className="modal-header bg-primary text-white py-3 px-4" style={{ backgroundColor: '#013BA6' }}>
                   <h5 className="modal-title fw-bold text-white fs-16 d-flex align-items-center gap-2">
                     <i className="feather-user-plus" />
                     <span>Register New Scholar / Staff Account</span>
@@ -1634,7 +1634,7 @@ export const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
                     type="submit"
                     disabled={isCreatingUser}
                     className="btn btn-primary btn-sm rounded-pill px-4 fw-semibold text-white"
-                    style={{ backgroundColor: '#0171BB', borderColor: '#0171BB' }}
+                    style={{ backgroundColor: '#013BA6', borderColor: '#013BA6' }}
                   >
                     {isCreatingUser ? 'Registering Account...' : 'Register User'}
                   </button>
@@ -1653,7 +1653,7 @@ export const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
           <div className="modal-dialog modal-dialog-centered modal-lg">
             <div className="modal-content border-0 shadow-lg rounded-3">
               <form onSubmit={handleCreateCourseSubmit}>
-                <div className="modal-header bg-primary text-white py-3 px-4" style={{ backgroundColor: '#0171BB' }}>
+                <div className="modal-header bg-primary text-white py-3 px-4" style={{ backgroundColor: '#013BA6' }}>
                   <h5 className="modal-title fw-bold text-white fs-16 d-flex align-items-center gap-2">
                     <i className="feather-plus-circle" />
                     <span>Launch New Academic Course</span>
@@ -1774,7 +1774,7 @@ export const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
                     type="submit"
                     disabled={isCreatingCourse}
                     className="btn btn-primary btn-sm rounded-pill px-4 fw-semibold text-white"
-                    style={{ backgroundColor: '#0171BB', borderColor: '#0171BB' }}
+                    style={{ backgroundColor: '#013BA6', borderColor: '#013BA6' }}
                   >
                     {isCreatingCourse ? 'Provisioning Course...' : 'Save & Provision'}
                   </button>
@@ -1875,7 +1875,7 @@ export const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
                     type="submit"
                     disabled={isSavingSiteInfo}
                     className="btn btn-primary btn-sm rounded-pill px-4 fw-semibold text-white"
-                    style={{ backgroundColor: '#0171BB', borderColor: '#0171BB' }}
+                    style={{ backgroundColor: '#013BA6', borderColor: '#013BA6' }}
                   >
                     {isSavingSiteInfo ? 'Saving...' : 'Save Site Identity'}
                   </button>
@@ -2026,7 +2026,7 @@ export const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
                     type="submit"
                     disabled={isSavingSecurity}
                     className="btn btn-primary btn-sm rounded-pill px-4 fw-semibold text-white"
-                    style={{ backgroundColor: '#0171BB', borderColor: '#0171BB' }}
+                    style={{ backgroundColor: '#013BA6', borderColor: '#013BA6' }}
                   >
                     {isSavingSecurity ? 'Saving...' : 'Save Policies'}
                   </button>
@@ -2045,7 +2045,7 @@ export const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content border-0 shadow-lg rounded-3">
               <form onSubmit={handleSavePayment}>
-                <div className="modal-header bg-primary text-white py-3 px-4" style={{ backgroundColor: '#0171BB' }}>
+                <div className="modal-header bg-primary text-white py-3 px-4" style={{ backgroundColor: '#013BA6' }}>
                   <h5 className="modal-title fw-bold text-white fs-16 d-flex align-items-center gap-2">
                     <i className="feather-dollar-sign" />
                     <span>Tuition Currencies & Payment Gateways</span>
@@ -2110,7 +2110,7 @@ export const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
                     type="submit"
                     disabled={isSavingPayment}
                     className="btn btn-primary btn-sm rounded-pill px-4 fw-semibold text-white"
-                    style={{ backgroundColor: '#0171BB', borderColor: '#0171BB' }}
+                    style={{ backgroundColor: '#013BA6', borderColor: '#013BA6' }}
                   >
                     {isSavingPayment ? 'Saving...' : 'Save Payment Config'}
                   </button>
@@ -2180,7 +2180,7 @@ export const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
                   target="_blank"
                   rel="noreferrer"
                   className="btn btn-primary btn-sm rounded-pill px-4 fw-semibold text-white d-inline-flex align-items-center gap-1.5"
-                  style={{ backgroundColor: '#0171BB', borderColor: '#0171BB' }}
+                  style={{ backgroundColor: '#013BA6', borderColor: '#013BA6' }}
                 >
                   <span>Launch Administrative Console</span>
                   <i className="feather-external-link fs-12" />
@@ -2199,7 +2199,7 @@ export const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content border-0 shadow-lg rounded-3">
               <form onSubmit={handleCreateCategory}>
-                <div className="modal-header bg-primary text-white py-3 px-4" style={{ backgroundColor: '#0171BB' }}>
+                <div className="modal-header bg-primary text-white py-3 px-4" style={{ backgroundColor: '#013BA6' }}>
                   <h5 className="modal-title fw-bold text-white fs-16 d-flex align-items-center gap-2">
                     <i className="feather-folder-plus" />
                     <span>Create Faculty / Academic Category</span>
@@ -2279,7 +2279,7 @@ export const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
                     type="submit"
                     disabled={isCreatingCategory}
                     className="btn btn-primary btn-sm rounded-pill px-4 fw-semibold text-white"
-                    style={{ backgroundColor: '#0171BB', borderColor: '#0171BB' }}
+                    style={{ backgroundColor: '#013BA6', borderColor: '#013BA6' }}
                   >
                     {isCreatingCategory ? 'Creating Category...' : 'Save Faculty'}
                   </button>
@@ -2298,7 +2298,7 @@ export const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content border-0 shadow-lg rounded-3">
               <form onSubmit={handleCreateGroup}>
-                <div className="modal-header bg-primary text-white py-3 px-4" style={{ backgroundColor: '#0171BB' }}>
+                <div className="modal-header bg-primary text-white py-3 px-4" style={{ backgroundColor: '#013BA6' }}>
                   <h5 className="modal-title fw-bold text-white fs-16 d-flex align-items-center gap-2">
                     <i className="feather-users" />
                     <span>Create Seminar / Cohort Group</span>
@@ -2357,7 +2357,7 @@ export const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
                   <button
                     type="submit"
                     className="btn btn-primary btn-sm rounded-pill px-4 fw-semibold text-white"
-                    style={{ backgroundColor: '#0171BB', borderColor: '#0171BB' }}
+                    style={{ backgroundColor: '#013BA6', borderColor: '#013BA6' }}
                   >
                     Create Group
                   </button>

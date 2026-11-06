@@ -20,12 +20,12 @@ export const DEFAULT_DIPLOMA_THEMES: Record<string, BeautifulCertificateTheme> =
     name: 'Royal OUT Navy & Gold Foil Guilloche',
     badge: 'Chancellor Honours',
     bgGradient: 'radial-gradient(circle at center, #fffdf7 0%, #fef9e7 68%, #f5e6ba 100%)',
-    outerBorder: '#071F38',
+    outerBorder: '#061838',
     innerBorder: '#D4AF37',
-    accentColor: '#071F38',
+    accentColor: '#061838',
     sealColor: '#D4AF37',
     textColor: '#0f172a',
-    ribbonBg: 'linear-gradient(135deg, #071F38 0%, #0171BB 100%)',
+    ribbonBg: 'linear-gradient(135deg, #061838 0%, #013BA6 100%)',
   },
   'parchment-scroll': {
     id: 'parchment-scroll',
@@ -179,8 +179,8 @@ export const BeautifulCertificateStudio: React.FC<BeautifulCertificateStudioProp
       <div
         className="p-3 p-md-4 rounded-top-4 text-white"
         style={{
-          background: 'linear-gradient(135deg, #071F38 0%, #0171BB 55%, #0F172A 100%)',
-          borderBottom: '3px solid #FFD200',
+          background: 'linear-gradient(135deg, #061838 0%, #013BA6 55%, #0F172A 100%)',
+          borderBottom: '3px solid #F4ED2D',
         }}
       >
         <div className="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
@@ -188,7 +188,7 @@ export const BeautifulCertificateStudio: React.FC<BeautifulCertificateStudioProp
             <div className="d-flex align-items-center gap-2 mb-1">
               <span
                 className="badge rounded-pill fw-bold"
-                style={{ background: '#FFD200', color: '#071F38', fontSize: '0.72rem', letterSpacing: '0.6px' }}
+                style={{ background: '#F4ED2D', color: '#061838', fontSize: '0.72rem', letterSpacing: '0.6px' }}
               >
                 <i className="isax isax-medal-star me-1" />
                 BEAUTIFUL CERTIFICATE & VECTOR DIPLOMA STUDIO
@@ -198,7 +198,7 @@ export const BeautifulCertificateStudio: React.FC<BeautifulCertificateStudioProp
               </span>
             </div>
             <h5 className="text-white fw-bold mb-0">
-              Official Sovereign University Diploma — <span style={{ color: '#FFD200' }}>{ currentTheme.name }</span>
+              Official Sovereign University Diploma — <span style={{ color: '#F4ED2D' }}>{ currentTheme.name }</span>
             </h5>
           </div>
 
@@ -208,7 +208,7 @@ export const BeautifulCertificateStudio: React.FC<BeautifulCertificateStudioProp
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-sm fw-bold rounded-pill px-3 py-2 shadow-sm"
-              style={{ background: '#FFD200', color: '#071F38', border: '2px solid #fff' }}
+              style={{ background: '#F4ED2D', color: '#061838', border: '2px solid #fff' }}
             >
               <i className="isax isax-maximize-4 me-1" />
               Open Full-Bleed Vector Diploma PDF
@@ -218,7 +218,7 @@ export const BeautifulCertificateStudio: React.FC<BeautifulCertificateStudioProp
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-sm btn-light fw-bold rounded-pill px-3 py-2 shadow-sm"
-              style={{ color: '#071F38' }}
+              style={{ color: '#061838' }}
             >
               <i className="isax isax-printer me-1 text-primary" />
               Print / Export A4 Landscape PDF
@@ -242,8 +242,8 @@ export const BeautifulCertificateStudio: React.FC<BeautifulCertificateStudioProp
                 onClick={() => handleSaveTheme(t.id)}
                 className="btn btn-sm rounded-pill fw-bold transition-all"
                 style={{
-                  background: isActive ? '#FFD200' : 'rgba(255,255,255,0.12)',
-                  color: isActive ? '#071F38' : '#FFFFFF',
+                  background: isActive ? '#F4ED2D' : 'rgba(255,255,255,0.12)',
+                  color: isActive ? '#061838' : '#FFFFFF',
                   border: isActive ? '2px solid #FFFFFF' : '1px solid rgba(255,255,255,0.28)',
                   fontSize: '0.74rem',
                   padding: '5px 13px',
@@ -588,12 +588,12 @@ export const BeautifulCertificateStudio: React.FC<BeautifulCertificateStudioProp
                       textAnchor="middle"
                       fontSize="8.5"
                       fontWeight="900"
-                      fill="#071F38"
+                      fill="#061838"
                       letterSpacing="1"
                     >
                       SENATE SEAL
                     </text>
-                    <text x="70" y="68" textAnchor="middle" fontSize="13" fontWeight="900" fill="#071F38">
+                    <text x="70" y="68" textAnchor="middle" fontSize="13" fontWeight="900" fill="#061838">
                       OUT &bull; 1992
                     </text>
                     <text x="70" y="80" textAnchor="middle" fontSize="7.5" fontWeight="800" fill="#78350F">
@@ -643,7 +643,7 @@ export const BeautifulCertificateStudio: React.FC<BeautifulCertificateStudioProp
                       style={{
                         fontSize: '8px',
                         fontWeight: 800,
-                        color: '#071F38',
+                        color: '#061838',
                         marginTop: '3px',
                         fontFamily: 'monospace',
                       }}

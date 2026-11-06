@@ -18,7 +18,7 @@
   --sp-green-500: #22c55e;
   --sp-cyan-500: #06b6d4;
   --sp-cyan-400: #22d3ee;
-  --sp-sky-600: #0171BB;
+  --sp-sky-600: #013BA6;
   --sp-bg: #f5f7fb;
   --sp-card: #ffffff;
   --sp-border: #e6eaf0;
@@ -514,11 +514,11 @@
 .sp-event-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sp-event-time { font-size: 11.5px; color: var(--sp-muted); display: flex; align-items: center; gap: 5px; margin-top: 3px; }
 .sp-btn-blue { background: var(--sp-sky-600); color: #fff; border: 0; border-radius: 7px; padding: 6px 12px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0; }
-.sp-btn-blue:hover { background: #005B97; color: #fff; }
+.sp-btn-blue:hover { background: #013BA6; color: #fff; }
 .sp-callout { display: flex; align-items: center; gap: 12px; background: #e0f5fe; border: 1px solid #bae6fd; border-radius: 10px; padding: 12px; }
 .sp-callout-icon { width: 36px; height: 36px; border-radius: 9px; background: var(--sp-sky-600); color: #fff; display: grid; place-items: center; font-size: 17px; flex-shrink: 0; }
 .sp-callout-title { font-size: 13px; font-weight: 600; color: #075985; }
-.sp-callout-text { font-size: 11.5px; color: #005B97; }
+.sp-callout-text { font-size: 11.5px; color: #013BA6; }
 
 .sp-empty { background: var(--sp-card); border: 1px dashed #cbd5e1; border-radius: var(--sp-radius); padding: 28px; text-align: center; color: var(--sp-muted); font-size: 13px; }
 .sp-skeleton { background: linear-gradient(90deg, #eef2f6 0%, #f8fafc 50%, #eef2f6 100%); background-size: 200% 100%; animation: sp-shimmer 1.2s infinite; border-radius: var(--sp-radius); }

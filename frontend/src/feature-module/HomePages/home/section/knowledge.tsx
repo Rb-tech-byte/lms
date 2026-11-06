@@ -17,7 +17,7 @@ const Knowledge: React.FC = () => {
             <div className="mb-3">
               <div
                 className="text-uppercase fw-bold mb-1"
-                style={{ fontSize: '11px', color: '#0171BB', letterSpacing: '0.06em' }}
+                style={{ fontSize: '11px', color: '#013BA6', letterSpacing: '0.06em' }}
               >
                 {pathwayCfg.eyebrow}
               </div>
@@ -34,7 +34,7 @@ const Knowledge: React.FC = () => {
                 <div key={idx} className="col-lg-3 col-md-6">
                   <div
                     className="card h-100 border shadow-sm overflow-hidden"
-                    style={{ borderRadius: '12px', borderTop: '3px solid #0171BB', borderBottom: '3px solid #FFD200', borderColor: '#93C5FD' }}
+                    style={{ borderRadius: '12px', borderTop: '3px solid #013BA6', borderBottom: '3px solid #F4ED2D', borderColor: '#93C5FD' }}
                   >
                     {st.coverImage && (
                       <div style={{ height: '95px', overflow: 'hidden' }}>
@@ -50,7 +50,7 @@ const Knowledge: React.FC = () => {
                       <div className="d-flex align-items-center justify-content-between mb-2">
                         <span
                           className="badge rounded-2 px-2 py-1 fw-bold"
-                          style={{ background: '#FFD200', color: '#003B66', fontSize: '11.5px' }}
+                          style={{ background: '#F4ED2D', color: '#003B66', fontSize: '11.5px' }}
                         >
                           STEP {st.step}
                         </span>
@@ -65,7 +65,7 @@ const Knowledge: React.FC = () => {
                       <Link
                         to={st.route || '/register'}
                         className="text-decoration-none fw-semibold"
-                        style={{ fontSize: '12px', color: '#0171BB' }}
+                        style={{ fontSize: '12px', color: '#013BA6' }}
                       >
                         Proceed →
                       </Link>
@@ -83,11 +83,11 @@ const Knowledge: React.FC = () => {
             className="p-4 rounded-3 shadow-sm d-flex flex-wrap align-items-center justify-content-between gap-3"
             style={{
               background: ctaCfg.bgImage
-                ? `linear-gradient(135deg, rgba(1, 113, 187, 0.90) 0%, rgba(0, 130, 214, 0.86) 55%, rgba(0, 149, 242, 0.84) 100%), url(${ctaCfg.bgImage}) center/cover no-repeat`
-                : 'linear-gradient(135deg, #0171BB 0%, #0082D6 55%, #0095F2 100%)',
+                ? `linear-gradient(135deg, rgba(1, 59, 166, 0.90) 0%, rgba(0, 130, 214, 0.86) 55%, rgba(0, 149, 242, 0.84) 100%), url(${ctaCfg.bgImage}) center/cover no-repeat`
+                : 'linear-gradient(135deg, #013BA6 0%, #228DDD 55%, #0095F2 100%)',
               color: '#ffffff',
-              border: '3px solid #FFD200',
-              boxShadow: '0 12px 28px rgba(1, 113, 187, 0.22)',
+              border: '3px solid #F4ED2D',
+              boxShadow: '0 12px 28px rgba(1, 59, 166, 0.22)',
             }}
           >
             <div style={{ maxWidth: '640px' }}>
@@ -102,7 +102,7 @@ const Knowledge: React.FC = () => {
               <Link
                 to={ctaCfg.primaryRoute || '/register'}
                 className="btn btn-sm px-3 py-2 fw-bold rounded-2"
-                style={{ background: '#FFD200', border: '1.5px solid #FEF207', color: '#003B66', fontSize: '13px' }}
+                style={{ background: '#F4ED2D', border: '1.5px solid #FEF207', color: '#003B66', fontSize: '13px' }}
               >
                 {ctaCfg.primaryText}
               </Link>
@@ -111,7 +111,7 @@ const Knowledge: React.FC = () => {
                 className="btn btn-sm px-3 py-2 fw-semibold rounded-2"
                 style={{
                   background: 'rgba(255,253,231,0.16)',
-                  border: '1.5px solid #FFD200',
+                  border: '1.5px solid #F4ED2D',
                   color: '#FFFDE7',
                   fontSize: '13px',
                 }}

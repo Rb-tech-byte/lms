@@ -14,7 +14,7 @@ const DEFAULT_KICKSTART_TEMPLATES = [
     short_title: 'Undergraduate Degree',
     badge: '8 Semester Units',
     icon: 'isax-verify',
-    accentColor: '#0171BB',
+    accentColor: '#013BA6',
     target_format: 'tiles',
     num_sections: 8,
     description: 'Standardized 8-module university semester syllabus with SARIS rotating QR attendance tracking, continuous assessment assignments, grading rubrics, and final exam readiness.',
@@ -359,7 +359,7 @@ const AddNewCourse: React.FC = () => {
                                     style={{
                                       cursor: 'pointer',
                                       borderLeftWidth: isSelected ? '4px' : '1px',
-                                      borderLeftColor: isSelected ? tpl.accentColor || '#0171BB' : undefined,
+                                      borderLeftColor: isSelected ? tpl.accentColor || '#013BA6' : undefined,
                                     }}
                                   >
                                     <div className="d-flex justify-content-between align-items-start gap-2 mb-1">
@@ -370,8 +370,8 @@ const AddNewCourse: React.FC = () => {
                                       <span
                                         className="badge"
                                         style={{
-                                          backgroundColor: `${tpl.accentColor || '#0171BB'}18`,
-                                          color: tpl.accentColor || '#0171BB',
+                                          backgroundColor: `${tpl.accentColor || '#013BA6'}18`,
+                                          color: tpl.accentColor || '#013BA6',
                                           fontSize: '0.72rem',
                                         }}
                                       >

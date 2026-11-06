@@ -412,7 +412,7 @@ const StudentQuizQuestion: React.FC = () => {
                                 style={{
                                   cursor: 'pointer',
                                   transition: 'all 0.15s ease-in-out',
-                                  boxShadow: isSelected ? '0 0 0 1px #0171BB' : 'none',
+                                  boxShadow: isSelected ? '0 0 0 1px #013BA6' : 'none',
                                 }}
                               >
                                 <div

@@ -4,7 +4,7 @@ import { all_routes } from '../../../router/all_routes';
 import { courseService, PublicCatalogCategory } from '../../../../core/api/courseService';
 import { useCmsConfig } from '../../../../core/api/cmsService';
 
-const FACULTY_ACCENTS = ['#0171BB', '#005B97', '#0082D6', '#D97706', '#0171BB', '#005B97'];
+const FACULTY_ACCENTS = ['#013BA6', '#013BA6', '#228DDD', '#D97706', '#013BA6', '#013BA6'];
 const FACULTY_ICONS = ['isax-cpu-setting', 'isax-chart-21', 'isax-courthouse', 'isax-teacher', 'isax-book-1', 'isax-global'];
 
 const Categories: React.FC = () => {
@@ -32,7 +32,7 @@ const Categories: React.FC = () => {
           <div>
             <div
               className="text-uppercase fw-bold mb-1"
-              style={{ fontSize: '11px', color: '#0171BB', letterSpacing: '0.06em' }}
+              style={{ fontSize: '11px', color: '#013BA6', letterSpacing: '0.06em' }}
             >
               {sectionCfg.eyebrow}
             </div>
@@ -69,7 +69,7 @@ const Categories: React.FC = () => {
                     borderRadius: '12px',
                     borderColor: '#E2E8F0',
                     borderTop: `3.5px solid ${accent}`,
-                    borderBottom: '3px solid #FFD200',
+                    borderBottom: '3px solid #F4ED2D',
                     transition: 'transform 0.15s ease, box-shadow 0.15s ease',
                   }}
                 >
@@ -80,7 +80,7 @@ const Categories: React.FC = () => {
                       style={{
                         height: '95px',
                         background: `${accent}15`,
-                        borderBottom: '3px solid #FFD200',
+                        borderBottom: '3px solid #F4ED2D',
                       }}
                     >
                       <img
@@ -103,7 +103,7 @@ const Categories: React.FC = () => {
                         style={{
                           backgroundColor: accent,
                           color: '#ffffff',
-                          border: '1px solid #FFD200',
+                          border: '1px solid #F4ED2D',
                           fontSize: '10px',
                           letterSpacing: '0.04em',
                           boxShadow: '0 2px 6px rgba(0,0,0,0.2)',

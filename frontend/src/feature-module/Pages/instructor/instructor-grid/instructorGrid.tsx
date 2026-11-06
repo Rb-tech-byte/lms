@@ -112,8 +112,8 @@ const InstructorGrid: React.FC = () => {
       <section
         className="py-4"
         style={{
-          background: 'linear-gradient(135deg, #005B97 0%, #0171BB 55%, #0082D6 100%)',
-          borderBottom: '3px solid #FFD200',
+          background: 'linear-gradient(135deg, #013BA6 0%, #013BA6 55%, #228DDD 100%)',
+          borderBottom: '3px solid #F4ED2D',
         }}
       >
         <div className="container">
@@ -122,7 +122,7 @@ const InstructorGrid: React.FC = () => {
               <div className="d-flex align-items-center gap-2 mb-2">
                 <span
                   className="badge rounded-pill px-3 py-1 fw-bold"
-                  style={{ background: '#FFD200', color: '#051426', fontSize: '0.72rem' }}
+                  style={{ background: '#F4ED2D', color: '#051426', fontSize: '0.72rem' }}
                 >
                   ACADEMIC SENATE &amp; LECTURERS
                 </span>
@@ -185,7 +185,7 @@ const InstructorGrid: React.FC = () => {
                       setShowApplyModal(true);
                     }}
                     className="btn btn-sm btn-light rounded-pill px-3 fw-semibold ms-1"
-                    style={{ fontSize: '0.76rem', color: '#071F38', whiteSpace: 'nowrap' }}
+                    style={{ fontSize: '0.76rem', color: '#061838', whiteSpace: 'nowrap' }}
                   >
                     <i className="isax isax-teacher me-1" />
                     Join Faculty
@@ -294,7 +294,7 @@ const InstructorGrid: React.FC = () => {
                                   className="badge rounded-pill mb-1"
                                   style={{
                                     background: '#eff6ff',
-                                    color: '#0171BB',
+                                    color: '#013BA6',
                                     fontSize: '0.67rem',
                                     fontWeight: 600,
                                   }}

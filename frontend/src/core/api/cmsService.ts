@@ -242,9 +242,9 @@ export const DEFAULT_CMS_CONFIG: CmsConfig = {
   stats: {
     visible: true,
     items: [
-      { id: 'stat-scholars', label: 'Active Enrolled Scholars', value: '14,820', badge: 'Nationwide & EAC', icon: 'isax-profile-2user', accent: '#0171BB' },
-      { id: 'stat-courses', label: 'Published Digital Modules', value: '4', badge: 'Moodle 5.3 Active', icon: 'isax-book-saved', accent: '#0171BB' },
-      { id: 'stat-faculties', label: 'Academic Faculties & Institutes', value: '5', badge: 'Senate Approved', icon: 'isax-courthouse', accent: '#0171BB' },
+      { id: 'stat-scholars', label: 'Active Enrolled Scholars', value: '14,820', badge: 'Nationwide & EAC', icon: 'isax-profile-2user', accent: '#013BA6' },
+      { id: 'stat-courses', label: 'Published Digital Modules', value: '4', badge: 'Moodle 5.3 Active', icon: 'isax-book-saved', accent: '#013BA6' },
+      { id: 'stat-faculties', label: 'Academic Faculties & Institutes', value: '5', badge: 'Senate Approved', icon: 'isax-courthouse', accent: '#013BA6' },
       { id: 'stat-centers', label: 'Regional Exam & Study Centres', value: '30+', badge: 'All Regions', icon: 'isax-location', accent: '#D97706' },
     ],
   },
@@ -279,7 +279,7 @@ export const DEFAULT_CMS_CONFIG: CmsConfig = {
           badge: 'Moodle 5.3 Core',
           icon: 'isax-monitor-mobbile',
           route: '/course/course-grid',
-          accent: '#0171BB',
+          accent: '#013BA6',
           coverImage: '/assets/img/home/feature-self-paced.svg',
         },
         {
@@ -289,7 +289,7 @@ export const DEFAULT_CMS_CONFIG: CmsConfig = {
           badge: 'Pesapal V3 & Selcom',
           icon: 'isax-wallet-check',
           route: '/pages/pricing-plan',
-          accent: '#0171BB',
+          accent: '#013BA6',
           coverImage: '/assets/img/home/feature-instant-payment.svg',
         },
         {
@@ -299,7 +299,7 @@ export const DEFAULT_CMS_CONFIG: CmsConfig = {
           badge: 'OAS 3.1 Assessment',
           icon: 'isax-clipboard-tick',
           route: '/student/student-quiz',
-          accent: '#0171BB',
+          accent: '#013BA6',
           coverImage: '/assets/img/home/feature-online-quiz.svg',
         },
         {
@@ -393,7 +393,7 @@ export const DEFAULT_CMS_CONFIG: CmsConfig = {
           title: '2026/2027 Semester I Online Course Registration & Orientation Schedule',
           summary: 'All continuing and newly admitted scholars can now register for core and elective modules via the self-service portal.',
           route: '/blog/blog-details?id=2',
-          badgeColor: '#0171BB',
+          badgeColor: '#013BA6',
           coverImage: '/assets/img/home/notice-admissions.svg',
         },
         {
@@ -403,7 +403,7 @@ export const DEFAULT_CMS_CONFIG: CmsConfig = {
           title: 'Continuous Assessment Timed Quizzes & Proctored Examination Guidelines',
           summary: 'Review the updated Senate guidelines for online continuous assessments (30%) and regional centre end-of-semester examinations (70%).',
           route: '/blog/blog-details?id=3',
-          badgeColor: '#0171BB',
+          badgeColor: '#013BA6',
           coverImage: '/assets/img/home/notice-examinations.svg',
         },
         {

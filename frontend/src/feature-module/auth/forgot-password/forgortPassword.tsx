@@ -112,7 +112,7 @@ const ForgortPassword: React.FC = () => {
                 disabled={loading}
                 className="btn w-100 rounded-pill py-2.5 fw-bold text-white shadow-sm mb-3"
                 style={{
-                  background: 'linear-gradient(135deg, #071F38 0%, #0171BB 100%)',
+                  background: 'linear-gradient(135deg, #061838 0%, #013BA6 100%)',
                   fontSize: '0.9rem',
                 }}
               >
@@ -127,7 +127,7 @@ const ForgortPassword: React.FC = () => {
                 <Link
                   to={route.login}
                   className="fw-bold text-decoration-none"
-                  style={{ color: '#0171BB' }}
+                  style={{ color: '#013BA6' }}
                 >
                   Return to Sign In
                 </Link>

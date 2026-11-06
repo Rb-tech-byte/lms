@@ -36,7 +36,7 @@ const Featuredcourse: React.FC = () => {
           <div>
             <div
               className="text-uppercase fw-bold mb-1"
-              style={{ fontSize: '11px', color: '#0171BB', letterSpacing: '0.06em' }}
+              style={{ fontSize: '11px', color: '#013BA6', letterSpacing: '0.06em' }}
             >
               {sectionCfg.eyebrow}
             </div>
@@ -57,9 +57,9 @@ const Featuredcourse: React.FC = () => {
                 className="btn btn-sm rounded-pill px-3 py-1 fw-medium"
                 style={{
                   fontSize: '12px',
-                  background: activeFaculty === fac ? '#0171BB' : '#ffffff',
+                  background: activeFaculty === fac ? '#013BA6' : '#ffffff',
                   color: activeFaculty === fac ? '#ffffff' : '#334155',
-                  border: activeFaculty === fac ? '1px solid #0171BB' : '1px solid #cbd5e1',
+                  border: activeFaculty === fac ? '1px solid #013BA6' : '1px solid #cbd5e1',
                 }}
               >
                 {fac === 'ALL' ? 'All Programmes' : fac.replace('Faculty of ', '')}
@@ -77,8 +77,8 @@ const Featuredcourse: React.FC = () => {
                 style={{
                   borderRadius: '12px',
                   border: '1.5px solid #E2E8F0',
-                  borderTop: `3.5px solid ${course.accentColor || '#0171BB'}`,
-                  borderBottom: '3px solid #FFD200',
+                  borderTop: `3.5px solid ${course.accentColor || '#013BA6'}`,
+                  borderBottom: '3px solid #F4ED2D',
                   overflow: 'hidden',
                 }}
               >
@@ -89,8 +89,8 @@ const Featuredcourse: React.FC = () => {
                     height: '140px',
                     background: course.accentColor
                       ? `linear-gradient(135deg, ${course.accentColor}20 0%, ${course.accentColor}38 100%)`
-                      : 'linear-gradient(135deg, #0171BB20 0%, #0171BB38 100%)',
-                    borderBottom: '3px solid #FFD200',
+                      : 'linear-gradient(135deg, #013BA620 0%, #013BA638 100%)',
+                    borderBottom: '3px solid #F4ED2D',
                   }}
                 >
                   <Link to={`${all_routes.courseDetails}?id=${course.id}`} className="d-block w-100 h-100">
@@ -118,9 +118,9 @@ const Featuredcourse: React.FC = () => {
                   <span
                     className="badge rounded-pill position-absolute top-0 start-0 m-2 px-2.5 py-1 fw-bold"
                     style={{
-                      background: course.accentColor || '#0171BB',
+                      background: course.accentColor || '#013BA6',
                       color: '#ffffff',
-                      border: '1px solid #FFD200',
+                      border: '1px solid #F4ED2D',
                       fontSize: '0.68rem',
                       boxShadow: '0 2px 8px rgba(0,0,0,0.22)',
                     }}
@@ -130,7 +130,7 @@ const Featuredcourse: React.FC = () => {
                   <span
                     className="badge rounded-pill position-absolute top-0 end-0 m-2 px-2.5 py-1 fw-bold"
                     style={{
-                      background: '#FFD200',
+                      background: '#F4ED2D',
                       color: '#003B66',
                       fontSize: '0.72rem',
                       boxShadow: '0 2px 8px rgba(0,0,0,0.18)',
@@ -142,7 +142,7 @@ const Featuredcourse: React.FC = () => {
 
                 <div className="card-body p-3 d-flex flex-column flex-grow-1">
                   <div className="text-muted mb-1 text-truncate" style={{ fontSize: '11.5px' }}>
-                    <i className="isax isax-courthouse me-1" style={{ color: course.accentColor || '#0171BB' }} />
+                    <i className="isax isax-courthouse me-1" style={{ color: course.accentColor || '#013BA6' }} />
                     {course.categoryName}
                   </div>
 
@@ -219,8 +219,8 @@ const Featuredcourse: React.FC = () => {
                         to={`${all_routes.courseCheckout}?courseId=${course.id}`}
                         className="btn btn-sm btn-primary py-1 px-2 fw-semibold"
                         style={{
-                          background: course.accentColor || '#0171BB',
-                          borderColor: course.accentColor || '#0171BB',
+                          background: course.accentColor || '#013BA6',
+                          borderColor: course.accentColor || '#013BA6',
                           fontSize: '11.5px',
                         }}
                       >

@@ -50,8 +50,8 @@ const AboutUs: React.FC = () => {
       <section
         className="py-4"
         style={{
-          background: 'linear-gradient(135deg, #005B97 0%, #0171BB 55%, #0082D6 100%)',
-          borderBottom: '3px solid #FFD200',
+          background: 'linear-gradient(135deg, #013BA6 0%, #013BA6 55%, #228DDD 100%)',
+          borderBottom: '3px solid #F4ED2D',
         }}
       >
         <div className="container">
@@ -59,7 +59,7 @@ const AboutUs: React.FC = () => {
             <div className="col-lg-8">
               <span
                 className="badge rounded-pill px-3 py-1 fw-bold mb-2"
-                style={{ background: '#FFD200', color: '#051426', fontSize: '0.72rem' }}
+                style={{ background: '#F4ED2D', color: '#051426', fontSize: '0.72rem' }}
               >
                 {cms.sections?.capabilities?.eyebrow || 'NATIONAL OPEN & DISTANCE UNIVERSITY'}
               </span>
@@ -90,7 +90,7 @@ const AboutUs: React.FC = () => {
         <div className="container">
           <div className="row g-3 mb-4">
             {[
-              { label: 'Active Scholars', value: stats.totalScholars.toLocaleString() + '+', icon: 'isax-profile-2user', color: '#0171BB' },
+              { label: 'Active Scholars', value: stats.totalScholars.toLocaleString() + '+', icon: 'isax-profile-2user', color: '#013BA6' },
               { label: 'Accredited Faculties', value: String(stats.totalFaculties), icon: 'isax-buildings-2', color: '#059669' },
               { label: 'Regional Study Centres', value: String(stats.regionalCenters), icon: 'isax-location', color: '#d97706' },
               { label: 'Scholar Satisfaction', value: stats.satisfactionRate, icon: 'isax-verify', color: '#7c3aed' },
@@ -124,7 +124,7 @@ const AboutUs: React.FC = () => {
                   <div className="p-3">
                     <span
                       className="rounded-3 d-inline-flex align-items-center justify-content-center mb-2.5"
-                      style={{ width: 40, height: 40, background: '#eff6ff', color: '#0171BB' }}
+                      style={{ width: 40, height: 40, background: '#eff6ff', color: '#013BA6' }}
                     >
                       <i className={`isax ${pillar.icon || 'isax-award'} fs-5`} />
                     </span>

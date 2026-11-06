@@ -16,7 +16,7 @@ const Latestblog: React.FC = () => {
           <div>
             <div
               className="text-uppercase fw-bold mb-1"
-              style={{ fontSize: '11px', color: '#0171BB', letterSpacing: '0.06em' }}
+              style={{ fontSize: '11px', color: '#013BA6', letterSpacing: '0.06em' }}
             >
               {bulCfg.eyebrow}
             </div>
@@ -41,10 +41,10 @@ const Latestblog: React.FC = () => {
             <div key={item.id} className="col-lg-4 col-md-6">
               <div
                 className="card h-100 border shadow-sm overflow-hidden"
-                style={{ borderRadius: '12px', borderTop: '3px solid #0171BB', borderBottom: '3px solid #FFD200', borderColor: '#93C5FD' }}
+                style={{ borderRadius: '12px', borderTop: '3px solid #013BA6', borderBottom: '3px solid #F4ED2D', borderColor: '#93C5FD' }}
               >
                 {item.coverImage && (
-                  <div style={{ height: '115px', overflow: 'hidden', background: '#F0F8FF', borderBottom: '2px solid #FFD200' }}>
+                  <div style={{ height: '115px', overflow: 'hidden', background: '#F0F8FF', borderBottom: '2px solid #F4ED2D' }}>
                     <img
                       src={item.coverImage}
                       alt={item.title}
@@ -59,7 +59,7 @@ const Latestblog: React.FC = () => {
                     <span
                       className="badge rounded-pill px-2 py-1 fw-bold"
                       style={{
-                        background: '#FFD200',
+                        background: '#F4ED2D',
                         color: '#003B66',
                         fontSize: '10.5px',
                       }}
@@ -89,7 +89,7 @@ const Latestblog: React.FC = () => {
                   <Link
                     to={item.route || all_routes.blogDetails}
                     className="text-decoration-none fw-bold mt-auto"
-                    style={{ fontSize: '12px', color: '#0171BB' }}
+                    style={{ fontSize: '12px', color: '#013BA6' }}
                   >
                     Read Official Notice →
                   </Link>

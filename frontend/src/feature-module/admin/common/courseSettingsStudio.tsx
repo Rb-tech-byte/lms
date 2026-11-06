@@ -314,7 +314,7 @@ export const CourseSettingsStudio: React.FC<CourseSettingsStudioProps> = ({
         <div
           className="px-4 py-3 d-flex flex-wrap align-items-center justify-content-between flex-shrink-0"
           style={{
-            background: 'linear-gradient(135deg, #051426 0%, #0f172a 60%, #005B97 100%)',
+            background: 'linear-gradient(135deg, #051426 0%, #0f172a 60%, #013BA6 100%)',
             color: '#ffffff',
           }}
         >
@@ -434,7 +434,7 @@ export const CourseSettingsStudio: React.FC<CourseSettingsStudioProps> = ({
                             }`}
                             style={{
                               fontSize: '12px',
-                              backgroundColor: settingsSection === s.id ? '#0171BB' : 'transparent',
+                              backgroundColor: settingsSection === s.id ? '#013BA6' : 'transparent',
                               border: 'none',
                             }}
                           >
@@ -617,7 +617,7 @@ export const CourseSettingsStudio: React.FC<CourseSettingsStudioProps> = ({
                                   </div>
                                   <div className="row g-2">
                                     {[
-                                      { id: 1, title: 'Undergraduate Degree Programme', badge: '8 Semester Units', desc: 'SARIS QR attendance, continuous assessment rubric & exam prep', color: '#0171BB' },
+                                      { id: 1, title: 'Undergraduate Degree Programme', badge: '8 Semester Units', desc: 'SARIS QR attendance, continuous assessment rubric & exam prep', color: '#013BA6' },
                                       { id: 2, title: 'Postgraduate & Masters Seminar', badge: '6 Research Gates', desc: 'Literature review, VPL cloud sandbox lab & thesis defense checkpoints', color: '#06b6d4' },
                                       { id: 3, title: 'Short Courses & CPD Micro-Credential', badge: '4 Executive Sprints', desc: 'Self-paced briefings, quiz & TCU/SARIS verifiable CustomCert PDF', color: '#10b981' },
                                       { id: 4, title: 'STEM & Computer Science Lab Course', badge: '6 Engineering Labs', desc: 'Pre-linked CodeRunner unit-test auto-grader & VPL Cloud IDE', color: '#8b5cf6' },
@@ -741,7 +741,7 @@ export const CourseSettingsStudio: React.FC<CourseSettingsStudioProps> = ({
                             type="submit"
                             disabled={saving}
                             className="btn btn-sm btn-primary rounded-pill px-4 fw-bold shadow-sm"
-                            style={{ backgroundColor: '#0171BB', borderColor: '#0171BB' }}
+                            style={{ backgroundColor: '#013BA6', borderColor: '#013BA6' }}
                           >
                             {saving ? 'Saving...' : 'Save Parameters'}
                           </button>
@@ -878,7 +878,7 @@ export const CourseSettingsStudio: React.FC<CourseSettingsStudioProps> = ({
                                                   ? '#4338ca'
                                                   : m.modname === 'assign'
                                                   ? '#b45309'
-                                                  : '#005B97',
+                                                  : '#013BA6',
                                             }}
                                           >
                                             {m.modname}
@@ -1107,7 +1107,7 @@ export const CourseSettingsStudio: React.FC<CourseSettingsStudioProps> = ({
               <button
                 type="button"
                 className="btn btn-sm btn-primary rounded-pill px-4 fw-bold shadow-sm"
-                style={{ backgroundColor: '#0171BB', borderColor: '#0171BB' }}
+                style={{ backgroundColor: '#013BA6', borderColor: '#013BA6' }}
                 onClick={() => handleSubmitSettings()}
                 disabled={saving}
               >

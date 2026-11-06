@@ -216,7 +216,7 @@ const InstructorAnnouncements: React.FC = () => {
                   borderLeft:
                     ann.priority === 'High'
                       ? '4px solid #ef4444'
-                      : '4px solid #0171bb',
+                      : '4px solid #013ba6',
                 }}
               >
                 <div className="d-flex flex-wrap align-items-start justify-content-between gap-2 mb-2">

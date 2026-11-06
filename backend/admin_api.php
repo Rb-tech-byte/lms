@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Open University of Tanzania LMS
  * Native Administrative Web Service & Management API
@@ -125,7 +125,7 @@ function get_outlms_course_media_map($DB): array {
         foreach ($records as $r) {
             $map[(int)$r->entity_id] = [
                 'image' => append_svg_cache_bust((string)$r->file_path),
-                'accent' => $r->accent_color ?: '#0171BB',
+                'accent' => $r->accent_color ?: '#013BA6',
                 'badge' => $r->badge_text ?: '',
                 'alt' => $r->alt_text ?: '',
             ];
@@ -143,13 +143,13 @@ function get_outlms_category_media_map($DB): array {
             if ($r->media_type === 'icon') {
                 $icons[(int)$r->entity_id] = [
                     'icon' => append_svg_cache_bust((string)$r->file_path),
-                    'accent' => $r->accent_color ?: '#0171BB',
+                    'accent' => $r->accent_color ?: '#013BA6',
                     'badge' => $r->badge_text ?: '',
                 ];
             } else if ($r->media_type === 'cover') {
                 $covers[(int)$r->entity_id] = [
                     'cover' => append_svg_cache_bust((string)$r->file_path),
-                    'accent' => $r->accent_color ?: '#0171BB',
+                    'accent' => $r->accent_color ?: '#013BA6',
                     'badge' => $r->badge_text ?: '',
                 ];
             }
@@ -235,7 +235,7 @@ function outlms_get_kickstart_templates_catalog(): array {
             'short_title' => 'Undergraduate Degree',
             'badge' => '8 Semester Units',
             'icon' => 'isax-verify',
-            'accentColor' => '#0171BB',
+            'accentColor' => '#013BA6',
             'target_format' => 'tiles',
             'num_sections' => 8,
             'description' => 'Standardized 8-module university semester syllabus with SARIS rotating QR attendance tracking, continuous assessment assignments, grading rubrics, and final exam readiness.',
@@ -898,7 +898,7 @@ if (in_array($action, [
                     'startdate' => (int)$c->startdate ?: time(),
                     'courseImage' => $courseMediaMap[$c->id]['image'] ?? get_outlms_course_thumbnail((int)$c->id, $c->shortname, $courseMediaMap),
                     'image' => $courseMediaMap[$c->id]['image'] ?? get_outlms_course_thumbnail((int)$c->id, $c->shortname, $courseMediaMap),
-                    'accentColor' => $courseMediaMap[$c->id]['accent'] ?? '#0171BB',
+                    'accentColor' => $courseMediaMap[$c->id]['accent'] ?? '#013BA6',
                     'badgeText' => $courseMediaMap[$c->id]['badge'] ?? ($isMOOC ? 'Free / Open Access MOOC' : ($isPSC ? 'Professional Short Course' : 'Academic Degree')),
                     'rating' => '4.9',
                     'reviewsCount' => 42 + ((int)$c->id * 5),
@@ -914,7 +914,7 @@ if (in_array($action, [
                 $catId = (int)$cat->id;
                 $catIcon = $catMediaMap['icons'][$catId]['icon'] ?? ('/assets/img/category/icons/cat-icon-' . $catId . '-fstes.svg');
                 $catCover = $catMediaMap['covers'][$catId]['cover'] ?? ('/assets/img/category/covers/cat-cover-' . $catId . '-fstes.svg');
-                $catAccent = $catMediaMap['covers'][$catId]['accent'] ?? '#0171BB';
+                $catAccent = $catMediaMap['covers'][$catId]['accent'] ?? '#013BA6';
                 $catBadge = $catMediaMap['covers'][$catId]['badge'] ?? ($cat->idnumber ?: ('FAC-' . $catId));
 
                 $formattedCategories[] = [
@@ -1274,9 +1274,9 @@ if (in_array($action, [
                 'stats' => [
                     'visible' => true,
                     'items' => [
-                        ['id' => 'stat-scholars', 'label' => 'Active Scholars', 'value' => number_format($totalUsers), 'badge' => 'Nationwide & EAC', 'icon' => 'isax-profile-2user', 'accent' => '#0171BB'],
-                        ['id' => 'stat-courses', 'label' => 'Accredited Courses', 'value' => (string)$totalCourses, 'badge' => 'Open Enrolment', 'icon' => 'isax-book-saved', 'accent' => '#0171BB'],
-                        ['id' => 'stat-faculties', 'label' => 'Academic Faculties', 'value' => (string)$totalFaculties, 'badge' => 'Senate Approved', 'icon' => 'isax-courthouse', 'accent' => '#0171BB'],
+                        ['id' => 'stat-scholars', 'label' => 'Active Scholars', 'value' => number_format($totalUsers), 'badge' => 'Nationwide & EAC', 'icon' => 'isax-profile-2user', 'accent' => '#013BA6'],
+                        ['id' => 'stat-courses', 'label' => 'Accredited Courses', 'value' => (string)$totalCourses, 'badge' => 'Open Enrolment', 'icon' => 'isax-book-saved', 'accent' => '#013BA6'],
+                        ['id' => 'stat-faculties', 'label' => 'Academic Faculties', 'value' => (string)$totalFaculties, 'badge' => 'Senate Approved', 'icon' => 'isax-courthouse', 'accent' => '#013BA6'],
                         ['id' => 'stat-centers', 'label' => 'Regional Study Centres', 'value' => '30+', 'badge' => 'All Regions', 'icon' => 'isax-location', 'accent' => '#D97706'],
                     ],
                 ],
@@ -1311,7 +1311,7 @@ if (in_array($action, [
                                 'badge' => '24/7 Access',
                                 'icon' => 'isax-monitor-mobbile',
                                 'route' => '/course/course-grid',
-                                'accent' => '#0171BB',
+                                'accent' => '#013BA6',
                                 'coverImage' => '/assets/img/home/feature-self-paced.svg',
                             ],
                             [
@@ -1321,7 +1321,7 @@ if (in_array($action, [
                                 'badge' => 'Instant Receipt',
                                 'icon' => 'isax-wallet-check',
                                 'route' => '/pages/pricing-plan',
-                                'accent' => '#0171BB',
+                                'accent' => '#013BA6',
                                 'coverImage' => '/assets/img/home/feature-instant-payment.svg',
                             ],
                             [
@@ -1331,7 +1331,7 @@ if (in_array($action, [
                                 'badge' => 'Auto-Graded',
                                 'icon' => 'isax-clipboard-tick',
                                 'route' => '/student/student-quiz',
-                                'accent' => '#0171BB',
+                                'accent' => '#013BA6',
                                 'coverImage' => '/assets/img/home/feature-online-quiz.svg',
                             ],
                             [
@@ -1425,7 +1425,7 @@ if (in_array($action, [
                                 'title' => '2026/2027 Semester I Online Course Registration & Orientation Schedule',
                                 'summary' => 'All continuing and newly admitted scholars can now register for core and elective modules via the self-service portal.',
                                 'route' => '/blog/blog-details?id=2',
-                                'badgeColor' => '#0171BB',
+                                'badgeColor' => '#013BA6',
                                 'coverImage' => '/assets/img/home/notice-admissions.svg',
                             ],
                             [
@@ -1435,7 +1435,7 @@ if (in_array($action, [
                                 'title' => 'Continuous Assessment Quizzes & Regional Examination Guidelines',
                                 'summary' => 'Review the updated Senate guidelines for online continuous assessments (30%) and regional centre examinations (70%).',
                                 'route' => '/blog/blog-details?id=3',
-                                'badgeColor' => '#0171BB',
+                                'badgeColor' => '#013BA6',
                                 'coverImage' => '/assets/img/home/notice-examinations.svg',
                             ],
                             [
@@ -3222,7 +3222,7 @@ if ($isInstructorAction || in_array($action, ['resolve_identity', 'change_passwo
                     'name' => 'Tiles Grid Format',
                     'badge' => 'Visual Cards',
                     'icon' => 'isax-element-3',
-                    'accentColor' => '#0171BB',
+                    'accentColor' => '#013BA6',
                     'description' => 'Displays syllabus units as interactive visual tiles with progress rings, radial indicators, and modal activity launchers.',
                 ],
                 [
@@ -3898,7 +3898,7 @@ if ($isInstructorAction || in_array($action, ['resolve_identity', 'change_passwo
                     'sectionNumber' => (int)$cm->sectionnum,
                     'sectionName' => $cm->sectionname ?: ('Unit ' . (int)$cm->sectionnum),
                     'completed' => $isDone,
-                    'statusColor' => $isDone ? '#10b981' : '#0171BB',
+                    'statusColor' => $isDone ? '#10b981' : '#013BA6',
                     'statusLabel' => $isDone ? 'Completed' : 'In Progress',
                     'timecompleted' => ($isDone && $compRec) ? date('d M Y, h:i A', (int)$compRec->timemodified) : null,
                 ];
@@ -4284,11 +4284,11 @@ if ($isInstructorAction || in_array($action, ['resolve_identity', 'change_passwo
                     'name' => 'Royal OUT Navy & Gold Foil Guilloche',
                     'badge' => 'Chancellor Honours',
                     'bgGradient' => 'radial-gradient(circle at center, #fffdf7 0%, #fef9e7 68%, #f5e6ba 100%)',
-                    'outerBorder' => '#071F38',
+                    'outerBorder' => '#061838',
                     'innerBorder' => '#D4AF37',
-                    'accentColor' => '#071F38',
+                    'accentColor' => '#061838',
                     'goldColor' => '#B8860B',
-                    'ribbonBg' => 'linear-gradient(135deg, #071F38 0%, #0171BB 100%)',
+                    'ribbonBg' => 'linear-gradient(135deg, #061838 0%, #013BA6 100%)',
                     'sealColor' => '#D4AF37',
                     'textColor' => '#0f172a',
                 ],
@@ -4323,12 +4323,12 @@ if ($isInstructorAction || in_array($action, ['resolve_identity', 'change_passwo
                     'name' => 'Executive Dark Gold Foil & Holographic Crest',
                     'badge' => 'IEMT Executive',
                     'bgGradient' => 'radial-gradient(circle at center, #112240 0%, #0a192f 75%, #020c1b 100%)',
-                    'outerBorder' => '#FFD200',
+                    'outerBorder' => '#F4ED2D',
                     'innerBorder' => '#38bdf8',
-                    'accentColor' => '#FFD200',
+                    'accentColor' => '#F4ED2D',
                     'goldColor' => '#38bdf8',
                     'ribbonBg' => 'linear-gradient(135deg, #b45309 0%, #f59e0b 100%)',
-                    'sealColor' => '#FFD200',
+                    'sealColor' => '#F4ED2D',
                     'textColor' => '#f8fafc',
                 ],
                 'crimson-chancellor' => [
@@ -4422,7 +4422,7 @@ if ($isInstructorAction || in_array($action, ['resolve_identity', 'change_passwo
                 foreach ($themes as $tk => $tv) {
                     $isAct = ($tk === $t['id']);
                     $btnStyle = $isAct
-                        ? "background:#FFD200;color:#071F38;font-weight:800;border:2px solid #fff;"
+                        ? "background:#F4ED2D;color:#061838;font-weight:800;border:2px solid #fff;"
                         : "background:rgba(255,255,255,0.14);color:#fff;border:1px solid rgba(255,255,255,0.3);";
                     $href = "?action=render_beautiful_certificate&course_id={$courseId}&code=" . urlencode($serialCode) . "&theme=" . urlencode($tk);
                     $themeButtonsHtml .= "<a href=\"{$href}\" style=\"text-decoration:none;padding:6px 13px;border-radius:999px;font-size:12px;{$btnStyle}\">{$tv['name']}</a>";
@@ -4437,7 +4437,7 @@ if ($isInstructorAction || in_array($action, ['resolve_identity', 'change_passwo
   @page { size: A4 landscape; margin: 0; }
   * { box-sizing: border-box; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   body { margin: 0; padding: 0; background: #0f172a; font-family: 'Georgia', 'Times New Roman', serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-  .studio-toolbar { width: 100%; background: linear-gradient(90deg, #071F38 0%, #0171BB 50%, #071F38 100%); border-bottom: 3px solid #FFD200; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; font-family: system-ui, -apple-system, sans-serif; position: sticky; top: 0; z-index: 100; }
+  .studio-toolbar { width: 100%; background: linear-gradient(90deg, #061838 0%, #013BA6 50%, #061838 100%); border-bottom: 3px solid #F4ED2D; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; font-family: system-ui, -apple-system, sans-serif; position: sticky; top: 0; z-index: 100; }
   .diploma-stage { width: 1122px; height: 793px; margin: 24px auto; position: relative; background: {$t['bgGradient']}; color: {$t['textColor']}; box-shadow: 0 25px 70px rgba(0,0,0,0.55); overflow: hidden; padding: 28px; display: flex; flex-direction: column; justify-content: space-between; }
   .guilloche-outer { border: 10px double {$t['outerBorder']}; height: 100%; width: 100%; position: relative; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; }
   .guilloche-inner { border: 3px solid {$t['innerBorder']}; height: 100%; width: 100%; position: relative; padding: 26px 44px; display: flex; flex-direction: column; justify-content: space-between; text-align: center; }
@@ -4456,7 +4456,7 @@ if ($isInstructorAction || in_array($action, ['resolve_identity', 'change_passwo
 <body>
   <div class=\"studio-toolbar\">
     <div style=\"display:flex;align-items:center;gap:10px;color:#fff;\">
-      <span style=\"background:#FFD200;color:#071F38;font-weight:800;padding:4px 10px;border-radius:999px;font-size:11px;\">BEAUTIFUL CERTIFICATE STUDIO</span>
+      <span style=\"background:#F4ED2D;color:#061838;font-weight:800;padding:4px 10px;border-radius:999px;font-size:11px;\">BEAUTIFUL CERTIFICATE STUDIO</span>
       <strong style=\"font-size:14px;\">Serial: {$serialCode}</strong>
     </div>
     <div style=\"display:flex;align-items:center;gap:6px;flex-wrap:wrap;\">
@@ -4554,8 +4554,8 @@ if ($isInstructorAction || in_array($action, ['resolve_identity', 'change_passwo
               </defs>
               <polygon points=\"60,2 71,15 88,9 92,26 109,29 105,46 118,57 107,71 113,87 97,94 95,111 78,109 68,120 55,110 39,116 33,100 16,100 19,83 5,74 16,60 8,44 24,36 24,19 41,20 50,5\" fill=\"url(#goldFoil)\" stroke=\"#78350f\" stroke-width=\"1.5\"/>
               <circle cx=\"60\" cy=\"60\" r=\"40\" fill=\"none\" stroke=\"#78350f\" stroke-width=\"2\" stroke-dasharray=\"3,2\"/>
-              <circle cx=\"60\" cy=\"60\" r=\"34\" fill=\"#071F38\"/>
-              <text x=\"60\" y=\"52\" text-anchor=\"middle\" fill=\"#FFD200\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"900\">SENATE SEAL</text>
+              <circle cx=\"60\" cy=\"60\" r=\"34\" fill=\"#061838\"/>
+              <text x=\"60\" y=\"52\" text-anchor=\"middle\" fill=\"#F4ED2D\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"900\">SENATE SEAL</text>
               <text x=\"60\" y=\"65\" text-anchor=\"middle\" fill=\"#FFFFFF\" font-family=\"serif\" font-size=\"11\" font-weight=\"900\">OUT • TCU</text>
               <text x=\"60\" y=\"77\" text-anchor=\"middle\" fill=\"#38bdf8\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"700\">VERIFIED 2026</text>
             </svg>
@@ -4575,7 +4575,7 @@ if ($isInstructorAction || in_array($action, ['resolve_identity', 'change_passwo
             </div>
             <div style=\"background:#fff;padding:5px;border-radius:8px;border:1.5px solid {$t['outerBorder']};text-align:center;\">
               <img src=\"https://api.qrserver.com/v1/create-qr-code/?size=74x74&data=" . urlencode($verifyUrl) . "\" width=\"68\" height=\"68\" alt=\"QR\" style=\"display:block;\" />
-              <div style=\"font-family:monospace;font-size:8px;color:#071F38;font-weight:800;margin-top:2px;\">SCAN VERIFY</div>
+              <div style=\"font-family:monospace;font-size:8px;color:#061838;font-weight:800;margin-top:2px;\">SCAN VERIFY</div>
             </div>
           </div>
         </div>

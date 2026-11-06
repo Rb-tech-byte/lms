@@ -491,7 +491,7 @@ export const CourseCheckout: React.FC = () => {
               <Link
                 to={`${route.courseWatch}?courseId=${selectedCourseId}`}
                 className="btn btn-primary rounded-pill px-4 py-2.5 fw-semibold shadow-sm d-inline-flex align-items-center justify-content-center gap-2"
-                style={{ backgroundColor: '#0171BB' }}
+                style={{ backgroundColor: '#013BA6' }}
               >
                 <i className="feather-play-circle fs-16" />
                 <span>Enter Classroom &amp; Start Learning</span>
@@ -744,7 +744,7 @@ export const CourseCheckout: React.FC = () => {
                     <button
                       type="button"
                       className="btn btn-primary w-100 rounded-pill py-2.5 fw-semibold shadow-sm d-flex align-items-center justify-content-center gap-2"
-                      style={{ backgroundColor: '#0171BB', fontSize: '14px' }}
+                      style={{ backgroundColor: '#013BA6', fontSize: '14px' }}
                       onClick={handleInitiatePesapal}
                       disabled={loading}
                     >
@@ -828,7 +828,7 @@ export const CourseCheckout: React.FC = () => {
                           type="button"
                           onClick={handleOpenDedicatedWindow}
                           className="btn btn-primary btn-sm rounded-pill px-3"
-                          style={{ fontSize: '11px', backgroundColor: '#0171BB' }}
+                          style={{ fontSize: '11px', backgroundColor: '#013BA6' }}
                         >
                           Open in Dedicated Window Now
                         </button>
@@ -990,7 +990,7 @@ export const CourseCheckout: React.FC = () => {
             <button
               type="button"
               className="btn btn-primary rounded-pill px-4 py-2 fw-semibold shadow-sm d-inline-flex align-items-center gap-1.5"
-              style={{ backgroundColor: '#0171BB', fontSize: '13px' }}
+              style={{ backgroundColor: '#013BA6', fontSize: '13px' }}
               onClick={handleInitiatePesapal}
               disabled={loading}
             >

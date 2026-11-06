@@ -24,7 +24,7 @@ export const AuthBrandHeader: React.FC = () => {
           style={{
             fontSize: '1.25rem',
             letterSpacing: '-0.02em',
-            color: '#071F38',
+            color: '#061838',
           }}
         >
           LMS
@@ -33,7 +33,7 @@ export const AuthBrandHeader: React.FC = () => {
           className="badge rounded-pill"
           style={{
             background: '#eff6ff',
-            color: '#0171BB',
+            color: '#013BA6',
             fontSize: '0.68rem',
             fontWeight: 700,
           }}
@@ -95,7 +95,7 @@ export const AuthSideShowcase: React.FC<AuthSideShowcaseProps> = ({
     <div
       className="col-lg-6 d-none d-lg-flex flex-column justify-content-between p-4 p-xl-5 position-relative overflow-hidden"
       style={{
-        background: 'linear-gradient(145deg, #005B97 0%, #0171BB 55%, #0082D6 100%)',
+        background: 'linear-gradient(145deg, #013BA6 0%, #013BA6 55%, #228DDD 100%)',
         color: '#ffffff',
         minHeight: '100vh',
       }}

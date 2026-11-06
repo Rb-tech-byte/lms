@@ -449,7 +449,7 @@ export const StudentDashboard: React.FC = () => {
                   <div className="sp-stat">
                     <div
                       className="sp-stat-icon"
-                      style={{ background: '#E8F4FC', color: '#0171BB' }}
+                      style={{ background: '#E8F4FC', color: '#013BA6' }}
                     >
                       <i className="ti ti-clock-hour-4 fs-22" />
                     </div>
@@ -499,7 +499,7 @@ export const StudentDashboard: React.FC = () => {
               <div
                 className="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden"
                 style={{
-                  background: 'linear-gradient(135deg, #071F38 0%, #163760 65%, #1e426d 100%)',
+                  background: 'linear-gradient(135deg, #061838 0%, #163760 65%, #1e426d 100%)',
                   color: '#fff',
                 }}
               >
@@ -693,7 +693,7 @@ export const StudentDashboard: React.FC = () => {
                                   width: `${Math.max(5, course.progress ?? 0)}%`,
                                   background: isCompleted
                                     ? 'linear-gradient(90deg, #22c55e, #16a34a)'
-                                    : 'linear-gradient(90deg, #22d3ee, #0171BB)',
+                                    : 'linear-gradient(90deg, #22d3ee, #013BA6)',
                                 }}
                               />
                             </div>
@@ -935,7 +935,7 @@ export const StudentDashboard: React.FC = () => {
                         <div className="sp-callout-title">
                           OUT Degree &amp; Certification
                         </div>
-                        <div style={{ fontSize: '11px', color: '#005B97' }}>
+                        <div style={{ fontSize: '11px', color: '#013BA6' }}>
                           Earn your verified university credentials upon 100% course completion.
                         </div>
                       </div>
@@ -1895,7 +1895,7 @@ export const StudentDashboard: React.FC = () => {
               <div className="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
                 <div
                   className="modal-header border-0 text-white p-3.5"
-                  style={{ background: 'linear-gradient(135deg, #071F38 0%, #163760 100%)' }}
+                  style={{ background: 'linear-gradient(135deg, #061838 0%, #163760 100%)' }}
                 >
                   <div className="d-flex align-items-center gap-2">
                     <i className="ti ti-trophy fs-22 text-warning" />

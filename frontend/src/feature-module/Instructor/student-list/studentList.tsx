@@ -291,7 +291,7 @@ const StudentList: React.FC = () => {
                             height: 38,
                             borderRadius: '50%',
                             objectFit: 'cover',
-                            border: '1.5px solid #0171bb',
+                            border: '1.5px solid #013ba6',
                           }}
                         />
                         <div>

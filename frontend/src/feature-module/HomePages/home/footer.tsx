@@ -36,7 +36,7 @@ const Footer: React.FC = () => {
   return (
     <footer
       style={{
-        background: 'linear-gradient(135deg, #0171BB 0%, #0082D6 55%, #0171BB 100%)', color: '#FFFFFF', borderTop: '6px solid #FFD200',
+        background: 'linear-gradient(135deg, #013BA6 0%, #228DDD 55%, #013BA6 100%)', color: '#FFFFFF', borderTop: '6px solid #F4ED2D',
         fontSize: '13.5px',
       }}
     >
@@ -50,7 +50,7 @@ const Footer: React.FC = () => {
               <img
                 src={headerCfg.logoUrl || '/assets/img/out-logo.png'}
                 alt={footerCfg.orgName}
-                style={{ width: '42px', height: '42px', objectFit: 'contain', background: '#ffffff', borderRadius: '50%', padding: '2px', border: '2px solid #FFD200' }}
+                style={{ width: '42px', height: '42px', objectFit: 'contain', background: '#ffffff', borderRadius: '50%', padding: '2px', border: '2px solid #F4ED2D' }}
                 onError={(e) => {
                   (e.currentTarget as HTMLImageElement).src = '/assets/img/logo-white.svg';
                 }}
@@ -74,7 +74,7 @@ const Footer: React.FC = () => {
                 <span
                   className="badge rounded-pill px-3 py-1 fw-medium"
                   style={{
-                    background: '#FFD200', color: '#003B66', border: '1px solid #FEF207', fontWeight: 800,
+                    background: '#F4ED2D', color: '#003B66', border: '1px solid #FEF207', fontWeight: 800,
                     fontSize: '11.5px',
                   }}
                 >
@@ -86,15 +86,15 @@ const Footer: React.FC = () => {
 
             <div className="d-flex flex-column gap-1 small" style={{ color: '#FFFDE7' }}>
               <div>
-                <i className="isax isax-location me-2" style={{ color: '#FFD200' }} />
+                <i className="isax isax-location me-2" style={{ color: '#F4ED2D' }} />
                 {footerCfg.address}
               </div>
               <div>
-                <i className="isax isax-call-calling me-2" style={{ color: '#FFD200' }} />
+                <i className="isax isax-call-calling me-2" style={{ color: '#F4ED2D' }} />
                 {footerCfg.phone}
               </div>
               <div>
-                <i className="isax isax-sms me-2" style={{ color: '#FFD200' }} />
+                <i className="isax isax-sms me-2" style={{ color: '#F4ED2D' }} />
                 {footerCfg.email}
               </div>
             </div>
@@ -127,7 +127,7 @@ const Footer: React.FC = () => {
             <div
               className="p-3 rounded-3"
               style={{
-                background: 'rgba(255, 253, 231, 0.16)', border: '2px solid #FFD200', borderRadius: '12px',
+                background: 'rgba(255, 253, 231, 0.16)', border: '2px solid #F4ED2D', borderRadius: '12px',
               }}
             >
               <h6 className="fw-bold mb-1" style={{ fontSize: '14px', color: '#FEF207' }}>
@@ -146,7 +146,7 @@ const Footer: React.FC = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   style={{
-                    background: '#ffffff', border: '1.5px solid #FFD200', borderRadius: '8px',
+                    background: '#ffffff', border: '1.5px solid #F4ED2D', borderRadius: '8px',
                     color: '#003B66', fontSize: '12.5px',
                   }}
                 />
@@ -154,7 +154,7 @@ const Footer: React.FC = () => {
                   type="submit"
                   disabled={submitting}
                   className="btn btn-sm btn-primary px-3 fw-semibold flex-shrink-0"
-                  style={{ background: '#FFD200', borderColor: '#FFD200', color: '#003B66', fontSize: '12.5px', fontWeight: 800 }}
+                  style={{ background: '#F4ED2D', borderColor: '#F4ED2D', color: '#003B66', fontSize: '12.5px', fontWeight: 800 }}
                 >
                   {submitting ? '...' : 'Subscribe'}
                 </button>
@@ -168,7 +168,7 @@ const Footer: React.FC = () => {
               )}
 
               {footerCfg.columns?.[2] && (
-                <div className="mt-3 pt-3 d-flex flex-wrap gap-3" style={{ borderTop: '1px solid rgba(255, 210, 0, 0.45)' }}>
+                <div className="mt-3 pt-3 d-flex flex-wrap gap-3" style={{ borderTop: '1px solid rgba(244, 237, 45, 0.45)' }}>
                   {(footerCfg.columns[2].links || []).map((lnk, idx) => (
                     <Link
                       key={idx}
@@ -189,7 +189,7 @@ const Footer: React.FC = () => {
       {/* Bottom Legal & Social Strip */}
       <div
         style={{
-          background: '#0062A3', borderTop: '2px solid #FFD200',
+          background: '#0062A3', borderTop: '2px solid #F4ED2D',
         }}
         className="py-3"
       >
@@ -222,7 +222,7 @@ const Footer: React.FC = () => {
                   style={{
                     width: '28px',
                     height: '28px',
-                    background: '#FFD200', color: '#003B66',
+                    background: '#F4ED2D', color: '#003B66',
                     fontSize: '12px',
                   }}
                 >

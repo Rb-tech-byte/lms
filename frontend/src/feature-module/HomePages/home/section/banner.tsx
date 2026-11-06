@@ -40,12 +40,12 @@ const Banner: React.FC = () => {
     <section
       style={{
         background: cms.hero.bgImage
-          ? `linear-gradient(135deg, rgba(1, 113, 187, 0.88) 0%, rgba(0, 130, 214, 0.84) 55%, rgba(0, 149, 242, 0.82) 100%), url(${cms.hero.bgImage}) center/cover no-repeat`
-          : 'linear-gradient(135deg, #0171BB 0%, #0082D6 55%, #0095F2 100%)',
+          ? `linear-gradient(135deg, rgba(1, 59, 166, 0.88) 0%, rgba(0, 130, 214, 0.84) 55%, rgba(0, 149, 242, 0.82) 100%), url(${cms.hero.bgImage}) center/cover no-repeat`
+          : 'linear-gradient(135deg, #013BA6 0%, #228DDD 55%, #0095F2 100%)',
         color: '#ffffff',
         padding: '38px 0 34px',
-        borderTop: '4px solid #FFD200',
-        borderBottom: '5px solid #FFD200',
+        borderTop: '4px solid #F4ED2D',
+        borderBottom: '5px solid #F4ED2D',
       }}
     >
       <div className="container">
@@ -54,7 +54,7 @@ const Banner: React.FC = () => {
           <div className="col-lg-7">
             <div className="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3"
               style={{
-                background: '#FFD200', border: '1.5px solid #FEF207', color: '#003B66',
+                background: '#F4ED2D', border: '1.5px solid #FEF207', color: '#003B66',
                 fontSize: '12px',
                 fontWeight: 800,
                 boxShadow: '0 4px 12px rgba(0, 59, 102, 0.16)',
@@ -83,7 +83,7 @@ const Banner: React.FC = () => {
               onSubmit={handleSearch}
               className="p-2 rounded-3 mb-3 shadow-sm"
               style={{
-                background: '#ffffff', border: '2.5px solid #FFD200', boxShadow: '0 8px 24px rgba(1, 113, 187, 0.22)',
+                background: '#ffffff', border: '2.5px solid #F4ED2D', boxShadow: '0 8px 24px rgba(1, 59, 166, 0.22)',
               }}
             >
               <div className="row g-2 align-items-center">
@@ -121,7 +121,7 @@ const Banner: React.FC = () => {
                   <button
                     type="submit"
                     className="btn btn-sm btn-primary fw-semibold py-2 rounded-2"
-                    style={{ background: '#0171BB', borderColor: '#0171BB', borderBottom: '2px solid #FFD200', color: '#ffffff', fontSize: '13px', fontWeight: 700 }}
+                    style={{ background: '#013BA6', borderColor: '#013BA6', borderBottom: '2px solid #F4ED2D', color: '#ffffff', fontSize: '13px', fontWeight: 700 }}
                   >
                     Search
                   </button>
@@ -136,7 +136,7 @@ const Banner: React.FC = () => {
                   key={idx}
                   className="px-2.5 py-1 rounded-2 d-inline-flex align-items-center gap-1"
                   style={{
-                    background: 'rgba(255, 253, 231, 0.18)', border: '1px solid #FFD200', color: '#ffffff',
+                    background: 'rgba(255, 253, 231, 0.18)', border: '1px solid #F4ED2D', color: '#ffffff',
                     fontSize: '11.5px', fontWeight: 600,
                   }}
                 >
@@ -150,7 +150,7 @@ const Banner: React.FC = () => {
               <Link
                 to={cms.hero.primaryCtaRoute || all_routes.courseGrid}
                 className="btn btn-sm px-3 py-2 fw-bold rounded-2 d-inline-flex align-items-center gap-2"
-                style={{ background: '#FFD200', border: '1.5px solid #FEF207', color: '#003B66', fontSize: '13px', boxShadow: '0 4px 12px rgba(0, 59, 102, 0.18)' }}
+                style={{ background: '#F4ED2D', border: '1.5px solid #FEF207', color: '#003B66', fontSize: '13px', boxShadow: '0 4px 12px rgba(0, 59, 102, 0.18)' }}
               >
                 <i className="isax isax-book-1" />
                 <span>{cms.hero.primaryCtaText}</span>
@@ -160,7 +160,7 @@ const Banner: React.FC = () => {
                 className="btn btn-sm px-3 py-2 fw-semibold rounded-2 d-inline-flex align-items-center gap-2"
                 style={{
                   background: 'rgba(255, 253, 231, 0.16)',
-                  border: '1.5px solid #FFD200',
+                  border: '1.5px solid #F4ED2D',
                   color: '#FFFDE7',
                   fontSize: '13px',
                 }}
@@ -179,13 +179,13 @@ const Banner: React.FC = () => {
               className="p-3 rounded-3 shadow"
               style={{
                 background: 'linear-gradient(145deg, #FFFFFF 0%, #FFFDE7 100%)',
-                border: '3px solid #FFD200',
-                borderBottom: '5px solid #0171BB',
+                border: '3px solid #F4ED2D',
+                borderBottom: '5px solid #013BA6',
                 boxShadow: '0 14px 32px rgba(0, 59, 102, 0.22)',
               }}
             >
               {cms.hero.spotlightCover && (
-                <div className="mb-2 rounded-2 overflow-hidden" style={{ height: '74px', border: '1.5px solid #0171BB' }}>
+                <div className="mb-2 rounded-2 overflow-hidden" style={{ height: '74px', border: '1.5px solid #013BA6' }}>
                   <img
                     src={cms.hero.spotlightCover}
                     alt="Featured Modules"
@@ -198,7 +198,7 @@ const Banner: React.FC = () => {
                 <div className="d-flex align-items-center gap-2">
                   <span
                     className="d-inline-block rounded-circle"
-                    style={{ width: '9px', height: '9px', background: '#0171BB', border: '2px solid #FFD200' }}
+                    style={{ width: '9px', height: '9px', background: '#013BA6', border: '2px solid #F4ED2D' }}
                   />
                   <span className="fw-bold" style={{ fontSize: '13px', color: '#003B66' }}>
                     Featured Degree Modules
@@ -207,7 +207,7 @@ const Banner: React.FC = () => {
                 <Link
                   to={all_routes.courseGrid}
                   className="text-decoration-none fw-bold"
-                  style={{ fontSize: '12px', color: '#0171BB' }}
+                  style={{ fontSize: '12px', color: '#013BA6' }}
                 >
                   All Courses →
                 </Link>
@@ -221,7 +221,7 @@ const Banner: React.FC = () => {
                     style={{
                       background: '#F0F8FF',
                       border: '1px solid #93C5FD',
-                      borderLeft: '4px solid #0171BB',
+                      borderLeft: '4px solid #013BA6',
                     }}
                   >
                     <div className="min-w-0">
@@ -229,7 +229,7 @@ const Banner: React.FC = () => {
                         <span
                           className="badge px-2 py-0"
                           style={{
-                            background: '#FFD200', color: '#003B66', fontWeight: 800,
+                            background: '#F4ED2D', color: '#003B66', fontWeight: 800,
                             fontSize: '10.5px',
                           }}
                         >
@@ -248,7 +248,7 @@ const Banner: React.FC = () => {
                           <i className="isax isax-book me-1 text-primary" />
                           {course.modulesCount} Units
                         </span>
-                        <span className="fw-bold" style={{ color: '#0171BB' }}>{course.priceFormatted}</span>
+                        <span className="fw-bold" style={{ color: '#013BA6' }}>{course.priceFormatted}</span>
                       </div>
                     </div>
 
@@ -256,8 +256,8 @@ const Banner: React.FC = () => {
                       to={`${all_routes.courseDetails}?id=${course.id}`}
                       className="btn btn-sm py-1 px-2.5 flex-shrink-0 fw-bold"
                       style={{
-                        background: '#0171BB',
-                        borderBottom: '2px solid #FFD200',
+                        background: '#013BA6',
+                        borderBottom: '2px solid #F4ED2D',
                         color: '#ffffff',
                         fontSize: '11.5px',
                       }}
@@ -275,21 +275,21 @@ const Banner: React.FC = () => {
                   <Link
                     to={all_routes.studentDashboard}
                     className="badge text-decoration-none px-2 py-1 fw-bold"
-                    style={{ background: '#0171BB', color: '#ffffff', fontSize: '11px' }}
+                    style={{ background: '#013BA6', color: '#ffffff', fontSize: '11px' }}
                   >
                     Scholar Portal
                   </Link>
                   <Link
                     to={all_routes.instructorDashboard}
                     className="badge text-decoration-none px-2 py-1 fw-bold"
-                    style={{ background: '#FFD200', color: '#003B66', fontSize: '11px' }}
+                    style={{ background: '#F4ED2D', color: '#003B66', fontSize: '11px' }}
                   >
                     Lecturer Console
                   </Link>
                   <Link
                     to={all_routes.adminDashboard}
                     className="badge text-decoration-none px-2 py-1 fw-bold"
-                    style={{ background: '#E8F4FC', color: '#0171BB', border: '1px solid #0171BB', fontSize: '11px' }}
+                    style={{ background: '#E8F4FC', color: '#013BA6', border: '1px solid #013BA6', fontSize: '11px' }}
                   >
                     Admin Governance
                   </Link>

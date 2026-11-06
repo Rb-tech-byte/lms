@@ -686,8 +686,8 @@ export const AdminDashboard: React.FC = () => {
         <div
           className="px-3 px-md-4 py-2 d-flex align-items-center justify-content-between flex-wrap gap-2"
           style={{
-            background: 'linear-gradient(90deg, #071F38 0%, #0F172A 50%, #071F38 100%)',
-            borderBottom: '2px solid #FFD200',
+            background: 'linear-gradient(90deg, #061838 0%, #0F172A 50%, #061838 100%)',
+            borderBottom: '2px solid #F4ED2D',
           }}
         >
           <div className="d-flex align-items-center gap-1.5 flex-wrap">
@@ -715,7 +715,7 @@ export const AdminDashboard: React.FC = () => {
                     fontSize: '11.5px',
                     background: isAct ? pill.activeBg : 'rgba(255,255,255,0.08)',
                     color: isAct ? '#ffffff' : pill.color,
-                    border: isAct ? '1.5px solid #FFD200' : `1px solid ${pill.color}66`,
+                    border: isAct ? '1.5px solid #F4ED2D' : `1px solid ${pill.color}66`,
                     boxShadow: isAct ? '0 3px 10px rgba(0,0,0,0.35)' : 'none',
                   }}
                 >
@@ -792,7 +792,7 @@ export const AdminDashboard: React.FC = () => {
                     type="button"
                     onClick={() => setShowCreateCourseModal(true)}
                     className="btn btn-sm btn-primary rounded-pill px-3 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm"
-                    style={{ fontSize: '12px', background: '#0171BB', borderColor: '#0171BB' }}
+                    style={{ fontSize: '12px', background: '#013BA6', borderColor: '#013BA6' }}
                   >
                     <i className="feather-plus-circle" style={{ fontSize: '12px' }} />
                     <span>New Course</span>
@@ -1126,7 +1126,7 @@ export const AdminDashboard: React.FC = () => {
                     type="button"
                     onClick={() => setShowCreateCourseModal(true)}
                     className="btn btn-sm btn-primary rounded-pill px-3 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm"
-                    style={{ fontSize: '12px', background: '#0171BB', borderColor: '#0171BB' }}
+                    style={{ fontSize: '12px', background: '#013BA6', borderColor: '#013BA6' }}
                   >
                     <i className="feather-plus-circle" style={{ fontSize: '12px' }} />
                     <span>Add New Course</span>
@@ -1333,7 +1333,7 @@ export const AdminDashboard: React.FC = () => {
                     type="button"
                     onClick={() => setShowCreateCategoryModal(true)}
                     className="btn btn-sm btn-primary rounded-pill px-3 fw-semibold"
-                    style={{ fontSize: '12px', background: '#0171BB', borderColor: '#0171BB' }}
+                    style={{ fontSize: '12px', background: '#013BA6', borderColor: '#013BA6' }}
                   >
                     <i className="feather-plus-circle me-1" /> Add Category
                   </button>
@@ -1476,7 +1476,7 @@ export const AdminDashboard: React.FC = () => {
                     type="button"
                     onClick={() => setShowCreateUserModal(true)}
                     className="btn btn-sm btn-primary rounded-pill px-3 fw-semibold"
-                    style={{ fontSize: '12px', background: '#0171BB', borderColor: '#0171BB' }}
+                    style={{ fontSize: '12px', background: '#013BA6', borderColor: '#013BA6' }}
                   >
                     <i className="feather-user-plus me-1" /> Add User
                   </button>
@@ -1849,8 +1849,8 @@ export const AdminDashboard: React.FC = () => {
               <div
                 className="p-3 p-md-4 rounded-4 text-white shadow-sm"
                 style={{
-                  background: 'linear-gradient(135deg, #071F38 0%, #065f46 55%, #0F172A 100%)',
-                  borderBottom: '3px solid #FFD200',
+                  background: 'linear-gradient(135deg, #061838 0%, #065f46 55%, #0F172A 100%)',
+                  borderBottom: '3px solid #F4ED2D',
                 }}
               >
                 <div className="d-flex flex-wrap align-items-center justify-content-between gap-3">
@@ -1858,7 +1858,7 @@ export const AdminDashboard: React.FC = () => {
                     <div className="d-flex align-items-center gap-2 mb-1">
                       <span
                         className="badge rounded-pill fw-bold"
-                        style={{ background: '#FFD200', color: '#071F38', fontSize: '11px' }}
+                        style={{ background: '#F4ED2D', color: '#061838', fontSize: '11px' }}
                       >
                         100% ACTIVE &amp; VERIFIED ACROSS 18 CATEGORIES
                       </span>
@@ -1889,7 +1889,7 @@ export const AdminDashboard: React.FC = () => {
                         }
                       }}
                       className="btn btn-sm fw-bold rounded-pill px-3 py-2 shadow-sm"
-                      style={{ background: '#FFD200', color: '#071F38' }}
+                      style={{ background: '#F4ED2D', color: '#061838' }}
                     >
                       <i className="feather-check-circle me-1" />
                       Enable All Installed Extensions (100%)
@@ -1915,7 +1915,7 @@ export const AdminDashboard: React.FC = () => {
                     className="btn btn-sm rounded-pill px-2.5 py-1 fw-bold"
                     style={{
                       fontSize: '11px',
-                      background: pluginTypeFilter === 'all' ? '#0171BB' : '#e0f2fe',
+                      background: pluginTypeFilter === 'all' ? '#013BA6' : '#e0f2fe',
                       color: pluginTypeFilter === 'all' ? '#ffffff' : '#0369a1',
                       border: '1px solid #0284c7',
                     }}
@@ -2138,8 +2138,8 @@ export const AdminDashboard: React.FC = () => {
               <div
                 className="p-3 p-md-4 rounded-4 text-white shadow-sm"
                 style={{
-                  background: 'linear-gradient(135deg, #071F38 0%, #3b0764 55%, #0F172A 100%)',
-                  borderBottom: '3px solid #FFD200',
+                  background: 'linear-gradient(135deg, #061838 0%, #3b0764 55%, #0F172A 100%)',
+                  borderBottom: '3px solid #F4ED2D',
                 }}
               >
                 <div className="d-flex flex-wrap align-items-center justify-content-between gap-3">
@@ -2147,7 +2147,7 @@ export const AdminDashboard: React.FC = () => {
                     <div className="d-flex align-items-center gap-2 mb-1">
                       <span
                         className="badge rounded-pill fw-bold"
-                        style={{ background: '#FFD200', color: '#071F38', fontSize: '11px' }}
+                        style={{ background: '#F4ED2D', color: '#061838', fontSize: '11px' }}
                       >
                         ZERO-MOODLE-LOGIN HEADLESS ADMIN GOVERNANCE
                       </span>
@@ -2167,7 +2167,7 @@ export const AdminDashboard: React.FC = () => {
                     <Link
                       to="/pages/api-docs"
                       className="btn btn-sm fw-bold rounded-pill px-3 py-2"
-                      style={{ background: '#FFD200', color: '#071F38' }}
+                      style={{ background: '#F4ED2D', color: '#061838' }}
                     >
                       <i className="feather-book-open me-1" />
                       Interactive Swagger Explorer
@@ -2660,7 +2660,7 @@ export const AdminDashboard: React.FC = () => {
                   <button type="button" className="btn btn-sm btn-outline-secondary rounded-pill px-3" onClick={() => setShowCreateCourseModal(false)}>
                     Cancel
                   </button>
-                  <button type="submit" className="btn btn-sm btn-primary rounded-pill px-4" style={{ background: '#0171BB' }}>
+                  <button type="submit" className="btn btn-sm btn-primary rounded-pill px-4" style={{ background: '#013BA6' }}>
                     Save Course
                   </button>
                 </div>
@@ -2740,7 +2740,7 @@ export const AdminDashboard: React.FC = () => {
                   <button type="button" className="btn btn-sm btn-outline-secondary rounded-pill px-3" onClick={() => setEditCourseData(null)}>
                     Cancel
                   </button>
-                  <button type="submit" className="btn btn-sm btn-primary rounded-pill px-4" style={{ background: '#0171BB' }}>
+                  <button type="submit" className="btn btn-sm btn-primary rounded-pill px-4" style={{ background: '#013BA6' }}>
                     Update Course
                   </button>
                 </div>
@@ -2790,7 +2790,7 @@ export const AdminDashboard: React.FC = () => {
                   <button type="button" className="btn btn-sm btn-outline-secondary rounded-pill px-3" onClick={() => setShowCreateCategoryModal(false)}>
                     Cancel
                   </button>
-                  <button type="submit" className="btn btn-sm btn-primary rounded-pill px-4" style={{ background: '#0171BB' }}>
+                  <button type="submit" className="btn btn-sm btn-primary rounded-pill px-4" style={{ background: '#013BA6' }}>
                     Save Category
                   </button>
                 </div>
@@ -2826,7 +2826,7 @@ export const AdminDashboard: React.FC = () => {
                   <button type="button" className="btn btn-sm btn-outline-secondary rounded-pill px-3" onClick={() => setEditCategoryData(null)}>
                     Cancel
                   </button>
-                  <button type="submit" className="btn btn-sm btn-primary rounded-pill px-4" style={{ background: '#0171BB' }}>
+                  <button type="submit" className="btn btn-sm btn-primary rounded-pill px-4" style={{ background: '#013BA6' }}>
                     Save
                   </button>
                 </div>
@@ -2919,7 +2919,7 @@ export const AdminDashboard: React.FC = () => {
                   <button type="button" className="btn btn-sm btn-outline-secondary rounded-pill px-3" onClick={() => setShowCreateUserModal(false)}>
                     Cancel
                   </button>
-                  <button type="submit" className="btn btn-sm btn-primary rounded-pill px-4" style={{ background: '#0171BB' }}>
+                  <button type="submit" className="btn btn-sm btn-primary rounded-pill px-4" style={{ background: '#013BA6' }}>
                     Create Account
                   </button>
                 </div>
@@ -2987,7 +2987,7 @@ export const AdminDashboard: React.FC = () => {
                   <button type="button" className="btn btn-sm btn-outline-secondary rounded-pill px-3" onClick={() => setEditUserData(null)}>
                     Cancel
                   </button>
-                  <button type="submit" className="btn btn-sm btn-primary rounded-pill px-4" style={{ background: '#0171BB' }}>
+                  <button type="submit" className="btn btn-sm btn-primary rounded-pill px-4" style={{ background: '#013BA6' }}>
                     Save Changes
                   </button>
                 </div>
@@ -3027,7 +3027,7 @@ export const AdminDashboard: React.FC = () => {
                   <button type="button" className="btn btn-sm btn-outline-secondary rounded-pill px-3" onClick={() => setEnrolModalUser(null)}>
                     Cancel
                   </button>
-                  <button type="submit" className="btn btn-sm btn-primary rounded-pill px-4" style={{ background: '#0171BB' }}>
+                  <button type="submit" className="btn btn-sm btn-primary rounded-pill px-4" style={{ background: '#013BA6' }}>
                     Confirm Enrolment
                   </button>
                 </div>

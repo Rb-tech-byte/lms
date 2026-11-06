@@ -383,7 +383,7 @@ export const CourseCart: React.FC = () => {
                   <Link
                     to={route.courseGrid}
                     className="btn btn-primary rounded-pill px-4 py-2 small fw-semibold"
-                    style={{ backgroundColor: '#0171BB' }}
+                    style={{ backgroundColor: '#013BA6' }}
                   >
                     Browse Short Courses
                   </Link>
@@ -575,7 +575,7 @@ export const CourseCart: React.FC = () => {
                 <Link
                   to={`${route.courseCheckout}?id=${primaryCheckoutId}`}
                   className="btn btn-primary w-100 rounded-pill py-2.5 fw-semibold shadow-sm d-flex align-items-center justify-content-center gap-2 mb-2.5 text-decoration-none"
-                  style={{ backgroundColor: '#0171BB', fontSize: '14px' }}
+                  style={{ backgroundColor: '#013BA6', fontSize: '14px' }}
                 >
                   <i className="feather-lock fs-14" />
                   <span>Proceed to Enrolment Checkout</span>
@@ -628,7 +628,7 @@ export const CourseCart: React.FC = () => {
             <Link
               to={`${route.courseCheckout}?id=${primaryCheckoutId}`}
               className="btn btn-primary rounded-pill px-4 py-2 fw-semibold shadow-sm d-inline-flex align-items-center gap-1.5 text-decoration-none"
-              style={{ backgroundColor: '#0171BB', fontSize: '13px' }}
+              style={{ backgroundColor: '#013BA6', fontSize: '13px' }}
             >
               <i className="feather-lock fs-13" />
               <span>Checkout</span>

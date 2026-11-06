@@ -330,7 +330,7 @@ const InstructorCertificate: React.FC = () => {
         <div
           className="p-4 rounded-3 border text-center bg-white shadow-sm"
           style={{
-            border: '3px double #0171bb',
+            border: '3px double #013ba6',
             position: 'relative',
             background: 'linear-gradient(180deg, #f0f7ff 0%, #ffffff 100%)',
           }}

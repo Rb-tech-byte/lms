@@ -63,7 +63,7 @@ const Register: React.FC = () => {
     const map: Record<number, { label: string; color: string }> = {
       1: { label: 'Too short', color: '#ef4444' },
       2: { label: 'Fair', color: '#f59e0b' },
-      3: { label: 'Good', color: '#0171BB' },
+      3: { label: 'Good', color: '#013BA6' },
       4: { label: 'Strong', color: '#10b981' },
     };
     return { score, ...map[score] };
@@ -348,11 +348,11 @@ const Register: React.FC = () => {
                   style={{ fontSize: '0.78rem' }}
                 >
                   I agree to the University{' '}
-                  <Link to={route.termsConditions} className="text-decoration-none fw-semibold" style={{ color: '#0171BB' }}>
+                  <Link to={route.termsConditions} className="text-decoration-none fw-semibold" style={{ color: '#013BA6' }}>
                     Academic Charter
                   </Link>{' '}
                   and{' '}
-                  <Link to={route.privacyPolicy} className="text-decoration-none fw-semibold" style={{ color: '#0171BB' }}>
+                  <Link to={route.privacyPolicy} className="text-decoration-none fw-semibold" style={{ color: '#013BA6' }}>
                     Privacy Policy
                   </Link>
                   .
@@ -364,7 +364,7 @@ const Register: React.FC = () => {
                 disabled={submitting}
                 className="btn w-100 rounded-pill py-2.5 fw-bold text-white shadow-sm mt-1 mb-3"
                 style={{
-                  background: 'linear-gradient(135deg, #071F38 0%, #0171BB 100%)',
+                  background: 'linear-gradient(135deg, #061838 0%, #013BA6 100%)',
                   fontSize: '0.9rem',
                 }}
               >
@@ -387,7 +387,7 @@ const Register: React.FC = () => {
                 <Link
                   to={route.login}
                   className="fw-bold text-decoration-none"
-                  style={{ color: '#0171BB' }}
+                  style={{ color: '#013BA6' }}
                 >
                   Sign In
                 </Link>

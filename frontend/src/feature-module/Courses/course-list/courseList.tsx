@@ -123,8 +123,8 @@ const CourseList: React.FC = () => {
       <section
         className="py-3.5"
         style={{
-          background: 'linear-gradient(135deg, #005B97 0%, #0171BB 55%, #0082D6 100%)',
-          borderBottom: '3px solid #FFD200',
+          background: 'linear-gradient(135deg, #013BA6 0%, #013BA6 55%, #228DDD 100%)',
+          borderBottom: '3px solid #F4ED2D',
         }}
       >
         <div className="container">
@@ -132,7 +132,7 @@ const CourseList: React.FC = () => {
             <div className="col-lg-7">
               <span
                 className="badge rounded-pill px-2.5 py-1 fw-bold mb-1.5"
-                style={{ background: '#FFD200', color: '#051426', fontSize: '0.7rem' }}
+                style={{ background: '#F4ED2D', color: '#051426', fontSize: '0.7rem' }}
               >
                 PROGRAMME DIRECTORY
               </span>
@@ -181,16 +181,16 @@ const CourseList: React.FC = () => {
               className="btn btn-sm rounded-pill px-3 py-1 fw-semibold"
               style={{
                 fontSize: '0.74rem',
-                background: selectedCategory === 0 ? '#FFD200' : 'rgba(255,255,255,0.12)',
+                background: selectedCategory === 0 ? '#F4ED2D' : 'rgba(255,255,255,0.12)',
                 color: selectedCategory === 0 ? '#0f172a' : '#ffffff',
-                border: selectedCategory === 0 ? '1px solid #FFD200' : '1px solid rgba(255,255,255,0.2)',
+                border: selectedCategory === 0 ? '1px solid #F4ED2D' : '1px solid rgba(255,255,255,0.2)',
               }}
             >
               All Faculties ({courses.length})
             </button>
             {categories.map((cat) => {
               const active = selectedCategory === cat.id;
-              const accent = cat.accentColor || '#0171BB';
+              const accent = cat.accentColor || '#013BA6';
               return (
                 <button
                   key={cat.id}
@@ -199,9 +199,9 @@ const CourseList: React.FC = () => {
                   className="btn btn-sm rounded-pill px-3 py-1 fw-medium d-flex align-items-center gap-1.5"
                   style={{
                     fontSize: '0.74rem',
-                    background: active ? '#FFD200' : 'rgba(255,255,255,0.1)',
+                    background: active ? '#F4ED2D' : 'rgba(255,255,255,0.1)',
                     color: active ? '#0f172a' : '#ffffff',
-                    border: active ? '1px solid #FFD200' : `1px solid ${accent}60`,
+                    border: active ? '1px solid #F4ED2D' : `1px solid ${accent}60`,
                   }}
                 >
                   {cat.icon && (
@@ -296,7 +296,7 @@ const CourseList: React.FC = () => {
           ) : (
             <div className="d-flex flex-column gap-3">
               {paginatedCourses.map((c) => {
-                const accent = c.accentColor || '#0171BB';
+                const accent = c.accentColor || '#013BA6';
                 const courseSlug = (c.shortname || `course-${c.id}`).toLowerCase().replace(/[^a-z0-9]/g, '-');
                 const thumbUrl = c.courseImage || c.image || `/assets/img/course/thumbnails/course-${c.id}-${courseSlug}.svg`;
 
@@ -307,7 +307,7 @@ const CourseList: React.FC = () => {
                     style={{
                       border: '1.5px solid #E2E8F0',
                       borderLeft: `5px solid ${accent}`,
-                      borderBottom: '2.5px solid #FFD200',
+                      borderBottom: '2.5px solid #F4ED2D',
                     }}
                   >
                     <div className="row align-items-center g-3">
@@ -339,7 +339,7 @@ const CourseList: React.FC = () => {
                             style={{
                               background: accent,
                               color: '#ffffff',
-                              border: '1px solid #FFD200',
+                              border: '1px solid #F4ED2D',
                               fontSize: '0.68rem',
                               boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
                             }}

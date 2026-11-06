@@ -88,7 +88,7 @@ export const CourseCategory: React.FC<CourseCategoryProps> = ({
                 categoryIcon: ac.categoryIcon || ac.icon || matchedPub?.categoryIcon || matchedPub?.icon,
                 cover: ac.cover || ac.categoryCover || matchedPub?.cover || matchedPub?.categoryCover,
                 categoryCover: ac.categoryCover || ac.cover || matchedPub?.categoryCover || matchedPub?.cover,
-                accentColor: ac.accentColor || matchedPub?.accentColor || '#0171BB',
+                accentColor: ac.accentColor || matchedPub?.accentColor || '#013BA6',
                 badgeText: ac.badgeText || matchedPub?.badgeText || ac.idnumber,
               };
             })
@@ -308,7 +308,7 @@ export const CourseCategory: React.FC<CourseCategoryProps> = ({
                 <h5 className="fw-bold mb-0 text-dark">Course Categories & Academic Faculties Manager</h5>
                 <span
                   className="badge rounded-pill"
-                  style={{ backgroundColor: '#E8F4FC', color: '#005B97', fontSize: '11px', fontWeight: 700 }}
+                  style={{ backgroundColor: '#E8F4FC', color: '#013BA6', fontSize: '11px', fontWeight: 700 }}
                 >
                   {categories.length} Categories • {courses.length} Courses
                 </span>
@@ -372,7 +372,7 @@ export const CourseCategory: React.FC<CourseCategoryProps> = ({
                   setShowCatModal(true);
                 }}
                 className="btn btn-sm btn-primary fw-bold d-inline-flex align-items-center gap-1 shadow-sm"
-                style={{ backgroundColor: '#0171BB', borderColor: '#0171BB', fontSize: '12px' }}
+                style={{ backgroundColor: '#013BA6', borderColor: '#013BA6', fontSize: '12px' }}
               >
                 <i className="feather-folder-plus" /> + New Category
               </button>
@@ -383,8 +383,8 @@ export const CourseCategory: React.FC<CourseCategoryProps> = ({
         <section
           className="py-4 mb-4"
           style={{
-            background: 'linear-gradient(135deg, #005B97 0%, #0171BB 55%, #0082D6 100%)',
-            borderBottom: '3px solid #FFD200',
+            background: 'linear-gradient(135deg, #013BA6 0%, #013BA6 55%, #228DDD 100%)',
+            borderBottom: '3px solid #F4ED2D',
           }}
         >
           <div className="container">
@@ -393,7 +393,7 @@ export const CourseCategory: React.FC<CourseCategoryProps> = ({
                 <div className="d-flex align-items-center gap-2 mb-2">
                   <span
                     className="badge rounded-pill px-3 py-1 fw-bold"
-                    style={{ background: '#FFD200', color: '#051426', fontSize: '0.72rem' }}
+                    style={{ background: '#F4ED2D', color: '#051426', fontSize: '0.72rem' }}
                   >
                     ACADEMIC FACULTIES & SCHOOLS
                   </span>
@@ -454,7 +454,7 @@ export const CourseCategory: React.FC<CourseCategoryProps> = ({
                 const icon = icons[idx % icons.length];
                 const coverImg = cat.categoryCover || cat.cover;
                 const iconImg = cat.categoryIcon || cat.icon;
-                const accent = cat.accentColor || '#0171BB';
+                const accent = cat.accentColor || '#013BA6';
 
                 return (
                   <div className="col-lg-4 col-md-6 d-flex" key={cat.id}>
@@ -472,7 +472,7 @@ export const CourseCategory: React.FC<CourseCategoryProps> = ({
                           style={{
                             height: '115px',
                             background: `${accent}15`,
-                            borderBottom: '3px solid #FFD200',
+                            borderBottom: '3px solid #F4ED2D',
                           }}
                         >
                           <img
@@ -493,7 +493,7 @@ export const CourseCategory: React.FC<CourseCategoryProps> = ({
                             style={{
                               backgroundColor: accent,
                               color: '#ffffff',
-                              border: '1px solid #FFD200',
+                              border: '1px solid #F4ED2D',
                               fontSize: '0.68rem',
                             }}
                           >
@@ -527,8 +527,8 @@ export const CourseCategory: React.FC<CourseCategoryProps> = ({
                                 style={{
                                   width: 40,
                                   height: 40,
-                                  background: active ? '#071F38' : '#eff6ff',
-                                  color: active ? '#fbbf24' : '#0171BB',
+                                  background: active ? '#061838' : '#eff6ff',
+                                  color: active ? '#fbbf24' : '#013BA6',
                                 }}
                               >
                                 <i className={`isax ${icon} fs-5`} />
@@ -716,7 +716,7 @@ export const CourseCategory: React.FC<CourseCategoryProps> = ({
                         setShowCourseModal(true);
                       }}
                       className="btn btn-sm btn-primary rounded-pill px-3 fw-semibold"
-                      style={{ backgroundColor: '#0171BB', borderColor: '#0171BB', fontSize: '11.5px' }}
+                      style={{ backgroundColor: '#013BA6', borderColor: '#013BA6', fontSize: '11.5px' }}
                     >
                       + Add Course Here
                     </button>
@@ -731,8 +731,8 @@ export const CourseCategory: React.FC<CourseCategoryProps> = ({
                       className="card border-0 shadow-sm rounded-3 w-100 d-flex flex-column justify-content-between bg-white overflow-hidden"
                       style={{
                         border: '1.5px solid #e2e8f0',
-                        borderTop: `3.5px solid ${course.accentColor || '#0171BB'}`,
-                        borderBottom: '3px solid #FFD200',
+                        borderTop: `3.5px solid ${course.accentColor || '#013BA6'}`,
+                        borderBottom: '3px solid #F4ED2D',
                       }}
                     >
                       {/* Course Thumbnail */}
@@ -740,8 +740,8 @@ export const CourseCategory: React.FC<CourseCategoryProps> = ({
                         className="position-relative overflow-hidden"
                         style={{
                           height: 140,
-                          background: `${course.accentColor || '#0171BB'}15`,
-                          borderBottom: '3px solid #FFD200',
+                          background: `${course.accentColor || '#013BA6'}15`,
+                          borderBottom: '3px solid #F4ED2D',
                         }}
                       >
                         <Link to={`${routes.courseDetails}?id=${course.id}`}>
@@ -762,9 +762,9 @@ export const CourseCategory: React.FC<CourseCategoryProps> = ({
                         <span
                           className="badge position-absolute top-2 start-2 px-2.5 py-1 rounded-pill fw-bold"
                           style={{
-                            backgroundColor: course.accentColor || '#0171BB',
+                            backgroundColor: course.accentColor || '#013BA6',
                             color: '#ffffff',
-                            border: '1px solid #FFD200',
+                            border: '1px solid #F4ED2D',
                             fontSize: '0.68rem',
                           }}
                         >
@@ -773,7 +773,7 @@ export const CourseCategory: React.FC<CourseCategoryProps> = ({
                         <span
                           className="badge position-absolute top-2 end-2 px-2.5 py-1 rounded-pill fw-bold"
                           style={{
-                            background: '#FFD200',
+                            background: '#F4ED2D',
                             color: '#003B66',
                             fontSize: '0.72rem',
                           }}

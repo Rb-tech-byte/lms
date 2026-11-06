@@ -21,7 +21,7 @@ const Masterskill: React.FC = () => {
         <div className="mb-3">
           <div
             className="text-uppercase fw-bold mb-1"
-            style={{ fontSize: '11px', color: '#0171BB', letterSpacing: '0.06em' }}
+            style={{ fontSize: '11px', color: '#013BA6', letterSpacing: '0.06em' }}
           >
             {capCfg.eyebrow}
           </div>
@@ -41,12 +41,12 @@ const Masterskill: React.FC = () => {
                 style={{
                   borderRadius: '12px',
                   borderColor: '#93C5FD',
-                  borderTop: '3px solid #0171BB',
-                  borderBottom: '3px solid #FFD200',
+                  borderTop: '3px solid #013BA6',
+                  borderBottom: '3px solid #F4ED2D',
                 }}
               >
                 {card.coverImage && (
-                  <div style={{ height: '110px', overflow: 'hidden', borderBottom: '2px solid #FFD200' }}>
+                  <div style={{ height: '110px', overflow: 'hidden', borderBottom: '2px solid #F4ED2D' }}>
                     <img
                       src={card.coverImage}
                       alt={card.title}
@@ -63,8 +63,8 @@ const Masterskill: React.FC = () => {
                         width: '36px',
                         height: '36px',
                         background: '#FFFDE7',
-                        border: '1.5px solid #FFD200',
-                        color: '#0171BB',
+                        border: '1.5px solid #F4ED2D',
+                        color: '#013BA6',
                       }}
                     >
                       <i className={`isax ${card.icon || 'isax-flash'} fs-18`} />
@@ -72,7 +72,7 @@ const Masterskill: React.FC = () => {
                     <span
                       className="badge rounded-pill px-2 py-0 fw-bold"
                       style={{
-                        background: '#FFD200',
+                        background: '#F4ED2D',
                         color: '#003B66',
                         fontSize: '10.5px',
                       }}
@@ -92,7 +92,7 @@ const Masterskill: React.FC = () => {
                   <Link
                     to={card.route || '/course/course-grid'}
                     className="text-decoration-none fw-bold mt-auto d-inline-flex align-items-center gap-1"
-                    style={{ fontSize: '12px', color: '#0171BB' }}
+                    style={{ fontSize: '12px', color: '#013BA6' }}
                   >
                     <span>Explore Feature</span>
                     <i className="isax isax-arrow-right-3" />

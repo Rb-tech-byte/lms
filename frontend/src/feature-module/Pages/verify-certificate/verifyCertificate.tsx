@@ -73,7 +73,7 @@ export const VerifyCertificate: React.FC = () => {
           <div className="col-lg-8 text-center">
             <span
               className="badge rounded-pill px-3 py-1.5 fw-bold mb-3"
-              style={{ background: '#071F38', color: '#fbbf24', fontSize: '0.78rem' }}
+              style={{ background: '#061838', color: '#fbbf24', fontSize: '0.78rem' }}
             >
               CENTRAL ACADEMIC REGISTRY &amp; CREDENTIAL VERIFICATION
             </span>

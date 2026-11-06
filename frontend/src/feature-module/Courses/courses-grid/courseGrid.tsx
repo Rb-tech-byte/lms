@@ -152,8 +152,8 @@ const CourseGrid: React.FC = () => {
       <section
         className="py-3.5"
         style={{
-          background: 'linear-gradient(135deg, #005B97 0%, #0171BB 55%, #0082D6 100%)',
-          borderBottom: '3px solid #FFD200',
+          background: 'linear-gradient(135deg, #013BA6 0%, #013BA6 55%, #228DDD 100%)',
+          borderBottom: '3px solid #F4ED2D',
         }}
       >
         <div className="container">
@@ -162,7 +162,7 @@ const CourseGrid: React.FC = () => {
               <div className="d-flex align-items-center gap-2 mb-1.5">
                 <span
                   className="badge rounded-pill px-2.5 py-1 fw-bold"
-                  style={{ background: '#FFD200', color: '#051426', fontSize: '0.7rem' }}
+                  style={{ background: '#F4ED2D', color: '#051426', fontSize: '0.7rem' }}
                 >
                   PROGRAMME CATALOGUE
                 </span>
@@ -255,9 +255,9 @@ const CourseGrid: React.FC = () => {
               style={{
                 width: 140,
                 cursor: 'pointer',
-                background: selectedCategory === 0 ? 'linear-gradient(135deg, #0171BB 0%, #005B97 100%)' : '#f8fafc',
+                background: selectedCategory === 0 ? 'linear-gradient(135deg, #013BA6 0%, #013BA6 100%)' : '#f8fafc',
                 color: selectedCategory === 0 ? '#ffffff' : '#1e293b',
-                border: selectedCategory === 0 ? '2px solid #FFD200' : '1px solid #e2e8f0',
+                border: selectedCategory === 0 ? '2px solid #F4ED2D' : '1px solid #e2e8f0',
                 boxShadow: selectedCategory === 0 ? '0 4px 12px rgba(1,113,187,0.25)' : 'none',
               }}
             >
@@ -266,8 +266,8 @@ const CourseGrid: React.FC = () => {
                 style={{
                   width: 38,
                   height: 38,
-                  background: selectedCategory === 0 ? '#FFD200' : '#e2e8f0',
-                  color: selectedCategory === 0 ? '#051426' : '#0171BB',
+                  background: selectedCategory === 0 ? '#F4ED2D' : '#e2e8f0',
+                  color: selectedCategory === 0 ? '#051426' : '#013BA6',
                   fontWeight: 800,
                   fontSize: '0.85rem',
                 }}
@@ -286,7 +286,7 @@ const CourseGrid: React.FC = () => {
             {categories.map((cat) => {
               const active = selectedCategory === cat.id;
               const count = courses.filter((c) => c.categoryid === cat.id).length || cat.coursecount;
-              const accent = cat.accentColor || '#0171BB';
+              const accent = cat.accentColor || '#013BA6';
               const coverImg = cat.cover || cat.categoryCover || `/assets/img/category/covers/cat-cover-${cat.id}-fstes.svg`;
 
               return (
@@ -298,7 +298,7 @@ const CourseGrid: React.FC = () => {
                     width: 160,
                     cursor: 'pointer',
                     background: '#ffffff',
-                    border: active ? `2px solid #FFD200` : `1.5px solid #e2e8f0`,
+                    border: active ? `2px solid #F4ED2D` : `1.5px solid #e2e8f0`,
                     boxShadow: active ? `0 6px 14px ${accent}33` : '0 2px 4px rgba(0,0,0,0.04)',
                     transform: active ? 'translateY(-2px)' : 'none',
                   }}
@@ -348,7 +348,7 @@ const CourseGrid: React.FC = () => {
                     <span
                       className="badge position-absolute top-0 end-0 m-1 px-1.5 py-0.5 fw-bold"
                       style={{
-                        background: '#FFD200',
+                        background: '#F4ED2D',
                         color: '#051426',
                         fontSize: '0.6rem',
                         boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
@@ -515,9 +515,9 @@ const CourseGrid: React.FC = () => {
                       }`}
                       style={{
                         fontSize: '0.76rem',
-                        background: selectedCategory === 0 ? '#0171BB' : '#f8fafc',
-                        border: selectedCategory === 0 ? '1.5px solid #FFD200' : '1px solid #e2e8f0',
-                        borderLeft: '4px solid #0171BB',
+                        background: selectedCategory === 0 ? '#013BA6' : '#f8fafc',
+                        border: selectedCategory === 0 ? '1.5px solid #F4ED2D' : '1px solid #e2e8f0',
+                        borderLeft: '4px solid #013BA6',
                       }}
                     >
                       <span>All Faculties</span>
@@ -525,7 +525,7 @@ const CourseGrid: React.FC = () => {
                         className="badge rounded-pill"
                         style={{
                           fontSize: '0.66rem',
-                          background: selectedCategory === 0 ? '#FFD200' : '#e2e8f0',
+                          background: selectedCategory === 0 ? '#F4ED2D' : '#e2e8f0',
                           color: selectedCategory === 0 ? '#051426' : '#334155',
                           fontWeight: 700,
                         }}
@@ -536,7 +536,7 @@ const CourseGrid: React.FC = () => {
                     {categories.map((cat) => {
                       const count = courses.filter((c) => c.categoryid === cat.id).length || cat.coursecount;
                       const active = selectedCategory === cat.id;
-                      const accent = cat.accentColor || '#0171BB';
+                      const accent = cat.accentColor || '#013BA6';
                       return (
                         <button
                           key={cat.id}
@@ -548,7 +548,7 @@ const CourseGrid: React.FC = () => {
                           style={{
                             fontSize: '0.74rem',
                             background: active ? accent : '#f8fafc',
-                            border: active ? '1.5px solid #FFD200' : '1px solid #e2e8f0',
+                            border: active ? '1.5px solid #F4ED2D' : '1px solid #e2e8f0',
                             borderLeft: `4px solid ${accent}`,
                           }}
                         >
@@ -571,7 +571,7 @@ const CourseGrid: React.FC = () => {
                             className="badge rounded-pill"
                             style={{
                               fontSize: '0.66rem',
-                              background: active ? '#FFD200' : `${accent}20`,
+                              background: active ? '#F4ED2D' : `${accent}20`,
                               color: active ? '#051426' : accent,
                               fontWeight: 700,
                             }}
@@ -659,8 +659,8 @@ const CourseGrid: React.FC = () => {
                   className="card border-0 shadow-sm rounded-3 mb-3.5 overflow-hidden"
                   style={{
                     border: '1.5px solid #E2E8F0',
-                    borderLeft: `5px solid ${activeCategory.accentColor || '#0171BB'}`,
-                    borderBottom: '3px solid #FFD200',
+                    borderLeft: `5px solid ${activeCategory.accentColor || '#013BA6'}`,
+                    borderBottom: '3px solid #F4ED2D',
                     background: '#ffffff',
                   }}
                 >
@@ -680,7 +680,7 @@ const CourseGrid: React.FC = () => {
                       <span
                         className="badge position-absolute top-0 start-0 m-2 px-2 py-1 fw-bold"
                         style={{
-                          background: '#FFD200',
+                          background: '#F4ED2D',
                           color: '#051426',
                           fontSize: '0.68rem',
                           boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
@@ -693,7 +693,7 @@ const CourseGrid: React.FC = () => {
                       <div className="d-flex align-items-center justify-content-between mb-1">
                         <span
                           className="fw-bold"
-                          style={{ color: activeCategory.accentColor || '#0171BB', fontSize: '0.72rem' }}
+                          style={{ color: activeCategory.accentColor || '#013BA6', fontSize: '0.72rem' }}
                         >
                           ACTIVE FACULTY FILTER
                         </span>
@@ -795,7 +795,7 @@ const CourseGrid: React.FC = () => {
                 <>
                   <div className="row g-3">
                     {paginatedCourses.map((course) => {
-                      const accent = course.accentColor || '#0171BB';
+                      const accent = course.accentColor || '#013BA6';
                       const courseSlug = (course.shortname || `course-${course.id}`).toLowerCase().replace(/[^a-z0-9]/g, '-');
                       const thumbUrl = course.courseImage || course.image || `/assets/img/course/thumbnails/course-${course.id}-${courseSlug}.svg`;
 
@@ -806,7 +806,7 @@ const CourseGrid: React.FC = () => {
                             style={{
                               border: '1.5px solid #E2E8F0',
                               borderTop: `4px solid ${accent}`,
-                              borderBottom: '3px solid #FFD200',
+                              borderBottom: '3px solid #F4ED2D',
                               transition: 'transform 0.2s ease, box-shadow 0.2s ease',
                             }}
                           >
@@ -820,7 +820,7 @@ const CourseGrid: React.FC = () => {
                                   maxHeight: '160px',
                                   aspectRatio: '16 / 9',
                                   background: `linear-gradient(135deg, ${accent}22 0%, ${accent}44 100%)`,
-                                  borderBottom: '3px solid #FFD200',
+                                  borderBottom: '3px solid #F4ED2D',
                                   contain: 'paint layout',
                                 }}
                               >
@@ -853,7 +853,7 @@ const CourseGrid: React.FC = () => {
                                   style={{
                                     background: accent,
                                     color: '#ffffff',
-                                    border: '1px solid #FFD200',
+                                    border: '1px solid #F4ED2D',
                                     fontSize: '0.68rem',
                                     boxShadow: '0 2px 6px rgba(0,0,0,0.22)',
                                   }}
@@ -865,7 +865,7 @@ const CourseGrid: React.FC = () => {
                                 <span
                                   className="badge rounded-pill position-absolute top-0 end-0 m-2 px-2.5 py-1 fw-bold"
                                   style={{
-                                    background: '#FFD200',
+                                    background: '#F4ED2D',
                                     color: '#003B66',
                                     fontSize: '0.72rem',
                                     boxShadow: '0 2px 6px rgba(0,0,0,0.22)',

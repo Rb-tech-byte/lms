@@ -257,7 +257,7 @@ const InstructorMessage: React.FC = () => {
                             maxWidth: '75%',
                             fontSize: 13,
                             lineHeight: 1.5,
-                            background: m.isMe ? '#0171bb' : '#f1f5f9',
+                            background: m.isMe ? '#013ba6' : '#f1f5f9',
                             color: m.isMe ? '#ffffff' : '#1e293b',
                             borderRadius: m.isMe ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
                           }}

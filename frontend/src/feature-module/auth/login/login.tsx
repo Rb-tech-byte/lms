@@ -137,16 +137,16 @@ const Login: React.FC = () => {
                 </span>
                 <span
                   className="badge rounded-pill"
-                  style={{ background: '#eff6ff', color: '#0171BB', fontSize: '0.66rem' }}
+                  style={{ background: '#eff6ff', color: '#013BA6', fontSize: '0.66rem' }}
                 >
                   One-Click Demo
                 </span>
               </div>
               <div className="row g-2">
                 {[
-                  { key: 'student' as const, label: 'Scholar', icon: 'isax-teacher', accent: '#0171BB' },
+                  { key: 'student' as const, label: 'Scholar', icon: 'isax-teacher', accent: '#013BA6' },
                   { key: 'instructor' as const, label: 'Lecturer', icon: 'isax-briefcase', accent: '#059669' },
-                  { key: 'admin' as const, label: 'Admin', icon: 'isax-shield-tick', accent: '#071F38' },
+                  { key: 'admin' as const, label: 'Admin', icon: 'isax-shield-tick', accent: '#061838' },
                 ]
                   // Only roles explicitly allowed for public demo are shown (default: student only).
                   // Privileged accounts must never be one-click accessible on a public deployment.
@@ -211,7 +211,7 @@ const Login: React.FC = () => {
                   <Link
                     to={route.forgotpassword}
                     className="text-decoration-none fw-semibold"
-                    style={{ fontSize: '0.76rem', color: '#0171BB' }}
+                    style={{ fontSize: '0.76rem', color: '#013BA6' }}
                   >
                     Forgot Password?
                   </Link>
@@ -263,7 +263,7 @@ const Login: React.FC = () => {
                 disabled={submitting}
                 className="btn w-100 rounded-pill py-2.5 fw-bold text-white shadow-sm mb-3"
                 style={{
-                  background: 'linear-gradient(135deg, #071F38 0%, #0171BB 100%)',
+                  background: 'linear-gradient(135deg, #061838 0%, #013BA6 100%)',
                   fontSize: '0.9rem',
                 }}
               >
@@ -286,7 +286,7 @@ const Login: React.FC = () => {
                 <Link
                   to={route.register}
                   className="fw-bold text-decoration-none"
-                  style={{ color: '#0171BB' }}
+                  style={{ color: '#013BA6' }}
                 >
                   Create Scholar Account
                 </Link>

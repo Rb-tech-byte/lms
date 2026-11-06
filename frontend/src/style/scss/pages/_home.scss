@@ -725,7 +725,7 @@
 		width: 1px;
 		right: -10px;
 		top: 0;
-		background: linear-gradient(to bottom, #5D5292, #0072BC);
+		background: linear-gradient(to bottom, #5D5292, #013BA6);
 		@include respond-below(md){
 			display: none;
 		}
@@ -1460,7 +1460,7 @@
 		&:before {
 			font-family: "Font Awesome 5 Free";
 			content: "\f054";
-			color: #0072BC;
+			color: #013BA6;
 			font-size: 16px;
 			font-weight: 900;
 		}
@@ -1470,7 +1470,7 @@
 		&:before {
 			font-family: "Font Awesome 5 Free";
 			content: "\f053";
-			color: #0072BC;
+			color: #013BA6;
 			font-size: 16px;
 			font-weight: 900;
 		}
@@ -1637,7 +1637,7 @@
     display: flex;
 	font-weight: 600;
 	font-size: 20px;
-	color: #0072BC;
+	color: #013BA6;
     -webkit-transition: 0.7s;
     -moz-transition: 0.7s;
     -o-transition: 0.7s;

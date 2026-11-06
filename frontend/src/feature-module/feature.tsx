@@ -57,7 +57,7 @@ const Feature = () => {
         onClick={handleExitImpersonation}
         className="btn btn-sm rounded-pill fw-bold"
         style={{
-          backgroundColor: '#0171BB',
+          backgroundColor: '#013BA6',
           color: '#ffffff',
           fontSize: '11px',
           padding: '3px 10px',

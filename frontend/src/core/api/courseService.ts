@@ -464,7 +464,7 @@ export const courseService = {
         hasH5P: c.hasH5P,
         accreditation: c.accreditation,
         sponsorshipEligible: c.sponsorshipEligible,
-        accentColor: c.accentColor || (c.isMOOC ? '#10b981' : (c.isPSC ? '#06b6d4' : '#0171BB')),
+        accentColor: c.accentColor || (c.isMOOC ? '#10b981' : (c.isPSC ? '#06b6d4' : '#013BA6')),
         badgeText: c.badgeText || (c.isMOOC ? 'Free / Open Access MOOC' : (c.isPSC ? 'Professional Short Course' : 'Academic Degree')),
       };
     };
@@ -669,7 +669,7 @@ export const courseService = {
       tuitionFee: matched?.tuitionFee || 150000,
       priceFormatted: matched?.priceFormatted || 'TZS 150,000',
       courseImage: matched?.courseImage || `/assets/img/course/thumbnails/course-${courseId}-${(matched?.shortname || `course-${courseId}`).toLowerCase().replace(/[^a-z0-9]/g, '-')}.svg`,
-      accentColor: matched?.accentColor || '#0171BB',
+      accentColor: matched?.accentColor || '#013BA6',
       badgeText: matched?.badgeText || 'Academic Degree',
       rating: matched?.rating || '4.9',
       reviewsCount: matched?.reviewsCount || 48,

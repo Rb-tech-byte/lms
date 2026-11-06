@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Open University of Tanzania (OUT) LMS
  * Enterprise System Features & Sample Data Seeder

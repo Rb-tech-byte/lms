@@ -53,16 +53,16 @@ const Counter: React.FC = () => {
                   style={{
                     borderRadius: '12px',
                     border: '1.5px solid #93C5FD',
-                    borderTop: '3px solid #0171BB',
-                    borderBottom: '3px solid #FFD200',
-                    borderLeft: `5px solid ${isGold ? '#FFD200' : '#0171BB'}`,
+                    borderTop: '3px solid #013BA6',
+                    borderBottom: '3px solid #F4ED2D',
+                    borderLeft: `5px solid ${isGold ? '#F4ED2D' : '#013BA6'}`,
                   }}
                 >
                   <div className="card-body p-3 d-flex align-items-center justify-content-between">
                     <div>
                       <div
                         className="text-uppercase fw-bold mb-1"
-                        style={{ fontSize: '11px', color: '#0171BB', letterSpacing: '0.03em' }}
+                        style={{ fontSize: '11px', color: '#013BA6', letterSpacing: '0.03em' }}
                       >
                         {stat.label}
                       </div>
@@ -73,7 +73,7 @@ const Counter: React.FC = () => {
                         <span
                           className="badge rounded-pill px-2 py-0 fw-bold"
                           style={{
-                            background: '#FFD200',
+                            background: '#F4ED2D',
                             color: '#003B66',
                             fontSize: '10.5px',
                           }}
@@ -88,8 +88,8 @@ const Counter: React.FC = () => {
                         width: '42px',
                         height: '42px',
                         background: isGold ? '#FFFDE7' : '#E8F4FC',
-                        border: `1.5px solid ${isGold ? '#FFD200' : '#0171BB'}`,
-                        color: '#0171BB',
+                        border: `1.5px solid ${isGold ? '#F4ED2D' : '#013BA6'}`,
+                        color: '#013BA6',
                       }}
                     >
                       <i className={`isax ${stat.icon || 'isax-award'} fs-20`} />

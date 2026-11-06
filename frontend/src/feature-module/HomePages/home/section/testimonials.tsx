@@ -13,7 +13,7 @@ const Testimonials: React.FC = () => {
         <div className="mb-3">
           <div
             className="text-uppercase fw-bold mb-1"
-            style={{ fontSize: '11px', color: '#0171BB', letterSpacing: '0.06em' }}
+            style={{ fontSize: '11px', color: '#013BA6', letterSpacing: '0.06em' }}
           >
             {revCfg.eyebrow}
           </div>
@@ -30,10 +30,10 @@ const Testimonials: React.FC = () => {
             <div key={item.id} className="col-lg-4 col-md-6">
               <div
                 className="card h-100 border shadow-sm overflow-hidden"
-                style={{ borderRadius: '12px', borderTop: '3px solid #0171BB', borderBottom: '3px solid #FFD200', borderColor: '#93C5FD' }}
+                style={{ borderRadius: '12px', borderTop: '3px solid #013BA6', borderBottom: '3px solid #F4ED2D', borderColor: '#93C5FD' }}
               >
                 {item.coverImage && (
-                  <div style={{ height: '64px', overflow: 'hidden', borderBottom: '2px solid #FFD200' }}>
+                  <div style={{ height: '64px', overflow: 'hidden', borderBottom: '2px solid #F4ED2D' }}>
                     <img
                       src={item.coverImage}
                       alt={item.name}
@@ -46,7 +46,7 @@ const Testimonials: React.FC = () => {
                   <div className="d-flex align-items-center justify-content-between mb-2">
                     <span
                       className="badge rounded-pill px-2 py-1 fw-bold"
-                      style={{ background: '#FFD200', color: '#003B66', fontSize: '10.5px' }}
+                      style={{ background: '#F4ED2D', color: '#003B66', fontSize: '10.5px' }}
                     >
                       {item.course}
                     </span>

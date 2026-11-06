@@ -23,7 +23,7 @@ interface CorporateStudentHeaderProps {
 
 const TONES: Record<PortalNotification['tone'], { bg: string; fg: string }> = {
   amber: { bg: '#fef3c7', fg: '#b45309' },
-  sky: { bg: '#E8F4FC', fg: '#005B97' },
+  sky: { bg: '#E8F4FC', fg: '#013BA6' },
   green: { bg: '#dcfce7', fg: '#15803d' },
 };
 

@@ -62,7 +62,7 @@ const Header: React.FC = () => {
       {headerCfg.showTopbar && (
         <div
           style={{
-            background: 'linear-gradient(90deg, #005B97 0%, #0171BB 50%, #005B97 100%)', color: '#ffffff', fontSize: '12px', borderBottom: '2px solid #FFD200',
+            background: 'linear-gradient(90deg, #013BA6 0%, #013BA6 50%, #013BA6 100%)', color: '#ffffff', fontSize: '12px', borderBottom: '2px solid #F4ED2D',
           }}
           className="py-1 px-2"
         >
@@ -71,25 +71,25 @@ const Header: React.FC = () => {
               {headerCfg.announcementBadge && (
                 <span
                   className="badge rounded-pill px-2 py-1 fw-semibold"
-                  style={{ background: '#FFD200', color: '#003B66', fontSize: '11px', fontWeight: 700 }}
+                  style={{ background: '#F4ED2D', color: '#003B66', fontSize: '11px', fontWeight: 700 }}
                 >
                   <i className="isax isax-verify me-1" />
                   {headerCfg.announcementBadge}
                 </span>
               )}
               <span className="d-none d-md-inline-flex align-items-center">
-                <i className="isax isax-location me-1" style={{ color: "#FFD200" }} />
+                <i className="isax isax-location me-1" style={{ color: "#F4ED2D" }} />
                 {headerCfg.topbarAddress}
               </span>
             </div>
 
             <div className="d-flex align-items-center gap-3">
               <span className="d-none d-sm-inline-flex align-items-center">
-                <i className="isax isax-call-calling me-1" style={{ color: "#FFD200" }} />
+                <i className="isax isax-call-calling me-1" style={{ color: "#F4ED2D" }} />
                 {headerCfg.topbarPhone}
               </span>
               <span className="d-none d-lg-inline-flex align-items-center">
-                <i className="isax isax-sms me-1" style={{ color: "#FFD200" }} />
+                <i className="isax isax-sms me-1" style={{ color: "#F4ED2D" }} />
                 {headerCfg.topbarEmail}
               </span>
             </div>
@@ -158,7 +158,7 @@ const Header: React.FC = () => {
                   location.pathname === item.route ||
                   (item.route === '/index' && location.pathname === '/');
                 const navPalette = [
-                  { color: '#0171BB', bg: 'rgba(1,113,187,0.12)', activeBg: '#0171BB', border: 'rgba(1,113,187,0.3)', icon: 'isax-home-2' },
+                  { color: '#013BA6', bg: 'rgba(1,113,187,0.12)', activeBg: '#013BA6', border: 'rgba(1,113,187,0.3)', icon: 'isax-home-2' },
                   { color: '#059669', bg: 'rgba(5,150,105,0.12)', activeBg: '#059669', border: 'rgba(5,150,105,0.3)', icon: 'isax-book-1' },
                   { color: '#7c3aed', bg: 'rgba(124,58,237,0.12)', activeBg: '#7c3aed', border: 'rgba(124,58,237,0.3)', icon: 'isax-courthouse' },
                   { color: '#d97706', bg: 'rgba(217,119,6,0.12)', activeBg: '#d97706', border: 'rgba(217,119,6,0.3)', icon: 'isax-teacher' },
@@ -197,8 +197,8 @@ const Header: React.FC = () => {
                   fontSize: '12.5px',
                   whiteSpace: 'nowrap',
                   flexShrink: 0,
-                  color: location.pathname.includes('verify-certificate') ? '#071F38' : '#b45309',
-                  background: location.pathname.includes('verify-certificate') ? '#FFD200' : 'rgba(245,158,11,0.15)',
+                  color: location.pathname.includes('verify-certificate') ? '#061838' : '#b45309',
+                  background: location.pathname.includes('verify-certificate') ? '#F4ED2D' : 'rgba(245,158,11,0.15)',
                   border: '1px solid rgba(245,158,11,0.45)',
                 }}
               >
@@ -345,7 +345,7 @@ const Header: React.FC = () => {
                   <Link
                     to={all_routes.register}
                     className="btn btn-sm btn-primary rounded-2 px-3 fw-semibold d-none d-sm-inline-flex align-items-center"
-                    style={{ fontSize: '13px', background: '#0171BB', borderColor: '#0171BB' }}
+                    style={{ fontSize: '13px', background: '#013BA6', borderColor: '#013BA6' }}
                   >
                     {headerCfg.ctaRegisterText || 'Apply / Register'}
                   </Link>

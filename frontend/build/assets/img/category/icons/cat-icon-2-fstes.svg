@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="iconBg_fstes" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#041d2e" />
+      <stop offset="100%" stop-color="#0c4a6e" />
+    </linearGradient>
+    <linearGradient id="iconBorder_fstes" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#0284c7" />
+    </linearGradient>
+  </defs>
+
+  <!-- Squircle Base -->
+  <rect x="4" y="4" width="120" height="120" rx="28" fill="url(#iconBg_fstes)" stroke="url(#iconBorder_fstes)" stroke-width="3" />
+  
+  <!-- Subtle Internal Glow -->
+  <circle cx="64" cy="64" r="42" fill="#38bdf8" opacity="0.15" />
+
+  <!-- Vector Illustration -->
+  
+      <!-- Science Atom &amp; Flask -->
+      <ellipse cx="64" cy="64" rx="42" ry="16" fill="none" stroke="#38bdf8" stroke-width="3" transform="rotate(30 64 64)" />
+      <ellipse cx="64" cy="64" rx="42" ry="16" fill="none" stroke="#38bdf8" stroke-width="3" transform="rotate(-30 64 64)" />
+      <ellipse cx="64" cy="64" rx="42" ry="16" fill="none" stroke="#38bdf8" stroke-width="3" transform="rotate(90 64 64)" />
+      <circle cx="64" cy="64" r="9" fill="#facc15" />
+    
+</svg>

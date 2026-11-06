@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450">
+  <defs>
+    <!-- Background Gradient tailored for BBA302 -->
+    <linearGradient id="bgGrad_BBA302" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#260611" />
+      <stop offset="55%" stop-color="#881337" />
+      <stop offset="100%" stop-color="#be123c" />
+    </linearGradient>
+
+    <!-- Accent Badge Gradient -->
+    <linearGradient id="accentGrad_BBA302" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#fb7185" />
+      <stop offset="100%" stop-color="#e11d48" />
+    </linearGradient>
+
+    <!-- Glassmorphic Card Container -->
+    <linearGradient id="cardGrad_BBA302" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.14" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.04" />
+    </linearGradient>
+
+    <!-- Drop Shadow Filter -->
+    <filter id="shadow_BBA302" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.45" />
+    </filter>
+
+    <pattern id="gridPattern_BBA302" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ffffff" stroke-width="0.7" opacity="0.06" />
+    </pattern>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect width="800" height="450" fill="url(#bgGrad_BBA302)" />
+  <rect width="800" height="450" fill="url(#gridPattern_BBA302)" />
+
+  <!-- Thematic Ambient Light Orbs -->
+  <circle cx="700" cy="110" r="220" fill="#fda4af" opacity="0.18" filter="blur(40px)" />
+  <circle cx="100" cy="380" r="160" fill="#e11d48" opacity="0.14" filter="blur(40px)" />
+
+  <!-- Official OUT Top Institutional Gold Bar -->
+  <rect x="0" y="0" width="800" height="14" fill="#FFD200" />
+
+  <!-- OUT Institutional Brand Pill -->
+  <g transform="translate(48, 44)">
+    <rect width="360" height="34" rx="17" fill="#003B66" fill-opacity="0.65" stroke="#FFD200" stroke-opacity="0.85" stroke-width="1.5" />
+    <circle cx="18" cy="17" r="7" fill="#FFD200" />
+    <text x="36" y="22" font-family="'Segoe UI', Inter, sans-serif" font-size="12" font-weight="700" fill="#ffffff" letter-spacing="1.2">THE OPEN UNIVERSITY OF TANZANIA</text>
+  </g>
+
+  <!-- Faculty / Department Label -->
+  <g transform="translate(48, 98)">
+    <text font-family="'Segoe UI', Inter, sans-serif" font-size="13" font-weight="700" fill="#fb7185" letter-spacing="0.5">FACULTY OF BUSINESS MANAGEMENT</text>
+  </g>
+
+  <!-- Course Code Badge -->
+  <g transform="translate(48, 124)">
+    <rect width="130" height="36" rx="8" fill="url(#accentGrad_BBA302)" filter="url(#shadow_BBA302)" />
+    <text x="65" y="24" text-anchor="middle" font-family="'Segoe UI', Inter, sans-serif" font-size="16" font-weight="800" fill="#ffffff" letter-spacing="0.8">BBA302</text>
+  </g>
+
+  <!-- Delivery / Program Type Badge -->
+  <g transform="translate(190, 124)">
+    <rect width="210" height="36" rx="8" fill="#ffffff" fill-opacity="0.12" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1.2" />
+    <text x="105" y="23" text-anchor="middle" font-family="'Segoe UI', Inter, sans-serif" font-size="12.5" font-weight="700" fill="#ffffff">Faculty Undergraduate Degree</text>
+  </g>
+
+  <!-- Course Title (Multline wrapped) -->
+  <g transform="translate(48, 200)">
+    <text font-family="'Segoe UI', Inter, sans-serif" font-size="28" font-weight="800" fill="#ffffff" letter-spacing="-0.5">
+      <tspan x="0" dy="0">Marketing Management &amp; Strategic</tspan><tspan x="0" dy="34">Brand Positioning</tspan>
+    </text>
+  </g>
+
+  <!-- Key Syllabus Bullets / Subtitle -->
+  <g transform="translate(48, 355)">
+    <rect width="440" height="48" rx="8" fill="#000000" fill-opacity="0.3" stroke="#ffffff" stroke-opacity="0.15" stroke-width="1.2" />
+    <text x="18" y="28" font-family="'Segoe UI', Inter, sans-serif" font-size="12" font-weight="500" fill="#e2e8f0">Consumer Behavior, Digital Channels, Brand Equity &amp; Omnichannel Sales</text>
+  </g>
+
+  <!-- Right Visual Feature Showcase Card -->
+  <g transform="translate(520, 70)" filter="url(#shadow_BBA302)">
+    <!-- Glassmorphic Card Container -->
+    <rect width="232" height="310" rx="20" fill="url(#cardGrad_BBA302)" stroke="#ffffff" stroke-opacity="0.3" stroke-width="2" />
+    
+    <!-- Topic Thematic Graphic -->
+    <g transform="translate(-5, 20)">
+      
+      <!-- Marketing Megaphone &amp; Target Bullseye -->
+      <g transform="translate(60, 50)">
+        <!-- Target Bullseye Outer -->
+        <circle cx="95" cy="50" r="38" fill="none" stroke="#fb7185" stroke-width="3" />
+        <circle cx="95" cy="50" r="24" fill="none" stroke="#fda4af" stroke-width="2.5" />
+        <circle cx="95" cy="50" r="10" fill="#e11d48" />
+        <!-- Bullhorn Megaphone -->
+        <polygon points="10,40 45,25 45,75 10,60" fill="#f43f5e" stroke="#ffffff" stroke-width="2" />
+        <rect x="0" y="45" width="12" height="10" rx="2" fill="#ffffff" />
+        <path d="M22,60 L22,78 L32,78 L32,60" fill="#e11d48" />
+        <!-- Sound Waves -->
+        <path d="M52,38 C56,43 56,57 52,62" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M58,32 C65,40 65,60 58,68" fill="none" stroke="#fda4af" stroke-width="2" stroke-linecap="round" />
+      </g>
+      <text x="120" y="195" text-anchor="middle" font-family="'Segoe UI', Inter, sans-serif" font-size="11" font-weight="700" fill="#ffe4e6" letter-spacing="1">BRAND POSITIONING &amp; ROI</text>
+    
+    </g>
+
+    <!-- Bottom Institutional Verified Stamp -->
+    <g transform="translate(16, 260)">
+      <rect width="200" height="34" rx="8" fill="#003B66" fill-opacity="0.9" stroke="#FFD200" stroke-width="1.5" />
+      <circle cx="20" cy="17" r="5" fill="#22c55e" />
+      <text x="34" y="21" font-family="'Segoe UI', Inter, sans-serif" font-size="10.5" font-weight="800" fill="#ffffff" letter-spacing="0.5">SARIS &amp; TCU ACCREDITED</text>
+    </g>
+  </g>
+
+  <!-- Bottom Accent Line -->
+  <rect x="0" y="442" width="800" height="8" fill="url(#accentGrad_BBA302)" />
+</svg>

@@ -1,0 +1,183 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 520" width="100%" height="100%" fill="none">
+  <defs>
+    <linearGradient id="bgGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7" stop-opacity="0.16" />
+      <stop offset="50%" stop-color="#0b1f3a" stop-opacity="0.08" />
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0.14" />
+    </linearGradient>
+    <linearGradient id="navyCard" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b1f3a" />
+      <stop offset="60%" stop-color="#163760" />
+      <stop offset="100%" stop-color="#1e426d" />
+    </linearGradient>
+    <linearGradient id="goldAccent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#fbbf24" />
+    </linearGradient>
+    <linearGradient id="skyAccent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0284c7" />
+      <stop offset="100%" stop-color="#38bdf8" />
+    </linearGradient>
+    <linearGradient id="emeraldAccent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#059669" />
+      <stop offset="100%" stop-color="#34d399" />
+    </linearGradient>
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="125%">
+      <feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#0b1f3a" flood-opacity="0.18" />
+    </filter>
+    <filter id="floatShadow" x="-15%" y="-15%" width="130%" height="135%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#0f172a" flood-opacity="0.14" />
+    </filter>
+  </defs>
+
+  <!-- Soft Ambient Academic Halo Circles -->
+  <circle cx="320" cy="260" r="225" fill="url(#bgGlow)" />
+  <circle cx="320" cy="260" r="175" stroke="#0284c7" stroke-opacity="0.14" stroke-width="1.5" stroke-dasharray="6 6" />
+  <circle cx="115" cy="110" r="28" fill="#f59e0b" fill-opacity="0.12" />
+  <circle cx="535" cy="400" r="36" fill="#0284c7" fill-opacity="0.12" />
+
+  <!-- Network Connectivity Nodes (Representing 30 Regional Centres) -->
+  <g stroke="#0284c7" stroke-opacity="0.22" stroke-width="1.5">
+    <line x1="95" y1="185" x2="165" y2="155" />
+    <line x1="485" y1="125" x2="545" y2="165" />
+    <line x1="110" y1="365" x2="175" y2="335" />
+  </g>
+  <circle cx="95" cy="185" r="5" fill="#0284c7" />
+  <circle cx="545" cy="165" r="5" fill="#f59e0b" />
+  <circle cx="110" cy="365" r="5" fill="#10b981" />
+
+  <!-- Main Digital University Portal Monitor / Tablet Card -->
+  <g filter="url(#cardShadow)">
+    <rect x="135" y="78" width="370" height="330" rx="22" fill="#ffffff" stroke="#e2e8f0" stroke-width="2" />
+    <!-- Top Dark-Navy Portal Header Bar -->
+    <path d="M135 100 C135 87.85 144.85 78 157 78 H483 C495.15 78 505 87.85 505 100 V138 H135 V100 Z" fill="url(#navyCard)" />
+    <!-- Window Dots -->
+    <circle cx="160" cy="108" r="5" fill="#f87171" />
+    <circle cx="176" cy="108" r="5" fill="#fbbf24" />
+    <circle cx="192" cy="108" r="5" fill="#34d399" />
+    <!-- Header Brand Pill -->
+    <rect x="220" y="96" width="145" height="24" rx="12" fill="#ffffff" fill-opacity="0.12" />
+    <text x="292" y="112" text-anchor="middle" fill="#f8fafc" font-family="Inter, system-ui, sans-serif" font-size="10.5" font-weight="700" letter-spacing="0.6">
+      LMS SCHOLAR PORTAL
+    </text>
+    <!-- Gold Verified Badge -->
+    <rect x="430" y="97" width="56" height="22" rx="11" fill="url(#goldAccent)" />
+    <text x="458" y="112" text-anchor="middle" fill="#0f172a" font-family="Inter, system-ui, sans-serif" font-size="9.5" font-weight="800">
+      TCU
+    </text>
+
+    <!-- Active Course Banner Inside Screen -->
+    <rect x="157" y="156" width="326" height="74" rx="14" fill="#f0f9ff" stroke="#bae6fd" stroke-width="1.2" />
+    <rect x="171" y="170" width="46" height="46" rx="12" fill="url(#navyCard)" />
+    <!-- Book / Code Icon inside Course Box -->
+    <path d="M184 185 H204 M184 193 H200 M184 201 H196" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round" />
+    <text x="230" y="184" fill="#0284c7" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="700">
+      DEGREE PROGRAMME • ACTIVE SEMESTER
+    </text>
+    <text x="230" y="201" fill="#0f172a" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="800">
+      BSc. Computer Science &amp; Business
+    </text>
+    <!-- Progress Bar -->
+    <rect x="230" y="210" width="185" height="7" rx="3.5" fill="#cbd5e1" />
+    <rect x="230" y="210" width="148" height="7" rx="3.5" fill="url(#emeraldAccent)" />
+    <text x="425" y="217" fill="#059669" font-family="Inter, system-ui, sans-serif" font-size="10.5" font-weight="700">
+      84%
+    </text>
+
+    <!-- 3 Interactive Study Unit Cards Inside Screen -->
+    <!-- Card 1 -->
+    <rect x="157" y="244" width="102" height="82" rx="12" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.2" />
+    <circle cx="180" cy="267" r="12" fill="#eff6ff" />
+    <path d="M176 267 L179 270 L185 264" stroke="#0284c7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+    <text x="169" y="295" fill="#0f172a" font-family="Inter, system-ui, sans-serif" font-size="10.5" font-weight="700">
+      Study Units
+    </text>
+    <text x="169" y="311" fill="#64748b" font-family="Inter, system-ui, sans-serif" font-size="9.5" font-weight="600">
+      24 Digital Modules
+    </text>
+
+    <!-- Card 2 -->
+    <rect x="269" y="244" width="102" height="82" rx="12" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.2" />
+    <circle cx="292" cy="267" r="12" fill="#fef3c7" />
+    <path d="M288 271 V263 L297 267 Z" fill="#d97706" />
+    <text x="281" y="295" fill="#0f172a" font-family="Inter, system-ui, sans-serif" font-size="10.5" font-weight="700">
+      Live Seminars
+    </text>
+    <text x="281" y="311" fill="#64748b" font-family="Inter, system-ui, sans-serif" font-size="9.5" font-weight="600">
+      Interactive Labs
+    </text>
+
+    <!-- Card 3 -->
+    <rect x="381" y="244" width="102" height="82" rx="12" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.2" />
+    <circle cx="404" cy="267" r="12" fill="#ecfdf5" />
+    <path d="M399 267 H409 M404 262 V272" stroke="#059669" stroke-width="2.2" stroke-linecap="round" />
+    <text x="393" y="295" fill="#0f172a" font-family="Inter, system-ui, sans-serif" font-size="10.5" font-weight="700">
+      Assessments
+    </text>
+    <text x="393" y="311" fill="#64748b" font-family="Inter, system-ui, sans-serif" font-size="9.5" font-weight="600">
+      Verified Grades
+    </text>
+
+    <!-- Bottom Status Strip inside Screen -->
+    <rect x="157" y="340" width="326" height="46" rx="12" fill="url(#navyCard)" />
+    <circle cx="182" cy="363" r="11" fill="#10b981" fill-opacity="0.2" />
+    <circle cx="182" cy="363" r="5" fill="#34d399" />
+    <text x="202" y="360" fill="#ffffff" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="700">
+      14,820+ Active University Scholars
+    </text>
+    <text x="202" y="374" fill="#cbd5e1" font-family="Inter, system-ui, sans-serif" font-size="9.5" font-weight="500">
+      30 Regional Study Centres • Flexible Open &amp; Distance Learning
+    </text>
+  </g>
+
+  <!-- Floating Left Card: Academic Graduation Mortarboard Badge -->
+  <g filter="url(#floatShadow)">
+    <rect x="52" y="210" width="136" height="92" rx="16" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
+    <rect x="68" y="224" width="40" height="40" rx="12" fill="url(#navyCard)" />
+    <!-- Graduation Cap Vector -->
+    <polygon points="88,233 73,241 88,249 103,241" fill="#fbbf24" />
+    <path d="M79 245 V253 C79 256 97 256 97 253 V245" stroke="#ffffff" stroke-width="1.8" fill="none" />
+    <line x1="101" y1="242" x2="101" y2="254" stroke="#fbbf24" stroke-width="1.8" />
+    <text x="116" y="241" fill="#0f172a" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="800">
+      Accredited
+    </text>
+    <text x="116" y="255" fill="#0284c7" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="700">
+      Degrees
+    </text>
+    <rect x="68" y="274" width="104" height="16" rx="8" fill="#ecfdf5" />
+    <text x="120" y="285" text-anchor="middle" fill="#059669" font-family="Inter, system-ui, sans-serif" font-size="9.5" font-weight="700">
+      ✓ Senate Approved
+    </text>
+  </g>
+
+  <!-- Floating Top-Right Card: Security &amp; SSO Shield -->
+  <g filter="url(#floatShadow)">
+    <rect x="448" y="34" width="142" height="78" rx="16" fill="url(#navyCard)" stroke="#334155" stroke-width="1.2" />
+    <circle cx="478" cy="73" r="18" fill="#f59e0b" fill-opacity="0.18" />
+    <!-- Shield Lock Icon -->
+    <path d="M478 60 L488 64 V72 C488 79 483.5 84.5 478 87 C472.5 84.5 468 79 468 72 V64 L478 60 Z" fill="#fbbf24" />
+    <path d="M475 73 L477.5 75.5 L482 70.5" stroke="#0b1f3a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    <text x="504" y="69" fill="#ffffff" font-family="Inter, system-ui, sans-serif" font-size="11.5" font-weight="800">
+      Verified ID
+    </text>
+    <text x="504" y="84" fill="#cbd5e1" font-family="Inter, system-ui, sans-serif" font-size="9.5" font-weight="600">
+      Scholar &amp; Staff SSO
+    </text>
+  </g>
+
+  <!-- Floating Bottom-Right Card: Certificate &amp; Transcript Achievement -->
+  <g filter="url(#floatShadow)">
+    <rect x="436" y="352" width="154" height="86" rx="16" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
+    <circle cx="468" cy="395" r="20" fill="#f0f9ff" />
+    <path d="M460 395 L466 401 L477 389" stroke="#0284c7" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" />
+    <text x="496" y="385" fill="#0f172a" font-family="Inter, system-ui, sans-serif" font-size="12" font-weight="800">
+      99.2% Success
+    </text>
+    <text x="496" y="400" fill="#64748b" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="600">
+      Digital Transcripts
+    </text>
+    <text x="496" y="415" fill="#d97706" font-family="Inter, system-ui, sans-serif" font-size="9.5" font-weight="700">
+      ★ 4.9 Scholar Rating
+    </text>
+  </g>
+</svg>

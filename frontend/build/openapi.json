@@ -1,0 +1,4442 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "OUT LMS — Enterprise REST & Web Services API",
+    "summary": "Unified Academic, Administrative & Moodle Core Web Services Engine",
+    "description": "### 🏛️ The Open University of Tanzania (Chuo Kikuu Huria cha Tanzania)\n**TCU & SARIS Accredited National Distance & Blended Learning Ecosystem**\n\nEnterprise API Gateway documentation providing complete interactive visualization of:\n1. **Public Academic & Discovery APIs**: Live course catalog, faculties, syllabi, fee structures, and verified instructor profiles.\n2. **Admissions & Student Self-Service**: User registration, password resets, inquiries, and application workflows.\n3. **Payments & Checkout Engine**: Pesapal 3.0 Mobile Money (M-Pesa, Airtel Money, Tigo Pesa, HaloPesa) & Card gateway.\n4. **Accredited Digital Credentials**: SARIS & TCU verifiable digital certificates with unique verification codes.\n5. **Course & Faculty Administration**: Full CUD operations for courses, learning activity modules, categories, and groups.\n6. **Instructor Console Services**: Teaching dashboard, assignments, grading rubrics, quizzes, announcements, and earnings.\n7. **System & Telemetry Operations**: Configuration, cache management, telemetry, and platform diagnostics.\n8. **SSO & Authentication**: Single Sign-On and security token generation.\n9. **Moodle Core Web Services**: Standard Moodle REST protocol endpoints (`/webservice/rest/server.php`).\n",
+    "version": "1.0.0-enterprise",
+    "contact": {
+      "name": "OUT Directorate of Information and Communication Technology (DICT)",
+      "url": "https://lms.out.ac.tz",
+      "email": "dict@out.ac.tz"
+    },
+    "license": {
+      "name": "The Open University of Tanzania Institutional License",
+      "url": "https://lms.out.ac.tz/terms"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Unified Gateway & Reverse Proxy (Port 3000)"
+    },
+    {
+      "url": "http://localhost:8080",
+      "description": "Direct Backend Application Server (Port 8080)"
+    },
+    {
+      "url": "https://lms.out.ac.tz",
+      "description": "Institutional Production Cloud Gateway"
+    }
+  ],
+  "tags": [
+    {
+      "name": "OUT LMS Core System Features & Functional Capabilities",
+      "description": "Enterprise system features and native functional modules of the Open University of Tanzania (OUT) LMS: Adaptive Curriculum Layout Engine (Visual Tiles, Tabbed Units, Collapsible Accordions, Kickstart Template Wizard), OUT Cloud Virtual Lab IDE, Automated Algorithmic & Unit-Test Grader, SARIS Biometric & Rotating QR Digital Attendance System, Milestone Completion Telemetry, Academic Merit & XP Engine, TCU & SARIS Verifiable Digital Credential Engine, and Intelligent Scholar Retention Automation."
+    },
+    {
+      "name": "Public Academic Catalog",
+      "description": "Course discovery, degree programmes, short courses (PSC), MOOCs, and syllabi."
+    },
+    {
+      "name": "Admissions & Onboarding",
+      "description": "Student self-service registration, password recovery, and inquiry forms."
+    },
+    {
+      "name": "Payments & Checkout",
+      "description": "Pesapal 3.0, Tanzanian Mobile Money (M-Pesa, Airtel, Tigo, HaloPesa) & Cards."
+    },
+    {
+      "name": "Digital Credentials",
+      "description": "TCU & SARIS verifiable certificates and QR validation."
+    },
+    {
+      "name": "Course & Curriculum Management",
+      "description": "Full administrative course CUD, sections, learning activities, and enrolments."
+    },
+    {
+      "name": "Faculties & Categories",
+      "description": "University faculties, academic departments, and category hierarchies."
+    },
+    {
+      "name": "User & Group Governance",
+      "description": "Scholar and staff directory, role assignments, and tutorial study groups."
+    },
+    {
+      "name": "Instructor Console",
+      "description": "Faculty teaching console, grading rubrics, assignments, quizzes, and payouts."
+    },
+    {
+      "name": "Gamification & Live Sessions",
+      "description": "Scholar XP points, badges, leaderboards, and virtual live classrooms."
+    },
+    {
+      "name": "System & Telemetry",
+      "description": "Cache purge, performance metrics, site settings, and CMS branding."
+    },
+    {
+      "name": "SSO & Security Tokens",
+      "description": "Single Sign-On authentication and Moodle mobile/web service tokens."
+    },
+    {
+      "name": "Moodle Core Web Services",
+      "description": "Adaptive Moodle web services supporting discrete RESTful protocol (`/webservice/restful/server.php/{function}` with Bearer token) and standard RPC protocol (`/webservice/rest/server.php`)."
+    }
+  ],
+  "paths": {
+    "/admin_api.php?action=public_catalog": {
+      "get": {
+        "tags": [
+          "Public Academic Catalog"
+        ],
+        "summary": "Retrieve Public Course Catalog",
+        "description": "Queries live MariaDB tables to return the complete catalog of published academic degree courses, professional short courses (PSC), and MOOCs with fees, real faculty instructors, and themed SVG covers.",
+        "operationId": "getPublicCatalog",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "public_catalog"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Category ID filter (e.g. 6 for PSC, 7 for MOOCs)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=public_course_details": {
+      "get": {
+        "tags": [
+          "Public Academic Catalog"
+        ],
+        "summary": "Get Detailed Course Syllabus & Modules",
+        "description": "Retrieves full course curriculum, sections, learning activities, lecturer bio, and fee details for a specific course ID.",
+        "operationId": "getPublicCourseDetails",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "public_course_details"
+            }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Course primary key ID (e.g. 7 or 12)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=public_instructors": {
+      "get": {
+        "tags": [
+          "Public Academic Catalog"
+        ],
+        "summary": "List Faculty Members & Senior Lecturers",
+        "description": "Returns university course directors, department chairs, and lecturers with their biographies, faculties, and assigned courses.",
+        "operationId": "getPublicInstructors",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "public_instructors"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=get_short_courses_catalog": {
+      "get": {
+        "tags": [
+          "Public Academic Catalog"
+        ],
+        "summary": "List Professional Short Courses (PSC)",
+        "description": "Returns specialized vocational and professional certification short courses offered by IEMT and Faculty of Science & Technology.",
+        "operationId": "getShortCoursesCatalog",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "get_short_courses_catalog"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=register_user": {
+      "post": {
+        "tags": [
+          "Admissions & Onboarding"
+        ],
+        "summary": "Student Self-Service Registration",
+        "description": "Creates a verified scholar account in Moodle core with automatic student role assignment and faculty department onboarding.",
+        "operationId": "registerUser",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "register_user"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "password",
+                  "firstname",
+                  "lastname"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "scholar@out.ac.tz"
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 6,
+                    "example": "Study@2026"
+                  },
+                  "firstname": {
+                    "type": "string",
+                    "example": "Baraka"
+                  },
+                  "lastname": {
+                    "type": "string",
+                    "example": "Mollel"
+                  },
+                  "phone": {
+                    "type": "string",
+                    "example": "+255712000111"
+                  },
+                  "department": {
+                    "type": "string",
+                    "example": "Faculty of Science, Technology & Environmental Studies"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=request_password_reset": {
+      "post": {
+        "tags": [
+          "Admissions & Onboarding"
+        ],
+        "summary": "Request or Complete Password Reset",
+        "description": "Initiates self-service password recovery or sets a new password using a verified reset token.",
+        "operationId": "requestPasswordReset",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "request_password_reset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "scholar@out.ac.tz"
+                  },
+                  "token": {
+                    "type": "string",
+                    "description": "Verification token sent via email/SMS."
+                  },
+                  "new_password": {
+                    "type": "string",
+                    "minLength": 6
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=submit_contact_inquiry": {
+      "post": {
+        "tags": [
+          "Admissions & Onboarding"
+        ],
+        "summary": "Submit University Contact Inquiry",
+        "description": "Directs prospective student queries to the appropriate faculty dean or admissions coordinator.",
+        "operationId": "submitContactInquiry",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "submit_contact_inquiry"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "email",
+                  "message"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Fatma Juma"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "fatma.juma@gmail.com"
+                  },
+                  "subject": {
+                    "type": "string",
+                    "example": "Inquiry regarding PSC-CYBER enrollment"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Kindly advise on the start date for cohort 2."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=paygw_pesapal_create_order": {
+      "post": {
+        "tags": [
+          "Payments & Checkout"
+        ],
+        "summary": "Initiate Pesapal 3.0 Payment Order",
+        "description": "Generates a Pesapal 3.0 transaction reference supporting Tanzanian Mobile Money (M-Pesa, Airtel, Tigo, HaloPesa) and International Cards.",
+        "operationId": "createPesapalOrder",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "paygw_pesapal_create_order"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "courseid",
+                  "amount",
+                  "currency",
+                  "email",
+                  "phonenumber"
+                ],
+                "properties": {
+                  "courseid": {
+                    "type": "integer",
+                    "example": 12
+                  },
+                  "enrolid": {
+                    "type": "integer",
+                    "example": 68
+                  },
+                  "amount": {
+                    "type": "number",
+                    "example": 220000
+                  },
+                  "currency": {
+                    "type": "string",
+                    "enum": [
+                      "TZS",
+                      "USD"
+                    ],
+                    "default": "TZS"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "scholar@out.ac.tz"
+                  },
+                  "phonenumber": {
+                    "type": "string",
+                    "example": "+255754123456"
+                  },
+                  "firstname": {
+                    "type": "string",
+                    "example": "Juma"
+                  },
+                  "lastname": {
+                    "type": "string",
+                    "example": "Rashid"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=paygw_pesapal_check_status": {
+      "get": {
+        "tags": [
+          "Payments & Checkout"
+        ],
+        "summary": "Query Pesapal 3.0 Order Status",
+        "description": "Queries Pesapal IPN status to verify whether transaction completed, pending, or failed, automatically enrolling scholar on success.",
+        "operationId": "checkPesapalStatus",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "paygw_pesapal_check_status"
+            }
+          },
+          {
+            "name": "order_tracking_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=verify_certificate": {
+      "get": {
+        "tags": [
+          "Digital Credentials"
+        ],
+        "summary": "Verify TCU & SARIS Accredited Certificate",
+        "description": "Validates authenticity of a digital graduation certificate using its unique serial verification code.",
+        "operationId": "verifyCertificate",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "verify_certificate"
+            }
+          },
+          {
+            "name": "code",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "OUT-CERT-2026-CS101-7890"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=get_certificate": {
+      "get": {
+        "tags": [
+          "Digital Credentials"
+        ],
+        "summary": "Retrieve Scholar Certificate Details",
+        "description": "Fetches certificate metadata, student name, course title, grade, date issued, and official verification QR code.",
+        "operationId": "getCertificate",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "get_certificate"
+            }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=get_courses": {
+      "get": {
+        "tags": [
+          "Course & Curriculum Management"
+        ],
+        "summary": "List All Courses (Administrative CUD)",
+        "description": "Returns complete courses list with enrollment statistics, category hierarchy, format, and visibility toggles.",
+        "operationId": "adminGetCourses",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "get_courses"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/admin_api.php?action=create_course": {
+      "post": {
+        "tags": [
+          "Course & Curriculum Management"
+        ],
+        "summary": "Create New Academic Course",
+        "description": "Provisions a new course container in Moodle database with specified shortname, category, syllabus sections, and course format.",
+        "operationId": "adminCreateCourse",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "create_course"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "fullname",
+                  "shortname",
+                  "category"
+                ],
+                "properties": {
+                  "fullname": {
+                    "type": "string",
+                    "example": "Artificial Intelligence in Legal Practice"
+                  },
+                  "shortname": {
+                    "type": "string",
+                    "example": "LAW-AI-401"
+                  },
+                  "category": {
+                    "type": "integer",
+                    "example": 2
+                  },
+                  "summary": {
+                    "type": "string",
+                    "example": "Exploration of modern legaltech and AI in jurisprudence."
+                  },
+                  "format": {
+                    "type": "string",
+                    "default": "topics"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/admin_api.php?action=update_course_settings": {
+      "post": {
+        "tags": [
+          "Course & Curriculum Management"
+        ],
+        "summary": "Update Course Settings",
+        "description": "Modifies course title, visibility, description summary, or category placement.",
+        "operationId": "adminUpdateCourseSettings",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "update_course_settings"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "id"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "fullname": {
+                    "type": "string"
+                  },
+                  "shortname": {
+                    "type": "string"
+                  },
+                  "visible": {
+                    "type": "integer",
+                    "enum": [
+                      0,
+                      1
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/admin_api.php?action=delete_course": {
+      "post": {
+        "tags": [
+          "Course & Curriculum Management"
+        ],
+        "summary": "Delete or Archive Course",
+        "description": "Permanently deletes or hides a course from the active university directory.",
+        "operationId": "adminDeleteCourse",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "delete_course"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "id"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/admin_api.php?action=add_activity": {
+      "post": {
+        "tags": [
+          "Course & Curriculum Management"
+        ],
+        "summary": "Add Learning Activity Module",
+        "description": "Attaches a Quiz, Assignment, Page, or File Resource to a specific course section.",
+        "operationId": "adminAddActivity",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "add_activity"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "course_id",
+                  "section_num",
+                  "module_type",
+                  "name"
+                ],
+                "properties": {
+                  "course_id": {
+                    "type": "integer"
+                  },
+                  "section_num": {
+                    "type": "integer"
+                  },
+                  "module_type": {
+                    "type": "string",
+                    "enum": [
+                      "quiz",
+                      "assign",
+                      "page",
+                      "resource"
+                    ]
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "intro": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/admin_api.php?action=get_categories": {
+      "get": {
+        "tags": [
+          "Faculties & Categories"
+        ],
+        "summary": "List Faculties & Academic Categories",
+        "description": "Returns all faculty departments (IEMT, Science, Business, Law, Education) and their course counts.",
+        "operationId": "adminGetCategories",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "get_categories"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/admin_api.php?action=add_category": {
+      "post": {
+        "tags": [
+          "Faculties & Categories"
+        ],
+        "summary": "Create New Academic Category",
+        "description": "Adds a new faculty department or programme cluster.",
+        "operationId": "adminAddCategory",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "add_category"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Faculty of Agriculture & Food Security"
+                  },
+                  "idnumber": {
+                    "type": "string",
+                    "example": "FAFS"
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/admin_api.php?action=get_users": {
+      "get": {
+        "tags": [
+          "User & Group Governance"
+        ],
+        "summary": "Query User Directory",
+        "description": "Returns users with RBAC role assignments, faculty department, last login, and account status.",
+        "operationId": "adminGetUsers",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "get_users"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/admin_api.php?action=create_user": {
+      "post": {
+        "tags": [
+          "User & Group Governance"
+        ],
+        "summary": "Administrative User Provisioning",
+        "description": "Creates a user account with explicit role (student, teacher, manager, admin).",
+        "operationId": "adminCreateUser",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "create_user"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "username",
+                  "email",
+                  "firstname",
+                  "lastname",
+                  "password",
+                  "role"
+                ],
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "firstname": {
+                    "type": "string"
+                  },
+                  "lastname": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "role": {
+                    "type": "string",
+                    "enum": [
+                      "student",
+                      "teacher",
+                      "manager",
+                      "admin"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/admin_api.php?action=instructor_dashboard": {
+      "get": {
+        "tags": [
+          "Instructor Console"
+        ],
+        "summary": "Get Instructor Dashboard Telemetry",
+        "description": "Returns teaching metrics: active courses, enrolled scholars, pending assignment submissions, and average grading turn-around.",
+        "operationId": "getInstructorDashboard",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "instructor_dashboard"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/admin_api.php?action=instructor_assignments": {
+      "get": {
+        "tags": [
+          "Instructor Console"
+        ],
+        "summary": "List Instructor Assignments & Submissions",
+        "description": "Fetches all course assignments, submission counts, graded rubrics, and deadlines.",
+        "operationId": "getInstructorAssignments",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "instructor_assignments"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/admin_api.php?action=instructor_announcements": {
+      "get": {
+        "tags": [
+          "Instructor Console"
+        ],
+        "summary": "List Course Announcements",
+        "description": "Fetches instructor broadcast announcements dispatched to enrolled course scholars.",
+        "operationId": "getInstructorAnnouncements",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "instructor_announcements"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/admin_api.php?action=instructor_earnings": {
+      "get": {
+        "tags": [
+          "Instructor Console"
+        ],
+        "summary": "View Instructor Remuneration & Royalties",
+        "description": "Calculates course enrollment royalties, tuition shares, and historical payouts.",
+        "operationId": "getInstructorEarnings",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "instructor_earnings"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/admin_api.php?action=purge_cache": {
+      "post": {
+        "tags": [
+          "System & Telemetry"
+        ],
+        "summary": "Purge System Cache Stores",
+        "description": "Flushes specified or all internal caches (MUC, theme, lang, JS, OPcache).",
+        "operationId": "adminPurgeCache",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "purge_cache"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "target": {
+                    "type": "string",
+                    "enum": [
+                      "all",
+                      "theme",
+                      "muc",
+                      "lang",
+                      "js",
+                      "opcache"
+                    ],
+                    "default": "all"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/admin_api.php?action=get_cache_status": {
+      "get": {
+        "tags": [
+          "System & Telemetry"
+        ],
+        "summary": "System Cache & Memory Diagnostics",
+        "description": "Returns memory utilization, OPcache hit ratio, and database query statistics.",
+        "operationId": "adminGetCacheStatus",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "get_cache_status"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/admin_api.php?action=get_cms_config": {
+      "get": {
+        "tags": [
+          "System & Telemetry"
+        ],
+        "summary": "Get Public Portal CMS Branding",
+        "description": "Retrieves homepage hero headings, announcement banners, contact phone numbers, and official branding assets.",
+        "operationId": "getCmsConfig",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "get_cms_config"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sso.php": {
+      "post": {
+        "tags": [
+          "SSO & Security Tokens"
+        ],
+        "summary": "Single Sign-On (SSO) Authentication",
+        "description": "Authenticates user credentials against Moodle core database, generating secure session and redirect state.",
+        "operationId": "ssoAuthenticate",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "username",
+                  "password"
+                ],
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "example": "admin"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "Admin@123"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/login/token.php": {
+      "post": {
+        "tags": [
+          "SSO & Security Tokens"
+        ],
+        "summary": "Generate Moodle Web Service Token",
+        "description": "Moodle core service token generator for external mobile apps, headless portals, and API integrations.",
+        "operationId": "generateMoodleToken",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "username",
+                  "password",
+                  "service"
+                ],
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "example": "teacher"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "Teacher@123"
+                  },
+                  "service": {
+                    "type": "string",
+                    "default": "moodle_mobile_app",
+                    "example": "moodle_mobile_app"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webservice/rest/server.php?wsfunction=core_course_get_courses": {
+      "post": {
+        "tags": [
+          "Moodle Core Web Services"
+        ],
+        "summary": "Moodle WS: core_course_get_courses",
+        "description": "Standard Moodle Core Web Service to query course records by specified IDs or retrieve all visible courses.",
+        "operationId": "wsCoreCourseGetCourses",
+        "parameters": [
+          {
+            "name": "wstoken",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Web service token"
+          },
+          {
+            "name": "moodlewsrestformat",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          },
+          {
+            "name": "wsfunction",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "core_course_get_courses"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "MoodleWsToken": []
+          }
+        ]
+      }
+    },
+    "/webservice/restful/server.php/format_kickstart_import_template": {
+      "post": {
+        "tags": [
+          "Moodle Core Web Services",
+          "Moodle Marketplace Plugins (GET & POST)"
+        ],
+        "summary": "Kickstart WS: Import Course Template (format_kickstart_import_template)",
+        "description": "Applies an institutional course backup or structure template to a specified course via Kickstart format engine.",
+        "operationId": "wsFormatKickstartImportTemplate",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "templateid",
+                  "courseid"
+                ],
+                "properties": {
+                  "templateid": {
+                    "type": "integer",
+                    "description": "Kickstart Template ID",
+                    "example": 1
+                  },
+                  "courseid": {
+                    "type": "integer",
+                    "description": "Target Moodle Course ID",
+                    "example": 7
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Template imported successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "boolean",
+                  "example": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webservice/rest/server.php?wsfunction=core_course_get_contents": {
+      "post": {
+        "tags": [
+          "Moodle Core Web Services"
+        ],
+        "summary": "Moodle WS: core_course_get_contents",
+        "description": "Returns full course sections, activities, learning resources, and completion requirements.",
+        "operationId": "wsCoreCourseGetContents",
+        "parameters": [
+          {
+            "name": "wstoken",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "moodlewsrestformat",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          },
+          {
+            "name": "wsfunction",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "core_course_get_contents"
+            }
+          },
+          {
+            "name": "courseid",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 7
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "MoodleWsToken": []
+          }
+        ]
+      }
+    },
+    "/webservice/rest/server.php?wsfunction=core_enrol_get_users_courses": {
+      "post": {
+        "tags": [
+          "Moodle Core Web Services"
+        ],
+        "summary": "Moodle WS: core_enrol_get_users_courses",
+        "description": "Returns all courses that a specific scholar is enrolled in, along with progress percentage and last access date.",
+        "operationId": "wsCoreEnrolGetUsersCourses",
+        "parameters": [
+          {
+            "name": "wstoken",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "moodlewsrestformat",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          },
+          {
+            "name": "wsfunction",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "core_enrol_get_users_courses"
+            }
+          },
+          {
+            "name": "userid",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 3
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "MoodleWsToken": []
+          }
+        ]
+      }
+    },
+    "/webservice/rest/server.php?wsfunction=core_enrol_get_enrolled_users": {
+      "post": {
+        "tags": [
+          "Moodle Core Web Services"
+        ],
+        "summary": "Moodle WS: core_enrol_get_enrolled_users",
+        "description": "Fetches list of all scholars and faculty enrolled in a given course container.",
+        "operationId": "wsCoreEnrolGetEnrolledUsers",
+        "parameters": [
+          {
+            "name": "wstoken",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "moodlewsrestformat",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          },
+          {
+            "name": "wsfunction",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "core_enrol_get_enrolled_users"
+            }
+          },
+          {
+            "name": "courseid",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 7
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "MoodleWsToken": []
+          }
+        ]
+      }
+    },
+    "/webservice/rest/server.php?wsfunction=gradereport_user_get_grade_items": {
+      "post": {
+        "tags": [
+          "Moodle Core Web Services"
+        ],
+        "summary": "Moodle WS: gradereport_user_get_grade_items",
+        "description": "Returns official academic gradebook items, calculated weights, feedback, and percentage scores for a course.",
+        "operationId": "wsGradereportUserGetGradeItems",
+        "parameters": [
+          {
+            "name": "wstoken",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "moodlewsrestformat",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          },
+          {
+            "name": "wsfunction",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "gradereport_user_get_grade_items"
+            }
+          },
+          {
+            "name": "courseid",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 7
+          },
+          {
+            "name": "userid",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 3
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "MoodleWsToken": []
+          }
+        ]
+      }
+    },
+    "/webservice/rest/server.php?wsfunction=core_webservice_get_site_info": {
+      "post": {
+        "tags": [
+          "Moodle Core Web Services"
+        ],
+        "summary": "Moodle WS: core_webservice_get_site_info",
+        "description": "Returns institutional site information, enabled functions, username, user ID, and active capabilities.",
+        "operationId": "wsCoreWebserviceGetSiteInfo",
+        "parameters": [
+          {
+            "name": "wstoken",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "moodlewsrestformat",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "json"
+            }
+          },
+          {
+            "name": "wsfunction",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "core_webservice_get_site_info"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request / Parameter Validation Failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access Denied / Insufficient Privileges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "MoodleWsToken": []
+          }
+        ]
+      }
+    },
+    "/admin_api.php?action=get_installed_plugins_summary": {
+      "get": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Query OUT LMS Core System Capabilities & Live Telemetry (GET)",
+        "description": "Returns all 12 core system features and functional capabilities of the OUT LMS platform along with live database telemetry counts across all academic programmes.",
+        "operationId": "get_get_installed_plugins_summary",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "get_installed_plugins_summary"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful system feature response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Query OUT LMS Core System Capabilities & Live Telemetry (POST)",
+        "description": "Returns all 12 core system features and functional capabilities of the OUT LMS platform along with live database telemetry counts across all academic programmes.",
+        "operationId": "post_get_installed_plugins_summary",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "get_installed_plugins_summary"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "action": "get_installed_plugins_summary"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful system feature execution / mutation response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=get_course_formats": {
+      "get": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Get Adaptive Curriculum Layout Modes (Tiles, Tabbed Units, Accordions, Kickstart Wizard) (GET)",
+        "description": "Retrieves the active curriculum layout configuration for a programme and lists all supported adaptive display modes (Visual Tiles Grid, Horizontal Unit Tabs, Compact Collapsible Topics, Kickstart Template Wizard, Sequential Syllabus).",
+        "operationId": "get_get_course_formats",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "get_course_formats"
+            }
+          },
+          {
+            "name": "course_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful system feature response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Get Adaptive Curriculum Layout Modes (Tiles, Tabbed Units, Accordions, Kickstart Wizard) (POST)",
+        "description": "Retrieves the active curriculum layout configuration for a programme and lists all supported adaptive display modes (Visual Tiles Grid, Horizontal Unit Tabs, Compact Collapsible Topics, Kickstart Template Wizard, Sequential Syllabus).",
+        "operationId": "post_get_course_formats",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "get_course_formats"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "action": "get_course_formats",
+                  "course_id": 7
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful system feature execution / mutation response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=get_kickstart_templates": {
+      "get": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Get Kickstart Institutional Faculty Starter Templates (GET)",
+        "description": "Returns the 4 institutional Kickstart course starter templates (Undergraduate Degree, Postgraduate Seminar, Short Courses & CPD, STEM & Coding Lab) with syllabus blueprints and included enterprise modules.",
+        "operationId": "get_kickstart_templates",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "get_kickstart_templates"
+            }
+          },
+          {
+            "name": "course_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 2
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Kickstart starter templates catalog",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Import & Provision Kickstart Faculty Starter Template (POST)",
+        "description": "Applies a selected Kickstart faculty starter template (1..4) to a target course, automatically provisioning its study units, SARIS QR attendance, VPL cloud lab, verifiable CustomCert credential, and retention nudges.",
+        "operationId": "post_import_kickstart_template",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "action": "import_kickstart_template",
+                  "course_id": 2,
+                  "template_id": 1
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Template provisioned into course",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=update_course_format": {
+      "get": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Switch Adaptive Curriculum Layout Mode (tiles | onetopic | topcoll | topics) (GET)",
+        "description": "Updates and persists the adaptive curriculum layout mode for the specified programme in real time.",
+        "operationId": "get_update_course_format",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "update_course_format"
+            }
+          },
+          {
+            "name": "course_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "tiles"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful system feature response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Switch Adaptive Curriculum Layout Mode (tiles | onetopic | topcoll | topics) (POST)",
+        "description": "Updates and persists the adaptive curriculum layout mode for the specified programme in real time.",
+        "operationId": "post_update_course_format",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "update_course_format"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "action": "update_course_format",
+                  "course_id": 7,
+                  "format": "tiles"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful system feature execution / mutation response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=get_attendance": {
+      "get": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Get SARIS Digital Attendance Sessions & Rotating QR Passkeys (GET)",
+        "description": "Retrieves live seminar attendance sessions, rotating QR passkeys, participation logs, and cumulative attendance rate for a programme.",
+        "operationId": "get_get_attendance",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "get_attendance"
+            }
+          },
+          {
+            "name": "course_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 3
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful system feature response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Get SARIS Digital Attendance Sessions & Rotating QR Passkeys (POST)",
+        "description": "Retrieves live seminar attendance sessions, rotating QR passkeys, participation logs, and cumulative attendance rate for a programme.",
+        "operationId": "post_get_attendance",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "get_attendance"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "action": "get_attendance",
+                  "course_id": 7,
+                  "user_id": 3
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful system feature execution / mutation response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=record_attendance": {
+      "get": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Verify Scholar QR Check-In or Schedule Live Seminar Session (GET)",
+        "description": "Records a scholar attendance check-in (Present, Late, Excused, Absent) or schedules a new QR-enabled live seminar session.",
+        "operationId": "get_record_attendance",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "record_attendance"
+            }
+          },
+          {
+            "name": "course_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 3
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "P"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful system feature response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Verify Scholar QR Check-In or Schedule Live Seminar Session (POST)",
+        "description": "Records a scholar attendance check-in (Present, Late, Excused, Absent) or schedules a new QR-enabled live seminar session.",
+        "operationId": "post_record_attendance",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "record_attendance"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "action": "record_attendance",
+                  "course_id": 7,
+                  "user_id": 3,
+                  "status": "P",
+                  "remarks": "Verified via SARIS QR Portal"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful system feature execution / mutation response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=get_vpl_labs": {
+      "get": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Get OUT Cloud Virtual Programming Labs & Graded Submissions (GET)",
+        "description": "Retrieves interactive cloud coding labs, starter code templates, runtime environments, and pre-evaluated unit test telemetry.",
+        "operationId": "get_get_vpl_labs",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "get_vpl_labs"
+            }
+          },
+          {
+            "name": "course_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 3
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful system feature response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Get OUT Cloud Virtual Programming Labs & Graded Submissions (POST)",
+        "description": "Retrieves interactive cloud coding labs, starter code templates, runtime environments, and pre-evaluated unit test telemetry.",
+        "operationId": "post_get_vpl_labs",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "get_vpl_labs"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "action": "get_vpl_labs",
+                  "course_id": 7,
+                  "user_id": 3
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful system feature execution / mutation response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=submit_vpl_code": {
+      "get": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Execute & Grade Code in OUT Cloud Sandbox IDE (GET)",
+        "description": "Compiles and executes scholar code in the OUT Cloud Sandbox IDE against automated unit assertions, persisting the rubric grade and execution log.",
+        "operationId": "get_submit_vpl_code",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "submit_vpl_code"
+            }
+          },
+          {
+            "name": "course_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            }
+          },
+          {
+            "name": "vpl_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "python"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful system feature response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Execute & Grade Code in OUT Cloud Sandbox IDE (POST)",
+        "description": "Compiles and executes scholar code in the OUT Cloud Sandbox IDE against automated unit assertions, persisting the rubric grade and execution log.",
+        "operationId": "post_submit_vpl_code",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "submit_vpl_code"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "action": "submit_vpl_code",
+                  "course_id": 7,
+                  "vpl_id": 1,
+                  "user_id": 3,
+                  "language": "python",
+                  "source_code": "def solve_out_lab(items):\n    return sum(x for x in items if x > 0)\n"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful system feature execution / mutation response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=get_coderunner_questions": {
+      "get": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Get Automated Algorithmic Assessment & Unit-Test Suites (GET)",
+        "description": "Retrieves algorithmic assessment challenges with function signatures, starter templates, visible test assertions, and sample verification matrices.",
+        "operationId": "get_get_coderunner_questions",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "get_coderunner_questions"
+            }
+          },
+          {
+            "name": "course_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful system feature response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Get Automated Algorithmic Assessment & Unit-Test Suites (POST)",
+        "description": "Retrieves algorithmic assessment challenges with function signatures, starter templates, visible test assertions, and sample verification matrices.",
+        "operationId": "post_get_coderunner_questions",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "get_coderunner_questions"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "action": "get_coderunner_questions",
+                  "course_id": 7
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful system feature execution / mutation response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=evaluate_coderunner": {
+      "get": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Verify Solution Against Automated Unit-Test Suite (GET)",
+        "description": "Executes submitted code against all test assertions and returns the expected vs. actual verification matrix and calculated marks.",
+        "operationId": "get_evaluate_coderunner",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "evaluate_coderunner"
+            }
+          },
+          {
+            "name": "course_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            }
+          },
+          {
+            "name": "question_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 571
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful system feature response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Verify Solution Against Automated Unit-Test Suite (POST)",
+        "description": "Executes submitted code against all test assertions and returns the expected vs. actual verification matrix and calculated marks.",
+        "operationId": "post_evaluate_coderunner",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "evaluate_coderunner"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "action": "evaluate_coderunner",
+                  "course_id": 7,
+                  "question_id": 571,
+                  "answer_code": "def classify_out_grade(score: int) -> str:\n    return \"Distinction\" if score >= 70 else (\"Credit\" if score >= 50 else \"Supplement\")\n"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful system feature execution / mutation response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=get_completion_progress": {
+      "get": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Get Milestone Completion Telemetry & Scholar Merit XP (GET)",
+        "description": "Returns the interactive color-coded milestone completion bar across all syllabus units along with the scholar XP level and academic merit rank.",
+        "operationId": "get_get_completion_progress",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "get_completion_progress"
+            }
+          },
+          {
+            "name": "course_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 3
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful system feature response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Get Milestone Completion Telemetry & Scholar Merit XP (POST)",
+        "description": "Returns the interactive color-coded milestone completion bar across all syllabus units along with the scholar XP level and academic merit rank.",
+        "operationId": "post_get_completion_progress",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "get_completion_progress"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "action": "get_completion_progress",
+                  "course_id": 7,
+                  "user_id": 3
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful system feature execution / mutation response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=toggle_activity_completion": {
+      "get": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Synchronize Milestone Completion & Award Scholar Merit XP (GET)",
+        "description": "Toggles completion state for a syllabus learning activity and recalculates overall programme progress percentage and Scholar Merit XP.",
+        "operationId": "get_toggle_activity_completion",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "toggle_activity_completion"
+            }
+          },
+          {
+            "name": "course_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            }
+          },
+          {
+            "name": "cmid",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 22
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 3
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful system feature response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Synchronize Milestone Completion & Award Scholar Merit XP (POST)",
+        "description": "Toggles completion state for a syllabus learning activity and recalculates overall programme progress percentage and Scholar Merit XP.",
+        "operationId": "post_toggle_activity_completion",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "toggle_activity_completion"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "action": "toggle_activity_completion",
+                  "course_id": 7,
+                  "cmid": 22,
+                  "user_id": 3
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful system feature execution / mutation response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=get_customcert_templates": {
+      "get": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Get TCU & SARIS Verifiable Digital Credential Metadata (GET)",
+        "description": "Retrieves the official verifiable digital certificate template and issued cryptographic serial code for a programme and scholar.",
+        "operationId": "get_get_customcert_templates",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "get_customcert_templates"
+            }
+          },
+          {
+            "name": "course_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 3
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful system feature response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Get TCU & SARIS Verifiable Digital Credential Metadata (POST)",
+        "description": "Retrieves the official verifiable digital certificate template and issued cryptographic serial code for a programme and scholar.",
+        "operationId": "post_get_customcert_templates",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "get_customcert_templates"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "action": "get_customcert_templates",
+                  "course_id": 7,
+                  "user_id": 3
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful system feature execution / mutation response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=issue_customcert": {
+      "get": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Generate & Issue Verifiable Digital Credential (GET)",
+        "description": "Generates a uniquely coded TCU & SARIS verifiable digital certificate and returns the cryptographic serial number and QR verification URL.",
+        "operationId": "get_issue_customcert",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "issue_customcert"
+            }
+          },
+          {
+            "name": "course_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 3
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful system feature response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Generate & Issue Verifiable Digital Credential (POST)",
+        "description": "Generates a uniquely coded TCU & SARIS verifiable digital certificate and returns the cryptographic serial number and QR verification URL.",
+        "operationId": "post_issue_customcert",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "issue_customcert"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "action": "issue_customcert",
+                  "course_id": 7,
+                  "user_id": 3
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful system feature execution / mutation response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=get_reengagement_nudges": {
+      "get": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Get Intelligent Scholar Retention & Momentum Campaigns (GET)",
+        "description": "Retrieves active automated study momentum alerts, inactivity reminders, and dispatch telemetry for a programme.",
+        "operationId": "get_get_reengagement_nudges",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "get_reengagement_nudges"
+            }
+          },
+          {
+            "name": "course_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful system feature response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Get Intelligent Scholar Retention & Momentum Campaigns (POST)",
+        "description": "Retrieves active automated study momentum alerts, inactivity reminders, and dispatch telemetry for a programme.",
+        "operationId": "post_get_reengagement_nudges",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "get_reengagement_nudges"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "action": "get_reengagement_nudges",
+                  "course_id": 7
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful system feature execution / mutation response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=trigger_reengagement": {
+      "get": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Dispatch Automated Scholar Retention & Momentum Alert (GET)",
+        "description": "Triggers an immediate study momentum and assessment readiness alert to enrolled scholars in the specified programme.",
+        "operationId": "get_trigger_reengagement",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "trigger_reengagement"
+            }
+          },
+          {
+            "name": "course_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful system feature response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Dispatch Automated Scholar Retention & Momentum Alert (POST)",
+        "description": "Triggers an immediate study momentum and assessment readiness alert to enrolled scholars in the specified programme.",
+        "operationId": "post_trigger_reengagement",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "trigger_reengagement"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "action": "trigger_reengagement",
+                  "course_id": 7,
+                  "emailsubject": "[PSC-CYBER] Keep Your OUT Academic Streak & Milestone Progress Active!"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful system feature execution / mutation response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=moodle_ws_bridge": {
+      "get": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Unified OUT LMS Core Web Services JSON Bridge (GET)",
+        "description": "Executes core academic web service functions (site info, programme catalog, faculty hierarchy, and enrollment records) with unified JSON output.",
+        "operationId": "get_moodle_ws_bridge",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "moodle_ws_bridge"
+            }
+          },
+          {
+            "name": "wsfunction",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "core_webservice_get_site_info"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful system feature response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Unified OUT LMS Core Web Services JSON Bridge (POST)",
+        "description": "Executes core academic web service functions (site info, programme catalog, faculty hierarchy, and enrollment records) with unified JSON output.",
+        "operationId": "post_moodle_ws_bridge",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "moodle_ws_bridge"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "action": "moodle_ws_bridge",
+                  "wsfunction": "core_webservice_get_site_info"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful system feature execution / mutation response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=get_course_enterprise_suites": {
+      "get": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Retrieve All 65 Enterprise System Capabilities & Pre-Seeded Course Telemetry (8 Suites)",
+        "description": "Returns all 65 newly integrated OUT LMS Core System Features (deduplicating mod_customcert) grouped across 8 enterprise suites (AI & Intelligent Tutoring, Interactive Video & Media Studio, Curriculum Architecture & Workflows, Rich Authoring & Content Protection, Credentials & Quests, Commerce & Campus Operations, Learner Analytics & Dashboards, and Security, Auth & Plagiarism Governance) with pre-seeded sample records for the specified course.",
+        "parameters": [
+          {
+            "name": "course_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 7
+            }
+          },
+          {
+            "name": "suite",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ai_tutor",
+                "interactive_media",
+                "curriculum_governance",
+                "authoring_protection",
+                "credentials_quests",
+                "campus_operations",
+                "learner_analytics",
+                "security_governance"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Enterprise capability suites & course sample telemetry"
+          }
+        }
+      }
+    },
+    "/admin_api.php?action=execute_enterprise_feature": {
+      "post": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Execute & Verify Any of the 65 Enterprise System Capabilities (AI Tutor, Translation, OrigAI Scan, SARIS Sync, Video Studio)",
+        "description": "Executes a real-time write/verification action against any of the 65 integrated OUT LMS Core System Features and persists the execution telemetry in mdl_out_system_feature_data.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "course_id": {
+                    "type": "integer",
+                    "example": 7
+                  },
+                  "component": {
+                    "type": "string",
+                    "example": "local_dttutor"
+                  },
+                  "feature_code": {
+                    "type": "string",
+                    "example": "AI_SOCRATIC_TUTOR"
+                  },
+                  "suite": {
+                    "type": "string",
+                    "example": "ai_tutor"
+                  },
+                  "prompt": {
+                    "type": "string",
+                    "example": "Summarize Unit 1 in English & Kiswahili"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Capability execution verified & persisted"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Bearer token or Moodle session authentication header."
+      },
+      "MoodleWsToken": {
+        "type": "apiKey",
+        "in": "query",
+        "name": "wstoken",
+        "description": "Moodle Web Service Security Token obtained via /login/token.php."
+      }
+    },
+    "schemas": {
+      "StandardSuccessResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "errorcode": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

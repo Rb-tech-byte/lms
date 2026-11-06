@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 260" width="100%" height="100%" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="cta-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0171BB"/>
+      <stop offset="55%" stop-color="#0082D6"/>
+      <stop offset="100%" stop-color="#0095F2"/>
+    </linearGradient>
+    <radialGradient id="cta-glow" cx="82%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#FEF207" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#0171BB" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1440" height="260" rx="10" fill="url(#cta-grad)"/>
+  <rect width="1440" height="260" rx="10" fill="url(#cta-glow)"/>
+  <rect x="0" y="0" width="1440" height="6" fill="#FFD200"/>
+  <rect x="0" y="254" width="1440" height="6" fill="#FFD200"/>
+
+  <!-- University Arch &amp; Gold Laurel Vectors -->
+  <g stroke="rgba(254,242,7,0.26)" stroke-width="2" fill="none">
+    <circle cx="1200" cy="130" r="140"/>
+    <circle cx="1200" cy="130" r="100"/>
+    <circle cx="1200" cy="130" r="60"/>
+    <path d="M 0 160 C 400 90, 800 210, 1440 120"/>
+    <path d="M 0 200 C 450 140, 850 240, 1440 180"/>
+  </g>
+</svg>

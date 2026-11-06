@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="iconBg_fbm" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#201202" />
+      <stop offset="100%" stop-color="#451a03" />
+    </linearGradient>
+    <linearGradient id="iconBorder_fbm" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24" />
+      <stop offset="100%" stop-color="#d97706" />
+    </linearGradient>
+  </defs>
+
+  <!-- Squircle Base -->
+  <rect x="4" y="4" width="120" height="120" rx="28" fill="url(#iconBg_fbm)" stroke="url(#iconBorder_fbm)" stroke-width="3" />
+  
+  <!-- Subtle Internal Glow -->
+  <circle cx="64" cy="64" r="42" fill="#fbbf24" opacity="0.15" />
+
+  <!-- Vector Illustration -->
+  
+      <!-- Corporate Skyscraper &amp; Ascending Growth -->
+      <rect x="35" y="30" width="30" height="65" rx="3" fill="#b45309" stroke="#fde68a" stroke-width="1.5" />
+      <rect x="70" y="18" width="35" height="77" rx="3" fill="#d97706" stroke="#fde68a" stroke-width="2" />
+      <!-- Windows -->
+      <circle cx="50" cy="42" r="3" fill="#ffffff" />
+      <circle cx="50" cy="56" r="3" fill="#ffffff" />
+      <circle cx="87" cy="32" r="3.5" fill="#facc15" />
+      <circle cx="87" cy="46" r="3.5" fill="#facc15" />
+      <circle cx="87" cy="60" r="3.5" fill="#facc15" />
+      <!-- Growth Arrow -->
+      <path d="M25,85 L55,60 L85,45 L110,25" fill="none" stroke="#22c55e" stroke-width="3" stroke-linecap="round" />
+      <polygon points="115,22 105,20 110,28" fill="#22c55e" />
+    
+</svg>

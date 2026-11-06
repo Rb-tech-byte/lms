@@ -1,0 +1,42 @@
+{
+  "files": {
+    "main.css": "/static/css/main.d45b1009.css",
+    "main.js": "/static/js/main.18f9e7ba.js",
+    "static/media/iconsax.svg?yjegnn": "/static/media/iconsax.52ce065e59c96a6c26cd.svg",
+    "static/media/tabler-icons.ttf?v3.27.1": "/static/media/tabler-icons.3e014d8f09fa4fcfd61c.ttf",
+    "static/media/iconsax.ttf?yjegnn": "/static/media/iconsax.b88ead36c26a33c10edc.ttf",
+    "static/media/iconsax.eot?yjegnn": "/static/media/iconsax.2be58c2a3f360f0a4b6d.eot",
+    "static/media/iconsax.woff?yjegnn": "/static/media/iconsax.b5cbc291e10f8ab01855.woff",
+    "static/media/tabler-icons.woff?": "/static/media/tabler-icons.b369efe12d4b36b06c03.woff",
+    "static/media/tabler-icons.woff2?v3.27.1": "/static/media/tabler-icons.5f557139d61d9f50a633.woff2",
+    "static/media/map-bg.png": "/static/media/map-bg.5f70774765f925298aa7.png",
+    "static/media/fa-solid-900.ttf": "/static/media/fa-solid-900.2582b0e4bcf85eceead0.ttf",
+    "static/media/testimonials-bg.jpg": "/static/media/testimonials-bg.e8e195a0404cde14ba3f.jpg",
+    "static/media/Feather.svg": "/static/media/Feather.3dc6619f9f7fa059db35.svg",
+    "static/media/fa-brands-400.ttf": "/static/media/fa-brands-400.1815e00441357e01619e.ttf",
+    "static/media/fa-solid-900.woff2": "/static/media/fa-solid-900.2463b90d9a316e4e5294.woff2",
+    "static/media/fa-brands-400.woff2": "/static/media/fa-brands-400.c210719e60948b211a12.woff2",
+    "static/media/fa-regular-400.ttf": "/static/media/fa-regular-400.914997e1bdfc990d0897.ttf",
+    "static/media/Feather.woff": "/static/media/Feather.eb9822a3be07c5110df9.woff",
+    "static/media/Feather.ttf": "/static/media/Feather.b2469c88d8944b230519.ttf",
+    "static/media/benefit-bg.png": "/static/media/benefit-bg.bb8c39da9718ec92534d.png",
+    "static/media/category-bg.png": "/static/media/category-bg.fb62e8460fe6d24fbb88.png",
+    "static/media/fa-regular-400.woff2": "/static/media/fa-regular-400.89999bdf5d835c012025.woff2",
+    "static/media/bg-1.png": "/static/media/bg-1.9c2f62140de6b0440a8d.png",
+    "static/media/course-details-bg.jpg": "/static/media/course-details-bg.ec2f24e50194975e4ec7.jpg",
+    "static/media/fa-v4compatibility.ttf": "/static/media/fa-v4compatibility.da94ef451f4969af06e6.ttf",
+    "static/media/fa-v4compatibility.woff2": "/static/media/fa-v4compatibility.ea8f94e1d22e0d35ccd4.woff2",
+    "static/media/slick.svg": "/static/media/slick.2630a3e3eab21c607e21.svg",
+    "static/media/slick.eot": "/static/media/slick.a4e97f5a2a64f0ab1323.eot",
+    "static/media/slick.ttf": "/static/media/slick.c94f7671dcc99dce43e2.ttf",
+    "static/media/slick.woff": "/static/media/slick.295183786cd8a1389865.woff",
+    "index.html": "/index.html",
+    "static/media/mail-2.svg": "/static/media/mail-2.e42fcf3a3ebf30d688cd.svg",
+    "main.d45b1009.css.map": "/static/css/main.d45b1009.css.map",
+    "main.18f9e7ba.js.map": "/static/js/main.18f9e7ba.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.d45b1009.css",
+    "static/js/main.18f9e7ba.js"
+  ]
+}

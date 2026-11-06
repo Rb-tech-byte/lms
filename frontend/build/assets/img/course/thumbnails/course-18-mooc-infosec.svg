@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450">
+  <defs>
+    <!-- Background Gradient tailored for MOOC-INFOSEC -->
+    <linearGradient id="bgGrad_MOOC-INFOSEC" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#290612" />
+      <stop offset="55%" stop-color="#4c0519" />
+      <stop offset="100%" stop-color="#9f1239" />
+    </linearGradient>
+
+    <!-- Accent Badge Gradient -->
+    <linearGradient id="accentGrad_MOOC-INFOSEC" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#fb7185" />
+      <stop offset="100%" stop-color="#e11d48" />
+    </linearGradient>
+
+    <!-- Glassmorphic Card Container -->
+    <linearGradient id="cardGrad_MOOC-INFOSEC" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.14" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.04" />
+    </linearGradient>
+
+    <!-- Drop Shadow Filter -->
+    <filter id="shadow_MOOC-INFOSEC" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.45" />
+    </filter>
+
+    <pattern id="gridPattern_MOOC-INFOSEC" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ffffff" stroke-width="0.7" opacity="0.06" />
+    </pattern>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect width="800" height="450" fill="url(#bgGrad_MOOC-INFOSEC)" />
+  <rect width="800" height="450" fill="url(#gridPattern_MOOC-INFOSEC)" />
+
+  <!-- Thematic Ambient Light Orbs -->
+  <circle cx="700" cy="110" r="220" fill="#fda4af" opacity="0.18" filter="blur(40px)" />
+  <circle cx="100" cy="380" r="160" fill="#e11d48" opacity="0.14" filter="blur(40px)" />
+
+  <!-- Official OUT Top Institutional Gold Bar -->
+  <rect x="0" y="0" width="800" height="14" fill="#FFD200" />
+
+  <!-- OUT Institutional Brand Pill -->
+  <g transform="translate(48, 44)">
+    <rect width="360" height="34" rx="17" fill="#003B66" fill-opacity="0.65" stroke="#FFD200" stroke-opacity="0.85" stroke-width="1.5" />
+    <circle cx="18" cy="17" r="7" fill="#FFD200" />
+    <text x="36" y="22" font-family="'Segoe UI', Inter, sans-serif" font-size="12" font-weight="700" fill="#ffffff" letter-spacing="1.2">THE OPEN UNIVERSITY OF TANZANIA</text>
+  </g>
+
+  <!-- Faculty / Department Label -->
+  <g transform="translate(48, 98)">
+    <text font-family="'Segoe UI', Inter, sans-serif" font-size="13" font-weight="700" fill="#fb7185" letter-spacing="0.5">IEMT MASSIVE OPEN ONLINE COURSES</text>
+  </g>
+
+  <!-- Course Code Badge -->
+  <g transform="translate(48, 124)">
+    <rect width="130" height="36" rx="8" fill="url(#accentGrad_MOOC-INFOSEC)" filter="url(#shadow_MOOC-INFOSEC)" />
+    <text x="65" y="24" text-anchor="middle" font-family="'Segoe UI', Inter, sans-serif" font-size="16" font-weight="800" fill="#4c0519" letter-spacing="0.8">MOOC-INFOSEC</text>
+  </g>
+
+  <!-- Delivery / Program Type Badge -->
+  <g transform="translate(190, 124)">
+    <rect width="210" height="36" rx="8" fill="#ffffff" fill-opacity="0.12" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1.2" />
+    <text x="105" y="23" text-anchor="middle" font-family="'Segoe UI', Inter, sans-serif" font-size="12.5" font-weight="700" fill="#ffffff">Free / Open Access MOOC</text>
+  </g>
+
+  <!-- Course Title (Multline wrapped) -->
+  <g transform="translate(48, 200)">
+    <text font-family="'Segoe UI', Inter, sans-serif" font-size="28" font-weight="800" fill="#ffffff" letter-spacing="-0.5">
+      <tspan x="0" dy="0">Information Security Awareness</tspan><tspan x="0" dy="34">for Public &amp; Private Institutions</tspan>
+    </text>
+  </g>
+
+  <!-- Key Syllabus Bullets / Subtitle -->
+  <g transform="translate(48, 355)">
+    <rect width="440" height="48" rx="8" fill="#000000" fill-opacity="0.3" stroke="#ffffff" stroke-opacity="0.15" stroke-width="1.2" />
+    <text x="18" y="28" font-family="'Segoe UI', Inter, sans-serif" font-size="12" font-weight="500" fill="#e2e8f0">Data Protection, Phishing Prevention, Social Engineering &amp; Compliance</text>
+  </g>
+
+  <!-- Right Visual Feature Showcase Card -->
+  <g transform="translate(520, 70)" filter="url(#shadow_MOOC-INFOSEC)">
+    <!-- Glassmorphic Card Container -->
+    <rect width="232" height="310" rx="20" fill="url(#cardGrad_MOOC-INFOSEC)" stroke="#ffffff" stroke-opacity="0.3" stroke-width="2" />
+    
+    <!-- Topic Thematic Graphic -->
+    <g transform="translate(-5, 20)">
+      
+      <!-- Biometric Scanner &amp; Firewall Key -->
+      <circle cx="120" cy="95" r="50" fill="#4c0519" stroke="#fb7185" stroke-width="2.5" />
+      <path d="M100,95 C100,84 109,75 120,75 C131,75 140,84 140,95 C140,105 131,115 120,115"
+            fill="none" stroke="#f43f5e" stroke-width="2.5" stroke-linecap="round" />
+      <path d="M108,95 C108,88 113,83 120,83 C127,83 132,88 132,95"
+            fill="none" stroke="#fecdd3" stroke-width="2" stroke-linecap="round" />
+      <circle cx="120" cy="95" r="3" fill="#facc15" />
+      <!-- Security Badge Ribbon -->
+      <rect x="80" y="155" width="80" height="20" rx="4" fill="#be123c" stroke="#fb7185" stroke-width="1.2" />
+      <text x="120" y="169" text-anchor="middle" font-family="'Segoe UI', Inter, sans-serif" font-size="10" font-weight="800" fill="#ffffff">CYBER SAFE</text>
+      <text x="120" y="200" text-anchor="middle" font-family="'Segoe UI', Inter, sans-serif" font-size="11" font-weight="700" fill="#ffe4e6" letter-spacing="1">CIVIC DATA PROTECTION</text>
+    
+    </g>
+
+    <!-- Bottom Institutional Verified Stamp -->
+    <g transform="translate(16, 260)">
+      <rect width="200" height="34" rx="8" fill="#003B66" fill-opacity="0.9" stroke="#FFD200" stroke-width="1.5" />
+      <circle cx="20" cy="17" r="5" fill="#22c55e" />
+      <text x="34" y="21" font-family="'Segoe UI', Inter, sans-serif" font-size="10.5" font-weight="800" fill="#ffffff" letter-spacing="0.5">SARIS &amp; TCU ACCREDITED</text>
+    </g>
+  </g>
+
+  <!-- Bottom Accent Line -->
+  <rect x="0" y="442" width="800" height="8" fill="url(#accentGrad_MOOC-INFOSEC)" />
+</svg>

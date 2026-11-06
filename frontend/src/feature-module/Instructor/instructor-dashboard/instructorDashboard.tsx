@@ -252,7 +252,7 @@ const InstructorDashboard: React.FC = () => {
       options: {
         chart: { type: 'bar' as const, toolbar: { show: false }, fontFamily: 'inherit' },
         plotOptions: { bar: { borderRadius: 6, columnWidth: '42%' } },
-        colors: ['#061838', '#38bdf8'],
+        colors: ['#013BA6', '#228DDD'],
         xaxis: {
           categories: courses.map((c) => c.shortname),
           labels: { style: { colors: '#475569', fontSize: '11px', fontWeight: 600 } },

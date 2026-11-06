@@ -1111,8 +1111,8 @@ export const SiteAdminHub: React.FC<SiteAdminHubProps> = ({
                             <span
                               className="badge rounded-pill px-2.5 py-1 fw-bold"
                               style={{
-                                backgroundColor: (cat.coursecount || 0) > 0 ? '#dcfce7' : '#f1f5f9',
-                                color: (cat.coursecount || 0) > 0 ? '#15803d' : '#64748b',
+                                backgroundColor: (cat.coursecount || 0) > 0 ? '#E8F4FC' : '#f1f5f9',
+                                color: (cat.coursecount || 0) > 0 ? '#013BA6' : '#64748b',
                                 fontSize: '11px',
                               }}
                             >

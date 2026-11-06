@@ -44,23 +44,23 @@ export const CorporateAdminSidebar: React.FC<CorporateAdminSidebarProps> = ({
     {
       groupLabel: 'CONSOLE & GOVERNANCE',
       items: [
-        { key: 'dashboard', title: 'Overview & KPI', icon: 'feather-grid', badge: 'LIVE', accentColor: '#38bdf8', activeGradient: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)' },
-        { key: 'api-gateway', title: 'Admin & APIs', icon: 'feather-terminal', badge: '85+ API', accentColor: '#c084fc', activeGradient: 'linear-gradient(135deg, #9333ea 0%, #6d28d9 100%)' },
-        { key: 'api-docs', title: 'API Hub', icon: 'feather-code', badge: 'OPENAPI', path: '/pages/api-docs', accentColor: '#38bdf8', activeGradient: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)' },
-        { key: 'certificates', title: 'Beautiful Diplomas', icon: 'feather-award', badge: '6 THEMES', accentColor: '#fbbf24', activeGradient: 'linear-gradient(135deg, #d97706 0%, #b45309 100%)' },
-        { key: 'courses', title: 'Courses Catalog', icon: 'feather-book-open', badge: 'CUD', accentColor: '#34d399', activeGradient: 'linear-gradient(135deg, #059669 0%, #047857 100%)' },
-        { key: 'categories', title: 'Faculties & Cats', icon: 'feather-folder', badge: 'CUD', accentColor: '#fb923c', activeGradient: 'linear-gradient(135deg, #ea580c 0%, #c2410c 100%)' },
-        { key: 'users', title: 'User Directory', icon: 'feather-users', badge: 'RBAC', accentColor: '#60a5fa', activeGradient: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)' },
-        { key: 'ledger', title: 'Tuition & Pesapal', icon: 'feather-credit-card', badge: 'IPN', accentColor: '#2dd4bf', activeGradient: 'linear-gradient(135deg, #0d9488 0%, #0f766e 100%)' },
+        { key: 'dashboard', title: 'Overview & KPI', icon: 'feather-grid', badge: 'LIVE', accentColor: '#228DDD', activeGradient: 'linear-gradient(135deg, #013BA6 0%, #228DDD 100%)' },
+        { key: 'api-gateway', title: 'Admin & APIs', icon: 'feather-terminal', badge: '85+ API', accentColor: '#228DDD', activeGradient: 'linear-gradient(135deg, #013BA6 0%, #228DDD 100%)' },
+        { key: 'api-docs', title: 'API Hub', icon: 'feather-code', badge: 'OPENAPI', path: '/pages/api-docs', accentColor: '#228DDD', activeGradient: 'linear-gradient(135deg, #013BA6 0%, #228DDD 100%)' },
+        { key: 'certificates', title: 'Beautiful Diplomas', icon: 'feather-award', badge: '6 THEMES', accentColor: '#F4ED2D', activeGradient: 'linear-gradient(135deg, #013BA6 0%, #228DDD 100%)' },
+        { key: 'courses', title: 'Courses Catalog', icon: 'feather-book-open', badge: 'CUD', accentColor: '#228DDD', activeGradient: 'linear-gradient(135deg, #013BA6 0%, #228DDD 100%)' },
+        { key: 'categories', title: 'Faculties & Cats', icon: 'feather-folder', badge: 'CUD', accentColor: '#228DDD', activeGradient: 'linear-gradient(135deg, #013BA6 0%, #228DDD 100%)' },
+        { key: 'users', title: 'User Directory', icon: 'feather-users', badge: 'RBAC', accentColor: '#228DDD', activeGradient: 'linear-gradient(135deg, #013BA6 0%, #228DDD 100%)' },
+        { key: 'ledger', title: 'Tuition & Pesapal', icon: 'feather-credit-card', badge: 'IPN', accentColor: '#F4ED2D', activeGradient: 'linear-gradient(135deg, #013BA6 0%, #228DDD 100%)' },
       ],
     },
     {
       groupLabel: 'SYSTEM & CAPABILITIES',
       items: [
-        { key: 'corporate', title: 'Corporate Cohorts', icon: 'feather-briefcase', badge: 'B2B', accentColor: '#f472b6', activeGradient: 'linear-gradient(135deg, #db2777 0%, #be185d 100%)' },
-        { key: 'settings', title: 'CMS Content Studio', icon: 'feather-sliders', badge: 'CMS', accentColor: '#a78bfa', activeGradient: 'linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%)' },
-        { key: 'plugins', title: '77 System Features', icon: 'feather-cpu', badge: '77', accentColor: '#facc15', activeGradient: 'linear-gradient(135deg, #ca8a04 0%, #a16207 100%)' },
-        { key: 'health', title: 'System Health', icon: 'feather-activity', badge: '99.98%', accentColor: '#4ade80', activeGradient: 'linear-gradient(135deg, #16a34a 0%, #15803d 100%)' },
+        { key: 'corporate', title: 'Corporate Cohorts', icon: 'feather-briefcase', badge: 'B2B', accentColor: '#228DDD', activeGradient: 'linear-gradient(135deg, #013BA6 0%, #228DDD 100%)' },
+        { key: 'settings', title: 'CMS Content Studio', icon: 'feather-sliders', badge: 'CMS', accentColor: '#228DDD', activeGradient: 'linear-gradient(135deg, #013BA6 0%, #228DDD 100%)' },
+        { key: 'plugins', title: '77 System Features', icon: 'feather-cpu', badge: '77', accentColor: '#F4ED2D', activeGradient: 'linear-gradient(135deg, #013BA6 0%, #228DDD 100%)' },
+        { key: 'health', title: 'System Health', icon: 'feather-activity', badge: '99.98%', accentColor: '#228DDD', activeGradient: 'linear-gradient(135deg, #013BA6 0%, #228DDD 100%)' },
       ],
     },
   ];
@@ -74,7 +74,7 @@ export const CorporateAdminSidebar: React.FC<CorporateAdminSidebarProps> = ({
         width: sidebarWidth,
         minWidth: sidebarWidth,
         maxWidth: sidebarWidth,
-        background: 'linear-gradient(180deg, #013BA6 0%, #013BA6 100%)',
+        background: 'linear-gradient(180deg, #061838 0%, #013BA6 100%)',
         height: '100vh',
         transition: 'width 0.2s ease, min-width 0.2s ease, max-width 0.2s ease',
         zIndex: 1040,
@@ -182,13 +182,13 @@ export const CorporateAdminSidebar: React.FC<CorporateAdminSidebarProps> = ({
                       } py-2 border-0 rounded-3 text-decoration-none`}
                       style={{
                         background: isActive
-                          ? item.activeGradient || 'linear-gradient(135deg, #013BA6 0%, #013BA6 100%)'
+                          ? item.activeGradient || 'linear-gradient(135deg, #013BA6 0%, #228DDD 100%)'
                           : 'rgba(255,255,255,0.06)',
                         color: isActive ? '#ffffff' : '#f1f5f9',
                         fontWeight: isActive ? 700 : 600,
                         fontSize: '12.5px',
-                        borderLeft: `3px solid ${isActive ? '#F4ED2D' : item.accentColor || '#38bdf8'}`,
-                        boxShadow: isActive ? '0 4px 12px rgba(0, 0, 0, 0.28)' : 'none',
+                        borderLeft: `3px solid ${isActive ? '#F4ED2D' : 'transparent'}`,
+                        boxShadow: isActive ? '0 4px 12px rgba(1, 59, 166, 0.45)' : 'none',
                         transition: 'all 0.15s ease',
                       }}
                       title={collapsed ? item.title : undefined}
@@ -200,7 +200,7 @@ export const CorporateAdminSidebar: React.FC<CorporateAdminSidebarProps> = ({
                           } flex-shrink-0`}
                           style={{
                             fontSize: '14px',
-                            color: isActive ? '#F4ED2D' : item.accentColor || '#38bdf8',
+                            color: isActive ? '#F4ED2D' : '#228DDD',
                           }}
                         />
                         {!collapsed && <span className="text-truncate">{item.title}</span>}
@@ -210,8 +210,8 @@ export const CorporateAdminSidebar: React.FC<CorporateAdminSidebarProps> = ({
                         <span
                           className="badge rounded-pill"
                           style={{
-                            background: isActive ? '#F4ED2D' : 'rgba(15,23,42,0.45)',
-                            color: isActive ? '#061838' : item.accentColor || '#F4ED2D',
+                            background: isActive ? '#F4ED2D' : 'rgba(255,255,255,0.12)',
+                            color: isActive ? '#061838' : '#228DDD',
                             fontSize: '9px',
                             fontWeight: 800,
                           }}

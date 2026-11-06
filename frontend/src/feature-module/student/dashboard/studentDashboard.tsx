@@ -406,7 +406,7 @@ export const StudentDashboard: React.FC = () => {
                         cx="48"
                         cy="48"
                         r="40"
-                        stroke="#22d3ee"
+                        stroke="#F4ED2D"
                         strokeWidth="8"
                         strokeDasharray={251.2}
                         strokeDashoffset={251.2 - (251.2 * (overallProgress || 25)) / 100}
@@ -434,7 +434,7 @@ export const StudentDashboard: React.FC = () => {
                   <div className="sp-stat">
                     <div
                       className="sp-stat-icon"
-                      style={{ background: '#0f172a', color: '#fff' }}
+                      style={{ background: '#061838', color: '#fff' }}
                     >
                       <i className="ti ti-book-2 fs-22" />
                     </div>
@@ -466,7 +466,7 @@ export const StudentDashboard: React.FC = () => {
                   <div className="sp-stat">
                     <div
                       className="sp-stat-icon"
-                      style={{ background: '#dcfce7', color: '#16a34a' }}
+                      style={{ background: '#F0F9FF', color: '#228DDD' }}
                     >
                       <i className="ti ti-circle-check fs-22" />
                     </div>
@@ -483,7 +483,7 @@ export const StudentDashboard: React.FC = () => {
                   <div className="sp-stat">
                     <div
                       className="sp-stat-icon"
-                      style={{ background: '#fef3c7', color: '#d97706' }}
+                      style={{ background: 'rgba(244, 237, 45, 0.22)', color: '#061838' }}
                     >
                       <i className="ti ti-award fs-22" />
                     </div>
@@ -499,7 +499,7 @@ export const StudentDashboard: React.FC = () => {
               <div
                 className="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden"
                 style={{
-                  background: 'linear-gradient(135deg, #061838 0%, #163760 65%, #1e426d 100%)',
+                  background: 'linear-gradient(135deg, #061838 0%, #013BA6 100%)',
                   color: '#fff',
                 }}
               >
@@ -509,7 +509,7 @@ export const StudentDashboard: React.FC = () => {
                       <div className="d-flex align-items-center gap-2 mb-2 flex-wrap">
                         <span
                           className="badge rounded-pill px-3 py-1 fw-bold"
-                          style={{ background: '#f59e0b', color: '#0f172a', fontSize: '0.74rem' }}
+                          style={{ background: '#F4ED2D', color: '#061838', fontSize: '0.74rem' }}
                         >
                           <i className="ti ti-flame me-1" /> LEVEL {learnerXp?.level || 3}
                         </span>
@@ -520,14 +520,14 @@ export const StudentDashboard: React.FC = () => {
                           {learnerXp?.levelTitle || 'Proficient Scholar'}
                         </span>
                         <span
-                          className="badge bg-info-subtle text-info border border-info rounded-pill px-2.5 py-1"
-                          style={{ fontSize: '0.74rem' }}
+                          className="badge border rounded-pill px-2.5 py-1"
+                          style={{ fontSize: '0.74rem', background: 'rgba(34, 141, 221, 0.2)', color: '#fff', borderColor: '#228DDD' }}
                         >
                           <i className="ti ti-trophy me-1" /> Cohort Rank #{learnerXp?.rank || 5}
                         </span>
                         <span
-                          className="badge bg-warning-subtle text-warning border border-warning rounded-pill px-2.5 py-1"
-                          style={{ fontSize: '0.74rem' }}
+                          className="badge border rounded-pill px-2.5 py-1"
+                          style={{ fontSize: '0.74rem', background: 'rgba(244, 237, 45, 0.2)', color: '#F4ED2D', borderColor: '#F4ED2D' }}
                         >
                           <i className="ti ti-medal me-1" /> {learnerXp?.badgesEarned || 5} Digital Badges
                         </span>
@@ -548,7 +548,7 @@ export const StudentDashboard: React.FC = () => {
                           <span className="text-light text-opacity-75">
                             Level {learnerXp?.level || 3} ({learnerXp?.totalXp?.toLocaleString() || '6,750'} XP)
                           </span>
-                          <span className="fw-bold text-warning">
+                          <span className="fw-bold" style={{ color: '#F4ED2D' }}>
                             {learnerXp?.percentage || 70}% to Level {(learnerXp?.level || 3) + 1} (
                             {learnerXp?.nextLevelTarget?.toLocaleString() || '7,500'} XP)
                           </span>
@@ -561,7 +561,7 @@ export const StudentDashboard: React.FC = () => {
                             className="progress-bar"
                             style={{
                               width: `${learnerXp?.percentage || 70}%`,
-                              background: 'linear-gradient(90deg, #f59e0b 0%, #10b981 100%)',
+                              background: 'linear-gradient(90deg, #228DDD 0%, #F4ED2D 100%)',
                               borderRadius: 999,
                             }}
                           />
@@ -574,8 +574,8 @@ export const StudentDashboard: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => setShowLeaderboardModal(true)}
-                          className="btn btn-warning rounded-pill px-4 py-2 fw-bold text-dark shadow-sm d-inline-flex align-items-center justify-content-center gap-2"
-                          style={{ fontSize: '0.84rem' }}
+                          className="btn rounded-pill px-4 py-2 fw-bold shadow-sm d-inline-flex align-items-center justify-content-center gap-2"
+                          style={{ background: '#F4ED2D', color: '#061838', border: 'none', fontSize: '0.84rem' }}
                         >
                           <i className="ti ti-chart-arrows" /> View Cohort Leaderboard
                         </button>
@@ -666,7 +666,8 @@ export const StudentDashboard: React.FC = () => {
                             <span
                               className="sp-course-status"
                               style={{
-                                background: isCompleted ? '#16a34a' : '#f59e0b',
+                                background: isCompleted ? '#013BA6' : '#F4ED2D',
+                                color: isCompleted ? '#FFFFFF' : '#061838',
                               }}
                             >
                               {isCompleted ? 'Completed' : 'In Progress'}
@@ -692,8 +693,8 @@ export const StudentDashboard: React.FC = () => {
                                 style={{
                                   width: `${Math.max(5, course.progress ?? 0)}%`,
                                   background: isCompleted
-                                    ? 'linear-gradient(90deg, #22c55e, #16a34a)'
-                                    : 'linear-gradient(90deg, #22d3ee, #013BA6)',
+                                    ? 'linear-gradient(90deg, #228DDD, #013BA6)'
+                                    : 'linear-gradient(90deg, #228DDD, #F4ED2D)',
                                 }}
                               />
                             </div>
@@ -708,7 +709,7 @@ export const StudentDashboard: React.FC = () => {
                                   onClick={() => handleSelectView('certificates')}
                                   className="sp-btn-green"
                                   style={{
-                                    background: 'linear-gradient(135deg, #10b981, #059669)',
+                                    background: 'linear-gradient(135deg, #013BA6, #228DDD)',
                                   }}
                                 >
                                   <span>Certificate</span>
@@ -963,7 +964,7 @@ export const StudentDashboard: React.FC = () => {
                   src="/assets/img/user/user-02.jpg"
                   alt={studentName}
                   className="rounded-circle shadow-sm"
-                  style={{ width: '72px', height: '72px', objectFit: 'cover', border: '3px solid #10b981' }}
+                  style={{ width: '72px', height: '72px', objectFit: 'cover', border: '3px solid #228DDD' }}
                   onError={(e: any) => {
                     e.target.src = '/assets/img/user/user-01.jpg';
                   }}
@@ -1024,7 +1025,7 @@ export const StudentDashboard: React.FC = () => {
                       <div className="col-6">
                         <div className="p-2.5 bg-white rounded-2 border text-center">
                           <span className="text-muted small d-block">Exam Status</span>
-                          <span className="fw-bold fs-18 text-emerald" style={{ color: '#059669' }}>Eligible</span>
+                          <span className="fw-bold fs-18" style={{ color: '#013BA6' }}>Eligible</span>
                         </div>
                       </div>
                     </div>
@@ -1632,7 +1633,7 @@ export const StudentDashboard: React.FC = () => {
               <div className="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
                 <div
                   className="modal-header text-white p-3.5 border-0"
-                  style={{ background: 'linear-gradient(90deg, #09172c 0%, #102646 100%)' }}
+                  style={{ background: 'linear-gradient(90deg, #061838 0%, #013BA6 100%)' }}
                 >
                   <div className="d-flex align-items-center gap-2.5">
                     <div
@@ -1640,8 +1641,8 @@ export const StudentDashboard: React.FC = () => {
                       style={{
                         width: '36px',
                         height: '36px',
-                        backgroundColor: 'rgba(0, 194, 255, 0.2)',
-                        color: '#00c2ff',
+                        backgroundColor: 'rgba(34, 141, 221, 0.2)',
+                        color: '#228DDD',
                       }}
                     >
                       <i className="feather-calendar fs-18" />
@@ -1895,10 +1896,10 @@ export const StudentDashboard: React.FC = () => {
               <div className="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
                 <div
                   className="modal-header border-0 text-white p-3.5"
-                  style={{ background: 'linear-gradient(135deg, #061838 0%, #163760 100%)' }}
+                  style={{ background: 'linear-gradient(135deg, #061838 0%, #013BA6 100%)' }}
                 >
                   <div className="d-flex align-items-center gap-2">
-                    <i className="ti ti-trophy fs-22 text-warning" />
+                    <i className="ti ti-trophy fs-22" style={{ color: '#F4ED2D' }} />
                     <div>
                       <h5 className="modal-title fw-bold text-white mb-0">
                         Academic Cohort Leaderboard &amp; Badges

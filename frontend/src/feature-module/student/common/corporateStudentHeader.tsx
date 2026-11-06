@@ -22,9 +22,9 @@ interface CorporateStudentHeaderProps {
 }
 
 const TONES: Record<PortalNotification['tone'], { bg: string; fg: string }> = {
-  amber: { bg: '#fef3c7', fg: '#b45309' },
+  amber: { bg: 'rgba(244, 237, 45, 0.22)', fg: '#061838' },
   sky: { bg: '#E8F4FC', fg: '#013BA6' },
-  green: { bg: '#dcfce7', fg: '#15803d' },
+  green: { bg: '#F0F9FF', fg: '#228DDD' },
 };
 
 export const CorporateStudentHeader: React.FC<CorporateStudentHeaderProps> = ({

@@ -34,12 +34,12 @@ const AdminSidebar = () => {
     <div className="col-lg-3">
       <div className="settings-sidebar mb-lg-0 theiaStickySidebar">
         {/* Admin Identity Card */}
-        <div className="card border-0 shadow-sm p-3 mb-4 rounded-3 text-center" style={{ background: "linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)", color: "#ffffff" }}>
+        <div className="card border-0 shadow-sm p-3 mb-4 rounded-3 text-center" style={{ background: "linear-gradient(135deg, #061838 0%, #013BA6 100%)", color: "#ffffff" }}>
           <div className="avatar avatar-xl rounded-circle mx-auto mb-2 bg-white text-primary d-flex align-items-center justify-content-center shadow-sm">
-            <i className="isax isax-security-user fs-24" />
+            <i className="isax isax-security-user fs-24" style={{ color: '#013BA6' }} />
           </div>
           <h6 className="text-white mb-0 fw-bold">{user?.name || 'University Administrator'}</h6>
-          <span className="badge bg-danger text-white my-1 align-self-center px-2 py-1 fs-11">
+          <span className="badge my-1 align-self-center px-2 py-1 fs-11 fw-bold" style={{ background: '#F4ED2D', color: '#061838' }}>
             Super Administrator
           </span>
           <p className="text-white-50 fs-12 mb-0">{user?.department || 'Directorate of ICT Services & Registrar'}</p>

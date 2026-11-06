@@ -692,17 +692,17 @@ export const AdminDashboard: React.FC = () => {
         >
           <div className="d-flex align-items-center gap-1.5 flex-wrap">
             {[
-              { key: 'dashboard', label: 'Overview & KPI', icon: 'feather-grid', color: '#38bdf8', activeBg: '#0284c7' },
-              { key: 'api-gateway', label: 'API & Endpoints (85+)', icon: 'feather-terminal', color: '#c084fc', activeBg: '#9333ea' },
-              { key: 'certificates', label: 'Beautiful Diplomas (6 Themes)', icon: 'feather-award', color: '#fbbf24', activeBg: '#d97706' },
-              { key: 'courses', label: `Courses (${courses.length})`, icon: 'feather-book-open', color: '#34d399', activeBg: '#059669' },
-              { key: 'categories', label: 'Faculties & Cats', icon: 'feather-folder', color: '#fb923c', activeBg: '#ea580c' },
-              { key: 'users', label: `Users (${users.length})`, icon: 'feather-users', color: '#60a5fa', activeBg: '#2563eb' },
-              { key: 'ledger', label: 'Tuition & Pesapal', icon: 'feather-credit-card', color: '#2dd4bf', activeBg: '#0d9488' },
-              { key: 'corporate', label: 'Corporate B2B', icon: 'feather-briefcase', color: '#f472b6', activeBg: '#db2777' },
-              { key: 'settings', label: 'CMS Studio', icon: 'feather-sliders', color: '#a78bfa', activeBg: '#7c3aed' },
-              { key: 'plugins', label: '77 System Features', icon: 'feather-cpu', color: '#facc15', activeBg: '#ca8a04' },
-              { key: 'health', label: 'Health & Cache', icon: 'feather-activity', color: '#4ade80', activeBg: '#16a34a' },
+              { key: 'dashboard', label: 'Overview & KPI', icon: 'feather-grid' },
+              { key: 'api-gateway', label: 'API & Endpoints (85+)', icon: 'feather-terminal' },
+              { key: 'certificates', label: 'Beautiful Diplomas (6 Themes)', icon: 'feather-award' },
+              { key: 'courses', label: `Courses (${courses.length})`, icon: 'feather-book-open' },
+              { key: 'categories', label: 'Faculties & Cats', icon: 'feather-folder' },
+              { key: 'users', label: `Users (${users.length})`, icon: 'feather-users' },
+              { key: 'ledger', label: 'Tuition & Pesapal', icon: 'feather-credit-card' },
+              { key: 'corporate', label: 'Corporate B2B', icon: 'feather-briefcase' },
+              { key: 'settings', label: 'CMS Studio', icon: 'feather-sliders' },
+              { key: 'plugins', label: '77 System Features', icon: 'feather-cpu' },
+              { key: 'health', label: 'Health & Cache', icon: 'feather-activity' },
             ].map((pill) => {
               const isAct = activeView === pill.key;
               return (
@@ -713,13 +713,13 @@ export const AdminDashboard: React.FC = () => {
                   className="btn btn-sm rounded-pill px-2.5 py-1 fw-bold d-inline-flex align-items-center gap-1"
                   style={{
                     fontSize: '11.5px',
-                    background: isAct ? pill.activeBg : 'rgba(255,255,255,0.08)',
-                    color: isAct ? '#ffffff' : pill.color,
-                    border: isAct ? '1.5px solid #F4ED2D' : `1px solid ${pill.color}66`,
-                    boxShadow: isAct ? '0 3px 10px rgba(0,0,0,0.35)' : 'none',
+                    background: isAct ? 'linear-gradient(135deg, #013BA6 0%, #228DDD 100%)' : 'rgba(255,255,255,0.06)',
+                    color: isAct ? '#ffffff' : '#cbd5e1',
+                    border: isAct ? '1.5px solid #F4ED2D' : '1px solid rgba(255,255,255,0.14)',
+                    boxShadow: isAct ? '0 3px 10px rgba(1,59,166,0.45)' : 'none',
                   }}
                 >
-                  <i className={pill.icon} style={{ fontSize: '11px' }} />
+                  <i className={pill.icon} style={{ fontSize: '11px', color: isAct ? '#F4ED2D' : '#228DDD' }} />
                   <span>{pill.label}</span>
                 </button>
               );
@@ -728,7 +728,7 @@ export const AdminDashboard: React.FC = () => {
 
           <span
             className="badge rounded-pill px-2.5 py-1 fw-bold d-none d-xl-inline-flex align-items-center gap-1"
-            style={{ background: 'rgba(16,185,129,0.2)', color: '#6ee7b7', border: '1px solid #10b981', fontSize: '10.5px' }}
+            style={{ background: 'rgba(244,237,45,0.15)', color: '#F4ED2D', border: '1px solid rgba(244,237,45,0.3)', fontSize: '10.5px' }}
           >
             <i className="feather-shield" />
             Zero-Moodle-Login Headless Admin Active
@@ -827,13 +827,13 @@ export const AdminDashboard: React.FC = () => {
                       <span className="text-muted fw-semibold text-truncate" style={{ fontSize: '11px', letterSpacing: '0.04em' }}>
                         FACULTY TEACHERS
                       </span>
-                      <div className="rounded-2 p-1.5 text-success" style={{ background: '#dcfce7' }}>
+                      <div className="rounded-2 p-1.5" style={{ background: '#F0F9FF', color: '#228DDD' }}>
                         <i className="feather-award" style={{ fontSize: '14px' }} />
                       </div>
                     </div>
                     <div className="fs-4 fw-bold text-dark mb-0.5">{telemetry.activeInstructors}</div>
                     <div className="text-muted small" style={{ fontSize: '11px' }}>
-                      <span className="text-success fw-semibold">100%</span> Assigned to modules
+                      <span className="fw-semibold" style={{ color: '#228DDD' }}>100%</span> Assigned to modules
                     </div>
                   </div>
                 </div>
@@ -845,13 +845,13 @@ export const AdminDashboard: React.FC = () => {
                       <span className="text-muted fw-semibold text-truncate" style={{ fontSize: '11px', letterSpacing: '0.04em' }}>
                         PUBLISHED COURSES
                       </span>
-                      <div className="rounded-2 p-1.5 text-info" style={{ background: '#e0e7ff' }}>
+                      <div className="rounded-2 p-1.5" style={{ background: '#E8F4FC', color: '#013BA6' }}>
                         <i className="feather-book-open" style={{ fontSize: '14px' }} />
                       </div>
                     </div>
                     <div className="fs-4 fw-bold text-dark mb-0.5">{telemetry.publishedCourses}</div>
                     <div className="text-muted small" style={{ fontSize: '11px' }}>
-                      <span className="text-info fw-semibold">{telemetry.totalModules}</span> Learning units
+                      <span className="fw-semibold" style={{ color: '#013BA6' }}>{telemetry.totalModules}</span> Learning units
                     </div>
                   </div>
                 </div>
@@ -863,7 +863,7 @@ export const AdminDashboard: React.FC = () => {
                       <span className="text-muted fw-semibold text-truncate" style={{ fontSize: '11px', letterSpacing: '0.04em' }}>
                         TUITION COLLECTED
                       </span>
-                      <div className="rounded-2 p-1.5 text-warning" style={{ background: '#fef3c7' }}>
+                      <div className="rounded-2 p-1.5" style={{ background: 'rgba(244,237,45,0.22)', color: '#061838' }}>
                         <i className="feather-dollar-sign" style={{ fontSize: '14px' }} />
                       </div>
                     </div>
@@ -871,7 +871,7 @@ export const AdminDashboard: React.FC = () => {
                       {telemetry.totalTuitionTzs}
                     </div>
                     <div className="text-muted small" style={{ fontSize: '11px' }}>
-                      <span className="text-warning fw-semibold">{telemetry.pesapalTransactionsCount}</span> IPN payments
+                      <span className="fw-semibold" style={{ color: '#013BA6' }}>{telemetry.pesapalTransactionsCount}</span> IPN payments
                     </div>
                   </div>
                 </div>
@@ -1849,7 +1849,7 @@ export const AdminDashboard: React.FC = () => {
               <div
                 className="p-3 p-md-4 rounded-4 text-white shadow-sm"
                 style={{
-                  background: 'linear-gradient(135deg, #061838 0%, #065f46 55%, #0F172A 100%)',
+                  background: 'linear-gradient(135deg, #061838 0%, #013BA6 55%, #228DDD 100%)',
                   borderBottom: '3px solid #F4ED2D',
                 }}
               >
@@ -2138,7 +2138,7 @@ export const AdminDashboard: React.FC = () => {
               <div
                 className="p-3 p-md-4 rounded-4 text-white shadow-sm"
                 style={{
-                  background: 'linear-gradient(135deg, #061838 0%, #3b0764 55%, #0F172A 100%)',
+                  background: 'linear-gradient(135deg, #061838 0%, #013BA6 55%, #228DDD 100%)',
                   borderBottom: '3px solid #F4ED2D',
                 }}
               >

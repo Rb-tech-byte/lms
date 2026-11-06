@@ -10,7 +10,7 @@ if (defined('OUTLMS_API_BOOTSTRAPPED')) {
 define('OUTLMS_API_BOOTSTRAPPED', true);
 
 define('AJAX_SCRIPT', true);
-define('NO_MOODLE_COOKIES', true);
+if (!defined('NO_MOODLE_COOKIES')) { define('NO_MOODLE_COOKIES', true); }
 if (php_sapi_name() === 'cli' && !defined('CLI_SCRIPT')) {
     define('CLI_SCRIPT', true);
 }
@@ -37,7 +37,7 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
     http_response_code(200);
     exit;
 }
@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 // Read JSON input payload if POST
 // -----------------------------------------------------------------------------
 $input = [];
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     $raw = file_get_contents('php://input');
     if (!empty($raw)) {
         $input = json_decode($raw, true) ?? [];

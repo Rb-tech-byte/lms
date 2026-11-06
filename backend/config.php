@@ -44,7 +44,7 @@ $CFG->prefix    = getenv('MOODLE_DB_PREFIX') ?: 'mdl_';
 
 $CFG->dboptions = [
     'dbpersist'   => 0,
-    'dbport'      => getenv('MOODLE_DB_PORT') ? (int)getenv('MOODLE_DB_PORT') : 3306,
+    'dbport'      => getenv('MOODLE_DB_PORT') ? (int)getenv('MOODLE_DB_PORT') : (DIRECTORY_SEPARATOR === '\\' ? 3307 : 3306),
     'dbsocket'    => getenv('MOODLE_DB_SOCKET') ?: '',
     'dbcollation' => getenv('MOODLE_DB_COLLATION') ?: 'utf8mb4_unicode_ci',
 ];
@@ -110,7 +110,15 @@ $CFG->routerconfigured = true;
 $CFG->debug = E_ALL;
 $CFG->debugdisplay = 0;
 
-require_once(__DIR__ . '/lib/setup.php');
+if (file_exists(__DIR__ . '/lib/setup.php')) {
+    require_once(__DIR__ . '/lib/setup.php');
+} elseif (file_exists(dirname(__DIR__) . '/moodle-backend/lib/setup.php')) {
+    require_once(dirname(__DIR__) . '/moodle-backend/lib/setup.php');
+} elseif (file_exists(dirname(__DIR__) . '/moodle-backend/public/lib/setup.php')) {
+    require_once(dirname(__DIR__) . '/moodle-backend/public/lib/setup.php');
+} else {
+    require_once(__DIR__ . '/lib/setup.php');
+}
 
 // There is no php closing tag in this file,
 // it is intentional because it prevents trailing whitespace problems!

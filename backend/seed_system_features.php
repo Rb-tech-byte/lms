@@ -18,6 +18,38 @@ global $DB;
 
 echo "=== Seeding OUT LMS Core System Features & Sample Data Across All Courses ===\n";
 
+$dbman = $DB->get_manager();
+$xmldbPlugins = [
+    'attendance' => $CFG->dirroot . '/mod/attendance/db/install.xml',
+    'vpl' => $CFG->dirroot . '/mod/vpl/db/install.xml',
+    'customcert' => $CFG->dirroot . '/mod/customcert/db/install.xml',
+    'reengagement' => $CFG->dirroot . '/mod/reengagement/db/install.xml',
+    'format_kickstart_template' => $CFG->dirroot . '/course/format/kickstart/db/install.xml',
+];
+foreach ($xmldbPlugins as $checkTable => $xmlPath) {
+    if (!$dbman->table_exists($checkTable) && file_exists($xmlPath)) {
+        try {
+            $dbman->install_from_xmldb_file($xmlPath);
+            echo "  [OK] Installed XMLDB schema for '{$checkTable}'\n";
+        } catch (\Throwable $e) {
+            echo "  [WARN] XMLDB install notice for {$checkTable}: " . $e->getMessage() . "\n";
+        }
+    }
+}
+
+foreach (['attendance', 'vpl', 'customcert', 'reengagement'] as $modName) {
+    if (!$DB->record_exists('modules', ['name' => $modName])) {
+        $modRec = new \stdClass();
+        $modRec->name = $modName;
+        $modRec->cron = 0;
+        $modRec->lastcron = 0;
+        $modRec->search = '';
+        $modRec->visible = 1;
+        $DB->insert_record('modules', $modRec);
+        echo "  [OK] Registered activity module '{$modName}' in mdl_modules\n";
+    }
+}
+
 $courses = $DB->get_records_sql("SELECT * FROM {course} WHERE id > 1 ORDER BY id ASC");
 $now = time();
 
@@ -425,6 +457,128 @@ if (file_exists(__DIR__ . '/seed_65_marketplace_features.php')) {
     $extRes = seed_out_65_marketplace_features();
     echo "  [OK] Provisioned {$extRes['unique_new_capabilities']} additional capabilities across {$extRes['courses_count']} courses (Total rows: {$extRes['total_feature_rows']})\n";
 }
+
+// 7. Set Kickstart as Institutional Default Format & Seed 4 Core Faculty Starter Templates
+set_config('format', 'kickstart', 'moodlecourse');
+set_config('version', '2026110201', 'format_kickstart');
+set_config('course_templates_view', 'tile', 'format_kickstart');
+echo "  [OK] Set Institutional Default Course Format to 'kickstart'\n";
+
+$dbman = $DB->get_manager();
+if (!$dbman->table_exists('format_kickstart_template')) {
+    $table = new \xmldb_table('format_kickstart_template');
+    $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+    $table->add_field('title', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+    $table->add_field('description', XMLDB_TYPE_TEXT, null, null, false, null, null);
+    $table->add_field('descriptionformat', XMLDB_TYPE_INTEGER, '10', null, false, null, '1');
+    $table->add_field('preview_url', XMLDB_TYPE_CHAR, '255', null, false, null, null);
+    $table->add_field('restrictcohort', XMLDB_TYPE_INTEGER, '1', null, false, null, '0');
+    $table->add_field('restrictcategory', XMLDB_TYPE_INTEGER, '1', null, false, null, '0');
+    $table->add_field('restrictrole', XMLDB_TYPE_INTEGER, '1', null, false, null, '0');
+    $table->add_field('restrictuser', XMLDB_TYPE_INTEGER, '1', null, false, null, '0');
+    $table->add_field('cohortids', XMLDB_TYPE_TEXT, null, null, false, null, null);
+    $table->add_field('categoryids', XMLDB_TYPE_TEXT, null, null, false, null, null);
+    $table->add_field('userids', XMLDB_TYPE_TEXT, null, null, false, null, null);
+    $table->add_field('includesubcategories', XMLDB_TYPE_INTEGER, '1', null, false, null, '0');
+    $table->add_field('roleids', XMLDB_TYPE_TEXT, null, null, false, null, null);
+    $table->add_field('sort', XMLDB_TYPE_INTEGER, '10', null, false, null, '1');
+    $table->add_field('courseformat', XMLDB_TYPE_INTEGER, '1', null, false, null, '0');
+    $table->add_field('coursefromtemplate', XMLDB_TYPE_INTEGER, '1', null, false, null, '0');
+    $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, false, null, '0');
+    $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, false, null, '2');
+    $table->add_field('status', XMLDB_TYPE_INTEGER, '1', null, false, null, '1');
+    $table->add_field('visible', XMLDB_TYPE_INTEGER, '1', null, false, null, '1');
+    $table->add_field('format', XMLDB_TYPE_CHAR, '40', null, false, null, 'tiles');
+    $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+    $dbman->create_table($table);
+}
+
+if (!$dbman->table_exists('format_kickstart_options')) {
+    $optTable = new \xmldb_table('format_kickstart_options');
+    $optTable->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+    $optTable->add_field('templateid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+    $optTable->add_field('displayname', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+    $optTable->add_field('format', XMLDB_TYPE_CHAR, '21', null, XMLDB_NOTNULL, null, null);
+    $optTable->add_field('sectionid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+    $optTable->add_field('name', XMLDB_TYPE_CHAR, '100', null, XMLDB_NOTNULL, null, null);
+    $optTable->add_field('value', XMLDB_TYPE_TEXT, null, null, false, null, null);
+    $optTable->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+    $dbman->create_table($optTable);
+}
+
+$starterTemplates = [
+    [
+        'sort' => 1,
+        'title' => 'Undergraduate Degree Programme (TCU & SARIS Accredited)',
+        'description' => '<p>Standardized 8-module semester syllabus with SARIS rotating QR attendance tracking, continuous assessment assignments, grading rubrics, and final exam readiness.</p>',
+        'preview_url' => '/course/course-details?id=2',
+        'courseid' => 2,
+        'format' => 'tiles',
+    ],
+    [
+        'sort' => 2,
+        'title' => 'Postgraduate & Masters Seminar (Research & Dissertation)',
+        'description' => '<p>Advanced seminar layout featuring literature review forums, research methodology checkpoints, cloud lab workspaces, and thesis defense evaluation gates.</p>',
+        'preview_url' => '/course/course-details?id=3',
+        'courseid' => 3,
+        'format' => 'onetopic',
+    ],
+    [
+        'sort' => 3,
+        'title' => 'Short Courses & CPD Micro-Credential (Verifiable Certificate)',
+        'description' => '<p>High-velocity executive & professional development blueprint with self-paced video units, competency quizzes, and automated TCU/SARIS QR-verifiable CustomCert PDF issuance.</p>',
+        'preview_url' => '/course/course-details?id=7',
+        'courseid' => 7,
+        'format' => 'topcoll',
+    ],
+    [
+        'sort' => 4,
+        'title' => 'STEM & Computer Science Lab Course (CodeRunner & VPL IDE)',
+        'description' => '<p>Hands-on engineering and software development curriculum pre-linked with automated CodeRunner unit-test grading questions and browser-based VPL Cloud IDE labs.</p>',
+        'preview_url' => '/course/course-details?id=8',
+        'courseid' => 8,
+        'format' => 'tiles',
+    ],
+];
+
+foreach ($starterTemplates as $st) {
+    $existingTpl = $DB->get_record('format_kickstart_template', ['sort' => $st['sort']]);
+    if ($existingTpl) {
+        $existingTpl->title = $st['title'];
+        $existingTpl->description = $st['description'];
+        $existingTpl->preview_url = $st['preview_url'];
+        $existingTpl->courseid = $st['courseid'];
+        $existingTpl->format = $st['format'];
+        $existingTpl->visible = 1;
+        $existingTpl->status = 1;
+        $DB->update_record('format_kickstart_template', $existingTpl);
+    } else {
+        $tplRec = new \stdClass();
+        $tplRec->title = $st['title'];
+        $tplRec->description = $st['description'];
+        $tplRec->descriptionformat = 1;
+        $tplRec->preview_url = $st['preview_url'];
+        $tplRec->restrictcohort = 0;
+        $tplRec->restrictcategory = 0;
+        $tplRec->restrictrole = 0;
+        $tplRec->restrictuser = 0;
+        $tplRec->cohortids = '[]';
+        $tplRec->categoryids = '[]';
+        $tplRec->userids = '[]';
+        $tplRec->includesubcategories = 0;
+        $tplRec->roleids = '[]';
+        $tplRec->sort = $st['sort'];
+        $tplRec->courseformat = 0;
+        $tplRec->coursefromtemplate = 1;
+        $tplRec->courseid = $st['courseid'];
+        $tplRec->userid = 2;
+        $tplRec->status = 1;
+        $tplRec->visible = 1;
+        $tplRec->format = $st['format'];
+        $DB->insert_record('format_kickstart_template', $tplRec);
+    }
+}
+echo "  [OK] Seeded 4 Institutional Kickstart Faculty Starter Templates in mdl_format_kickstart_template\n";
 
 purge_all_caches();
 if (function_exists('opcache_reset')) {

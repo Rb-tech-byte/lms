@@ -692,6 +692,7 @@ export const adminService = {
     category?: number;
     summary?: string;
     format?: string;
+    kickstart_template_id?: number;
     num_sections?: number;
     tuition_fee?: number;
   }): Promise<any> {
@@ -708,6 +709,44 @@ export const adminService = {
     const data = await parseSafeJson(res, 'adminService');
     if (!data.success) {
       throw new Error(data.error || 'Failed to create course model');
+    }
+    return data;
+  },
+
+  /**
+   * Retrieves the 4 institutional Kickstart faculty starter templates
+   */
+  async getKickstartTemplates(courseId = 2): Promise<any> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl()}?action=get_kickstart_templates&course_id=${courseId}`;
+    const res = await fetch(url, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {}
+    });
+    return parseSafeJson(res, 'adminService');
+  },
+
+  /**
+   * Provisions a Kickstart faculty starter template into a target course
+   */
+  async importKickstartTemplate(courseId: number, templateId: number): Promise<any> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl()}?action=import_kickstart_template`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+      },
+      body: JSON.stringify({
+        action: 'import_kickstart_template',
+        course_id: courseId,
+        template_id: templateId,
+        token
+      })
+    });
+    const data = await parseSafeJson(res, 'adminService');
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to import Kickstart template');
     }
     return data;
   },

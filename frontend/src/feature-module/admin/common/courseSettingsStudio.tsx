@@ -573,11 +573,11 @@ export const CourseSettingsStudio: React.FC<CourseSettingsStudioProps> = ({
                                   value={form.format}
                                   onChange={(e) => setForm({ ...form, format: e.target.value })}
                                 >
-                                  <option value="topics">Topical / Academic Study Units</option>
-                                  <option value="kickstart">Kickstart Course Wizard & Starter Templates</option>
+                                  <option value="kickstart">Kickstart Course Wizard & Starter Templates (Institutional Default)</option>
                                   <option value="tiles">Tiles Visual Cards Grid</option>
                                   <option value="onetopic">OneTopic Horizontal Tabs</option>
                                   <option value="topcoll">Collapsed Topics Accordion</option>
+                                  <option value="topics">Topical / Academic Study Units</option>
                                   <option value="weeks">Weekly Semester Schedule</option>
                                   <option value="singleactivity">Single Modular Activity</option>
                                 </select>
@@ -598,6 +598,67 @@ export const CourseSettingsStudio: React.FC<CourseSettingsStudioProps> = ({
                                   <option value={0}>Show all study units on one page</option>
                                   <option value={1}>Show one study unit per page</option>
                                 </select>
+                              </div>
+                              <div className="col-12 mt-2">
+                                <div className="p-3 rounded-3 border bg-light">
+                                  <div className="d-flex justify-content-between align-items-center mb-2">
+                                    <div>
+                                      <div className="fw-bold small text-dark">
+                                        <i className="feather-zap text-primary me-1" />
+                                        Kickstart Institutional Faculty Starter Blueprints
+                                      </div>
+                                      <div className="text-muted" style={{ fontSize: '11px' }}>
+                                        1-click automated syllabus & module provisioning via <code>format_kickstart_import_template</code>
+                                      </div>
+                                    </div>
+                                    <span className="badge bg-primary-subtle text-primary" style={{ fontSize: '10px' }}>
+                                      Moodle 5.3+ Ready
+                                    </span>
+                                  </div>
+                                  <div className="row g-2">
+                                    {[
+                                      { id: 1, title: 'Undergraduate Degree Programme', badge: '8 Semester Units', desc: 'SARIS QR attendance, continuous assessment rubric & exam prep', color: '#0171BB' },
+                                      { id: 2, title: 'Postgraduate & Masters Seminar', badge: '6 Research Gates', desc: 'Literature review, VPL cloud sandbox lab & thesis defense checkpoints', color: '#06b6d4' },
+                                      { id: 3, title: 'Short Courses & CPD Micro-Credential', badge: '4 Executive Sprints', desc: 'Self-paced briefings, quiz & TCU/SARIS verifiable CustomCert PDF', color: '#10b981' },
+                                      { id: 4, title: 'STEM & Computer Science Lab Course', badge: '6 Engineering Labs', desc: 'Pre-linked CodeRunner unit-test auto-grader & VPL Cloud IDE', color: '#8b5cf6' },
+                                    ].map((tpl) => (
+                                      <div className="col-md-6" key={tpl.id}>
+                                        <div className="p-2 border rounded-2 bg-white d-flex justify-content-between align-items-center gap-2">
+                                          <div>
+                                            <div className="fw-semibold text-dark" style={{ fontSize: '12px' }}>
+                                              {tpl.title}{' '}
+                                              <span className="badge bg-light text-dark border ms-1" style={{ fontSize: '10px' }}>
+                                                {tpl.badge}
+                                              </span>
+                                            </div>
+                                            <div className="text-muted" style={{ fontSize: '11px' }}>{tpl.desc}</div>
+                                          </div>
+                                          <button
+                                            type="button"
+                                            className="btn btn-sm btn-outline-primary text-nowrap"
+                                            style={{ fontSize: '11px', padding: '3px 8px' }}
+                                            onClick={async () => {
+                                              try {
+                                                setSaving(true);
+                                                const res = await adminService.importKickstartTemplate(courseId, tpl.id);
+                                                onNotify('success', res.message || `Applied Kickstart template: ${tpl.title}`);
+                                                const refreshed = await adminService.getCourseDetails(courseId);
+                                                setCourse(refreshed);
+                                                if (onCourseUpdated) onCourseUpdated();
+                                              } catch (err: any) {
+                                                onNotify('danger', err?.message || 'Failed to apply Kickstart template');
+                                              } finally {
+                                                setSaving(false);
+                                              }
+                                            }}
+                                          >
+                                            Apply Blueprint
+                                          </button>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </div>

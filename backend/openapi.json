@@ -2877,6 +2877,83 @@
         }
       }
     },
+    "/admin_api.php?action=get_kickstart_templates": {
+      "get": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Get Kickstart Institutional Faculty Starter Templates (GET)",
+        "description": "Returns the 4 institutional Kickstart course starter templates (Undergraduate Degree, Postgraduate Seminar, Short Courses & CPD, STEM & Coding Lab) with syllabus blueprints and included enterprise modules.",
+        "operationId": "get_kickstart_templates",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "default": "get_kickstart_templates"
+            }
+          },
+          {
+            "name": "course_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 2
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Kickstart starter templates catalog",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "OUT LMS Core System Features & Functional Capabilities"
+        ],
+        "summary": "Import & Provision Kickstart Faculty Starter Template (POST)",
+        "description": "Applies a selected Kickstart faculty starter template (1..4) to a target course, automatically provisioning its study units, SARIS QR attendance, VPL cloud lab, verifiable CustomCert credential, and retention nudges.",
+        "operationId": "post_import_kickstart_template",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "action": "import_kickstart_template",
+                  "course_id": 2,
+                  "template_id": 1
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Template provisioned into course",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/admin_api.php?action=update_course_format": {
       "get": {
         "tags": [

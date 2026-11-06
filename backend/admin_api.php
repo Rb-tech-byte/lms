@@ -224,6 +224,406 @@ function outlms_user_is_instructor(int $userId): bool {
     );
 }
 
+function outlms_get_kickstart_templates_catalog(): array {
+    global $DB;
+    $blueprints = [
+        1 => [
+            'id' => 1,
+            'sort' => 1,
+            'code' => 'undergraduate_degree',
+            'title' => 'Undergraduate Degree Programme (TCU & SARIS Accredited)',
+            'short_title' => 'Undergraduate Degree',
+            'badge' => '8 Semester Units',
+            'icon' => 'isax-verify',
+            'accentColor' => '#0171BB',
+            'target_format' => 'tiles',
+            'num_sections' => 8,
+            'description' => 'Standardized 8-module university semester syllabus with SARIS rotating QR attendance tracking, continuous assessment assignments, grading rubrics, and final exam readiness.',
+            'preview_url' => '/course/course-details?id=2',
+            'tags' => ['undergraduate', 'degree', 'saris', 'tcu'],
+            'included_capabilities' => [
+                'SARIS Rotating QR Attendance Register',
+                'Continuous Assessment Assignment & Rubric',
+                'Interactive Visual Tiles Grid Layout',
+                'Milestone Completion Telemetry Bar',
+            ],
+            'sections' => [
+                1 => ['name' => 'Unit 1: Foundations, Theoretical Framework & Historical Context', 'summary' => '<p>Core theoretical foundations, academic terminology, and institutional context aligned with TCU degree standards.</p>'],
+                2 => ['name' => 'Unit 2: Core Analytical Principles & Applied Methodologies', 'summary' => '<p>Analytical frameworks, problem-solving methodologies, and structured academic reading guides.</p>'],
+                3 => ['name' => 'Unit 3: Regulatory Standards, Governance & Institutional Frameworks', 'summary' => '<p>National and East African regulatory compliance, governance models, and statutory analysis.</p>'],
+                4 => ['name' => 'Unit 4: Case Study Analysis & Mid-Semester Continuous Assessment', 'summary' => '<p>Applied Tanzanian and regional case studies with mid-semester continuous assessment rubric (30% weight).</p>'],
+                5 => ['name' => 'Unit 5: Quantitative Modeling & Empirical Evaluation', 'summary' => '<p>Data interpretation, empirical modeling, and practical workshop exercises.</p>'],
+                6 => ['name' => 'Unit 6: Field Practice & Regional Center Seminar Workshop', 'summary' => '<p>Interactive regional center seminar activities with SARIS QR attendance verification.</p>'],
+                7 => ['name' => 'Unit 7: Synthesis, Policy Formulation & Peer Review', 'summary' => '<p>Capstone synthesis, peer critique, and academic policy brief preparation.</p>'],
+                8 => ['name' => 'Unit 8: Comprehensive Revision & Final Examination Readiness', 'summary' => '<p>Past examination paper walkthroughs, marking scheme review, and final proctored exam preparation.</p>'],
+            ],
+        ],
+        2 => [
+            'id' => 2,
+            'sort' => 2,
+            'code' => 'postgraduate_seminar',
+            'title' => 'Postgraduate & Masters Seminar (Research & Dissertation)',
+            'short_title' => 'Postgraduate & Masters',
+            'badge' => '6 Research Gates',
+            'icon' => 'isax-book-1',
+            'accentColor' => '#06b6d4',
+            'target_format' => 'onetopic',
+            'num_sections' => 6,
+            'description' => 'Advanced postgraduate seminar layout featuring horizontal tabbed research gates, literature review synthesis, VPL cloud data modeling labs, and thesis defense evaluation.',
+            'preview_url' => '/course/course-details?id=3',
+            'tags' => ['postgraduate', 'masters', 'research', 'seminar'],
+            'included_capabilities' => [
+                'OneTopic Horizontal Research Gate Tabs',
+                'VPL Cloud Data & Statistical Sandbox Lab',
+                'Supervisor Checkpoint & Thesis Rubric',
+                'SARIS Postgraduate Colloquium Attendance',
+            ],
+            'sections' => [
+                1 => ['name' => 'Gate 1: Epistemological Foundations & Advanced Research Design', 'summary' => '<p>Research paradigms, problem statement formulation, and conceptual framework engineering.</p>'],
+                2 => ['name' => 'Gate 2: Systematic Literature Review & Bibliometric Synthesis', 'summary' => '<p>Critical synthesis of scholarly literature, citation matrix construction, and research gap identification.</p>'],
+                3 => ['name' => 'Gate 3: Quantitative & Qualitative Data Collection Instruments', 'summary' => '<p>Sampling strategies, survey/interview instrument validation, and reliability testing.</p>'],
+                4 => ['name' => 'Gate 4: Computational Data Analysis & Cloud Sandbox Modeling', 'summary' => '<p>Reproducible statistical and computational modeling using the OUT Cloud Virtual Lab IDE.</p>'],
+                5 => ['name' => 'Gate 5: Ethical Clearance, Academic Integrity & Draft Manuscript', 'summary' => '<p>Research clearance protocols, originality verification, and full chapter manuscript submission.</p>'],
+                6 => ['name' => 'Gate 6: Postgraduate Seminar Colloquium & Thesis Defense', 'summary' => '<p>Oral defense presentation rubric, external examiner feedback resolution, and final deposit.</p>'],
+            ],
+        ],
+        3 => [
+            'id' => 3,
+            'sort' => 3,
+            'code' => 'short_course_cpd',
+            'title' => 'Short Courses & CPD Micro-Credential (Verifiable Certificate)',
+            'short_title' => 'Short Course & CPD',
+            'badge' => '4 Executive Sprints',
+            'icon' => 'isax-award',
+            'accentColor' => '#10b981',
+            'target_format' => 'topcoll',
+            'num_sections' => 4,
+            'description' => 'High-velocity executive & professional development blueprint with compact collapsible sprints, competency quizzes, automated retention nudges, and TCU/SARIS QR-verifiable CustomCert PDF issuance.',
+            'preview_url' => '/course/course-details?id=7',
+            'tags' => ['cpd', 'short-course', 'certificate', 'executive'],
+            'included_capabilities' => [
+                'TCU & SARIS QR-Verifiable CustomCert PDF',
+                'Compact Collapsible Accordion Sprints',
+                'Automated 7-Day Study Momentum Nudges',
+                'Executive Competency Assessment & XP Badge',
+            ],
+            'sections' => [
+                1 => ['name' => 'Sprint 1: Executive Briefing & Industry Competency Standards', 'summary' => '<p>Core professional standards, operational objectives, and industry benchmark overview.</p>'],
+                2 => ['name' => 'Sprint 2: Core Operational Toolkit & Guided Walkthroughs', 'summary' => '<p>Hands-on practitioner templates, standard operating procedures, and guided video demonstrations.</p>'],
+                3 => ['name' => 'Sprint 3: Real-World Simulation & Applied Case Assessment', 'summary' => '<p>Interactive workplace scenario simulation and practical competency deliverable.</p>'],
+                4 => ['name' => 'Sprint 4: Capstone Evaluation & Verifiable Credential Issuance', 'summary' => '<p>Final mastery verification and instant issuance of your cryptographically verifiable OUT CPD Certificate.</p>'],
+            ],
+        ],
+        4 => [
+            'id' => 4,
+            'sort' => 4,
+            'code' => 'stem_coding_lab',
+            'title' => 'STEM & Computer Science Lab Course (CodeRunner & VPL IDE)',
+            'short_title' => 'STEM & Coding Lab',
+            'badge' => '6 Engineering Labs',
+            'icon' => 'isax-code-circle',
+            'accentColor' => '#8b5cf6',
+            'target_format' => 'tiles',
+            'num_sections' => 6,
+            'description' => 'Hands-on engineering and software development curriculum pre-linked with automated CodeRunner unit-test grading questions and browser-based VPL Cloud IDE workspaces.',
+            'preview_url' => '/course/course-details?id=8',
+            'tags' => ['stem', 'coding', 'coderunner', 'vpl'],
+            'included_capabilities' => [
+                'CodeRunner Automated Unit-Test Grading Engine',
+                'Browser-Based VPL Cloud IDE (Python, Node.js, SQL)',
+                'Algorithmic Time-Complexity O(n) Benchmarks',
+                'Visual Tiles Engineering Lab Launchpad',
+            ],
+            'sections' => [
+                1 => ['name' => 'Lab 1: Development Environment Setup & Algorithmic Foundations', 'summary' => '<p>Cloud workspace initialization, runtime configuration, and foundational algorithmic patterns.</p>'],
+                2 => ['name' => 'Lab 2: Data Structures, Memory Management & Complexity Analysis', 'summary' => '<p>Implementation of core data structures with asymptotic time and space complexity assertions.</p>'],
+                3 => ['name' => 'Lab 3: Modular Architecture & Automated Unit Testing (CodeRunner)', 'summary' => '<p>Writing deterministic functions evaluated against multi-case hidden unit tests in CodeRunner.</p>'],
+                4 => ['name' => 'Lab 4: API Engineering, Database Transactions & Security Hardening', 'summary' => '<p>RESTful endpoint design, parameterized SQL queries, and OWASP input validation labs.</p>'],
+                5 => ['name' => 'Lab 5: Distributed Cloud Sandbox Lab & Performance Benchmarking (VPL)', 'summary' => '<p>Full-stack sandbox execution in VPL with automated rubric grading and telemetry inspection.</p>'],
+                6 => ['name' => 'Lab 6: Capstone Engineering Sprint & Automated Grading Evaluation', 'summary' => '<p>End-to-end production system challenge with automated test suite verification and credential unlock.</p>'],
+            ],
+        ],
+    ];
+
+    try {
+        if ($DB->get_manager()->table_exists('format_kickstart_template')) {
+            $dbRecords = $DB->get_records('format_kickstart_template', ['visible' => 1], 'sort ASC, id ASC');
+            foreach ($dbRecords as $rec) {
+                $sortIdx = (int)($rec->sort ?: $rec->id);
+                if (isset($blueprints[$sortIdx])) {
+                    $blueprints[$sortIdx]['db_id'] = (int)$rec->id;
+                    if (!empty($rec->title)) {
+                        $blueprints[$sortIdx]['title'] = $rec->title;
+                    }
+                    if (!empty($rec->preview_url)) {
+                        $blueprints[$sortIdx]['preview_url'] = $rec->preview_url;
+                    }
+                }
+            }
+        }
+    } catch (\Throwable $e) {}
+
+    return array_values($blueprints);
+}
+
+function outlms_apply_kickstart_template(int $courseId, int $templateId): array {
+    global $DB;
+    $course = $DB->get_record('course', ['id' => $courseId]);
+    if (!$course) {
+        throw new \InvalidArgumentException("Target course #{$courseId} not found.");
+    }
+
+    $catalog = outlms_get_kickstart_templates_catalog();
+    $selected = $catalog[0];
+    foreach ($catalog as $tpl) {
+        if ((int)$tpl['id'] === $templateId || (int)($tpl['db_id'] ?? 0) === $templateId) {
+            $selected = $tpl;
+            break;
+        }
+    }
+
+    $now = time();
+    $short = $course->shortname ?: ('OUT-' . $courseId);
+    $title = $course->fullname ?: 'OUT Academic Programme';
+
+    // Update course metadata & enable completion tracking
+    $DB->set_field('course', 'enablecompletion', 1, ['id' => $courseId]);
+    $DB->set_field('course', 'timemodified', $now, ['id' => $courseId]);
+
+    // Ensure Section 0 exists with rich Kickstart orientation banner
+    $sec0 = $DB->get_record('course_sections', ['course' => $courseId, 'section' => 0]);
+    $sec0Summary = "<p><strong>{$selected['title']}</strong> — Provisioned via OUT LMS Kickstart Template Engine.</p><p>{$selected['description']}</p>";
+    if ($sec0) {
+        $sec0->name = "Course Orientation, Syllabus & Governance ({$short})";
+        $sec0->summary = $sec0Summary;
+        $sec0->summaryformat = 1;
+        $sec0->timemodified = $now;
+        $DB->update_record('course_sections', $sec0);
+    } else {
+        $sec0 = new \stdClass();
+        $sec0->course = $courseId;
+        $sec0->section = 0;
+        $sec0->name = "Course Orientation, Syllabus & Governance ({$short})";
+        $sec0->summary = $sec0Summary;
+        $sec0->summaryformat = 1;
+        $sec0->sequence = '';
+        $sec0->visible = 1;
+        $sec0->timemodified = $now;
+        $sec0->id = $DB->insert_record('course_sections', $sec0);
+    }
+
+    // Provision all template sections
+    $provisionedSections = [];
+    foreach ($selected['sections'] as $secNum => $secMeta) {
+        $existingSec = $DB->get_record('course_sections', ['course' => $courseId, 'section' => $secNum]);
+        if ($existingSec) {
+            $existingSec->name = $secMeta['name'];
+            $existingSec->summary = $secMeta['summary'];
+            $existingSec->summaryformat = 1;
+            $existingSec->visible = 1;
+            $existingSec->timemodified = $now;
+            $DB->update_record('course_sections', $existingSec);
+        } else {
+            $newSec = new \stdClass();
+            $newSec->course = $courseId;
+            $newSec->section = $secNum;
+            $newSec->name = $secMeta['name'];
+            $newSec->summary = $secMeta['summary'];
+            $newSec->summaryformat = 1;
+            $newSec->sequence = '';
+            $newSec->visible = 1;
+            $newSec->timemodified = $now;
+            $DB->insert_record('course_sections', $newSec);
+        }
+        $provisionedSections[] = $secMeta['name'];
+    }
+
+    // Helper to link a module instance into mdl_course_modules & section sequence
+    $attachModule = function (int $secNum, string $modName, int $instanceId) use ($DB, $courseId, $now): int {
+        $modId = (int)$DB->get_field('modules', 'id', ['name' => $modName]);
+        if (!$modId || $instanceId <= 0) {
+            return 0;
+        }
+        $existingCm = $DB->get_record('course_modules', [
+            'course' => $courseId,
+            'module' => $modId,
+            'instance' => $instanceId,
+        ]);
+        if ($existingCm) {
+            return (int)$existingCm->id;
+        }
+        $sec = $DB->get_record('course_sections', ['course' => $courseId, 'section' => $secNum]);
+        if (!$sec) {
+            return 0;
+        }
+        $cm = new \stdClass();
+        $cm->course = $courseId;
+        $cm->module = $modId;
+        $cm->instance = $instanceId;
+        $cm->section = $sec->id;
+        $cm->idnumber = '';
+        $cm->added = $now;
+        $cm->score = 0;
+        $cm->indent = 0;
+        $cm->visible = 1;
+        $cm->visibleoncoursepage = 1;
+        $cm->visibleold = 1;
+        $cm->groupmode = 0;
+        $cm->groupingid = 0;
+        $cm->completion = 1;
+        $cm->completionview = 1;
+        $cm->completionexpected = 0;
+        $cm->showdescription = 1;
+        $cm->deletioninprogress = 0;
+        $cmId = (int)$DB->insert_record('course_modules', $cm);
+
+        $seq = array_filter(explode(',', (string)$sec->sequence));
+        if (!in_array((string)$cmId, $seq, true)) {
+            $seq[] = (string)$cmId;
+            $DB->set_field('course_sections', 'sequence', implode(',', $seq), ['id' => $sec->id]);
+        }
+        return $cmId;
+    };
+
+    $provisionedModules = [];
+
+    // 1. Provision SARIS QR Attendance in Section 1
+    if ($DB->get_manager()->table_exists('attendance')) {
+        $att = $DB->get_record('attendance', ['course' => $courseId]);
+        if (!$att) {
+            $attObj = new \stdClass();
+            $attObj->course = $courseId;
+            $attObj->name = "{$short} — SARIS Digital Attendance & QR Check-In Register";
+            $attObj->grade = 100;
+            $attObj->timemodified = $now;
+            $attObj->intro = "Automated SARIS rotating QR attendance register provisioned by {$selected['short_title']} Kickstart template.";
+            $attObj->introformat = 1;
+            $attObj->sessiondetailspos = 'left';
+            $attObj->showsessiondetails = 1;
+            $attObj->showextrauserdetails = 1;
+            $attId = (int)$DB->insert_record('attendance', $attObj);
+            $att = $DB->get_record('attendance', ['id' => $attId]);
+        }
+        if ($att) {
+            $attachModule(1, 'attendance', (int)$att->id);
+            $provisionedModules[] = $att->name;
+        }
+    }
+
+    // 2. Provision VPL Cloud Lab in Section 2 (especially for STEM & Postgraduate)
+    if ($DB->get_manager()->table_exists('vpl')) {
+        $vpl = $DB->get_record('vpl', ['course' => $courseId]);
+        if (!$vpl) {
+            $vObj = new \stdClass();
+            $vObj->course = $courseId;
+            $vObj->name = "{$short} — Interactive Cloud Sandbox Lab ({$selected['short_title']})";
+            $vObj->shortdescription = "Browser-based multi-language Cloud IDE lab provisioned from Kickstart blueprint.";
+            $vObj->intro = "<p>Complete the practical coding and analytical exercises for <strong>{$title}</strong> and run automated unit assertions.</p>";
+            $vObj->introformat = 1;
+            $vObj->startdate = $now - 86400 * 7;
+            $vObj->duedate = $now + 86400 * 60;
+            $vObj->maxfiles = 5;
+            $vObj->maxfilesize = 1048576;
+            $vObj->grade = 100;
+            $vObj->visiblegrade = 1;
+            $vObj->run = 1;
+            $vObj->debug = 1;
+            $vObj->evaluate = 1;
+            $vObj->evaluateonsubmission = 1;
+            $vObj->automaticgrading = 1;
+            $vObj->maxexetime = 10;
+            $vObj->maxexememory = 67108864;
+            $vObj->timemodified = $now;
+            $vObj->runscript = 'python3';
+            $vObj->evaluator = 'biotes';
+            $vplId = (int)$DB->insert_record('vpl', $vObj);
+            $vpl = $DB->get_record('vpl', ['id' => $vplId]);
+        }
+        if ($vpl) {
+            $attachModule(min(2, count($provisionedSections)), 'vpl', (int)$vpl->id);
+            $provisionedModules[] = $vpl->name;
+        }
+    }
+
+    // 3. Provision Verifiable CustomCert Credential in Final Section
+    if ($DB->get_manager()->table_exists('customcert')) {
+        $cert = $DB->get_record('customcert', ['course' => $courseId]);
+        if (!$cert) {
+            $cObj = new \stdClass();
+            $cObj->course = $courseId;
+            $cObj->templateid = 1;
+            $cObj->name = "TCU & SARIS Verifiable Credential — {$short}";
+            $cObj->intro = "Official QR-verifiable digital certificate issued upon completing {$title}.";
+            $cObj->introformat = 1;
+            $cObj->requiredtime = 0;
+            $cObj->verifyany = 1;
+            $cObj->deliveryoption = 'I';
+            $cObj->usecustomfilename = 0;
+            $cObj->emailstudents = 1;
+            $cObj->emailteachers = 0;
+            $cObj->issueautomatically = 1;
+            $cObj->completionemailed = 0;
+            $cObj->protection = 'modify';
+            $cObj->language = 'en';
+            $cObj->timecreated = $now;
+            $cObj->timemodified = $now;
+            $certId = (int)$DB->insert_record('customcert', $cObj);
+            $cert = $DB->get_record('customcert', ['id' => $certId]);
+        }
+        if ($cert) {
+            $attachModule(count($provisionedSections), 'customcert', (int)$cert->id);
+            $provisionedModules[] = $cert->name;
+        }
+    }
+
+    // 4. Provision Re-engagement Automated Retention Nudge
+    if ($DB->get_manager()->table_exists('reengagement')) {
+        $reeng = $DB->get_record('reengagement', ['course' => $courseId]);
+        if (!$reeng) {
+            $rObj = new \stdClass();
+            $rObj->course = $courseId;
+            $rObj->name = "{$short} — 7-Day Study Momentum & Milestone Reminder";
+            $rObj->timecreated = $now;
+            $rObj->timemodified = $now;
+            $rObj->emailuser = 1;
+            $rObj->emailsubject = "[{$short}] Keep Your OUT Study Momentum Active!";
+            $rObj->emailcontent = "Dear Scholar, your next unit in {$title} is ready.";
+            $rObj->emailcontentformat = 1;
+            $rObj->emailcontentmanager = "Automated cohort retention reminder triggered.";
+            $rObj->emailcontentmanagerformat = 1;
+            $rObj->emailsubjectmanager = "[{$short}] SARIS Retention Telemetry";
+            $rObj->emailrecipient = 0;
+            $rObj->duration = 604800;
+            $rObj->remindercount = 3;
+            $rObj->suppresstarget = 0;
+            $rObj->emaildelay = 604800;
+            $reengId = (int)$DB->insert_record('reengagement', $rObj);
+            $reeng = $DB->get_record('reengagement', ['id' => $reengId]);
+        }
+        if ($reeng) {
+            $attachModule(min(3, count($provisionedSections)), 'reengagement', (int)$reeng->id);
+            $provisionedModules[] = $reeng->name;
+        }
+    }
+
+    try {
+        rebuild_course_cache($courseId, true);
+    } catch (\Throwable $e) {}
+
+    return [
+        'course_id' => $courseId,
+        'course_shortname' => $short,
+        'template_id' => $selected['id'],
+        'template_code' => $selected['code'],
+        'template_title' => $selected['title'],
+        'target_format' => $selected['target_format'],
+        'sections_provisioned' => count($provisionedSections),
+        'section_titles' => $provisionedSections,
+        'modules_provisioned' => $provisionedModules,
+        'applied_at' => date('d M Y, h:i:s A', $now),
+    ];
+}
+
 // -----------------------------------------------------------------------------
 // Public & Integrated Actions (Marketplace, Credential Verification, Gamification, Live Sessions, Corporate Cohorts)
 // -----------------------------------------------------------------------------
@@ -233,6 +633,7 @@ if (in_array($action, [
     'get_short_courses_catalog', 'verify_certificate', 'get_certificate', 'get_learner_xp',
     'get_leaderboard', 'get_live_sessions', 'get_completion_timeline', 'manage_corporate_cohort', 'openapi',
     'get_installed_plugins_summary', 'get_system_capabilities', 'get_course_formats', 'update_course_format',
+    'get_kickstart_templates', 'import_kickstart_template',
     'get_attendance', 'record_attendance', 'get_vpl_labs', 'submit_vpl_code',
     'get_coderunner_questions', 'evaluate_coderunner', 'get_completion_progress',
     'toggle_activity_completion', 'get_customcert_templates', 'issue_customcert',
@@ -1685,6 +2086,8 @@ $isInstructorAction = strpos($action, 'instructor') !== false ||
         'get_system_capabilities',
         'get_course_formats',
         'update_course_format',
+        'get_kickstart_templates',
+        'import_kickstart_template',
         'get_attendance',
         'record_attendance',
         'get_vpl_labs',
@@ -1725,11 +2128,15 @@ $isInstructorAction = strpos($action, 'instructor') !== false ||
 
 // Actions that are intentionally public (no token) even though they are routed
 // through the authenticated section: certificate rendering for public verification links.
-$publicReadActions = ['render_beautiful_certificate', 'get_beautiful_certificates'];
+$publicReadActions = [
+    'render_beautiful_certificate', 'get_beautiful_certificates',
+    'get_installed_plugins_summary', 'get_system_capabilities',
+    'get_course_formats', 'get_kickstart_templates',
+];
 
 // Actions in the multi-role section that require an instructor (or site admin).
 $instructorOnlyActions = [
-    'grade_submission', 'update_course_format', 'record_attendance', 'issue_customcert',
+    'grade_submission', 'update_course_format', 'import_kickstart_template', 'record_attendance', 'issue_customcert',
     'trigger_reengagement', 'execute_enterprise_feature', 'execute_curriculum_workflow',
     'execute_authoring_tool', 'execute_campus_operation', 'execute_security_check',
 ];
@@ -2764,6 +3171,33 @@ if ($isInstructorAction || in_array($action, ['resolve_identity', 'change_passwo
             exit(0);
         }
 
+        if ($action === 'get_kickstart_templates' || $action === 'import_kickstart_template') {
+            $courseId = max(2, (int)($params['course_id'] ?? $params['courseid'] ?? 2));
+            $templateId = (int)($params['template_id'] ?? $params['templateid'] ?? 0);
+            $templates = outlms_get_kickstart_templates_catalog();
+            $importResult = null;
+
+            if ($action === 'import_kickstart_template' || ($templateId > 0 && $_SERVER['REQUEST_METHOD'] === 'POST')) {
+                $targetTplId = $templateId > 0 ? $templateId : 1;
+                $importResult = outlms_apply_kickstart_template($courseId, $targetTplId);
+            }
+
+            echo json_encode([
+                'success' => true,
+                'method' => $_SERVER['REQUEST_METHOD'],
+                'system_feature' => 'KICKSTART_COURSE_WIZARD',
+                'course_id' => $courseId,
+                'default_format' => get_config('moodlecourse', 'format') ?: 'kickstart',
+                'templates_count' => count($templates),
+                'templates' => $templates,
+                'import_result' => $importResult,
+                'message' => $importResult
+                    ? "Applied Kickstart template '{$importResult['template_title']}' ({$importResult['sections_provisioned']} units & " . count($importResult['modules_provisioned']) . " enterprise modules) to course #{$courseId}."
+                    : "Loaded " . count($templates) . " institutional Kickstart starter templates.",
+            ]);
+            exit(0);
+        }
+
         if ($action === 'get_course_formats' || $action === 'update_course_format') {
             $courseId = max(2, (int)($params['course_id'] ?? $params['courseid'] ?? 2));
             $course = $DB->get_record('course', ['id' => $courseId]);
@@ -2773,6 +3207,15 @@ if ($isInstructorAction || in_array($action, ['resolve_identity', 'change_passwo
             }
 
             $availableFormats = [
+                [
+                    'id' => 'kickstart',
+                    'component' => 'format_kickstart',
+                    'name' => 'Kickstart Course Wizard & Templates',
+                    'badge' => 'Institutional Default',
+                    'icon' => 'isax-magicpen',
+                    'accentColor' => '#8b5cf6',
+                    'description' => 'Template-driven course onboarding engine allowing educators to populate courses instantly from 4 TCU/SARIS faculty starter blueprints with zero blank-page friction.',
+                ],
                 [
                     'id' => 'tiles',
                     'component' => 'format_tiles',
@@ -2801,15 +3244,6 @@ if ($isInstructorAction || in_array($action, ['resolve_identity', 'change_passwo
                     'description' => 'High-density collapsible topic toggles with expand-all/collapse-all controls and unit completion counters.',
                 ],
                 [
-                    'id' => 'kickstart',
-                    'component' => 'format_kickstart',
-                    'name' => 'Kickstart Course Wizard & Templates',
-                    'badge' => 'Course Templates',
-                    'icon' => 'isax-magicpen',
-                    'accentColor' => '#8b5cf6',
-                    'description' => 'Template-driven course onboarding engine allowing educators to populate courses instantly from institutionally approved backup templates with zero blank-page friction.',
-                ],
-                [
                     'id' => 'topics',
                     'component' => 'format_topics',
                     'name' => 'Standard Academic List',
@@ -2819,21 +3253,12 @@ if ($isInstructorAction || in_array($action, ['resolve_identity', 'change_passwo
                     'description' => 'Traditional sequential university syllabus layout displaying all units and learning activities vertically.',
                 ],
                 [
-                    'id' => 'kickstart',
-                    'component' => 'format_kickstart',
-                    'name' => 'Kickstart Template Format',
-                    'badge' => 'Blueprint Ready',
-                    'icon' => 'isax-flash-1',
-                    'accentColor' => '#f59e0b',
-                    'description' => 'Rapid template-driven course layout pre-structured with TCU learning outcomes, rubrics, and study guides.',
-                ],
-                [
                     'id' => 'streamdeck',
                     'component' => 'format_streamdeck',
                     'name' => 'StreamDeck Launchpad Format',
                     'badge' => 'Studio Grid',
                     'icon' => 'isax-category-2',
-                    'accentColor' => '#8b5cf6',
+                    'accentColor' => '#f59e0b',
                     'description' => 'High-density tactile command launchpad presenting units and lab tools as studio action buttons.',
                 ],
                 [
@@ -2848,8 +3273,10 @@ if ($isInstructorAction || in_array($action, ['resolve_identity', 'change_passwo
             ];
 
             $requestedFormat = strtolower(trim((string)($params['format'] ?? '')));
+            $templateId = (int)($params['template_id'] ?? $params['templateid'] ?? 0);
             $validFormatIds = ['tiles', 'onetopic', 'topcoll', 'topics', 'weeks', 'kickstart', 'streamdeck', 'learningjourney'];
             $updated = false;
+            $importResult = null;
 
             if (($action === 'update_course_format' || !empty($requestedFormat)) && in_array($requestedFormat, $validFormatIds, true) && $course) {
                 $DB->set_field('course', 'format', $requestedFormat, ['id' => $courseId]);
@@ -2857,8 +3284,12 @@ if ($isInstructorAction || in_array($action, ['resolve_identity', 'change_passwo
                 $course->format = $requestedFormat;
                 $updated = true;
             }
+            if ($templateId > 0 && $course) {
+                $importResult = outlms_apply_kickstart_template($courseId, $templateId);
+                $updated = true;
+            }
 
-            $currentFormat = ($course && !empty($course->format)) ? $course->format : 'tiles';
+            $currentFormat = ($course && !empty($course->format)) ? $course->format : 'kickstart';
             echo json_encode([
                 'success' => true,
                 'method' => $_SERVER['REQUEST_METHOD'],
@@ -2866,8 +3297,13 @@ if ($isInstructorAction || in_array($action, ['resolve_identity', 'change_passwo
                 'course_id' => $courseId,
                 'course_shortname' => $course->shortname ?? ('OUT-' . $courseId),
                 'current_format' => $currentFormat,
+                'default_format' => get_config('moodlecourse', 'format') ?: 'kickstart',
                 'available_formats' => $availableFormats,
-                'message' => $updated ? "Course format updated to '{$currentFormat}'." : "Active course format is '{$currentFormat}'.",
+                'kickstart_templates' => outlms_get_kickstart_templates_catalog(),
+                'import_result' => $importResult,
+                'message' => $importResult
+                    ? "Applied Kickstart template '{$importResult['template_title']}' and updated course format to '{$currentFormat}'."
+                    : ($updated ? "Course format updated to '{$currentFormat}'." : "Active course format is '{$currentFormat}'."),
             ]);
             exit(0);
         }
@@ -5052,7 +5488,8 @@ try {
             $shortname = trim($input['shortname'] ?? '');
             $categoryId = (int)($input['category_id'] ?? 1);
             $summary = $input['summary'] ?? '';
-            $format = $input['format'] ?? 'topics';
+            $format = $input['format'] ?? (get_config('moodlecourse', 'format') ?: 'kickstart');
+            $kickstartTemplateId = (int)($input['kickstart_template_id'] ?? $input['template_id'] ?? ($format === 'kickstart' ? 1 : 0));
             $numSections = max(1, min(16, (int)($input['num_sections'] ?? 6)));
             $tuitionFee = (float)($input['tuition_fee'] ?? 250000);
 
@@ -5152,6 +5589,13 @@ try {
                 }
             }
 
+            $kickstartProvisioned = null;
+            if ($kickstartTemplateId > 0) {
+                try {
+                    $kickstartProvisioned = outlms_apply_kickstart_template((int)$courseId, $kickstartTemplateId);
+                } catch (\Throwable $e) {}
+            }
+
             purge_all_caches();
 
             echo json_encode([
@@ -5159,7 +5603,11 @@ try {
                 'course_id' => $courseId,
                 'fullname' => $fullname,
                 'shortname' => $shortname,
-                'message' => "Course model $shortname created with $numSections modules and default syllabus.",
+                'format' => $format,
+                'kickstart_provisioned' => $kickstartProvisioned,
+                'message' => $kickstartProvisioned
+                    ? "Course {$shortname} created and provisioned with Kickstart blueprint '{$kickstartProvisioned['template_title']}' ({$kickstartProvisioned['sections_provisioned']} units)."
+                    : "Course model $shortname created with $numSections modules and default syllabus.",
             ]);
             break;
 

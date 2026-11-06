@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { UserProfile, UserRole } from './demoUsers';
-import { fetchMoodleToken, callMoodleWs, parseSafeJson } from '../api/apiClient';
+import { fetchMoodleToken, callMoodleWs, parseSafeJson, getDynamicMoodleUrl } from '../api/apiClient';
 import { getAdminApiUrl } from '../api/adminService';
 
 export interface RegisterPayload {
@@ -211,7 +211,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               ? 'student'
               : trimmedInput;
 
-    // 1. Live token exchange
+    // 1. Direct Headless REST API Login via public_api.php?action=login_user
+    try {
+      const apiBase = getDynamicMoodleUrl();
+      const loginRes = await fetch(`${apiBase}/api/public_api.php?action=login_user`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({ username: moodleUsername, password }),
+      });
+      if (loginRes.ok) {
+        const loginData = await parseSafeJson<any>(loginRes, 'login_user');
+        if (loginData.success && loginData.token && loginData.user) {
+          localStorage.setItem(TOKEN_KEY, loginData.token);
+          setToken(loginData.token);
+          const loggedInUser: UserProfile = loginData.user;
+          if (moodleUsername === 'admin' || loggedInUser.role === 'admin') {
+            loggedInUser.role = 'admin';
+            loggedInUser.dashboardUrl = '/admin/dashboard';
+          }
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(loggedInUser));
+          setUser(loggedInUser);
+          return true;
+        }
+      }
+    } catch (apiErr) {
+      console.warn('Direct REST login attempt encountered error, trying token fallback:', apiErr);
+    }
+
+    // 2. Fallback to Moodle legacy token exchange
     try {
       const liveToken = await fetchMoodleToken(moodleUsername, password);
       if (liveToken) {

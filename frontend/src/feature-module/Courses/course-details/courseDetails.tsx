@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { all_routes } from '../../router/all_routes';
 import { courseService, PublicCatalogCourse } from '../../../core/api/courseService';
-import { adminService } from '../../../core/api/adminService';
+import { adminService, KickstartTemplateItem } from '../../../core/api/adminService';
 import { useAuth } from '../../../core/auth/authContext';
 import { BeautifulCertificateStudio } from '../../../core/common/BeautifulCertificateStudio';
 
@@ -121,6 +121,8 @@ const CourseDetails: React.FC = () => {
   // Moodle Marketplace Plugin States (Course Formats, VPL, CodeRunner, Attendance, Completion Progress, XP, CustomCert, Reengagement)
   const [activeFormat, setActiveFormat] = useState<string>('tiles');
   const [availableFormats, setAvailableFormats] = useState<any[]>([]);
+  const [kickstartTemplates, setKickstartTemplates] = useState<KickstartTemplateItem[]>([]);
+  const [importingKickstartId, setImportingKickstartId] = useState<number | null>(null);
   const [selectedOneTopicIdx, setSelectedOneTopicIdx] = useState<number>(0);
   const [vplLabs, setVplLabs] = useState<any[]>([]);
   const [selectedVplId, setSelectedVplId] = useState<number>(0);
@@ -185,6 +187,7 @@ const CourseDetails: React.FC = () => {
         certRes,
         reengRes,
         entRes,
+        kickstartRes,
       ] = await Promise.all([
         courseService.getPublicCourseDetails(targetId),
         courseService.getPublicCatalog(),
@@ -196,6 +199,7 @@ const CourseDetails: React.FC = () => {
         courseService.getCustomCertTemplates(targetId, resolvedUserId).catch(() => null),
         courseService.getReengagementNudges(targetId).catch(() => null),
         courseService.getCourseEnterpriseSuites(targetId).catch(() => null),
+        adminService.getKickstartTemplates(targetId).catch(() => null),
       ]);
       setCourse(detailData);
       setAllCourses(catalogData.courses || []);
@@ -205,6 +209,10 @@ const CourseDetails: React.FC = () => {
         setAvailableFormats(formatRes.available_formats || []);
       } else if (detailData?.format) {
         setActiveFormat(detailData.format);
+      }
+
+      if (kickstartRes?.success && Array.isArray(kickstartRes.templates)) {
+        setKickstartTemplates(kickstartRes.templates);
       }
 
       if (attRes?.success) {
@@ -276,6 +284,31 @@ const CourseDetails: React.FC = () => {
     } catch {
       // Visual switch remains active
     } finally {
+      setPluginActionBusy(null);
+    }
+  };
+
+  const handleApplyKickstartBlueprint = async (tpl: KickstartTemplateItem) => {
+    if (!course) return;
+    setImportingKickstartId(tpl.id);
+    setPluginActionBusy('kickstart');
+    try {
+      const res = await adminService.importKickstartTemplate(course.id, tpl.id);
+      if (res?.success) {
+        setFeedback({
+          type: 'success',
+          message:
+            res.message ||
+            `Applied Kickstart blueprint "${tpl.title}" (${res.sections_created || tpl.sections_count} units provisioned).`,
+        });
+        await loadCourseData(course.id);
+      } else {
+        setFeedback({ type: 'danger', message: res?.error || 'Unable to apply Kickstart blueprint.' });
+      }
+    } catch (err: any) {
+      setFeedback({ type: 'danger', message: err?.message || 'Unable to apply Kickstart blueprint.' });
+    } finally {
+      setImportingKickstartId(null);
       setPluginActionBusy(null);
     }
   };
@@ -936,7 +969,9 @@ const CourseDetails: React.FC = () => {
                             ? 'Horizontal Unit Tabs'
                             : activeFormat === 'topcoll'
                               ? 'Compact Accordions'
-                              : 'Sequential Syllabus'}
+                              : activeFormat === 'kickstart'
+                                ? 'Kickstart Blueprints'
+                                : 'Sequential Syllabus'}
                       </div>
                       <small className="text-primary" style={{ fontSize: '0.67rem' }}>
                         {course.sections.length} Active Units →
@@ -1032,7 +1067,9 @@ const CourseDetails: React.FC = () => {
                                 ? 'Horizontal Unit Tabs'
                                 : activeFormat === 'topcoll'
                                   ? 'Compact Collapsible Topics'
-                                  : 'Sequential Academic Syllabus'}
+                                  : activeFormat === 'kickstart'
+                                    ? 'Kickstart Faculty Blueprints'
+                                    : 'Sequential Academic Syllabus'}
                           </strong>
                         </span>
                       </div>
@@ -1172,6 +1209,99 @@ const CourseDetails: React.FC = () => {
                             {sec.name.length > 26 ? `${sec.name.slice(0, 26)}...` : sec.name}
                           </button>
                         ))}
+                      </div>
+                    )}
+
+                    {/* Kickstart Faculty Starter Blueprints Gallery (when activeFormat === 'kickstart') */}
+                    {activeFormat === 'kickstart' && kickstartTemplates.length > 0 && (
+                      <div
+                        className="p-3 rounded-4 border mb-3 shadow-sm"
+                        style={{
+                          background: 'linear-gradient(135deg, #f5f3ff 0%, #ffffff 100%)',
+                          borderColor: '#ddd6fe',
+                        }}
+                      >
+                        <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2.5">
+                          <div>
+                            <div className="d-flex align-items-center gap-2">
+                              <span
+                                className="badge rounded-pill px-2.5 py-0.5 fw-bold"
+                                style={{ background: '#7c3aed', color: '#fff', fontSize: '0.68rem' }}
+                              >
+                                format_kickstart
+                              </span>
+                              <span className="fw-bold text-dark" style={{ fontSize: '0.86rem' }}>
+                                OUT Institutional Faculty Starter Blueprints
+                              </span>
+                            </div>
+                            <p className="text-muted small mb-0 mt-0.5" style={{ fontSize: '0.75rem' }}>
+                              Provision standardized TCU &amp; SARIS accredited course structures with 1-click template deployment.
+                            </p>
+                          </div>
+                          <span className="badge bg-light text-dark border" style={{ fontSize: '0.7rem' }}>
+                            {kickstartTemplates.length} Ready Blueprints
+                          </span>
+                        </div>
+
+                        <div className="row g-2.5">
+                          {kickstartTemplates.map((tpl) => {
+                            const isImporting = importingKickstartId === tpl.id;
+                            return (
+                              <div className="col-md-6" key={tpl.id}>
+                                <div
+                                  className="p-2.5 rounded-3 bg-white border h-100 d-flex flex-column justify-content-between"
+                                  style={{ borderColor: '#e2e8f0' }}
+                                >
+                                  <div>
+                                    <div className="d-flex align-items-center justify-content-between gap-2 mb-1">
+                                      <span className="fw-bold text-dark" style={{ fontSize: '0.8rem' }}>
+                                        {tpl.title}
+                                      </span>
+                                      <span
+                                        className="badge rounded-pill"
+                                        style={{ background: '#ede9fe', color: '#6d28d9', fontSize: '0.66rem' }}
+                                      >
+                                        {tpl.sections_count} Units • {tpl.target_format.toUpperCase()}
+                                      </span>
+                                    </div>
+                                    <div
+                                      className="text-muted small mb-2"
+                                      style={{ fontSize: '0.73rem', lineHeight: 1.4 }}
+                                      dangerouslySetInnerHTML={{ __html: tpl.description }}
+                                    />
+                                  </div>
+                                  <div className="d-flex align-items-center justify-content-between flex-wrap gap-1 pt-1 border-top">
+                                    <div className="d-flex flex-wrap gap-1">
+                                      {(tpl.tags || []).slice(0, 3).map((tag) => (
+                                        <span
+                                          key={tag}
+                                          className="badge bg-light text-secondary border"
+                                          style={{ fontSize: '0.64rem' }}
+                                        >
+                                          #{tag}
+                                        </span>
+                                      ))}
+                                    </div>
+                                    <button
+                                      type="button"
+                                      disabled={pluginActionBusy === 'kickstart'}
+                                      onClick={() => handleApplyKickstartBlueprint(tpl)}
+                                      className="btn btn-sm rounded-pill px-2.5 py-0.5 fw-bold"
+                                      style={{
+                                        background: '#7c3aed',
+                                        color: '#ffffff',
+                                        fontSize: '0.7rem',
+                                        border: 'none',
+                                      }}
+                                    >
+                                      {isImporting ? 'Provisioning...' : 'Apply Blueprint'}
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
                     )}
 

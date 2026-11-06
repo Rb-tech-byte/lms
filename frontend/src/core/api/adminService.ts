@@ -91,6 +91,27 @@ export interface SystemHealthRecord {
   details: string;
 }
 
+export interface KickstartTemplateItem {
+  id: number;
+  template_code: string;
+  title: string;
+  description: string;
+  target_format: string;
+  sections_count: number;
+  tags: string[];
+  sections?: Array<{
+    section: number;
+    name: string;
+    summary: string;
+    modules?: Array<{
+      modname: string;
+      name: string;
+      intro: string;
+      content?: string;
+    }>;
+  }>;
+}
+
 /**
  * Dynamically resolves the OUT LMS admin API URL without hardcoding paths or hosts.
  * Checks runtime window injection, environment configuration, dynamic browser origin,

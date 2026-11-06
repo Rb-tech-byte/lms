@@ -37,6 +37,7 @@ const InstructorMessage: React.FC = () => {
 
   useEffect(() => {
     loadThreads();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const activeThread = useMemo(

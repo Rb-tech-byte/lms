@@ -88,6 +88,7 @@ export const AdminDashboard: React.FC = () => {
     if (urlTab && validViews.includes(urlTab)) {
       setActiveView(urlTab);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [urlTab]);
 
   const handleSelectView = (view: string) => {
@@ -162,7 +163,7 @@ export const AdminDashboard: React.FC = () => {
     shortname: '',
     category_id: 2,
     tuition_fee: 150000,
-    format: 'topics',
+    format: 'kickstart',
     num_sections: 6,
     summary: '',
   });
@@ -212,11 +213,10 @@ export const AdminDashboard: React.FC = () => {
     total_system_capabilities: 77,
     headless_admin_mode: true,
   });
-  const [systemCapabilities, setSystemCapabilities] = useState<any[]>([]);
-  const [apiCategoryFilter, setApiCategoryFilter] = useState<string>('all');
+  const [, setSystemCapabilities] = useState<any[]>([]);
   const [apiSearch, setApiSearch] = useState<string>('');
   const [newTokenLabel, setNewTokenLabel] = useState<string>('');
-  const [newTokenScope, setNewTokenScope] = useState<string>('Full Administrative & Governance Access (All 85+ Endpoints)');
+  const [newTokenScope] = useState<string>('Full Administrative & Governance Access (All 85+ Endpoints)');
   const [liveTestTarget, setLiveTestTarget] = useState<string>('?action=get_telemetry');
   const [liveTestMethod, setLiveTestMethod] = useState<'GET' | 'POST'>('GET');
   const [liveTestResult, setLiveTestResult] = useState<string>('');
@@ -316,7 +316,7 @@ export const AdminDashboard: React.FC = () => {
         shortname: '',
         category_id: 2,
         tuition_fee: 150000,
-        format: 'topics',
+        format: 'kickstart',
         num_sections: 6,
         summary: '',
       });

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { all_routes } from '../../router/all_routes';
 
 export const ApiDocs: React.FC = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { UserProfile, UserRole, DEMO_USERS } from './demoUsers';
+import { UserProfile, UserRole } from './demoUsers';
 import { fetchMoodleToken, callMoodleWs, parseSafeJson } from '../api/apiClient';
 import { getAdminApiUrl } from '../api/adminService';
 

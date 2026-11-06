@@ -17,6 +17,8 @@
 require_once __DIR__ . '/api/core/bootstrap.php';
 
 $publicActions = [
+    'login',
+    'login_user',
     'openapi',
     'register_user',
     'request_password_reset',

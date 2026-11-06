@@ -55,7 +55,13 @@ if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'seed_system_features.php')) {
 if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'seed_65_marketplace_features.php')) {
     copy(__DIR__ . DIRECTORY_SEPARATOR . 'seed_65_marketplace_features.php', $targetMoodle . DIRECTORY_SEPARATOR . 'seed_65_marketplace_features.php');
 }
-echo "[OK] Installed admin_api.php, sso.php, instructor_storage, seeders, and openapi.json\n";
+if (is_dir(__DIR__ . DIRECTORY_SEPARATOR . 'api')) {
+    copyFolder(__DIR__ . DIRECTORY_SEPARATOR . 'api', $targetMoodle . DIRECTORY_SEPARATOR . 'api');
+}
+if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'config.php')) {
+    copy(__DIR__ . DIRECTORY_SEPARATOR . 'config.php', $targetMoodle . DIRECTORY_SEPARATOR . 'config.php');
+}
+echo "[OK] Installed admin_api.php, sso.php, config.php, api/ endpoints, seeders, and openapi.json\n";
 
 // Also copy to public/ if Moodle 5.x router structure exists
 if (is_dir($targetMoodle . DIRECTORY_SEPARATOR . 'public')) {

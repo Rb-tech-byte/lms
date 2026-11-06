@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { instructorService, InstructorCertificateItem } from '../../../core/api/instructorService';
 import { useInstructorShell } from '../common/instructorLayout';
+import BeautifulCertificateStudio, { buildBeautifulCertificatePdfUrl } from '../../../core/common/BeautifulCertificateStudio';
 import {
   KpiCard,
   KpiGrid,
@@ -318,68 +319,54 @@ const InstructorCertificate: React.FC = () => {
         </div>
       </SectionCard>
 
+      {/* Embedded Beautiful Certificate & Vector Diploma Studio */}
+      <BeautifulCertificateStudio
+        courseId={previewTarget?.courseId || certificates[0]?.courseId || 7}
+        courseTitle={previewTarget?.courseName || certificates[0]?.courseName || 'Cybersecurity & Network Defense Fundamentals'}
+        courseCode={previewTarget?.courseCode || certificates[0]?.courseCode || 'PSC-CYBER'}
+        studentName={previewTarget?.studentName || certificates[0]?.studentName || 'Baraka Mkwawa'}
+        serialCode={previewTarget?.certificateCode || certificates[0]?.certificateCode || 'OUT-35CB03BB3C'}
+        issueDate={previewTarget?.issuedAt || certificates[0]?.issuedAt}
+        gradeScore={previewTarget?.grade || certificates[0]?.grade}
+        honours={previewTarget?.honors || certificates[0]?.honors}
+      />
+
       {/* Modal: Preview Certificate */}
       <Modal
         open={!!previewTarget}
         title="Official Academic Certificate Preview"
         subtitle={`Verification Identifier: ${previewTarget?.certificateCode}`}
         onClose={() => setPreviewTarget(null)}
-        submitLabel="Print / Download PDF"
-        onSubmit={() => window.print()}
+        submitLabel="Print / Download Vector Diploma PDF"
+        onSubmit={() => {
+          if (!previewTarget) return;
+          const url = buildBeautifulCertificatePdfUrl({
+            courseId: previewTarget.courseId || 7,
+            serialCode: previewTarget.certificateCode,
+            studentName: previewTarget.studentName,
+            courseTitle: previewTarget.courseName,
+            courseCode: previewTarget.courseCode,
+            gradeScore: previewTarget.grade,
+            honours: `★ ${previewTarget.honors.toUpperCase()} (${previewTarget.grade}) ★`,
+            issueDate: previewTarget.issuedAt,
+            autoPrint: true,
+          });
+          window.open(url, '_blank', 'noopener,noreferrer');
+        }}
       >
-        <div
-          className="p-4 rounded-3 border text-center bg-white shadow-sm"
-          style={{
-            border: '3px double #013ba6',
-            position: 'relative',
-            background: 'linear-gradient(180deg, #f0f7ff 0%, #ffffff 100%)',
-          }}
-        >
-          <div className="mb-3">
-            <img
-              src="/assets/img/logo.svg"
-              alt="Open University of Tanzania"
-              style={{ height: 56, objectFit: 'contain' }}
-            />
-          </div>
-          <h4 className="fw-bold text-primary mb-1 text-uppercase" style={{ letterSpacing: 1.5, fontSize: 16 }}>
-            The Open University of Tanzania
-          </h4>
-          <p className="text-muted small mb-3">Directoriate of Academic Affairs &amp; Examinations</p>
-          <p className="text-muted small mb-2">This is to certify that</p>
-          <h3 className="fw-bold text-dark mb-2" style={{ fontFamily: 'serif', fontSize: 22 }}>
-            {previewTarget?.studentName}
-          </h3>
-          <p className="text-muted small mb-2">has successfully completed the prescribed curriculum for</p>
-          <h5 className="fw-bold text-primary mb-2" style={{ fontSize: 16 }}>
-            {previewTarget?.courseName} ({previewTarget?.courseCode})
-          </h5>
-          <p className="text-dark fw-bold mb-3" style={{ fontSize: 13 }}>
-            Passed with {previewTarget?.grade} • Awarded {previewTarget?.honors}
-          </p>
-          <div className="d-flex justify-content-between align-items-end pt-3 border-top mt-4 text-start">
-            <div>
-              <div className="fw-bold text-dark" style={{ fontSize: 12 }}>
-                Dr. Amina Kilindo
-              </div>
-              <small className="text-muted">Course Director &amp; Examiner</small>
-            </div>
-            <div className="text-center">
-              <span className="badge bg-success-subtle text-success fw-bold px-2 py-1">
-                ✓ Cryptographically Verified
-              </span>
-              <div className="text-muted font-monospace mt-1" style={{ fontSize: 10 }}>
-                {previewTarget?.certificateCode}
-              </div>
-            </div>
-            <div className="text-end">
-              <div className="fw-bold text-dark" style={{ fontSize: 12 }}>
-                Prof. E. Mushi
-              </div>
-              <small className="text-muted">Dean of Faculty</small>
-            </div>
-          </div>
-        </div>
+        {previewTarget && (
+          <BeautifulCertificateStudio
+            compact
+            courseId={previewTarget.courseId || 7}
+            courseTitle={previewTarget.courseName}
+            courseCode={previewTarget.courseCode}
+            studentName={previewTarget.studentName}
+            serialCode={previewTarget.certificateCode}
+            issueDate={previewTarget.issuedAt}
+            gradeScore={previewTarget.grade}
+            honours={previewTarget.honors}
+          />
+        )}
       </Modal>
 
       {/* Modal: Issue Certificate */}

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { all_routes } from '../../router/all_routes';
 import { instructorService, InstructorCourseItem } from '../../../core/api/instructorService';
 import { useInstructorShell } from '../common/instructorLayout';
@@ -20,6 +20,7 @@ import {
 const PAGE_SIZE = 6;
 
 const InstructorCourse: React.FC = () => {
+  const navigate = useNavigate();
   const shell = useInstructorShell();
   const [courses, setCourses] = useState<InstructorCourseItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -182,17 +183,7 @@ const InstructorCourse: React.FC = () => {
   };
 
   const openEdit = (c: InstructorCourseItem) => {
-    setEditTarget(c);
-    setFormData({
-      fullname: c.fullname,
-      shortname: c.shortname,
-      categoryName: c.categoryName || 'Faculty of Science, Technology & Environmental Studies',
-      summary: c.summary || '',
-      price: c.price || 'TZS 150,000',
-      durationHours: c.durationHours || '04:00:00 Hours',
-      lessonsCount: c.lessonsCount || 8,
-      quizzesCount: c.quizzesCount || 1,
-    });
+    navigate(`${all_routes.addNewCourse}?courseid=${c.id}`);
   };
 
   const totalScholars = courses.reduce((acc, c) => acc + (Number(c.enrolledusercount) || 0), 0);
@@ -263,9 +254,9 @@ const InstructorCourse: React.FC = () => {
             <button
               type="button"
               className="ins-btn ins-btn-primary"
-              onClick={() => setCreateOpen(true)}
+              onClick={() => navigate(all_routes.addNewCourse)}
             >
-              <i className="feather-plus" /> Create Course
+              <i className="feather-plus" /> Create Course (Full Wizard)
             </button>
           </div>
         }
@@ -371,7 +362,7 @@ const InstructorCourse: React.FC = () => {
                     <td className="text-end">
                       <div className="d-inline-flex gap-1">
                         <Link
-                          to={all_routes.courseWatch}
+                          to={`${all_routes.courseWatch}?courseId=${c.id}`}
                           className="ins-action-btn is-view"
                           title="Open in Classroom"
                         >

@@ -137,16 +137,23 @@ const server = http.createServer(async (req, res) => {
     urlPath = decodeURIComponent(urlPath);
   } catch {}
 
-  // Reverse-proxy Moodle backend, API, or SSO requests
+  // Reverse-proxy Moodle backend, Modular Role APIs, API router, or SSO requests
   if (
     urlPath.startsWith('/outlmstheme/moodle-backend') ||
     urlPath.startsWith('/moodle-backend') ||
+    urlPath.startsWith('/api/') ||
     urlPath.startsWith('/admin_api.php') ||
     urlPath.startsWith('/sso.php') ||
     urlPath.startsWith('/webservice') ||
     urlPath.startsWith('/login/token.php')
   ) {
-    const backendSubPath = (urlPath.startsWith('/admin_api.php') || urlPath.startsWith('/sso.php') || urlPath.startsWith('/webservice') || urlPath.startsWith('/login/token.php'))
+    const backendSubPath = (
+      urlPath.startsWith('/api/') ||
+      urlPath.startsWith('/admin_api.php') ||
+      urlPath.startsWith('/sso.php') ||
+      urlPath.startsWith('/webservice') ||
+      urlPath.startsWith('/login/token.php')
+    )
       ? reqUrl
       : reqUrl.replace(/^\/outlmstheme\/moodle-backend/, '').replace(/^\/moodle-backend/, '');
     const fullTarget = `${BACKEND_TARGET.replace(/\/+$/, '')}${backendSubPath.startsWith('/') ? backendSubPath : '/' + backendSubPath}`;

@@ -2,8 +2,6 @@
 -- OUT LMS Database Schema & Seed Data
 -- The Open University of Tanzania Learning Management System
 -- ============================================================================
-CREATE DATABASE IF NOT EXISTS moodle_out CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE moodle_out;
 
 /*M!999999\- enable the sandbox mode */ 
 -- MariaDB dump 10.19-11.4.9-MariaDB, for Win64 (AMD64)

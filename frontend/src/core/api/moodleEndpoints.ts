@@ -51,4 +51,14 @@ export const MOODLE_ENDPOINTS = {
   PESAPAL_CHECK_STATUS: 'paygw_pesapal_check_status',
 } as const;
 
+export const MODULAR_API_ENDPOINTS = {
+  PUBLIC: '/api/public_api.php',
+  STUDENT: '/api/student_api.php',
+  INSTRUCTOR: '/api/instructor_api.php',
+  COURSE_STUDIO: '/api/course_studio_api.php',
+  ADMIN_SYSTEM: '/api/admin_system_api.php',
+  ROUTER: '/admin_api.php',
+} as const;
+
 export type MoodleFunction = typeof MOODLE_ENDPOINTS[keyof typeof MOODLE_ENDPOINTS];
+export type ModularApiKey = keyof typeof MODULAR_API_ENDPOINTS;

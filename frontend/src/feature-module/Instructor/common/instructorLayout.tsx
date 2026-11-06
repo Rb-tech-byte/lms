@@ -56,6 +56,11 @@ const MAIN_MENU: NavItem[] = [
     match: [all_routes.instructorCourseGrid],
     badgeKey: 'courses',
   },
+  {
+    title: 'Course & Category Studio',
+    icon: 'isax isax-add-circle5',
+    route: all_routes.addNewCourse,
+  },
   { title: 'Announcements', icon: 'isax isax-volume-high5', route: all_routes.instructorAnnouncements },
   { title: 'Assignments', icon: 'isax isax-clipboard-text5', route: all_routes.instructorAssignment, badgeKey: 'pending' },
   {
@@ -78,12 +83,6 @@ const MAIN_MENU: NavItem[] = [
 const SETTINGS_ROUTES = [
   all_routes.instructorsettings,
   all_routes.instructorChangePassword,
-  all_routes.instructorPlan,
-  all_routes.instructorSocialProfiles,
-  all_routes.instructorLinkedAccounts,
-  all_routes.instructorNotification,
-  all_routes.instructorIntegrations,
-  all_routes.instructorWithdraw,
 ];
 
 const PAGE_TITLES: Record<string, string> = {
@@ -91,6 +90,7 @@ const PAGE_TITLES: Record<string, string> = {
   [all_routes.instructorProfile]: 'My Faculty Profile',
   [all_routes.instructorCourse]: 'Directed Courses',
   [all_routes.instructorCourseGrid]: 'Directed Courses',
+  [all_routes.addNewCourse]: 'Course & Category Studio',
   [all_routes.instructorAnnouncements]: 'Announcements',
   [all_routes.instructorAssignment]: 'Assignments',
   [all_routes.studentsList]: 'Enrolled Students',
@@ -107,12 +107,6 @@ const PAGE_TITLES: Record<string, string> = {
   [all_routes.instructorTickets]: 'Support Tickets',
   [all_routes.instructorsettings]: 'Faculty Settings',
   [all_routes.instructorChangePassword]: 'Security & Password',
-  [all_routes.instructorPlan]: 'Faculty Appointment & Workload',
-  [all_routes.instructorSocialProfiles]: 'Scholarly Profiles',
-  [all_routes.instructorLinkedAccounts]: 'Linked Accounts',
-  [all_routes.instructorNotification]: 'Notification Preferences',
-  [all_routes.instructorIntegrations]: 'Moodle Integrations',
-  [all_routes.instructorWithdraw]: 'Bursar & Payout Accounts',
 };
 
 const DEFAULT_IDENTITY: InstructorIdentity = {
@@ -244,9 +238,10 @@ const InstructorLayout: React.FC = () => {
   };
 
   const pageTitle = settingsActive ? 'Teaching Settings' : PAGE_TITLES[location.pathname] || 'Faculty Console';
-  const displayName = (user as any)?.name && role === 'instructor' ? (user as any).name : instructor.fullname;
-  const displayTitle = instructor.title;
-  const avatar = instructor.avatar || '/assets/img/user/user-01.jpg';
+  const displayName = (user as any)?.name || instructor.fullname;
+  const displayTitle = (user as any)?.title || instructor.title;
+  const rawAvatar = (user as any)?.avatar || instructor.avatar || '/assets/img/user/user-01.jpg';
+  const avatar = rawAvatar.startsWith('/') || rawAvatar.startsWith('http') ? rawAvatar : `/${rawAvatar}`;
 
   const handleLogout = () => {
     logout();
@@ -266,14 +261,17 @@ const InstructorLayout: React.FC = () => {
         {/* ================= SIDEBAR ================= */}
         <aside className="ins-sidebar" aria-label="Faculty navigation">
           <div className="ins-brand">
-            <Link to={all_routes.instructorDashboard} title="OUT LMS • Faculty Console">
+            <Link
+              to={role === 'admin' ? all_routes.adminDashboard : all_routes.instructorDashboard}
+              title={role === 'admin' ? 'OUT LMS • Admin Console' : 'OUT LMS • Faculty Console'}
+            >
               <span className="ins-brand-logo">
                 <img src="/assets/img/logo.png" alt="OUT" />
               </span>
               <span className="ins-brand-name">
                 OUT <span>LMS</span>
               </span>
-              <span className="ins-brand-tag">Faculty</span>
+              <span className="ins-brand-tag">{role === 'admin' ? 'Admin' : 'Faculty'}</span>
             </Link>
             <button
               type="button"
@@ -289,6 +287,18 @@ const InstructorLayout: React.FC = () => {
             <div className="ins-nav-label">Main Menu</div>
             <div className="ins-nav-label-divider" />
             <ul>
+              {role === 'admin' && (
+                <li>
+                  <NavLink
+                    to={all_routes.adminDashboard}
+                    className="ins-nav-link"
+                    title="Return to Admin Console"
+                  >
+                    <i className="feather-shield" />
+                    <span className="ins-nav-text">Admin Dashboard</span>
+                  </NavLink>
+                </li>
+              )}
               {MAIN_MENU.map((item) => {
                 const badge = badgeFor(item);
                 return (
@@ -392,11 +402,10 @@ const InstructorLayout: React.FC = () => {
               {/* My Profile button on the other side (top header right) */}
               <Link
                 to={all_routes.instructorProfile}
-                className={`ins-btn ins-btn-sm d-none d-sm-inline-flex align-items-center gap-1.5 ${
-                  location.pathname === all_routes.instructorProfile
-                    ? 'ins-btn-accent'
-                    : 'ins-btn-ghost'
-                }`}
+                className={`ins-btn ins-btn-sm d-none d-sm-inline-flex align-items-center gap-1.5 ${location.pathname === all_routes.instructorProfile
+                  ? 'ins-btn-accent'
+                  : 'ins-btn-ghost'
+                  }`}
                 title="View & Edit My Profile"
               >
                 <i className="fa-solid fa-user" style={{ fontSize: '11px' }} />
@@ -488,4 +497,5 @@ const InstructorLayout: React.FC = () => {
 };
 
 export default InstructorLayout;
+
 

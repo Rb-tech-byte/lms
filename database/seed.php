@@ -61,17 +61,24 @@ if (!file_exists($sqlFile)) {
 echo "[INFO] Connecting to MySQL/MariaDB server ({$host}:{$port}) as '{$user}'...\n";
 
 try {
-    // Initial connection without db to allow creating database if not exists
-    $pdo = new PDO("mysql:host={$host};port={$port};charset=utf8mb4", $user, $pass, [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_EMULATE_PREPARES => false,
-        PDO::MYSQL_ATTR_LOCAL_INFILE => true,
-    ]);
-    
-    echo "[OK] Connected to database server.\n";
-    echo "[INFO] Ensuring database '{$db}' exists...\n";
-    $pdo->exec("CREATE DATABASE IF NOT EXISTS `{$db}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-    $pdo->exec("USE `{$db}`");
+    // Try connecting directly with database name first (standard for CyberPanel/cPanel grants)
+    try {
+        $pdo = new PDO("mysql:host={$host};port={$port};dbname={$db};charset=utf8mb4", $user, $pass, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_EMULATE_PREPARES => false,
+        ]);
+        echo "[OK] Connected directly to database '{$db}'.\n";
+    } catch (PDOException $ex) {
+        // Fallback: connect to server root and create database if user has privileges
+        $pdo = new PDO("mysql:host={$host};port={$port};charset=utf8mb4", $user, $pass, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_EMULATE_PREPARES => false,
+        ]);
+        echo "[OK] Connected to database server.\n";
+        echo "[INFO] Ensuring database '{$db}' exists...\n";
+        $pdo->exec("CREATE DATABASE IF NOT EXISTS `{$db}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+        $pdo->exec("USE `{$db}`");
+    }
     
     echo "[INFO] Importing SQL seed file: " . basename($sqlFile) . " (" . round(filesize($sqlFile) / (1024 * 1024), 2) . " MB)...\n";
     

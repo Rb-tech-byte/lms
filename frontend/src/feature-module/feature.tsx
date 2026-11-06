@@ -4,6 +4,17 @@ import Header from "../core/common/header/header";
 import BackToTop from "../core/common/backtotop/backToTop";
 import Footer from "../core/common/footer/footer";
 import { useAuth } from "../core/auth/authContext";
+import {
+  studentProtectedRoutes,
+  instructorProtectedRoutes,
+  adminProtectedRoutes,
+} from "./router/router.link";
+
+const PROTECTED_DASHBOARD_PATHS = new Set<string>([
+  ...studentProtectedRoutes.map((r) => r.path),
+  ...instructorProtectedRoutes.map((r) => r.path),
+  ...adminProtectedRoutes.map((r) => r.path),
+]);
 
 const Feature = () => {
   const location = useLocation();
@@ -71,12 +82,19 @@ const Feature = () => {
 
   const isHome = location.pathname === '/' || location.pathname === '/index' || location.pathname === '/index-6';
   const isAdminCategoryRoute =
-    role === 'admin' && location.pathname.startsWith('/course/course-category');
+    role === 'admin' &&
+    (location.pathname.startsWith('/course/course-category') ||
+      location.pathname.startsWith('/courses/course-category') ||
+      location.pathname.startsWith('/course-category'));
 
   const isDashboardLayout =
+    PROTECTED_DASHBOARD_PATHS.has(location.pathname) ||
     location.pathname.startsWith('/admin') ||
     location.pathname.startsWith('/instructor') ||
     location.pathname.startsWith('/student') ||
+    location.pathname.startsWith('/course/add-course') ||
+    location.pathname.startsWith('/courses/add-course') ||
+    location.pathname === '/add-course' ||
     location.pathname.startsWith('/course/course-watch') ||
     location.pathname.startsWith('/course/course-resume') ||
     isAdminCategoryRoute;

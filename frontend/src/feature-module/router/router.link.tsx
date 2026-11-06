@@ -9,12 +9,12 @@ import CourseCart from "../Courses/course-cart/courseCart";
 import CourseCheckout from "../Courses/course-checkout/courseCheckout";
 import AddNewCourse from "../Courses/add-newCourse/addNewCourse";
 
-// Student Components
+// Student Components (Connected to /api/student_api.php)
 import StudentDashboard from "../student/dashboard/studentDashboard";
 import CourseWatch from "../Courses/course-watch/courseWatch";
 import StudentQuizQuestion from "../student/student-quiz-question/studentQuizQuestion";
 
-// Instructor Components
+// Instructor Components (Connected to /api/instructor_api.php & /api/course_studio_api.php)
 import InstructorDashboard from "../Instructor/instructor-dashboard/instructorDashboard";
 import InstructorCourse from "../Instructor/instructor-course/instructorCourse";
 import InstructorAnnouncements from "../Instructor/instructor-announcements/instructorAnnouncements";
@@ -30,21 +30,15 @@ import InstructorMessage from "../Instructor/instructor-message/instructorMessag
 import InstructorTickets from "../Instructor/instructor-tickets/instructorTickets";
 import InstructorProfile from "../Instructor/instructor-settings/instructor-profile-settings/instructorProfile";
 import InstructorChangePassword from "../Instructor/instructor-settings/instructor-change-password/instructorChangePassoword";
-import InstructorSocialprofileSettings from "../Instructor/instructor-settings/instructor-socialprofile-settings/instructorSocialprofileSettings";
-import InstructorLinkedAccounts from "../Instructor/instructor-settings/instructor-linked-accounts/instructorLinkedAccounts";
-import InstructorNotification from "../Instructor/instructor-settings/instructor-notification/instructorNotification";
-import InstructorIntegrations from "../Instructor/instructor-settings/instructor-integrations/instructorIntegrations";
-import InstructorWithdraw from "../Instructor/instructor-settings/instructor-withdraw/instructorWithdraw";
-import InstructorPlanSettings from "../Instructor/instructor-settings/instructor-plans-settings/instructorPlanSettings";
 
-// Admin Components
+// Admin Components (Connected to /api/admin_system_api.php & /api/course_studio_api.php)
 import AdminDashboard from "../admin/adminDashboard";
 
-// Blog Components
+// Academic Bulletins (Connected to /api/public_api.php)
 import BlogGrid from "../blog/blog-layouts/blogGrid";
 import BlogDetails from "../blog/blog-details/blogDetails";
 
-// Public Pages & Informational
+// Public Pages & Informational (Connected to /api/public_api.php)
 import AboutUs from "../Pages/about-us/aboutUs";
 import ContactUs from "../Pages/contact-us/contactUs";
 import Notification from "../Pages/notification/notification";
@@ -60,7 +54,7 @@ import InstructorGrid from "../Pages/instructor/instructor-grid/instructorGrid";
 import InstructorListPublic from "../Pages/instructor/instructor-list/instructorList";
 import InstructorDetails from "../Pages/instructor/instructor-details/instructor-details";
 
-// Auth Components
+// Auth Components (Connected to /login/token.php, /api/public_api.php & /api/student_api.php)
 import Login from "../auth/login/login";
 import Register from "../auth/register/register";
 import ForgortPassword from "../auth/forgot-password/forgortPassword";
@@ -72,7 +66,7 @@ import Error500 from "../auth/error/error-500/error500";
 const routes = all_routes;
 
 /**
- * 1. Public Routes: Accessible by Guests, Students, Instructors, and Administrators
+ * 1. Public Routes: Connected to /api/public_api.php
  */
 export const publicRoutes = [
   {
@@ -84,31 +78,6 @@ export const publicRoutes = [
   {
     path: routes.homeone,
     element: <Home />,
-    route: Route,
-  },
-  {
-    path: routes.hometwo,
-    element: <Navigate to="/index" replace />,
-    route: Route,
-  },
-  {
-    path: routes.homethree,
-    element: <Navigate to="/index" replace />,
-    route: Route,
-  },
-  {
-    path: routes.homefour,
-    element: <Navigate to="/index" replace />,
-    route: Route,
-  },
-  {
-    path: routes.homefive,
-    element: <Navigate to="/index" replace />,
-    route: Route,
-  },
-  {
-    path: routes.homesix,
-    element: <Navigate to="/index" replace />,
     route: Route,
   },
   {
@@ -127,23 +96,8 @@ export const publicRoutes = [
     route: Route,
   },
   {
-    path: routes.courseCategory2,
-    element: <Navigate to={routes.courseCategory} replace />,
-    route: Route,
-  },
-  {
-    path: routes.courseCategory3,
-    element: <Navigate to={routes.courseCategory} replace />,
-    route: Route,
-  },
-  {
     path: routes.courseDetails,
     element: <CourseDetails />,
-    route: Route,
-  },
-  {
-    path: routes.courseDetails2,
-    element: <Navigate to={routes.courseDetails} replace />,
     route: Route,
   },
   {
@@ -241,7 +195,6 @@ export const publicRoutes = [
     element: <InstructorDetails />,
     route: Route,
   },
-  // Route aliases to prevent 404s on legacy/alternative URLs
   {
     path: "/home",
     element: <Home />,
@@ -278,37 +231,17 @@ export const publicRoutes = [
     route: Route,
   },
   {
-    path: "/course-grid",
-    element: <CourseGrid />,
-    route: Route,
-  },
-  {
-    path: "/course-list",
-    element: <CourseList />,
-    route: Route,
-  },
-  {
-    path: "/course-category",
-    element: <CourseCategory />,
-    route: Route,
-  },
-  {
-    path: "/pages/coming-soon",
-    element: <Navigate to="/index" replace />,
-    route: Route,
-  },
-  {
-    path: "/pages/under-construction",
-    element: <Navigate to="/index" replace />,
-    route: Route,
-  },
-  {
     path: "/pages/terms-conditions",
     element: <TermsCondition />,
     route: Route,
   },
   {
     path: "/pages/verify-certificate",
+    element: <VerifyCertificate />,
+    route: Route,
+  },
+  {
+    path: "/verify-certificate",
     element: <VerifyCertificate />,
     route: Route,
   },
@@ -325,7 +258,7 @@ export const publicRoutes = [
 ];
 
 /**
- * 2. Student Protected Routes: Restricted to Scholars & Administrators (RBAC)
+ * 2. Student Protected Routes: Connected to /api/student_api.php
  */
 export const studentProtectedRoutes = [
   {
@@ -334,7 +267,7 @@ export const studentProtectedRoutes = [
     route: Route,
   },
   {
-    path: routes.studentCourses,
+    path: "/student/student-courses",
     element: <Navigate to="/student/student-dashboard?tab=courses" replace />,
     route: Route,
   },
@@ -344,12 +277,7 @@ export const studentProtectedRoutes = [
     route: Route,
   },
   {
-    path: routes.courseResume,
-    element: <Navigate to="/course/course-watch?courseId=2" replace />,
-    route: Route,
-  },
-  {
-    path: routes.studentQuiz,
+    path: "/student/student-quiz",
     element: <Navigate to="/student/student-dashboard?tab=quizzes" replace />,
     route: Route,
   },
@@ -359,79 +287,24 @@ export const studentProtectedRoutes = [
     route: Route,
   },
   {
-    path: routes.studentCertificates,
+    path: "/student/student-certificates",
     element: <Navigate to="/student/student-dashboard?tab=certificates" replace />,
     route: Route,
   },
   {
-    path: routes.studentProfile,
+    path: "/student/student-profile",
     element: <Navigate to="/student/student-dashboard?tab=profile" replace />,
     route: Route,
   },
   {
-    path: routes.studentSettings,
+    path: "/student/student-settings",
     element: <Navigate to="/student/student-dashboard?tab=settings" replace />,
-    route: Route,
-  },
-  {
-    path: routes.studentChangePassword,
-    element: <Navigate to="/student/student-dashboard?tab=settings" replace />,
-    route: Route,
-  },
-  {
-    path: routes.studentSocialProfile,
-    element: <Navigate to="/student/student-dashboard?tab=settings" replace />,
-    route: Route,
-  },
-  {
-    path: routes.studentLinkedAccounts,
-    element: <Navigate to="/student/student-dashboard?tab=settings" replace />,
-    route: Route,
-  },
-  {
-    path: routes.studentNotification,
-    element: <Navigate to="/student/student-dashboard?tab=settings" replace />,
-    route: Route,
-  },
-  {
-    path: routes.studentBillingAddress,
-    element: <Navigate to="/student/student-dashboard?tab=settings" replace />,
-    route: Route,
-  },
-  {
-    path: routes.studentOrderHistory,
-    element: <Navigate to="/student/student-dashboard?tab=orders" replace />,
-    route: Route,
-  },
-  {
-    path: routes.studentReviews,
-    element: <Navigate to="/student/student-dashboard?tab=reviews" replace />,
-    route: Route,
-  },
-  {
-    path: routes.studentWishlist,
-    element: <Navigate to="/student/student-dashboard?tab=wishlist" replace />,
-    route: Route,
-  },
-  {
-    path: routes.studentTickets,
-    element: <Navigate to="/student/student-dashboard?tab=tickets" replace />,
-    route: Route,
-  },
-  {
-    path: routes.studentMessage,
-    element: <Navigate to="/student/student-dashboard?tab=messages" replace />,
-    route: Route,
-  },
-  {
-    path: routes.studentReferral,
-    element: <Navigate to="/student/student-dashboard?tab=referrals" replace />,
     route: Route,
   },
 ];
 
 /**
- * 3. Instructor Protected Routes: Restricted to Faculty Teachers & Administrators (RBAC)
+ * 3. Instructor Protected Routes: Connected to /api/instructor_api.php & /api/course_studio_api.php
  */
 export const instructorProtectedRoutes = [
   {
@@ -441,11 +314,6 @@ export const instructorProtectedRoutes = [
   },
   {
     path: routes.instructorCourse,
-    element: <InstructorCourse />,
-    route: Route,
-  },
-  {
-    path: routes.instructorCourseGrid,
     element: <InstructorCourse />,
     route: Route,
   },
@@ -485,16 +353,6 @@ export const instructorProtectedRoutes = [
     route: Route,
   },
   {
-    path: routes.studentsGrid,
-    element: <StudentList />,
-    route: Route,
-  },
-  {
-    path: routes.studentsDetails,
-    element: <StudentList />,
-    route: Route,
-  },
-  {
     path: routes.instructorQuiz,
     element: <InstructorQuiz />,
     route: Route,
@@ -502,11 +360,6 @@ export const instructorProtectedRoutes = [
   {
     path: routes.instructorQuizResult,
     element: <InstructorQuizResult />,
-    route: Route,
-  },
-  {
-    path: routes.instructorQA,
-    element: <InstructorQuiz />,
     route: Route,
   },
   {
@@ -539,40 +392,10 @@ export const instructorProtectedRoutes = [
     element: <InstructorTickets />,
     route: Route,
   },
-  {
-    path: routes.instructorPlan,
-    element: <InstructorPlanSettings />,
-    route: Route,
-  },
-  {
-    path: routes.instructorSocialProfiles,
-    element: <InstructorSocialprofileSettings />,
-    route: Route,
-  },
-  {
-    path: routes.instructorLinkedAccounts,
-    element: <InstructorLinkedAccounts />,
-    route: Route,
-  },
-  {
-    path: routes.instructorNotification,
-    element: <InstructorNotification />,
-    route: Route,
-  },
-  {
-    path: routes.instructorIntegrations,
-    element: <InstructorIntegrations />,
-    route: Route,
-  },
-  {
-    path: routes.instructorWithdraw,
-    element: <InstructorWithdraw />,
-    route: Route,
-  },
 ];
 
 /**
- * 4. Administrator Protected Routes: Restricted Strictly to Super Administrators (RBAC)
+ * 4. Administrator Protected Routes: Connected to /api/admin_system_api.php & /api/course_studio_api.php
  */
 export const adminProtectedRoutes = [
   {
@@ -583,7 +406,7 @@ export const adminProtectedRoutes = [
 ];
 
 /**
- * 5. Auth & Status Routes: Login, Register, Recovery, Errors
+ * 5. Auth & Status Routes: Connected to /login/token.php, /api/public_api.php & /api/student_api.php
  */
 export const authRoutes = [
   {
@@ -612,11 +435,6 @@ export const authRoutes = [
     route: Route,
   },
   {
-    path: routes.lockscreen,
-    element: <Navigate to={routes.login} replace />,
-    route: Route,
-  },
-  {
     path: routes.Error404,
     element: <Error404 />,
     route: Route,
@@ -624,16 +442,6 @@ export const authRoutes = [
   {
     path: routes.Error500,
     element: <Error500 />,
-    route: Route,
-  },
-  {
-    path: routes.underconstruction,
-    element: <Navigate to={routes.homeone} replace />,
-    route: Route,
-  },
-  {
-    path: routes.comingSoon,
-    element: <Navigate to={routes.homeone} replace />,
     route: Route,
   },
 ];

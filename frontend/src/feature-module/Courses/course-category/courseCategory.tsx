@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { all_routes } from '../../router/all_routes';
 import {
   courseService,
@@ -21,6 +21,7 @@ export const CourseCategory: React.FC<CourseCategoryProps> = ({
   onOpenCourseStudio,
 }) => {
   const routes = all_routes;
+  const navigate = useNavigate();
   const { role } = useAuth();
   const isAdmin = role === 'admin' || embeddedInAdmin;
   const isStaff = isAdmin || role === 'instructor';
@@ -285,11 +286,7 @@ export const CourseCategory: React.FC<CourseCategoryProps> = ({
   };
 
   const handleOpenCourseStudio = (courseId: number) => {
-    if (onOpenCourseStudio) {
-      onOpenCourseStudio(courseId);
-    } else {
-      setStudioCourseId(courseId);
-    }
+    navigate(`${all_routes.addNewCourse}?courseid=${courseId}`);
   };
 
   const visibleCourses =
@@ -344,24 +341,11 @@ export const CourseCategory: React.FC<CourseCategoryProps> = ({
 
               <button
                 type="button"
-                onClick={() => {
-                  setEditingCourse(null);
-                  setCourseForm({
-                    fullname: '',
-                    shortname: '',
-                    category_id: selectedFacultyId || categories[0]?.id || 2,
-                    format: 'topics',
-                    num_sections: 6,
-                    tuition_fee: 180000,
-                    summary: '',
-                    visible: 1,
-                  });
-                  setShowCourseModal(true);
-                }}
+                onClick={() => navigate(all_routes.addNewCourse)}
                 className="btn btn-sm btn-dark fw-semibold d-inline-flex align-items-center gap-1"
                 style={{ fontSize: '12px' }}
               >
-                <i className="feather-plus" /> + New Course
+                <i className="feather-plus" /> + New Course (Full Wizard)
               </button>
 
               <button
@@ -624,20 +608,7 @@ export const CourseCategory: React.FC<CourseCategoryProps> = ({
                           {isStaff && (
                             <button
                               type="button"
-                              onClick={() => {
-                                setEditingCourse(null);
-                                setCourseForm({
-                                  fullname: '',
-                                  shortname: '',
-                                  category_id: cat.id,
-                                  format: 'topics',
-                                  num_sections: 6,
-                                  tuition_fee: 180000,
-                                  summary: '',
-                                  visible: 1,
-                                });
-                                setShowCourseModal(true);
-                              }}
+                              onClick={() => navigate(all_routes.addNewCourse)}
                               className="btn btn-sm btn-outline-secondary rounded-pill px-2.5 py-0.5 fw-semibold"
                               style={{ fontSize: '0.7rem' }}
                               title="Add Course to this Category"
@@ -701,24 +672,11 @@ export const CourseCategory: React.FC<CourseCategoryProps> = ({
                   {isStaff && (
                     <button
                       type="button"
-                      onClick={() => {
-                        setEditingCourse(null);
-                        setCourseForm({
-                          fullname: '',
-                          shortname: '',
-                          category_id: selectedFacultyId || categories[0]?.id || 2,
-                          format: 'topics',
-                          num_sections: 6,
-                          tuition_fee: 180000,
-                          summary: '',
-                          visible: 1,
-                        });
-                        setShowCourseModal(true);
-                      }}
+                      onClick={() => navigate(all_routes.addNewCourse)}
                       className="btn btn-sm btn-primary rounded-pill px-3 fw-semibold"
                       style={{ backgroundColor: '#013BA6', borderColor: '#013BA6', fontSize: '11.5px' }}
                     >
-                      + Add Course Here
+                      + Add Course Here (Full Wizard)
                     </button>
                   )}
                 </div>
@@ -816,22 +774,9 @@ export const CourseCategory: React.FC<CourseCategoryProps> = ({
                               </button>
                               <button
                                 type="button"
-                                onClick={() => {
-                                  setEditingCourse(course);
-                                  setCourseForm({
-                                    fullname: course.fullname,
-                                    shortname: course.shortname,
-                                    category_id: course.categoryid || categories[0]?.id || 2,
-                                    format: course.format || 'topics',
-                                    num_sections: course.sectionsCount || 6,
-                                    tuition_fee: course.price || 0,
-                                    summary: course.summary || '',
-                                    visible: 1,
-                                  });
-                                  setShowCourseModal(true);
-                                }}
+                                onClick={() => navigate(`${all_routes.addNewCourse}?courseid=${course.id}`)}
                                 className="btn btn-sm btn-light border rounded-circle p-1 text-secondary"
-                                title="Edit Course"
+                                title="Edit Course in Full Wizard"
                               >
                                 <i className="feather-edit-2" style={{ fontSize: 11 }} />
                               </button>

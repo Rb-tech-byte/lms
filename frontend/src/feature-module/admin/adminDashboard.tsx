@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import CorporateAdminSidebar from './common/corporateAdminSidebar';
 import CorporateAdminHeader from './common/corporateAdminHeader';
 import SiteAdminHub from './common/siteAdminHub';
@@ -59,6 +59,7 @@ function exportToCsv(filename: string, rows: Record<string, any>[]) {
 }
 
 export const AdminDashboard: React.FC = () => {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const urlTab = searchParams.get('tab');
 
@@ -790,12 +791,12 @@ export const AdminDashboard: React.FC = () => {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setShowCreateCourseModal(true)}
+                    onClick={() => navigate(all_routes.addNewCourse)}
                     className="btn btn-sm btn-primary rounded-pill px-3 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm"
                     style={{ fontSize: '12px', background: '#013BA6', borderColor: '#013BA6' }}
                   >
                     <i className="feather-plus-circle" style={{ fontSize: '12px' }} />
-                    <span>New Course</span>
+                    <span>New Course (Full Wizard)</span>
                   </button>
                 </div>
               </div>
@@ -972,11 +973,11 @@ export const AdminDashboard: React.FC = () => {
                               <td className="py-2 px-3 text-end">
                                 <button
                                   type="button"
-                                  onClick={() => handleOpenStudio(c.id)}
+                                  onClick={() => navigate(`${all_routes.addNewCourse}?courseid=${c.id}`)}
                                   className="btn btn-sm btn-light border p-1 rounded-2 me-1"
-                                  title="Open Studio"
+                                  title="Edit Course & Curriculum in Wizard"
                                 >
-                                  <i className="feather-sliders" style={{ fontSize: '11px' }} />
+                                  <i className="feather-edit-2 text-primary" style={{ fontSize: '11px' }} />
                                 </button>
                                 <Link
                                   to={`${all_routes.courseDetails}?id=${c.id}`}
@@ -1124,12 +1125,12 @@ export const AdminDashboard: React.FC = () => {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setShowCreateCourseModal(true)}
+                    onClick={() => navigate(all_routes.addNewCourse)}
                     className="btn btn-sm btn-primary rounded-pill px-3 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm"
                     style={{ fontSize: '12px', background: '#013BA6', borderColor: '#013BA6' }}
                   >
                     <i className="feather-plus-circle" style={{ fontSize: '12px' }} />
-                    <span>Add New Course</span>
+                    <span>Add New Course (Full Wizard)</span>
                   </button>
                 </div>
               </div>
@@ -1243,17 +1244,17 @@ export const AdminDashboard: React.FC = () => {
                             <div className="d-inline-flex gap-1">
                               <button
                                 type="button"
-                                onClick={() => handleOpenStudio(c.id)}
+                                onClick={() => navigate(`${all_routes.addNewCourse}?courseid=${c.id}`)}
                                 className="btn btn-sm btn-light border p-1 rounded-2"
-                                title="Open Curriculum Studio"
+                                title="Open Full Course & Curriculum Wizard"
                               >
                                 <i className="feather-sliders text-primary" style={{ fontSize: '12px' }} />
                               </button>
                               <button
                                 type="button"
-                                onClick={() => setEditCourseData(c)}
+                                onClick={() => navigate(`${all_routes.addNewCourse}?courseid=${c.id}`)}
                                 className="btn btn-sm btn-light border p-1 rounded-2"
-                                title="Edit Course Settings"
+                                title="Edit Course Settings & Contents in Wizard"
                               >
                                 <i className="feather-edit-2 text-secondary" style={{ fontSize: '12px' }} />
                               </button>
@@ -1329,6 +1330,13 @@ export const AdminDashboard: React.FC = () => {
                   >
                     <i className="feather-download me-1" /> Export CSV
                   </button>
+                  <Link
+                    to={all_routes.addNewCourse}
+                    className="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold"
+                    style={{ fontSize: '12px' }}
+                  >
+                    <i className="feather-layers me-1" /> Full Course &amp; Category Studio (8-Section Wizard)
+                  </Link>
                   <button
                     type="button"
                     onClick={() => setShowCreateCategoryModal(true)}
@@ -2159,7 +2167,7 @@ export const AdminDashboard: React.FC = () => {
                       OUT LMS Enterprise API &amp; Endpoint Management Studio
                     </h4>
                     <div className="text-white-50" style={{ fontSize: '12.5px' }}>
-                      Manage, toggle, rate-limit, mint tokens, and live-test all REST, Moodle Web Services (`webservice/rest/server.php`), and Internal Gateway APIs (`admin_api.php`) directly from the React frontend without logging into Moodle.
+                      Manage, toggle, rate-limit, mint tokens, and live-test all REST, Moodle Web Services (`webservice/rest/server.php`), and Modular Role APIs (`public_api.php`, `student_api.php`, `instructor_api.php`, `course_studio_api.php`, `admin_system_api.php`) directly from the React frontend without logging into Moodle.
                     </div>
                   </div>
 
@@ -2259,7 +2267,9 @@ export const AdminDashboard: React.FC = () => {
                         onClick={async () => {
                           setLiveTesting(true);
                           try {
-                            const baseUrl = adminService.getAdminApiUrl();
+                            const actionMatch = liveTestTarget.match(/action=([a-zA-Z0-9_]+)/);
+                            const actionName = actionMatch ? actionMatch[1] : 'admin_system';
+                            const baseUrl = adminService.getAdminApiUrl(actionName);
                             const targetUrl = liveTestTarget.startsWith('http')
                               ? liveTestTarget
                               : `${baseUrl}${liveTestTarget.startsWith('?') ? liveTestTarget : `?${liveTestTarget}`}`;
@@ -2326,7 +2336,7 @@ export const AdminDashboard: React.FC = () => {
                       }}
                     >
                       {liveTestResult ||
-                        `// Click "Send API Request" or any preset pill above to inspect live JSON response from /moodle-backend/admin_api.php\n{\n  "headless_admin_mode": true,\n  "status": "READY_WITHOUT_MOODLE_LOGIN",\n  "total_system_capabilities": 77\n}`}
+                        `// Click "Send API Request" or any preset pill above to inspect live JSON response from /moodle-backend/api/{role}_api.php\n{\n  "headless_admin_mode": true,\n  "modular_controllers": [\n    "/api/public_api.php",\n    "/api/student_api.php",\n    "/api/instructor_api.php",\n    "/api/course_studio_api.php",\n    "/api/admin_system_api.php"\n  ],\n  "status": "READY_WITHOUT_MOODLE_LOGIN",\n  "total_system_capabilities": 77\n}`}
                     </pre>
                   </div>
                 </div>

@@ -49,6 +49,10 @@ if (strpos($redirect, '#') !== false) {
 }
 
 // Strip domain/base path if absolute URL was passed
+$cfgPath = parse_url($CFG->wwwroot, PHP_URL_PATH) ?: '';
+if (!empty($cfgPath) && str_starts_with($redirect, $cfgPath)) {
+    $redirect = substr($redirect, strlen($cfgPath));
+}
 $prefix = '/outlmstheme/moodle-backend';
 if (strpos($redirect, 'http://') === 0 || strpos($redirect, 'https://') === 0) {
     $parsed = parse_url($redirect);

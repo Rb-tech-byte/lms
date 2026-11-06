@@ -15,6 +15,7 @@ import { all_routes } from '../../router/all_routes';
 import CorporateStudentSidebar from '../common/corporateStudentSidebar';
 import CorporateStudentHeader from '../common/corporateStudentHeader';
 import { useStudentIdentity } from '../common/useStudentIdentity';
+import BeautifulCertificateStudio, { buildBeautifulCertificatePdfUrl } from '../../../core/common/BeautifulCertificateStudio';
 import '../common/studentPortal.css';
 
 interface AcademicLectureItem {
@@ -1211,73 +1212,171 @@ export const StudentDashboard: React.FC = () => {
           {/* VIEW: CERTIFICATES                                             */}
           {/* ============================================================== */}
           {activeView === 'certificates' && (
-            <div className="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
-              <div className="d-flex align-items-center justify-content-between mb-4">
-                <div>
-                  <h5 className="fw-bold text-dark mb-1">Official Academic Certificates</h5>
-                  <p className="text-muted small mb-0">
-                    The Open University of Tanzania verified university credentials with tamper-proof cryptographic verification codes.
-                  </p>
+            <>
+              <div className="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+                <div className="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+                  <div>
+                    <div className="d-flex align-items-center gap-2 mb-1">
+                      <span
+                        className="badge rounded-pill fw-bold"
+                        style={{ background: '#013BA6', color: '#F5EA14', fontSize: '11px' }}
+                      >
+                        MOD_CERTIFICATEBEAUTIFUL • VECTOR DIPLOMA ENGINE
+                      </span>
+                      <span className="badge bg-success-subtle text-success border border-success-subtle">
+                        300 DPI Gold-Foil Guilloche
+                      </span>
+                    </div>
+                    <h5 className="fw-bold text-dark mb-1">Official Academic Certificates &amp; Vector Diplomas</h5>
+                    <p className="text-muted small mb-0">
+                      The Open University of Tanzania verified university credentials with 6 luxury themes, embossed gold-foil Senate seal, and QR cryptographic verification.
+                    </p>
+                  </div>
+                  {certificates.length > 0 && (
+                    <a
+                      href={buildBeautifulCertificatePdfUrl({
+                        courseId: certificates[0].courseId,
+                        serialCode: certificates[0].verificationCode,
+                        studentName: certificates[0].studentName || studentName,
+                        studentRegNo: certificates[0].regNumber || regNumber,
+                        courseTitle: certificates[0].courseName,
+                        courseCode: certificates[0].courseCode,
+                        gradeScore: `${certificates[0].grade}% (Grade ${certificates[0].letterGrade})`,
+                        honours: `★ ${certificates[0].classification.toUpperCase()} (GRADE ${certificates[0].letterGrade} • ${certificates[0].grade}% • 20 CPD CREDITS) ★`,
+                        issueDate: certificates[0].issueDate,
+                        autoPrint: true,
+                      })}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn btn-sm fw-bold rounded-pill px-3 py-2 shadow-sm"
+                      style={{ background: '#013BA6', color: '#F5EA14' }}
+                    >
+                      <i className="feather-printer me-1.5" />
+                      Print / Export High-Res Vector Diploma PDF
+                    </a>
+                  )}
                 </div>
-              </div>
 
-              {loadingCertificates ? (
-                <div className="text-center py-5">
-                  <div className="spinner-border text-primary mb-2" role="status" />
-                  <p className="text-muted small">Loading certified credentials...</p>
-                </div>
-              ) : certificates.length === 0 ? (
-                <div className="text-center py-5 bg-light rounded-3">
-                  <i className="feather-award fs-32 text-muted mb-2 d-block" />
-                  <h6 className="fw-bold text-dark">No Certificates Issued Yet</h6>
-                  <p className="text-muted small">
-                    Complete all modules and assignments with at least 50% score to receive your certified OUT credentials.
-                  </p>
-                </div>
-              ) : (
-                <div className="row g-3">
-                  {certificates.map((cert) => (
-                    <div key={cert.id} className="col-md-6 col-lg-4">
-                      <div className="card border shadow-sm rounded-3 p-3.5 h-100 d-flex flex-column justify-content-between bg-light">
-                        <div>
-                          <div className="d-flex align-items-center justify-content-between mb-2">
-                            <span className="badge bg-success text-white">Verified</span>
-                            <span className="text-muted" style={{ fontSize: '11px' }}>
-                              {cert.issueDate}
-                            </span>
-                          </div>
+                {loadingCertificates ? (
+                  <div className="text-center py-5">
+                    <div className="spinner-border text-primary mb-2" role="status" />
+                    <p className="text-muted small">Loading certified credentials...</p>
+                  </div>
+                ) : certificates.length === 0 ? (
+                  <div className="text-center py-5 bg-light rounded-3">
+                    <i className="feather-award fs-32 text-muted mb-2 d-block" />
+                    <h6 className="fw-bold text-dark">No Certificates Issued Yet</h6>
+                    <p className="text-muted small">
+                      Complete all modules and assignments with at least 50% score to receive your certified OUT credentials.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="row g-3">
+                    {certificates.map((cert) => {
+                      const certPdfUrl = buildBeautifulCertificatePdfUrl({
+                        courseId: cert.courseId,
+                        serialCode: cert.verificationCode,
+                        studentName: cert.studentName || studentName,
+                        studentRegNo: cert.regNumber || regNumber,
+                        courseTitle: cert.courseName,
+                        courseCode: cert.courseCode,
+                        gradeScore: `${cert.grade}% (Grade ${cert.letterGrade})`,
+                        honours: `★ ${cert.classification.toUpperCase()} (GRADE ${cert.letterGrade} • ${cert.grade}% • 20 CPD CREDITS) ★`,
+                        issueDate: cert.issueDate,
+                        autoPrint: true,
+                      });
+                      return (
+                        <div key={cert.id} className="col-md-6 col-lg-4">
+                          <div
+                            className="card border-0 shadow-sm rounded-4 p-3.5 h-100 d-flex flex-column justify-content-between"
+                            style={{
+                              background: 'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)',
+                              border: '2px solid #e2e8f0',
+                            }}
+                          >
+                            <div>
+                              <div className="d-flex align-items-center justify-content-between mb-2">
+                                <span
+                                  className="badge rounded-pill fw-bold"
+                                  style={{ background: '#061838', color: '#F5EA14', fontSize: '10.5px' }}
+                                >
+                                  ★ SENATE DIPLOMA ({cert.courseCode})
+                                </span>
+                                <span className="text-muted fw-semibold" style={{ fontSize: '11px' }}>
+                                  {cert.issueDate}
+                                </span>
+                              </div>
 
-                          <h6 className="fw-bold text-dark mb-1" style={{ fontSize: '14.5px' }}>
-                            {cert.courseName}
-                          </h6>
-                          <div className="text-primary fw-semibold mb-2" style={{ fontSize: '12px' }}>
-                            {cert.classification} • Grade: {cert.letterGrade}
-                          </div>
+                              <h6 className="fw-bold text-dark mb-1" style={{ fontSize: '15px' }}>
+                                {cert.courseName}
+                              </h6>
+                              <div className="text-primary fw-bold mb-2" style={{ fontSize: '12px' }}>
+                                {cert.classification} • Grade {cert.letterGrade} ({cert.grade}%)
+                              </div>
 
-                          <div className="p-2 rounded bg-white border text-center mb-3">
-                            <span className="text-muted d-block" style={{ fontSize: '10px' }}>
-                              Verification Code:
-                            </span>
-                            <span className="font-monospace fw-bold text-dark" style={{ fontSize: '12px' }}>
-                              {cert.verificationCode}
-                            </span>
+                              <div
+                                className="p-2 rounded-3 text-center mb-3"
+                                style={{ background: '#061838', border: '1px solid #d4af37' }}
+                              >
+                                <span className="d-block text-white-50" style={{ fontSize: '9.5px', letterSpacing: '0.8px' }}>
+                                  CRYPTOGRAPHIC VERIFICATION SERIAL
+                                </span>
+                                <span className="font-monospace fw-bold" style={{ fontSize: '12.5px', color: '#F5EA14' }}>
+                                  {cert.verificationCode}
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="d-flex flex-column gap-2">
+                              <button
+                                type="button"
+                                onClick={() => setSelectedCertificate(cert)}
+                                className="btn btn-sm btn-primary rounded-pill w-100 py-1.5 fw-bold d-inline-flex align-items-center justify-content-center gap-1.5"
+                              >
+                                <i className="feather-eye fs-12" />
+                                <span>Open Luxury Certificate Modal</span>
+                              </button>
+                              <a
+                                href={certPdfUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn btn-sm rounded-pill w-100 py-1.5 fw-bold d-inline-flex align-items-center justify-content-center gap-1.5"
+                                style={{ background: '#061838', color: '#F5EA14', border: '1px solid #d4af37' }}
+                              >
+                                <i className="feather-printer fs-12" />
+                                <span>Print / Download Vector Diploma PDF</span>
+                              </a>
+                            </div>
                           </div>
                         </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
 
-                        <button
-                          type="button"
-                          onClick={() => setSelectedCertificate(cert)}
-                          className="btn btn-sm btn-primary rounded-pill w-100 py-1.5 fw-semibold d-inline-flex align-items-center justify-content-center gap-1.5"
-                        >
-                          <i className="feather-eye fs-12" />
-                          <span>View Official Certificate</span>
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+              {/* Embedded Beautiful Certificate & Vector Diploma Studio right on the Student Certificates tab */}
+              <BeautifulCertificateStudio
+                courseId={certificates[0]?.courseId || 7}
+                courseTitle={certificates[0]?.courseName || 'Cybersecurity & Network Defense Fundamentals'}
+                courseCode={certificates[0]?.courseCode || 'PSC-CYBER'}
+                studentName={certificates[0]?.studentName || studentName}
+                studentRegNo={certificates[0]?.regNumber || regNumber}
+                serialCode={certificates[0]?.verificationCode || 'OUT-35CB03BB3C'}
+                issueDate={certificates[0]?.issueDate}
+                gradeScore={
+                  certificates[0]
+                    ? `${certificates[0].grade}% (Grade ${certificates[0].letterGrade})`
+                    : undefined
+                }
+                honours={
+                  certificates[0]
+                    ? `${certificates[0].classification.toUpperCase()} (GRADE ${certificates[0].letterGrade} • ${certificates[0].grade}%)`
+                    : undefined
+                }
+                creditHours="12.0 TCU Credit Units (120 Hours)"
+              />
+            </>
           )}
 
           {/* ============================================================== */}
@@ -1786,14 +1885,28 @@ export const StudentDashboard: React.FC = () => {
           <div
             className="modal fade show d-block"
             tabIndex={-1}
-            style={{ backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 1060 }}
+            style={{ backgroundColor: 'rgba(6, 24, 56, 0.78)', zIndex: 1060 }}
           >
-            <div className="modal-dialog modal-dialog-centered modal-lg">
+            <div className="modal-dialog modal-dialog-centered modal-xl">
               <div className="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
-                <div className="modal-header bg-dark text-white p-3 border-0">
-                  <h5 className="modal-title fw-bold fs-15 text-white mb-0">
-                    Official Academic Certificate
-                  </h5>
+                <div
+                  className="modal-header text-white p-3 border-0"
+                  style={{
+                    background: 'linear-gradient(135deg, #061838 0%, #013BA6 60%, #061838 100%)',
+                    borderBottom: '3px solid #F5EA14',
+                  }}
+                >
+                  <div>
+                    <span
+                      className="badge rounded-pill fw-bold me-2"
+                      style={{ background: '#F5EA14', color: '#061838', fontSize: '10.5px' }}
+                    >
+                      BEAUTIFUL CERTIFICATE STUDIO
+                    </span>
+                    <span className="modal-title fw-bold fs-15 text-white">
+                      {selectedCertificate.courseName} ({selectedCertificate.courseCode})
+                    </span>
+                  </div>
                   <button
                     type="button"
                     className="btn-close btn-close-white"
@@ -1801,82 +1914,72 @@ export const StudentDashboard: React.FC = () => {
                   />
                 </div>
 
-                <div className="modal-body p-4 text-center bg-white">
-                  <div
-                    className="p-4 rounded-3 border position-relative"
-                    style={{
-                      background: 'radial-gradient(circle at center, #ffffff 0%, #f8fafc 100%)',
-                      border: '3px double #d1d5db',
-                    }}
-                  >
-                    <div className="mb-3">
-                      <img
-                        src="/assets/img/out-logo.png"
-                        alt="OUT LMS"
-                        style={{ height: '48px', objectFit: 'contain' }}
-                        onError={(e: any) => {
-                          e.target.style.display = 'none';
-                        }}
-                      />
-                      <h4 className="fw-bold text-dark mt-2 mb-0" style={{ letterSpacing: '0.5px' }}>
-                        THE OPEN UNIVERSITY OF TANZANIA
-                      </h4>
-                      <span className="text-muted small text-uppercase fw-semibold" style={{ letterSpacing: '1px' }}>
-                        Directorate of Undergraduate & Postgraduate Studies
-                      </span>
-                    </div>
-
-                    <p className="text-muted small mb-1">This is to certify that</p>
-                    <h3 className="fw-bold text-primary mb-2">
-                      {selectedCertificate.studentName}
-                    </h3>
-                    <p className="text-muted small mb-3">
-                      Registration Number: <strong>{selectedCertificate.regNumber}</strong>
-                    </p>
-
-                    <p className="text-muted small mb-1">has successfully completed the curriculum for</p>
-                    <h5 className="fw-bold text-dark mb-2">
-                      {selectedCertificate.courseName} ({selectedCertificate.courseCode})
-                    </h5>
-
-                    <p className="text-muted small mb-4">
-                      with academic classification of <strong>{selectedCertificate.classification}</strong> (Grade: {selectedCertificate.letterGrade}).
-                    </p>
-
-                    <div className="d-flex align-items-center justify-content-between pt-4 border-top">
-                      <div className="text-start">
-                        <span className="d-block fw-bold text-dark small">{selectedCertificate.deanName}</span>
-                        <span className="text-muted" style={{ fontSize: '11px' }}>Dean of Faculty</span>
-                      </div>
-                      <div className="text-center">
-                        <span className="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 font-monospace">
-                          SARIS VERIFIED • {selectedCertificate.verificationCode}
-                        </span>
-                      </div>
-                      <div className="text-end">
-                        <span className="d-block fw-bold text-dark small">{selectedCertificate.chancellorName}</span>
-                        <span className="text-muted" style={{ fontSize: '11px' }}>Vice Chancellor</span>
-                      </div>
-                    </div>
-                  </div>
+                <div className="modal-body p-3 bg-light" style={{ maxHeight: '82vh', overflowY: 'auto' }}>
+                  <BeautifulCertificateStudio
+                    compact
+                    courseId={selectedCertificate.courseId}
+                    courseTitle={selectedCertificate.courseName}
+                    courseCode={selectedCertificate.courseCode}
+                    studentName={selectedCertificate.studentName || studentName}
+                    studentRegNo={selectedCertificate.regNumber || regNumber}
+                    serialCode={selectedCertificate.verificationCode}
+                    issueDate={selectedCertificate.issueDate}
+                    gradeScore={`${selectedCertificate.grade}% (Grade ${selectedCertificate.letterGrade})`}
+                    honours={`${selectedCertificate.classification.toUpperCase()} (GRADE ${selectedCertificate.letterGrade} • ${selectedCertificate.grade}%)`}
+                    creditHours="12.0 TCU Credit Units (120 Hours)"
+                  />
                 </div>
 
-                <div className="modal-footer bg-light p-3 border-top d-flex justify-content-between">
+                <div className="modal-footer bg-white p-3 border-top d-flex justify-content-between">
                   <button
                     type="button"
-                    className="btn btn-secondary rounded-pill px-4"
+                    className="btn btn-outline-secondary rounded-pill px-4 fw-semibold"
                     onClick={() => setSelectedCertificate(null)}
                   >
-                    Close
+                    Close Preview
                   </button>
-                  <button
-                    type="button"
-                    className="btn btn-primary rounded-pill px-4 fw-semibold"
-                    onClick={() => window.print()}
-                  >
-                    <i className="ti ti-printer me-1.5" />
-                    Print / Download PDF
-                  </button>
+                  <div className="d-flex align-items-center gap-2">
+                    <a
+                      href={buildBeautifulCertificatePdfUrl({
+                        courseId: selectedCertificate.courseId,
+                        serialCode: selectedCertificate.verificationCode,
+                        studentName: selectedCertificate.studentName || studentName,
+                        studentRegNo: selectedCertificate.regNumber || regNumber,
+                        courseTitle: selectedCertificate.courseName,
+                        courseCode: selectedCertificate.courseCode,
+                        gradeScore: `${selectedCertificate.grade}% (Grade ${selectedCertificate.letterGrade})`,
+                        honours: `★ ${selectedCertificate.classification.toUpperCase()} (GRADE ${selectedCertificate.letterGrade} • ${selectedCertificate.grade}% • 20 CPD CREDITS) ★`,
+                        issueDate: selectedCertificate.issueDate,
+                        autoPrint: false,
+                      })}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn btn-outline-primary rounded-pill px-4 fw-bold"
+                    >
+                      <i className="feather-external-link me-1.5" />
+                      Open Full-Bleed Studio
+                    </a>
+                    <a
+                      href={buildBeautifulCertificatePdfUrl({
+                        courseId: selectedCertificate.courseId,
+                        serialCode: selectedCertificate.verificationCode,
+                        studentName: selectedCertificate.studentName || studentName,
+                        studentRegNo: selectedCertificate.regNumber || regNumber,
+                        courseTitle: selectedCertificate.courseName,
+                        courseCode: selectedCertificate.courseCode,
+                        gradeScore: `${selectedCertificate.grade}% (Grade ${selectedCertificate.letterGrade})`,
+                        honours: `★ ${selectedCertificate.classification.toUpperCase()} (GRADE ${selectedCertificate.letterGrade} • ${selectedCertificate.grade}% • 20 CPD CREDITS) ★`,
+                        issueDate: selectedCertificate.issueDate,
+                        autoPrint: true,
+                      })}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn btn-primary rounded-pill px-4 fw-bold"
+                    >
+                      <i className="ti ti-printer me-1.5" />
+                      Print / Download Luxury Diploma PDF
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>

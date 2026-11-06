@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { adminService } from '../api/adminService';
+import { getDynamicMoodleUrl } from '../api/apiClient';
 
 export interface BeautifulCertificateTheme {
   id: string;
@@ -89,23 +90,61 @@ export const DEFAULT_DIPLOMA_THEMES: Record<string, BeautifulCertificateTheme> =
   },
 };
 
-interface BeautifulCertificateStudioProps {
+export interface BeautifulCertificateStudioProps {
   courseId?: number | string;
   courseTitle?: string;
   courseCode?: string;
   studentName?: string;
   studentRegNo?: string;
   serialCode?: string;
+  issueDate?: string;
+  gradeScore?: string;
+  honours?: string;
+  creditHours?: string;
   compact?: boolean;
+}
+
+export function buildBeautifulCertificatePdfUrl(params: {
+  courseId?: number | string;
+  serialCode?: string;
+  theme?: string;
+  studentName?: string;
+  studentRegNo?: string;
+  courseTitle?: string;
+  courseCode?: string;
+  gradeScore?: string;
+  honours?: string;
+  issueDate?: string;
+  autoPrint?: boolean;
+}): string {
+  const cid = Number(params.courseId) || 7;
+  const qs = new URLSearchParams();
+  qs.set('action', 'render_beautiful_certificate');
+  qs.set('course_id', String(cid));
+  if (params.serialCode) qs.set('code', params.serialCode);
+  if (params.theme) qs.set('theme', params.theme);
+  if (params.studentName) qs.set('student_name', params.studentName);
+  if (params.studentRegNo) qs.set('reg_no', params.studentRegNo);
+  if (params.courseTitle) qs.set('course_title', params.courseTitle);
+  if (params.courseCode) qs.set('course_code', params.courseCode);
+  if (params.gradeScore) qs.set('grade', params.gradeScore);
+  if (params.honours) qs.set('honours', params.honours);
+  if (params.issueDate) qs.set('issue_date', params.issueDate);
+  if (params.autoPrint) qs.set('autoprint', '1');
+  return `${getDynamicMoodleUrl()}/api/student_api.php?${qs.toString()}`;
 }
 
 export const BeautifulCertificateStudio: React.FC<BeautifulCertificateStudioProps> = ({
   courseId = 7,
-  courseTitle = 'Advanced ICT Systems, Cloud Engineering & Enterprise Architecture',
-  courseCode = 'ICT-304',
-  studentName = 'Baraka Mkwawa',
-  studentRegNo = 'OUT/REG/2026/0003',
-  serialCode = 'OUT-35CB03BB3C',
+  courseTitle,
+  courseCode,
+  studentName,
+  studentRegNo,
+  serialCode,
+  issueDate,
+  gradeScore,
+  honours,
+  creditHours,
   compact = false,
 }) => {
   const numericCourseId = Number(courseId) || 7;
@@ -121,13 +160,23 @@ export const BeautifulCertificateStudio: React.FC<BeautifulCertificateStudioProp
       .getBeautifulCertificates(numericCourseId, serialCode)
       .then((res) => {
         if (!mounted || !res?.success) return;
-        if (res.themes) setThemes(res.themes);
+        if (res.themes) {
+          if (Array.isArray(res.themes)) {
+            const map: Record<string, BeautifulCertificateTheme> = { ...DEFAULT_DIPLOMA_THEMES };
+            res.themes.forEach((t: any) => {
+              if (t && t.id) map[t.id] = { ...(DEFAULT_DIPLOMA_THEMES[t.id] || {}), ...t };
+            });
+            setThemes(map);
+          } else if (typeof res.themes === 'object') {
+            setThemes({ ...DEFAULT_DIPLOMA_THEMES, ...res.themes });
+          }
+        }
         if (res.active_theme && DEFAULT_DIPLOMA_THEMES[res.active_theme]) {
           setActiveThemeKey(res.active_theme);
         }
         if (res.certificate) setCertData(res.certificate);
       })
-      .catch(() => {});
+      .catch(() => { });
     return () => {
       mounted = false;
     };
@@ -138,15 +187,24 @@ export const BeautifulCertificateStudio: React.FC<BeautifulCertificateStudioProp
   const mainTextColor = isDarkTheme ? '#F8FAFC' : currentTheme.textColor || '#0f172a';
   const subTextColor = isDarkTheme ? '#CBD5E1' : '#475569';
 
-  const displayStudentName = certData?.student_name || studentName;
-  const displayRegNo = certData?.student_reg_no || studentRegNo;
-  const displayCourseTitle = certData?.course_title || courseTitle;
-  const displayCourseCode = certData?.course_code || courseCode;
-  const displaySerial = certData?.serial_code || serialCode;
-  const displayIssueDate = certData?.issue_date || '05 November 2026';
-  const displayHonours = certData?.honours || 'FIRST CLASS HONOURS WITH DISTINCTION (GPA 4.8 / 5.0)';
-  const displayScore = certData?.grade_score || '96.4% (Grade A+)';
-  const displayCredits = certData?.credit_hours || '12.0 TCU Credit Units (120 Hours)';
+  const displayStudentName =
+    studentName || certData?.student_name || certData?.scholarName || 'Baraka Mkwawa';
+  const displayRegNo =
+    studentRegNo || certData?.student_reg_no || certData?.regNumber || 'OUT/REG/2026/0003';
+  const displayCourseTitle =
+    courseTitle || certData?.course_title || certData?.courseName || 'Advanced ICT Systems, Cloud Engineering & Enterprise Architecture';
+  const displayCourseCode =
+    courseCode || certData?.course_code || certData?.courseCode || 'ICT-304';
+  const displaySerial =
+    serialCode || certData?.serial_code || certData?.code || 'OUT-35CB03BB3C';
+  const displayIssueDate =
+    issueDate || certData?.issue_date || certData?.issuedDate || '05 November 2026';
+  const displayScore =
+    gradeScore || certData?.grade_score || certData?.grade || '96.4% (Grade A+)';
+  const displayHonours =
+    honours || certData?.honours || 'FIRST CLASS HONOURS WITH DISTINCTION (GPA 4.8 / 5.0)';
+  const displayCredits =
+    creditHours || certData?.credit_hours || '12.0 TCU Credit Units (120 Hours)';
 
   const handleSaveTheme = async (themeKey: string) => {
     setActiveThemeKey(themeKey);
@@ -165,8 +223,32 @@ export const BeautifulCertificateStudio: React.FC<BeautifulCertificateStudioProp
     }
   };
 
-  const fullPdfStudioUrl = adminService.getBeautifulCertificatePdfUrl(numericCourseId, displaySerial, activeThemeKey, false);
-  const autoPrintPdfUrl = adminService.getBeautifulCertificatePdfUrl(numericCourseId, displaySerial, activeThemeKey, true);
+  const fullPdfStudioUrl = buildBeautifulCertificatePdfUrl({
+    courseId: numericCourseId,
+    serialCode: displaySerial,
+    theme: activeThemeKey,
+    studentName: displayStudentName,
+    studentRegNo: displayRegNo,
+    courseTitle: displayCourseTitle,
+    courseCode: displayCourseCode,
+    gradeScore: displayScore,
+    honours: displayHonours,
+    issueDate: displayIssueDate,
+    autoPrint: false,
+  });
+  const autoPrintPdfUrl = buildBeautifulCertificatePdfUrl({
+    courseId: numericCourseId,
+    serialCode: displaySerial,
+    theme: activeThemeKey,
+    studentName: displayStudentName,
+    studentRegNo: displayRegNo,
+    courseTitle: displayCourseTitle,
+    courseCode: displayCourseCode,
+    gradeScore: displayScore,
+    honours: displayHonours,
+    issueDate: displayIssueDate,
+    autoPrint: true,
+  });
   const verifyQrData =
     typeof window !== 'undefined'
       ? `${window.location.origin}/pages/verify-certificate?code=${encodeURIComponent(displaySerial)}`
@@ -198,7 +280,7 @@ export const BeautifulCertificateStudio: React.FC<BeautifulCertificateStudioProp
               </span>
             </div>
             <h5 className="text-white fw-bold mb-0">
-              Official Sovereign University Diploma — <span style={{ color: '#F4ED2D' }}>{ currentTheme.name }</span>
+              Official Sovereign University Diploma — <span style={{ color: '#F4ED2D' }}>{currentTheme.name}</span>
             </h5>
           </div>
 

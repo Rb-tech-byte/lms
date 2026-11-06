@@ -16,7 +16,7 @@ export interface UserProfile {
   dashboardUrl: string;
 }
 
-export const DEMO_USERS: Record<'student' | 'instructor' | 'admin', UserProfile & { password: string }> = {
+export const DEMO_USERS: Record<'student' | 'instructor' | 'coursecreator' | 'admin', UserProfile & { password: string }> = {
   student: {
     id: 'out-stu-1042',
     username: 'student',
@@ -45,6 +45,20 @@ export const DEMO_USERS: Record<'student' | 'instructor' | 'admin', UserProfile 
     department: 'Department of Computing & Information Technology',
     phone: '+255 754 987 654',
     dashboardUrl: '/instructor/instructor-dashboard',
+  },
+  coursecreator: {
+    id: 'out-cc-0014',
+    username: 'coursecreator',
+    name: 'Prof. Joseph Mbwambo',
+    email: 'coursecreator@out.ac.tz',
+    password: 'Creator@2026!',
+    role: 'instructor',
+    avatar: 'assets/img/user/user-01.jpg',
+    title: 'Curriculum & Course Creator',
+    bio: 'Curriculum & Course Creator — Directorate of Academic Quality at The Open University of Tanzania.',
+    department: 'Directorate of Curriculum & Academic Quality',
+    phone: '+255 754 112 233',
+    dashboardUrl: '/course/add-course',
   },
   admin: {
     id: 'out-adm-0001',

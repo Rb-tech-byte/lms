@@ -17,8 +17,12 @@
   },
   "servers": [
     {
+      "url": "https://lms.wolinet.com",
+      "description": "Production Cloud Gateway (lms.wolinet.com)"
+    },
+    {
       "url": "http://localhost:3000",
-      "description": "Unified Gateway & Reverse Proxy (Port 3000)"
+      "description": "Unified Gateway & Development Reverse Proxy (Port 3000)"
     },
     {
       "url": "http://localhost:8080",

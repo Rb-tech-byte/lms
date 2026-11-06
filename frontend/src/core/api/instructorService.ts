@@ -3,8 +3,9 @@
  * Integrates Moodle teacher management with OUT LMS React frontend.
  */
 
-import { callMoodleWs } from './apiClient';
+import { callMoodleWs, getModularApiUrl } from './apiClient';
 import { MOODLE_ENDPOINTS } from './moodleEndpoints';
+import { adminService } from './adminService';
 
 export interface InstructorCourseItem {
   id: number;
@@ -247,71 +248,6 @@ export interface InstructorProfileSettings {
   staffId: string;
 }
 
-export interface InstructorSocialSettings {
-  orcid: string;
-  googleScholar: string;
-  researchGate: string;
-  linkedIn: string;
-  twitter: string;
-  website: string;
-}
-
-export interface InstructorNotificationSettings {
-  studentEnrolmentEmail: boolean;
-  assignmentSubmissionsEmail: boolean;
-  assignmentSubmissionsInstant: boolean;
-  quizCompletedEmail: boolean;
-  forumPostsEmail: boolean;
-  smsAlerts: boolean;
-  bursarPayoutEmail: boolean;
-  systemCircularsEmail: boolean;
-}
-
-export interface InstructorLinkedAccountItem {
-  id: string;
-  name: string;
-  provider: string;
-  icon: string;
-  connected: boolean;
-  accountIdentifier: string;
-  connectedAt: string;
-}
-
-export interface InstructorIntegrationItem {
-  id: string;
-  name: string;
-  category: string;
-  description: string;
-  icon: string;
-  status: 'connected' | 'disconnected' | 'warning';
-  endpoint: string;
-  lastChecked: string;
-}
-
-export interface InstructorWithdrawMethod {
-  id: string;
-  type: 'mobile_money' | 'bank';
-  provider: string;
-  accountName: string;
-  accountNumber: string;
-  branch?: string;
-  swift?: string;
-  isDefault: boolean;
-  verified: boolean;
-}
-
-export interface InstructorPlanWorkload {
-  facultyRank: string;
-  tenureStatus: string;
-  academicYear: string;
-  semester: string;
-  maxCourseLoad: number;
-  assignedCoursesCount: number;
-  allocatedTeachingHours: number;
-  officeHours: string;
-  regionalCenters: string[];
-}
-
 const DEFAULT_INSTRUCTOR_ID = 4; // Dr. Amina Kilindo in Moodle
 
 export const instructorService = {
@@ -323,10 +259,7 @@ export const instructorService = {
   ): Promise<InstructorDashboardPayload> {
     try {
       const token = localStorage.getItem('out_lms_ws_token') || '';
-      const apiBase =
-        typeof window !== 'undefined'
-          ? `${window.location.origin}/admin_api.php`
-          : '/admin_api.php';
+      const apiBase = getModularApiUrl('instructor');
 
       const url = `${apiBase}?action=get_instructor_dashboard_data&instructor_id=${instructorId}`;
       const res = await fetch(url, {
@@ -471,10 +404,7 @@ export const instructorService = {
   }): Promise<{ success: boolean; announcement?: InstructorAnnouncementItem; message: string }> {
     try {
       const token = localStorage.getItem('out_lms_ws_token') || '';
-      const apiBase =
-        typeof window !== 'undefined'
-          ? `${window.location.origin}/admin_api.php`
-          : '/admin_api.php';
+      const apiBase = getModularApiUrl('instructor');
 
       const res = await fetch(`${apiBase}?action=create_instructor_announcement`, {
         method: 'POST',
@@ -778,10 +708,7 @@ export const instructorService = {
     try {
       const token = localStorage.getItem('out_lms_ws_token') || '';
       const numericScore = Number(params.score ?? params.grade ?? 85);
-      const apiBase =
-        typeof window !== 'undefined'
-          ? `${window.location.origin}/admin_api.php`
-          : '/admin_api.php';
+      const apiBase = getModularApiUrl('instructor');
       const res = await fetch(`${apiBase}?action=grade_submission`, {
         method: 'POST',
         headers: {
@@ -920,10 +847,7 @@ export const instructorService = {
 
   async callApi(action: string, subaction: string = 'list', payload: any = {}): Promise<any> {
     const token = localStorage.getItem('out_lms_ws_token') || '';
-    const apiBase =
-      typeof window !== 'undefined' && window.location.port === '3000'
-        ? `${window.location.origin}/admin_api.php`
-        : '/outlmstheme/moodle-backend/admin_api.php';
+    const apiBase = getModularApiUrl('instructor');
     const isPost = subaction !== 'list' && subaction !== 'get';
     const url = `${apiBase}?action=${encodeURIComponent(action)}${subaction ? `&subaction=${encodeURIComponent(subaction)}` : ''}`;
 
@@ -957,7 +881,13 @@ export const instructorService = {
 
   async createCourse(course: Partial<InstructorCourseItem>): Promise<{ success: boolean; course?: InstructorCourseItem; message: string }> {
     try {
-      const res = await this.callApi('manage_instructor_courses', 'create', course);
+      const res: any = await adminService.createCourse({
+        fullname: course.fullname || '',
+        shortname: course.shortname || '',
+        summary: course.summary || '',
+        num_sections: course.lessonsCount || 8,
+        tuition_fee: Number(String(course.price || '150000').replace(/[^0-9]/g, '')) || 150000,
+      });
       return { success: !!res.success, course: res.course, message: res.message || 'Course created' };
     } catch (e: any) {
       return { success: false, message: e.message || 'Failed to create course' };
@@ -966,6 +896,16 @@ export const instructorService = {
 
   async updateCourse(course: Partial<InstructorCourseItem>): Promise<{ success: boolean; message: string }> {
     try {
+      const cid = Number(course.id || 0);
+      if (cid > 1) {
+        const res: any = await adminService.updateCourseSettings(cid, {
+          fullname: course.fullname,
+          shortname: course.shortname,
+          summary: course.summary,
+          tuition_fee: course.price ? Number(String(course.price).replace(/[^0-9]/g, '')) : undefined,
+        } as any);
+        return { success: !!res.success, message: res.message || 'Course updated' };
+      }
       const res = await this.callApi('manage_instructor_courses', 'update', course);
       return { success: !!res.success, message: res.message || 'Course updated' };
     } catch (e: any) {
@@ -975,7 +915,7 @@ export const instructorService = {
 
   async deleteCourse(id: number): Promise<{ success: boolean; message: string }> {
     try {
-      const res = await this.callApi('manage_instructor_courses', 'delete', { id });
+      const res: any = await adminService.deleteCourse(id);
       return { success: !!res.success, message: res.message || 'Course deleted' };
     } catch (e: any) {
       return { success: false, message: e.message || 'Failed to delete course' };
@@ -1303,291 +1243,5 @@ export const instructorService = {
       return { success: false, message: 'Password must be at least 8 characters long.' };
     }
     return { success: true, message: 'Password updated and synchronized with Moodle identity store.' };
-  },
-
-  async fetchSocialSettings(): Promise<InstructorSocialSettings> {
-    const saved = typeof window !== 'undefined' ? localStorage.getItem('out_instructor_social') : null;
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) { /* ignore */ }
-    }
-    return {
-      orcid: 'https://orcid.org/0000-0002-1825-0097',
-      googleScholar: 'https://scholar.google.com/citations?user=amina_kilindo_out',
-      researchGate: 'https://www.researchgate.net/profile/Amina-Kilindo',
-      linkedIn: 'https://linkedin.com/in/dr-amina-kilindo-out',
-      twitter: 'https://x.com/AminaKilindoOUT',
-      website: 'https://staff.out.ac.tz/akilindo',
-    };
-  },
-
-  async updateSocialSettings(social: Partial<InstructorSocialSettings>): Promise<{ success: boolean; message: string }> {
-    try {
-      const current = await this.fetchSocialSettings();
-      const updated = { ...current, ...social };
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('out_instructor_social', JSON.stringify(updated));
-      }
-      await this.callApi('instructor_profile', 'update_social', updated);
-      return { success: true, message: 'Scholarly & social profiles updated successfully.' };
-    } catch (e: any) {
-      return { success: true, message: 'Scholarly & social profiles saved.' };
-    }
-  },
-
-  async fetchNotificationSettings(): Promise<InstructorNotificationSettings> {
-    const saved = typeof window !== 'undefined' ? localStorage.getItem('out_instructor_notifs') : null;
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) { /* ignore */ }
-    }
-    return {
-      studentEnrolmentEmail: true,
-      assignmentSubmissionsEmail: true,
-      assignmentSubmissionsInstant: false,
-      quizCompletedEmail: true,
-      forumPostsEmail: true,
-      smsAlerts: true,
-      bursarPayoutEmail: true,
-      systemCircularsEmail: true,
-    };
-  },
-
-  async updateNotificationSettings(notifs: Partial<InstructorNotificationSettings>): Promise<{ success: boolean; message: string }> {
-    const current = await this.fetchNotificationSettings();
-    const updated = { ...current, ...notifs };
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('out_instructor_notifs', JSON.stringify(updated));
-    }
-    try {
-      await this.callApi('instructor_profile', 'update_notifications', updated);
-    } catch (e) { /* ignore */ }
-    return { success: true, message: 'Notification preferences updated.' };
-  },
-
-  async fetchLinkedAccounts(): Promise<InstructorLinkedAccountItem[]> {
-    const saved = typeof window !== 'undefined' ? localStorage.getItem('out_instructor_linked') : null;
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) { /* ignore */ }
-    }
-    return [
-      {
-        id: 'google-sso',
-        name: 'OUT Google Workspace for Education',
-        provider: 'Google SSO (@out.ac.tz)',
-        icon: 'ti ti-brand-google',
-        connected: true,
-        accountIdentifier: 'amina.kilindo@out.ac.tz',
-        connectedAt: '14 Jan 2026',
-      },
-      {
-        id: 'ms-edu',
-        name: 'Microsoft 365 Education (Teams & OneDrive)',
-        provider: 'Microsoft Azure AD',
-        icon: 'ti ti-brand-windows',
-        connected: true,
-        accountIdentifier: 'amina.kilindo@staff.out.ac.tz',
-        connectedAt: '03 Feb 2026',
-      },
-      {
-        id: 'moodle-app',
-        name: 'Moodle Mobile App Official Companion',
-        provider: 'Moodle 5.3 Web Services Token',
-        icon: 'ti ti-device-mobile',
-        connected: true,
-        accountIdentifier: 'Token: 8f9b...3c1a (Active on Pixel 8 Pro)',
-        connectedAt: '28 Oct 2026',
-      },
-      {
-        id: 'github-edu',
-        name: 'GitHub Education Classroom',
-        provider: 'GitHub OAuth2',
-        icon: 'ti ti-brand-github',
-        connected: false,
-        accountIdentifier: 'Not linked',
-        connectedAt: '—',
-      },
-    ];
-  },
-
-  async toggleLinkedAccount(id: string, connect: boolean): Promise<{ success: boolean; message: string }> {
-    const accounts = await this.fetchLinkedAccounts();
-    const updated = accounts.map((a) =>
-      a.id === id
-        ? {
-            ...a,
-            connected: connect,
-            accountIdentifier: connect ? 'Connected on ' + new Date().toLocaleDateString() : 'Not linked',
-            connectedAt: connect ? new Date().toLocaleDateString() : '—',
-          }
-        : a
-    );
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('out_instructor_linked', JSON.stringify(updated));
-    }
-    return {
-      success: true,
-      message: `${connect ? 'Connected' : 'Disconnected'} successfully.`,
-    };
-  },
-
-  async fetchIntegrations(): Promise<InstructorIntegrationItem[]> {
-    const saved = typeof window !== 'undefined' ? localStorage.getItem('out_instructor_integrations') : null;
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) { /* ignore */ }
-    }
-    return [
-      {
-        id: 'bbb',
-        name: 'BigBlueButton Virtual Classroom',
-        category: 'Live Video Lectures & Interactive Whiteboard',
-        description: 'OUT national video conferencing cluster for real-time virtual tutorials and student office hours.',
-        icon: 'ti ti-video',
-        status: 'connected',
-        endpoint: 'https://bbb.out.ac.tz/bigbluebutton/api',
-        lastChecked: 'Active (Ping 12ms)',
-      },
-      {
-        id: 'turnitin',
-        name: 'Turnitin Academic Integrity Suite',
-        category: 'Plagiarism & Originality Checker',
-        description: 'Automated originality analysis integrated directly with student assignment submissions.',
-        icon: 'ti ti-shield-check',
-        status: 'connected',
-        endpoint: 'turnitin.api.out.ac.tz/v2',
-        lastChecked: 'Active (Account #OUT-66291)',
-      },
-      {
-        id: 'moodle-ws',
-        name: 'Moodle REST Web Services Engine',
-        category: 'LMS Core Synchronization',
-        description: 'Bi-directional data exchange between Faculty Console and Moodle 5.3 course databases.',
-        icon: 'ti ti-cloud-lock',
-        status: 'connected',
-        endpoint: 'http://localhost/outlmstheme/moodle-backend/webservice/rest/server.php',
-        lastChecked: 'Connected (OAuth2 Bearer)',
-      },
-      {
-        id: 'h5p',
-        name: 'H5P Interactive Content Hub',
-        category: 'Rich Interactive Courseware',
-        description: 'Branching scenarios, interactive videos, and gamified practice checks for distance learners.',
-        icon: 'ti ti-puzzle',
-        status: 'connected',
-        endpoint: 'h5p.org/moodle-embed',
-        lastChecked: 'Version 1.25.1 Ready',
-      },
-      {
-        id: 'panopto',
-        name: 'Panopto Lecture Capture',
-        category: 'Media & Video Library',
-        description: 'High-definition lecture recording with automated speech-to-text transcripts and Swahili captions.',
-        icon: 'ti ti-player-play',
-        status: 'connected',
-        endpoint: 'media.out.ac.tz/panopto',
-        lastChecked: 'Storage: 184 GB / 1 TB',
-      },
-    ];
-  },
-
-  async testIntegration(id: string): Promise<{ success: boolean; message: string }> {
-    return { success: true, message: `Ping test succeeded. Endpoint responded with 200 OK (Latency: 14ms).` };
-  },
-
-  async fetchWithdrawSettings(): Promise<InstructorWithdrawMethod[]> {
-    const saved = typeof window !== 'undefined' ? localStorage.getItem('out_instructor_withdraw') : null;
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) { /* ignore */ }
-    }
-    return [
-      {
-        id: 'w-1',
-        type: 'mobile_money',
-        provider: 'Vodacom M-Pesa',
-        accountName: 'Dr. Amina Kilindo',
-        accountNumber: '+255 754 892 104',
-        isDefault: true,
-        verified: true,
-      },
-      {
-        id: 'w-2',
-        type: 'bank',
-        provider: 'CRDB Bank Tanzania',
-        accountName: 'Dr. Amina Kilindo',
-        accountNumber: '0150294821900',
-        branch: 'Kijitonyama Corporate Branch',
-        swift: 'CORUTZTZ',
-        isDefault: false,
-        verified: true,
-      },
-      {
-        id: 'w-3',
-        type: 'bank',
-        provider: 'NMB Bank Tanzania',
-        accountName: 'Dr. Amina Kilindo',
-        accountNumber: '201100482910',
-        branch: 'Kinondoni Branch, Dar es Salaam',
-        swift: 'NMBLTZTZ',
-        isDefault: false,
-        verified: true,
-      },
-    ];
-  },
-
-  async addWithdrawMethod(method: Omit<InstructorWithdrawMethod, 'id'>): Promise<{ success: boolean; message: string }> {
-    const list = await this.fetchWithdrawSettings();
-    const newId = `w-${Date.now()}`;
-    const updated = [...list.map((m) => method.isDefault ? { ...m, isDefault: false } : m), { ...method, id: newId }];
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('out_instructor_withdraw', JSON.stringify(updated));
-    }
-    return { success: true, message: 'Withdrawal method added and verified with OUT Bursar.' };
-  },
-
-  async removeWithdrawMethod(id: string): Promise<{ success: boolean; message: string }> {
-    const list = await this.fetchWithdrawSettings();
-    const updated = list.filter((m) => m.id !== id);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('out_instructor_withdraw', JSON.stringify(updated));
-    }
-    return { success: true, message: 'Account removed.' };
-  },
-
-  async setDefaultWithdrawMethod(id: string): Promise<{ success: boolean; message: string }> {
-    const list = await this.fetchWithdrawSettings();
-    const updated = list.map((m) => ({ ...m, isDefault: m.id === id }));
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('out_instructor_withdraw', JSON.stringify(updated));
-    }
-    return { success: true, message: 'Default payout method updated.' };
-  },
-
-  async fetchPlanSettings(): Promise<InstructorPlanWorkload> {
-    const saved = typeof window !== 'undefined' ? localStorage.getItem('out_instructor_plan') : null;
-    if (saved) {
-      try { return JSON.parse(saved); } catch (e) { /* ignore */ }
-    }
-    return {
-      facultyRank: 'Senior Lecturer (Tenured Faculty, Academic Track I)',
-      tenureStatus: 'Permanent & Pensionable (OUT Staff)',
-      academicYear: '2026/2027',
-      semester: 'Semester 2',
-      maxCourseLoad: 5,
-      assignedCoursesCount: 3,
-      allocatedTeachingHours: 18,
-      officeHours: 'Tuesdays & Thursdays, 10:00 – 13:00 EAT (Virtual BBB Room #401)',
-      regionalCenters: [
-        'Kinondoni Regional Centre (Dar es Salaam - Primary)',
-        'Arusha Regional Centre (Northern Zone)',
-        'Mwanza Regional Centre (Lake Zone)',
-      ],
-    };
-  },
-
-  async updatePlanSettings(plan: Partial<InstructorPlanWorkload>): Promise<{ success: boolean; message: string }> {
-    const current = await this.fetchPlanSettings();
-    const updated = { ...current, ...plan };
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('out_instructor_plan', JSON.stringify(updated));
-    }
-    return { success: true, message: 'Faculty appointment and teaching workload updated.' };
   },
 };

@@ -167,10 +167,7 @@ const InstructorDashboard: React.FC = () => {
   const [editSaving, setEditSaving] = useState(false);
 
   const openEdit = (c: InstructorCourseItem) => {
-    setEditCourse(c);
-    setEditName(c.fullname);
-    setEditCode(c.shortname);
-    setEditSummary(c.summary || '');
+    navigate(`${all_routes.addNewCourse}?courseid=${c.id}`);
   };
 
   const saveCourse = async () => {
@@ -292,8 +289,8 @@ const InstructorDashboard: React.FC = () => {
           <button type="button" className="ins-btn ins-btn-ghost" onClick={openAnnouncement} disabled={!courses.length}>
             <i className="feather-volume-2" /> Broadcast
           </button>
-          <button type="button" className="ins-btn ins-btn-accent" onClick={() => setNewOpen(true)}>
-            <i className="feather-plus" /> New Course
+          <button type="button" className="ins-btn ins-btn-accent" onClick={() => navigate(all_routes.addNewCourse)}>
+            <i className="feather-plus" /> New Course (Full Wizard)
           </button>
         </div>
       </div>
@@ -444,8 +441,8 @@ const InstructorDashboard: React.FC = () => {
             >
               <i className="feather-download" /> Export
             </button>
-            <button type="button" className="ins-btn ins-btn-primary ins-btn-sm" onClick={() => setNewOpen(true)}>
-              <i className="feather-plus" /> New
+            <button type="button" className="ins-btn ins-btn-primary ins-btn-sm" onClick={() => navigate(all_routes.addNewCourse)}>
+              <i className="feather-plus" /> New Course
             </button>
           </>
         }

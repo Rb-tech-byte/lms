@@ -687,3 +687,17 @@
     box-shadow: 0 2px 6px rgba(1, 59, 166, 0.25);
   }
 }
+
+.btn.btn-outline-secondary {
+  color: #334155 !important;
+  border-color: #cbd5e1 !important;
+  background-color: #ffffff !important;
+
+  &:hover,
+  &:focus,
+  &:active {
+    color: #013ba6 !important;
+    border-color: #013ba6 !important;
+    background-color: #f0f7ff !important;
+  }
+}

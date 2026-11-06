@@ -3,7 +3,7 @@
  * Interfaces with Moodle 5.x mod_quiz_* external functions.
  */
 
-import { callMoodleWs, isMockMode } from './apiClient';
+import { callMoodleWs, getModularApiUrl, isMockMode } from './apiClient';
 import { MOODLE_ENDPOINTS } from './moodleEndpoints';
 
 export interface MoodleQuiz {
@@ -519,10 +519,7 @@ export const quizService = {
     try {
       const token = localStorage.getItem('out_lms_ws_token') || '';
       const courseId = quizId === 1 ? 2 : quizId === 2 ? 3 : 4;
-      const apiBase =
-        typeof window !== 'undefined'
-          ? `${window.location.origin}/admin_api.php`
-          : '/admin_api.php';
+      const apiBase = getModularApiUrl('student');
       await fetch(`${apiBase}?action=submit_quiz_grade`, {
         method: 'POST',
         headers: {

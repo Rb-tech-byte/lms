@@ -470,22 +470,22 @@ export const courseService = {
     };
 
     try {
-      const res = await callInternalApi<any>('public_catalog', undefined, 'GET');
+      const res = await callInternalApi<any>('public_catalog', undefined, 'GET', 'public');
       if (res && res.success) {
         const mappedCourses = (res.courses || []).map((c: any, idx: number) => normalizeCourse(c, idx));
-        const totalScholars = Number(res.stats?.totalScholars || 14820);
-        const totalFaculties = Number(res.stats?.totalFaculties || (res.categories || []).length || 5);
+        const totalScholars = Number(res.stats?.totalScholars ?? 0);
+        const totalFaculties = Number(res.stats?.totalFaculties ?? (res.categories || []).length ?? 0);
         return {
           courses: mappedCourses,
           categories: res.categories || [],
           stats: {
             totalScholars,
             totalStudents: totalScholars,
-            totalCourses: mappedCourses.length || 3,
+            totalCourses: Number(res.stats?.totalCourses ?? mappedCourses.length),
             totalFaculties,
             totalCategories: totalFaculties,
-            totalInstructors: Number(res.stats?.totalInstructors || 185),
-            regionalCenters: Number(res.stats?.regionalCenters || 30),
+            totalInstructors: Number(res.stats?.totalInstructors ?? 0),
+            regionalCenters: Number(res.stats?.regionalCenters ?? 30),
             satisfactionRate: res.stats?.satisfactionRate || '99.2%',
           },
         };

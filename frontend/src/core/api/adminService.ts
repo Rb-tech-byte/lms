@@ -3,7 +3,7 @@
  * Interfaces with Moodle 5.x core_user_* and system audit logging.
  */
 
-import { callMoodleWs, getDynamicMoodleUrl, parseSafeJson } from './apiClient';
+import { callMoodleWs, getDynamicMoodleUrl, getModularApiUrl, ApiModuleType, parseSafeJson } from './apiClient';
 import { MOODLE_ENDPOINTS } from './moodleEndpoints';
 
 export interface PlatformTelemetry {
@@ -113,24 +113,18 @@ export interface KickstartTemplateItem {
 }
 
 /**
- * Dynamically resolves the OUT LMS admin API URL without hardcoding paths or hosts.
- * Checks runtime window injection, environment configuration, dynamic browser origin,
- * and relative paths.
+ * Dynamically resolves the OUT LMS modular API URL for a given action or module
+ * (`/moodle-backend/api/{module}_api.php` or `/moodle-backend/admin_api.php` for router).
  */
-export const getAdminApiUrl = (): string => {
-  if (typeof window !== 'undefined') {
-    if ((window as any).__OUT_LMS_CONFIG__?.adminApiUrl) {
-      return (window as any).__OUT_LMS_CONFIG__.adminApiUrl.replace(/\/+$/, '');
-    }
-    if ((window as any).__OUT_LMS_CONFIG__?.moodleUrl) {
-      return `${(window as any).__OUT_LMS_CONFIG__.moodleUrl.replace(/\/+$/, '')}/admin_api.php`;
-    }
-  }
-  if (process.env.REACT_APP_ADMIN_API_URL) {
-    return process.env.REACT_APP_ADMIN_API_URL.replace(/\/+$/, '');
-  }
-  return `${getDynamicMoodleUrl()}/admin_api.php`;
+export const getAdminApiUrl = (actionOrModule: ApiModuleType | string = 'admin_system'): string => {
+  return getModularApiUrl(actionOrModule);
 };
+
+export const getAdminSystemApiUrl = (): string => getModularApiUrl('admin_system');
+export const getCourseStudioApiUrl = (): string => getModularApiUrl('course_studio');
+export const getInstructorApiUrl = (): string => getModularApiUrl('instructor');
+export const getStudentApiUrl = (): string => getModularApiUrl('student');
+export const getPublicApiUrl = (): string => getModularApiUrl('public');
 
 /**
  * Dynamically resolves the active authentication token from storage, runtime, or env
@@ -150,6 +144,11 @@ export const getAdminToken = (): string => {
 
 export const adminService = {
   getAdminApiUrl,
+  getAdminSystemApiUrl,
+  getCourseStudioApiUrl,
+  getInstructorApiUrl,
+  getStudentApiUrl,
+  getPublicApiUrl,
   getAdminToken,
   /**
    * Retrieves platform-wide telemetry & enrolment counters
@@ -157,7 +156,7 @@ export const adminService = {
   async getPlatformStats(): Promise<PlatformTelemetry> {
     try {
       const token = getAdminToken();
-      const url = `${getAdminApiUrl()}?action=get_telemetry&token=${encodeURIComponent(token)}`;
+      const url = `${getAdminApiUrl('get_telemetry')}?action=get_telemetry&token=${encodeURIComponent(token)}`;
       const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
       const data = await parseSafeJson(res, 'adminService');
       if (data.success && data.telemetry) {
@@ -220,7 +219,7 @@ export const adminService = {
   async getUniversityUsers(role?: string, search?: string): Promise<UniversityUserRecord[]> {
     try {
       const token = getAdminToken();
-      let url = `${getAdminApiUrl()}?action=get_users&token=${encodeURIComponent(token)}`;
+      let url = `${getAdminApiUrl('get_users')}?action=get_users&token=${encodeURIComponent(token)}`;
       if (role && role !== 'all') url += `&role=${encodeURIComponent(role)}`;
       if (search) url += `&search=${encodeURIComponent(search)}`;
       const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
@@ -322,7 +321,7 @@ export const adminService = {
     role?: 'Student' | 'Instructor' | 'Administrator' | 'student' | 'instructor' | 'admin';
   }): Promise<{ success: boolean; user: UniversityUserRecord; message: string }> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=create_user`;
+    const url = `${getAdminApiUrl('create_user')}?action=create_user`;
     const res = await fetch(url, {
       method: 'POST',
       headers: {
@@ -352,7 +351,7 @@ export const adminService = {
     password?: string;
   }): Promise<{ success: boolean; user: UniversityUserRecord; message: string }> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=update_user`;
+    const url = `${getAdminApiUrl('update_user')}?action=update_user`;
     const res = await fetch(url, {
       method: 'POST',
       headers: {
@@ -373,7 +372,7 @@ export const adminService = {
    */
   async deleteUser(userId: number, permanent: boolean = false): Promise<any> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=delete_user`;
+    const url = `${getAdminApiUrl('delete_user')}?action=delete_user`;
     const res = await fetch(url, {
       method: 'POST',
       headers: {
@@ -394,7 +393,7 @@ export const adminService = {
    */
   async enrolStudent(userId: number, courseId: number): Promise<any> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=enrol_user`;
+    const url = `${getAdminApiUrl('enrol_user')}?action=enrol_user`;
     const res = await fetch(url, {
       method: 'POST',
       headers: {
@@ -415,7 +414,7 @@ export const adminService = {
    */
   async unenrolStudent(userId: number, courseId: number): Promise<any> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=unenrol_user`;
+    const url = `${getAdminApiUrl('unenrol_user')}?action=unenrol_user`;
     const res = await fetch(url, {
       method: 'POST',
       headers: {
@@ -437,7 +436,7 @@ export const adminService = {
   async getAuditLedger(): Promise<AuditLedgerRecord[]> {
     try {
       const token = getAdminToken();
-      const url = `${getAdminApiUrl()}?action=get_audit_ledger`;
+      const url = `${getAdminApiUrl('get_audit_ledger')}?action=get_audit_ledger`;
       const res = await fetch(url, {
         headers: {
           'Content-Type': 'application/json',
@@ -459,7 +458,7 @@ export const adminService = {
    */
   async updatePaymentStatus(id: number, status: string): Promise<any> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=update_payment_status`;
+    const url = `${getAdminApiUrl('update_payment_status')}?action=update_payment_status`;
     const res = await fetch(url, {
       method: 'POST',
       headers: {
@@ -480,7 +479,7 @@ export const adminService = {
    */
   async getCorporateCohorts(): Promise<CorporateCohort[]> {
     try {
-      const url = `${getAdminApiUrl()}?action=manage_corporate_cohort`;
+      const url = `${getAdminApiUrl('manage_corporate_cohort')}?action=manage_corporate_cohort`;
       const res = await fetch(url);
       const data = await parseSafeJson(res, 'adminService');
       if (data && data.success && Array.isArray(data.cohorts)) {
@@ -510,7 +509,7 @@ export const adminService = {
    */
   async getPlugins(): Promise<Record<string, PluginTypeGroup>> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=get_plugins&token=${encodeURIComponent(token)}`;
+    const url = `${getAdminApiUrl('get_plugins')}?action=get_plugins&token=${encodeURIComponent(token)}`;
     const res = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` }
     });
@@ -526,7 +525,7 @@ export const adminService = {
    */
   async togglePlugin(component: string, enable: boolean): Promise<any> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=toggle_plugin`;
+    const url = `${getAdminApiUrl('toggle_plugin')}?action=toggle_plugin`;
     const res = await fetch(url, {
       method: 'POST',
       headers: {
@@ -547,7 +546,7 @@ export const adminService = {
    */
   async enableAllPlugins(): Promise<any> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=enable_all_plugins&token=${encodeURIComponent(token)}`;
+    const url = `${getAdminApiUrl('enable_all_plugins')}?action=enable_all_plugins&token=${encodeURIComponent(token)}`;
     const res = await fetch(url, {
       method: 'POST',
       headers: {
@@ -568,7 +567,7 @@ export const adminService = {
    */
   async uninstallPlugin(component: string): Promise<any> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=uninstall_plugin`;
+    const url = `${getAdminApiUrl('uninstall_plugin')}?action=uninstall_plugin`;
     const res = await fetch(url, {
       method: 'POST',
       headers: {
@@ -589,8 +588,8 @@ export const adminService = {
    */
   async installPlugin(file?: File, componentName?: string): Promise<any> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=install_plugin`;
-    
+    const url = `${getAdminApiUrl('install_plugin')}?action=install_plugin`;
+
     let body: any;
     const headers: Record<string, string> = { Authorization: `Bearer ${token}` };
 
@@ -617,7 +616,7 @@ export const adminService = {
    */
   async getSettings(): Promise<AdminSettingsPayload> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=get_settings&token=${encodeURIComponent(token)}`;
+    const url = `${getAdminApiUrl('get_settings')}?action=get_settings&token=${encodeURIComponent(token)}`;
     const res = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` }
     });
@@ -633,7 +632,7 @@ export const adminService = {
    */
   async updateSettings(payload: { site?: any; payment?: any }): Promise<any> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=update_settings`;
+    const url = `${getAdminApiUrl('update_settings')}?action=update_settings`;
     const res = await fetch(url, {
       method: 'POST',
       headers: {
@@ -656,7 +655,7 @@ export const adminService = {
   async purgeCache(options?: { target?: 'all' | 'theme' | 'muc' | 'lang' | 'js' | 'opcache' | 'status' }): Promise<any> {
     const token = getAdminToken();
     const target = options?.target || 'all';
-    const url = `${getAdminApiUrl()}?action=purge_cache&type=${encodeURIComponent(target)}&token=${encodeURIComponent(token)}`;
+    const url = `${getAdminApiUrl('purge_cache')}?action=purge_cache&type=${encodeURIComponent(target)}&token=${encodeURIComponent(token)}`;
     const res = await fetch(url, {
       method: 'POST',
       headers: {
@@ -677,7 +676,7 @@ export const adminService = {
    */
   async getCacheStatus(): Promise<any> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=get_cache_status&token=${encodeURIComponent(token)}`;
+    const url = `${getAdminApiUrl('get_cache_status')}?action=get_cache_status&token=${encodeURIComponent(token)}`;
     const res = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` }
     });
@@ -689,7 +688,7 @@ export const adminService = {
    */
   async getCourses(): Promise<{ courses: AdminCourseRecord[]; categories: CourseCategoryRecord[] }> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=get_courses&token=${encodeURIComponent(token)}`;
+    const url = `${getAdminApiUrl('get_courses')}?action=get_courses&token=${encodeURIComponent(token)}`;
     const res = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` }
     });
@@ -704,21 +703,11 @@ export const adminService = {
   },
 
   /**
-   * Creates a new course learning model
+   * Creates a new course learning model (supports all 8 Moodle course/edit.php sections)
    */
-  async createCourse(courseData: {
-    fullname: string;
-    shortname: string;
-    category_id?: number;
-    category?: number;
-    summary?: string;
-    format?: string;
-    kickstart_template_id?: number;
-    num_sections?: number;
-    tuition_fee?: number;
-  }): Promise<any> {
+  async createCourse(courseData: Record<string, any>): Promise<any> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=create_course`;
+    const url = `${getAdminApiUrl('create_course')}?action=create_course`;
     const res = await fetch(url, {
       method: 'POST',
       headers: {
@@ -739,7 +728,7 @@ export const adminService = {
    */
   async getKickstartTemplates(courseId = 2): Promise<any> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=get_kickstart_templates&course_id=${courseId}`;
+    const url = `${getAdminApiUrl('get_kickstart_templates')}?action=get_kickstart_templates&course_id=${courseId}`;
     const res = await fetch(url, {
       headers: token ? { Authorization: `Bearer ${token}` } : {}
     });
@@ -751,7 +740,7 @@ export const adminService = {
    */
   async importKickstartTemplate(courseId: number, templateId: number): Promise<any> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=import_kickstart_template`;
+    const url = `${getAdminApiUrl('import_kickstart_template')}?action=import_kickstart_template`;
     const res = await fetch(url, {
       method: 'POST',
       headers: {
@@ -790,7 +779,7 @@ export const adminService = {
     content?: string;
   }): Promise<any> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=add_activity`;
+    const url = `${getAdminApiUrl('add_activity')}?action=add_activity`;
     const res = await fetch(url, {
       method: 'POST',
       headers: {
@@ -811,7 +800,7 @@ export const adminService = {
    */
   async toggleEnrol(courseId: number, enrolId: number, status: number): Promise<any> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=toggle_enrol`;
+    const url = `${getAdminApiUrl('toggle_enrol')}?action=toggle_enrol`;
     const res = await fetch(url, {
       method: 'POST',
       headers: {
@@ -832,7 +821,7 @@ export const adminService = {
    */
   getMoodleSsoUrl(redirectPath: string): string {
     const token = getAdminToken();
-    const apiBase = getAdminApiUrl().replace('/admin_api.php', '');
+    const apiBase = getDynamicMoodleUrl();
     return `${apiBase}/sso.php?token=${encodeURIComponent(token)}&redirect=${encodeURIComponent(redirectPath)}`;
   },
 
@@ -841,7 +830,7 @@ export const adminService = {
    */
   async getAdminTree(): Promise<Record<string, AdminCategoryNode>> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=get_admin_tree&token=${encodeURIComponent(token)}`;
+    const url = `${getAdminApiUrl('get_admin_tree')}?action=get_admin_tree&token=${encodeURIComponent(token)}`;
     const res = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` }
     });
@@ -857,7 +846,7 @@ export const adminService = {
    */
   async getCategories(): Promise<AdminCourseCategory[]> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=get_categories&token=${encodeURIComponent(token)}`;
+    const url = `${getAdminApiUrl('get_categories')}?action=get_categories&token=${encodeURIComponent(token)}`;
     const res = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` }
     });
@@ -878,7 +867,7 @@ export const adminService = {
     description?: string;
   }): Promise<any> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=add_category`;
+    const url = `${getAdminApiUrl('add_category')}?action=add_category`;
     const res = await fetch(url, {
       method: 'POST',
       headers: {
@@ -908,7 +897,7 @@ export const adminService = {
   }): Promise<any> {
     const token = getAdminToken();
     const catId = catData.category_id || catData.id;
-    const url = `${getAdminApiUrl()}?action=update_category`;
+    const url = `${getAdminApiUrl('update_category')}?action=update_category`;
     const res = await fetch(url, {
       method: 'POST',
       headers: {
@@ -929,7 +918,7 @@ export const adminService = {
    */
   async deleteCategory(categoryId: number, moveToId?: number): Promise<any> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=delete_category`;
+    const url = `${getAdminApiUrl('delete_category')}?action=delete_category`;
     const res = await fetch(url, {
       method: 'POST',
       headers: {
@@ -950,7 +939,7 @@ export const adminService = {
    */
   async deleteCourse(courseId: number): Promise<any> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=delete_course`;
+    const url = `${getAdminApiUrl('delete_course')}?action=delete_course`;
     const res = await fetch(url, {
       method: 'POST',
       headers: {
@@ -971,7 +960,7 @@ export const adminService = {
    */
   async getCourseDefaults(): Promise<CourseDefaultSettings> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=get_course_defaults&token=${encodeURIComponent(token)}`;
+    const url = `${getAdminApiUrl('get_course_defaults')}?action=get_course_defaults&token=${encodeURIComponent(token)}`;
     const res = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` }
     });
@@ -987,7 +976,7 @@ export const adminService = {
    */
   async updateCourseDefaults(settings: Partial<CourseDefaultSettings>): Promise<any> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=update_course_defaults`;
+    const url = `${getAdminApiUrl('update_course_defaults')}?action=update_course_defaults`;
     const res = await fetch(url, {
       method: 'POST',
       headers: {
@@ -1008,7 +997,7 @@ export const adminService = {
    */
   async getGroups(courseId: number): Promise<CourseGroupRecord[]> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=get_groups&course_id=${encodeURIComponent(courseId)}&token=${encodeURIComponent(token)}`;
+    const url = `${getAdminApiUrl('get_groups')}?action=get_groups&course_id=${encodeURIComponent(courseId)}&token=${encodeURIComponent(token)}`;
     const res = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` }
     });
@@ -1029,7 +1018,7 @@ export const adminService = {
     enrolmentkey?: string;
   }): Promise<any> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=create_group`;
+    const url = `${getAdminApiUrl('create_group')}?action=create_group`;
     const res = await fetch(url, {
       method: 'POST',
       headers: {
@@ -1050,7 +1039,7 @@ export const adminService = {
    */
   async deleteGroup(groupId: number): Promise<any> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=delete_group`;
+    const url = `${getAdminApiUrl('delete_group')}?action=delete_group`;
     const res = await fetch(url, {
       method: 'POST',
       headers: {
@@ -1071,7 +1060,7 @@ export const adminService = {
    */
   async getCourseDetails(courseId: number): Promise<CourseDetailFull> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=get_course_details&course_id=${courseId}&token=${encodeURIComponent(token)}`;
+    const url = `${getAdminApiUrl('get_course_details')}?action=get_course_details&course_id=${courseId}&token=${encodeURIComponent(token)}`;
     const res = await fetch(url, {
       method: 'GET',
       headers: {
@@ -1090,7 +1079,7 @@ export const adminService = {
    */
   async updateCourseSettings(courseId: number, settings: Partial<CourseDetailFull>): Promise<any> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=update_course_settings`;
+    const url = `${getAdminApiUrl('update_course_settings')}?action=update_course_settings`;
     const res = await fetch(url, {
       method: 'POST',
       headers: {
@@ -1111,7 +1100,7 @@ export const adminService = {
    */
   async getCourseParticipants(courseId: number): Promise<{ participants: CourseParticipantRecord[]; total: number; sso_manage_url: string }> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=get_course_participants&course_id=${courseId}&token=${encodeURIComponent(token)}`;
+    const url = `${getAdminApiUrl('get_course_participants')}?action=get_course_participants&course_id=${courseId}&token=${encodeURIComponent(token)}`;
     const res = await fetch(url, {
       method: 'GET',
       headers: {
@@ -1130,7 +1119,7 @@ export const adminService = {
    */
   async getCourseGrades(courseId: number): Promise<{ grade_items: CourseGradeItemRecord[]; total_items: number; sso_grader_report_url: string; sso_grade_setup_url: string }> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=get_course_grades&course_id=${courseId}&token=${encodeURIComponent(token)}`;
+    const url = `${getAdminApiUrl('get_course_grades')}?action=get_course_grades&course_id=${courseId}&token=${encodeURIComponent(token)}`;
     const res = await fetch(url, {
       method: 'GET',
       headers: {
@@ -1156,7 +1145,7 @@ export const adminService = {
     visible?: number;
   }): Promise<any> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=manage_course_section`;
+    const url = `${getAdminApiUrl('manage_course_section')}?action=manage_course_section`;
     const res = await fetch(url, {
       method: 'POST',
       headers: {
@@ -1182,7 +1171,7 @@ export const adminService = {
     visible?: number;
   }): Promise<any> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=update_activity`;
+    const url = `${getAdminApiUrl('update_activity')}?action=update_activity`;
     const res = await fetch(url, {
       method: 'POST',
       headers: {
@@ -1203,7 +1192,7 @@ export const adminService = {
    */
   async deleteActivity(cmId: number): Promise<any> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=delete_activity`;
+    const url = `${getAdminApiUrl('delete_activity')}?action=delete_activity`;
     const res = await fetch(url, {
       method: 'POST',
       headers: {
@@ -1224,7 +1213,7 @@ export const adminService = {
    */
   async getApiEndpointsRegistry(): Promise<any> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=get_api_endpoints_registry&token=${encodeURIComponent(token)}`;
+    const url = `${getAdminApiUrl('get_api_endpoints_registry')}?action=get_api_endpoints_registry&token=${encodeURIComponent(token)}`;
     const res = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` }
     });
@@ -1244,7 +1233,7 @@ export const adminService = {
     token_id?: string;
   }): Promise<any> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=manage_api_endpoint`;
+    const url = `${getAdminApiUrl('manage_api_endpoint')}?action=manage_api_endpoint`;
     const res = await fetch(url, {
       method: 'POST',
       headers: {
@@ -1261,7 +1250,7 @@ export const adminService = {
    */
   async getSystemCapabilities(courseId: number = 7): Promise<any> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=get_system_capabilities&course_id=${courseId}&token=${encodeURIComponent(token)}`;
+    const url = `${getAdminApiUrl('get_system_capabilities')}?action=get_system_capabilities&course_id=${courseId}&token=${encodeURIComponent(token)}`;
     const res = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` }
     });
@@ -1273,7 +1262,7 @@ export const adminService = {
    */
   async getBeautifulCertificates(courseId: number = 7, code: string = 'OUT-35CB03BB3C', theme?: string): Promise<any> {
     const token = getAdminToken();
-    let url = `${getAdminApiUrl()}?action=get_beautiful_certificates&course_id=${courseId}&code=${encodeURIComponent(code)}&token=${encodeURIComponent(token)}`;
+    let url = `${getAdminApiUrl('get_beautiful_certificates')}?action=get_beautiful_certificates&course_id=${courseId}&code=${encodeURIComponent(code)}&token=${encodeURIComponent(token)}`;
     if (theme) url += `&theme=${encodeURIComponent(theme)}`;
     const res = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` }
@@ -1286,7 +1275,7 @@ export const adminService = {
    */
   async saveBeautifulCertificateTheme(courseId: number, theme: string): Promise<any> {
     const token = getAdminToken();
-    const url = `${getAdminApiUrl()}?action=save_beautiful_certificate_theme`;
+    const url = `${getAdminApiUrl('save_beautiful_certificate_theme')}?action=save_beautiful_certificate_theme`;
     const res = await fetch(url, {
       method: 'POST',
       headers: {
@@ -1302,7 +1291,263 @@ export const adminService = {
    * Returns the direct URL to render/print the full-bleed A4 landscape Vector Diploma
    */
   getBeautifulCertificatePdfUrl(courseId: number = 7, code: string = 'OUT-35CB03BB3C', theme: string = 'royal-gold-navy', autoprint: boolean = false): string {
-    return `${getAdminApiUrl()}?action=render_beautiful_certificate&course_id=${courseId}&code=${encodeURIComponent(code)}&theme=${encodeURIComponent(theme)}${autoprint ? '&autoprint=1' : ''}`;
+    return `${getAdminApiUrl('render_beautiful_certificate')}?action=render_beautiful_certificate&course_id=${courseId}&code=${encodeURIComponent(code)}&theme=${encodeURIComponent(theme)}${autoprint ? '&autoprint=1' : ''}`;
+  },
+
+  /**
+   * Retrieves the complete Course & Category Management Studio workspace
+   * (categories, courses, cohorts, filters, roles, capabilities, competency frameworks, learning plans, content bank, standard tags)
+   */
+  async getCourseStudioWorkspace(categoryId: number = 1): Promise<any> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl('get_course_studio_workspace')}?action=get_course_studio_workspace&category_id=${categoryId}&token=${encodeURIComponent(token)}`;
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await parseSafeJson(res, 'adminService');
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to load Course Studio workspace');
+    }
+    return data;
+  },
+
+  /**
+   * Bulk uploads courses via CSV text or parsed rows (admin/tool/uploadcourse/index.php parity)
+   */
+  async bulkUploadCourses(payload: {
+    csv_text?: string;
+    rows?: Array<Record<string, any>>;
+    upload_mode?: string;
+    default_category_id?: number;
+    default_format?: string;
+    default_visible?: number;
+    delimiter?: string;
+  }): Promise<any> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl('bulk_upload_courses')}?action=bulk_upload_courses`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ ...payload, token }),
+    });
+    const data = await parseSafeJson(res, 'adminService');
+    if (!data.success) {
+      throw new Error(data.error || 'Bulk course upload failed');
+    }
+    return data;
+  },
+
+  /**
+   * Manages category & course permissions matrix and role assignments (admin/roles/permissions.php?contextid=3 parity)
+   */
+  async manageCategoryPermissions(payload: {
+    sub_action: 'toggle_capability' | 'assign_role' | 'unassign_role';
+    category_id?: number;
+    capabilities?: any[];
+    user_id?: number;
+    role_shortname?: string;
+    assignment_id?: number;
+  }): Promise<any> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl('manage_category_permissions')}?action=manage_category_permissions`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ ...payload, token }),
+    });
+    const data = await parseSafeJson(res, 'adminService');
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to update category permissions');
+    }
+    return data;
+  },
+
+  /**
+   * Creates, updates, or deletes cohorts (cohort/index.php?contextid=3 parity)
+   */
+  async manageCohorts(payload: {
+    sub_action?: 'create' | 'update' | 'delete';
+    cohort_id?: number;
+    name?: string;
+    idnumber?: string;
+    description?: string;
+    visible?: number;
+  }): Promise<any> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl('manage_cohorts')}?action=manage_cohorts`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ ...payload, token }),
+    });
+    const data = await parseSafeJson(res, 'adminService');
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to manage cohort');
+    }
+    return data;
+  },
+
+  /**
+   * Updates filter active status (filter/manage.php?contextid=3 parity)
+   */
+  async manageFilters(filter: string, active: number): Promise<any> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl('manage_filters')}?action=manage_filters`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ filter, active, token }),
+    });
+    const data = await parseSafeJson(res, 'adminService');
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to update filter');
+    }
+    return data;
+  },
+
+  /**
+   * Restores or clones a course from backup archive or existing course snapshot (backup/restorefile.php?contextid=3 parity)
+   */
+  async restoreBackupCourse(payload: {
+    source_course_id?: number;
+    target_category_id: number;
+    fullname?: string;
+    shortname?: string;
+    backup_filename?: string;
+  }): Promise<any> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl('restore_backup_course')}?action=restore_backup_course`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ ...payload, token }),
+    });
+    const data = await parseSafeJson(res, 'adminService');
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to restore course');
+    }
+    return data;
+  },
+
+  /**
+   * Creates or deletes learning plan templates (admin/tool/lp/learningplans.php?pagecontextid=3 parity)
+   */
+  async manageLearningPlans(payload: {
+    sub_action?: 'create' | 'delete';
+    plan_id?: number;
+    shortname?: string;
+    description?: string;
+    visible?: number;
+    duedate?: string;
+  }): Promise<any> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl('manage_learning_plans')}?action=manage_learning_plans`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ ...payload, token }),
+    });
+    const data = await parseSafeJson(res, 'adminService');
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to manage learning plan template');
+    }
+    return data;
+  },
+
+  /**
+   * Creates or deletes competency frameworks (admin/tool/lp/competencyframeworks.php?pagecontextid=3 parity)
+   */
+  async manageCompetencyFrameworks(payload: {
+    sub_action?: 'create' | 'delete';
+    framework_id?: number;
+    shortname?: string;
+    idnumber?: string;
+    description?: string;
+    taxonomies?: string;
+    visible?: number;
+  }): Promise<any> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl('manage_competency_frameworks')}?action=manage_competency_frameworks`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ ...payload, token }),
+    });
+    const data = await parseSafeJson(res, 'adminService');
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to manage competency framework');
+    }
+    return data;
+  },
+
+  /**
+   * Creates, uploads, or deletes interactive H5P items in the Content Bank (contentbank/index.php?contextid=3 parity)
+   */
+  async manageContentBank(payload: {
+    sub_action?: 'create' | 'delete';
+    content_id?: number;
+    name?: string;
+    library?: string;
+    size_kb?: number;
+    visibility?: number;
+  }): Promise<any> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl('manage_content_bank')}?action=manage_content_bank`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ ...payload, token }),
+    });
+    const data = await parseSafeJson(res, 'adminService');
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to manage content bank item');
+    }
+    return data;
+  },
+
+  /**
+   * Updates standard tags available in the Tags section of the course wizard
+   */
+  async manageStandardTags(tags: string[]): Promise<any> {
+    const token = getAdminToken();
+    const url = `${getAdminApiUrl('manage_standard_tags')}?action=manage_standard_tags`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ tags, token }),
+    });
+    const data = await parseSafeJson(res, 'adminService');
+    if (!data.success) {
+      throw new Error(data.error || 'Failed to update standard tags');
+    }
+    return data;
   },
 };
 
@@ -1457,6 +1702,7 @@ export interface CourseModuleItem {
   instance: number;
   modname: string;
   name: string;
+  content?: string;
   visible: number;
   completion: number;
   uservisible: boolean;
@@ -1480,6 +1726,7 @@ export interface CourseDetailFull {
   fullname: string;
   shortname: string;
   idnumber: string;
+  tuition_fee?: number;
   category_id: number;
   category?: number;
   category_name: string;
@@ -1515,6 +1762,7 @@ export interface CourseDetailFull {
     restore: string;
   };
   sections: CourseSectionDetail[];
+  [key: string]: any;
 }
 
 export interface CourseParticipantRecord {

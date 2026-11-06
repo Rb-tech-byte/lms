@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { certificateService } from '../../../core/api/certificateService';
 import { all_routes } from '../../router/all_routes';
-import { BeautifulCertificateStudio } from '../../../core/common/BeautifulCertificateStudio';
+import { BeautifulCertificateStudio, buildBeautifulCertificatePdfUrl } from '../../../core/common/BeautifulCertificateStudio';
 
 export const VerifyCertificate: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -196,7 +196,11 @@ export const VerifyCertificate: React.FC = () => {
                           <i className="feather-copy me-1" /> Copy Verification Link
                         </button>
                         <a
-                          href={`/moodle-backend/admin_api.php?action=render_beautiful_certificate&course_id=${result.certificate.courseId || 7}&code=${encodeURIComponent(result.certificate.code)}&autoprint=1`}
+                          href={buildBeautifulCertificatePdfUrl({
+                            courseId: result.certificate.courseId || 7,
+                            serialCode: result.certificate.code,
+                            autoPrint: true,
+                          })}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="btn btn-primary rounded-pill px-4 py-2 fw-semibold"

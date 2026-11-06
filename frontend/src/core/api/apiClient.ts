@@ -2,7 +2,12 @@
  * Unified Multi-Layer API Client for Open University of Tanzania (OUT LMS):
  * 1. Moodle Core Web Services (`/webservice/rest/server.php`)
  * 2. Moodle 5.x REST API v2 OpenAPI 3.1 (`/api/rest/v2/*`)
- * 3. OUT LMS Internal Governance, Bridge & CMS API (`/admin_api.php`)
+ * 3. OUT LMS Modular Domain APIs:
+ *    - `/api/public_api.php`        : Public catalog, course details, faculty directory, certificate verification
+ *    - `/api/student_api.php`       : Learner identity, XP, attendance, VPL, CodeRunner, Beautiful Certificates
+ *    - `/api/instructor_api.php`    : Instructor dashboard & 12 faculty CUD endpoints (Pure MariaDB)
+ *    - `/api/course_studio_api.php` : Unified 8-section Moodle Course Creation & Category Studio
+ *    - `/api/admin_system_api.php`  : Site settings, plugins, users CRUD, telemetry & Pesapal ledger
  */
 
 import { MOODLE_ENDPOINTS } from './moodleEndpoints';
@@ -29,29 +34,31 @@ export const getDynamicMoodleUrl = (): string => {
     if (window.__OUT_LMS_CONFIG__?.moodleUrl) {
       return window.__OUT_LMS_CONFIG__.moodleUrl.replace(/\/+$/, '');
     }
+    if (process.env.REACT_APP_MOODLE_URL) {
+      return process.env.REACT_APP_MOODLE_URL.replace(/\/+$/, '');
+    }
     const { protocol, host, port, pathname } = window.location;
     // When running on dev/SPA port 3000, route through the local gateway reverse proxy (/moodle-backend)
     if (port === '3000') {
       return `${protocol}//${host}/moodle-backend`;
     }
-    const pathParts = pathname.split('/').filter(Boolean);
-    const knownAppRoutes = [
-      'admin', 'course', 'courses', 'student', 'instructor',
-      'pages', 'home', 'login', 'register', 'dashboard', 'static', 'build', 'blog', 'index'
-    ];
+    // Support subdirectory hosting (/outlmstheme) while defaulting to root domain hosting (e.g. https://lms.wolinet.com)
+    const lowerPath = pathname.toLowerCase();
     const appBase =
-      pathParts.length > 0 && !knownAppRoutes.includes(pathParts[0].toLowerCase())
-        ? `/${pathParts[0]}`
-        : '/outlmstheme';
+      lowerPath === '/outlmstheme' || lowerPath.startsWith('/outlmstheme/')
+        ? '/outlmstheme'
+        : '';
     return `${protocol}//${host}${appBase}/moodle-backend`;
   }
-  return 'http://localhost/outlmstheme/moodle-backend';
+  return process.env.REACT_APP_MOODLE_URL
+    ? process.env.REACT_APP_MOODLE_URL.replace(/\/+$/, '')
+    : '/moodle-backend';
 };
 
 export const MOODLE_BASE_URL = getDynamicMoodleUrl();
 // Public read-only catalog service token fallback for unauthenticated visitors browsing courses/categories
 // Least-privilege token bound to the `outlms_public_catalog` service (read-only catalog functions only).
-// Rejected by admin_api.php as a user session. Override per environment with REACT_APP_PUBLIC_CATALOG_TOKEN.
+// Rejected by auth_middleware.php as a user session. Override per environment with REACT_APP_PUBLIC_CATALOG_TOKEN.
 const PUBLIC_SERVICE_TOKEN = process.env.REACT_APP_PUBLIC_CATALOG_TOKEN || '6ac96cc49daa091ad9122d2dbfc9efe2';
 const USE_MOCK = process.env.REACT_APP_USE_MOCK === 'true';
 
@@ -281,19 +288,166 @@ export async function callMoodleRestV2<T = any>(
   }
 }
 
+export type ApiModuleType =
+  | 'public'
+  | 'student'
+  | 'instructor'
+  | 'course_studio'
+  | 'admin_system'
+  | 'router';
+
+const PUBLIC_ACTIONS = new Set([
+  'openapi',
+  'register_user',
+  'request_password_reset',
+  'public_catalog',
+  'public_course_details',
+  'public_instructors',
+  'submit_contact_inquiry',
+  'submit_instructor_application',
+  'get_cms_config',
+  'get_short_courses_catalog',
+  'verify_certificate',
+  'get_certificate',
+]);
+
+const STUDENT_ACTIONS = new Set([
+  'resolve_identity',
+  'change_password',
+  'update_my_profile',
+  'submit_quiz_grade',
+  'get_learner_xp',
+  'get_leaderboard',
+  'get_live_sessions',
+  'get_completion_timeline',
+  'get_attendance',
+  'record_attendance',
+  'get_vpl_labs',
+  'submit_vpl_code',
+  'get_coderunner_questions',
+  'evaluate_coderunner',
+  'get_completion_progress',
+  'toggle_activity_completion',
+  'get_customcert_templates',
+  'issue_customcert',
+  'get_reengagement_nudges',
+  'trigger_reengagement',
+  'get_beautiful_certificates',
+  'save_beautiful_certificate_theme',
+  'render_beautiful_certificate',
+]);
+
+const INSTRUCTOR_ACTIONS = new Set([
+  'get_instructor_dashboard_data',
+  'create_instructor_announcement',
+  'grade_submission',
+  'manage_instructor_courses',
+  'manage_instructor_announcements',
+  'manage_instructor_assignments',
+  'manage_instructor_students',
+  'manage_instructor_quizzes',
+  'manage_instructor_quiz_results',
+  'manage_instructor_certificates',
+  'manage_instructor_earnings',
+  'manage_instructor_payouts',
+  'manage_instructor_statements',
+  'manage_instructor_messages',
+  'manage_instructor_tickets',
+  'instructor_profile',
+  'manage_instructor_profile',
+  'manage_corporate_cohort',
+]);
+
+const COURSE_STUDIO_ACTIONS = new Set([
+  'get_kickstart_templates',
+  'import_kickstart_template',
+  'get_course_formats',
+  'update_course_format',
+  'get_courses',
+  'create_course',
+  'delete_course',
+  'add_activity',
+  'delete_activity',
+  'update_activity',
+  'toggle_enrol',
+  'get_categories',
+  'add_category',
+  'delete_category',
+  'update_category',
+  'get_course_defaults',
+  'update_course_defaults',
+  'get_groups',
+  'create_group',
+  'delete_group',
+  'get_course_details',
+  'update_course_settings',
+  'get_course_participants',
+  'get_course_grades',
+  'manage_course_section',
+  'get_course_studio_workspace',
+  'bulk_upload_courses',
+  'manage_category_permissions',
+  'manage_cohorts',
+  'manage_filters',
+  'restore_backup_course',
+  'manage_learning_plans',
+  'manage_competency_frameworks',
+  'manage_content_bank',
+  'manage_standard_tags',
+]);
+
 /**
- * 3. Calls OUT LMS Internal Governance, Bridge & CMS API (`/admin_api.php`)
+ * Maps an API action name to its dedicated modular PHP controller
+ */
+export function resolveApiModuleForAction(action: string): ApiModuleType {
+  const cleanAction = (action || '').split('&')[0].split('?')[0].trim();
+  if (PUBLIC_ACTIONS.has(cleanAction)) return 'public';
+  if (STUDENT_ACTIONS.has(cleanAction)) return 'student';
+  if (INSTRUCTOR_ACTIONS.has(cleanAction) || cleanAction.startsWith('manage_instructor_')) {
+    return 'instructor';
+  }
+  if (COURSE_STUDIO_ACTIONS.has(cleanAction)) return 'course_studio';
+  return 'admin_system';
+}
+
+/**
+ * Returns the full URL for a specific modular API controller
+ * (`/moodle-backend/api/{module}_api.php` or `/moodle-backend/admin_api.php` for router)
+ */
+export function getModularApiUrl(moduleOrAction: ApiModuleType | string = 'admin_system'): string {
+  const baseUrl = getDynamicMoodleUrl();
+  if (moduleOrAction === 'router') {
+    return `${baseUrl}/admin_api.php`;
+  }
+  const validModules: ApiModuleType[] = [
+    'public',
+    'student',
+    'instructor',
+    'course_studio',
+    'admin_system',
+  ];
+  const resolvedModule: ApiModuleType = validModules.includes(moduleOrAction as ApiModuleType)
+    ? (moduleOrAction as ApiModuleType)
+    : resolveApiModuleForAction(moduleOrAction);
+  return `${baseUrl}/api/${resolvedModule}_api.php`;
+}
+
+/**
+ * 3. Calls OUT LMS Modular Role/Domain API (`/api/{module}_api.php`)
  */
 export async function callInternalApi<T = any>(
   action: string,
   payload?: Record<string, any>,
-  method: 'GET' | 'POST' = payload ? 'POST' : 'GET'
+  method: 'GET' | 'POST' = payload ? 'POST' : 'GET',
+  moduleOverride?: ApiModuleType
 ): Promise<T> {
   const token = localStorage.getItem('out_lms_ws_token') || '';
-  const baseUrl = `${getDynamicMoodleUrl()}/admin_api.php`;
-
   const parts = action.split('&');
-  const queryParams = new URLSearchParams({ action: parts[0] });
+  const primaryAction = parts[0];
+  const targetModule = moduleOverride || resolveApiModuleForAction(primaryAction);
+  const baseUrl = getModularApiUrl(targetModule);
+
+  const queryParams = new URLSearchParams({ action: primaryAction });
   for (let i = 1; i < parts.length; i++) {
     const [k, v] = parts[i].split('=');
     if (k) queryParams.set(decodeURIComponent(k), v ? decodeURIComponent(v) : '');
@@ -317,11 +471,51 @@ export async function callInternalApi<T = any>(
     ...(method === 'POST' ? { body: JSON.stringify({ ...(payload || {}), ...(token ? { token } : {}) }) } : {}),
   });
 
-  const data = await parseSafeJson<any>(response, `admin_api:${action}`);
+  const data = await parseSafeJson<any>(response, `${targetModule}_api:${primaryAction}`);
   if (!response.ok || data?.error) {
-    throw new Error(data?.error || `API action '${action}' failed`);
+    throw new Error(data?.error || `API action '${primaryAction}' failed`);
   }
   return data as T;
+}
+
+export function callPublicApi<T = any>(
+  action: string,
+  payload?: Record<string, any>,
+  method: 'GET' | 'POST' = payload ? 'POST' : 'GET'
+): Promise<T> {
+  return callInternalApi<T>(action, payload, method, 'public');
+}
+
+export function callStudentApi<T = any>(
+  action: string,
+  payload?: Record<string, any>,
+  method: 'GET' | 'POST' = payload ? 'POST' : 'GET'
+): Promise<T> {
+  return callInternalApi<T>(action, payload, method, 'student');
+}
+
+export function callInstructorApi<T = any>(
+  action: string,
+  payload?: Record<string, any>,
+  method: 'GET' | 'POST' = payload ? 'POST' : 'GET'
+): Promise<T> {
+  return callInternalApi<T>(action, payload, method, 'instructor');
+}
+
+export function callCourseStudioApi<T = any>(
+  action: string,
+  payload?: Record<string, any>,
+  method: 'GET' | 'POST' = payload ? 'POST' : 'GET'
+): Promise<T> {
+  return callInternalApi<T>(action, payload, method, 'course_studio');
+}
+
+export function callAdminSystemApi<T = any>(
+  action: string,
+  payload?: Record<string, any>,
+  method: 'GET' | 'POST' = payload ? 'POST' : 'GET'
+): Promise<T> {
+  return callInternalApi<T>(action, payload, method, 'admin_system');
 }
 
 /**

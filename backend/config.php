@@ -69,7 +69,7 @@ if (isset($_SERVER['HTTP_HOST'])) {
     $CFG->wwwroot = rtrim("{$protocol}{$host}", '/');
 } else {
     $envWwwroot = getenv('MOODLE_WWWROOT') ?: getenv('APP_URL');
-    $CFG->wwwroot = !empty($envWwwroot) ? rtrim($envWwwroot, '/') : 'http://localhost:8080';
+    $CFG->wwwroot = !empty($envWwwroot) ? rtrim($envWwwroot, '/') : 'https://lms.wolinet.com';
 }
 
 // -----------------------------------------------------------------------------

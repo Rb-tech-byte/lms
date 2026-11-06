@@ -83,16 +83,18 @@ async function resolveMoodleIdentity(activeToken: string, fallbackUsername?: str
       dashboardUrl = '/admin/dashboard';
     } else if (
       usernameLower === 'instructor' ||
+      usernameLower === 'coursecreator' ||
       usernameLower.includes('teacher') ||
       usernameLower.includes('lecturer') ||
       usernameLower.includes('amina') ||
-      Number(siteInfo.userid) === 4
+      Number(siteInfo.userid) === 4 ||
+      Number(siteInfo.userid) === 14
     ) {
       resolvedRole = 'instructor';
-      title = 'Senior Lecturer & Course Director';
-      department = 'Faculty of Science & Technology';
-      regNumber = 'FAC/CS/0205';
-      dashboardUrl = '/instructor/instructor-dashboard';
+      title = usernameLower === 'coursecreator' ? 'Curriculum & Course Creator' : 'Senior Lecturer & Course Director';
+      department = usernameLower === 'coursecreator' ? 'Directorate of Curriculum & Academic Quality' : 'Faculty of Science & Technology';
+      regNumber = usernameLower === 'coursecreator' ? 'FAC/CC/0014' : 'FAC/CS/0205';
+      dashboardUrl = usernameLower === 'coursecreator' ? '/course/add-course' : '/instructor/instructor-dashboard';
     }
 
     return {
@@ -203,9 +205,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         ? 'admin'
         : lower === 'instructor@out.ac.tz'
           ? 'instructor'
-          : lower === 'student@out.ac.tz'
-            ? 'student'
-            : trimmedInput;
+          : lower === 'coursecreator@out.ac.tz'
+            ? 'coursecreator'
+            : lower === 'student@out.ac.tz'
+              ? 'student'
+              : trimmedInput;
 
     // 1. Live token exchange
     try {

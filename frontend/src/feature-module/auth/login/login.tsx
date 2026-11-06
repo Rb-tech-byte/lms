@@ -54,7 +54,7 @@ const Login: React.FC = () => {
     navigate(fallbackUrl || route.studentDashboard, { replace: true });
   };
 
-  const handleDemoClick = async (roleKey: 'student' | 'instructor' | 'admin') => {
+  const handleDemoClick = async (roleKey: 'student' | 'instructor' | 'coursecreator' | 'admin') => {
     const creds = DEMO_USERS[roleKey];
     setEmail(creds.email);
     setPassword(creds.password);
@@ -66,6 +66,8 @@ const Login: React.FC = () => {
       if (ok) {
         if (roleKey === 'admin') {
           navigate('/admin/dashboard', { replace: true });
+        } else if (roleKey === 'coursecreator') {
+          navigate('/course/add-course', { replace: true });
         } else if (roleKey === 'instructor') {
           navigate(route.instructorDashboard || '/instructor/instructor-dashboard', { replace: true });
         } else {
@@ -147,14 +149,14 @@ const Login: React.FC = () => {
               <div className="row g-2">
                 {[
                   { key: 'student' as const, label: 'Scholar', roleDesc: 'Student Portal', icon: 'isax-teacher', accent: '#013BA6' },
-                  { key: 'instructor' as const, label: 'Lecturer', roleDesc: 'Instructor Portal', icon: 'isax-briefcase', accent: '#059669' },
+                  { key: 'instructor' as const, label: 'Lecturer', roleDesc: 'Instructor Portal', icon: 'isax-briefcase', accent: '#1D80DF' },
+                  { key: 'coursecreator' as const, label: 'Course Creator', roleDesc: 'Course Wizard Studio', icon: 'isax-book-1', accent: '#013BA6' },
                   { key: 'admin' as const, label: 'Admin', roleDesc: 'ICT & Admin Hub', icon: 'isax-shield-tick', accent: '#061838' },
                 ]
-                  .filter((item) => (process.env.REACT_APP_DEMO_ROLES || 'student,instructor,admin').split(',').map((r) => r.trim()).includes(item.key))
                   .map((item) => {
                   const isBusy = activeDemoRole === item.key;
                   return (
-                    <div className="col-4" key={item.key}>
+                    <div className="col-6" key={item.key}>
                       <button
                         type="button"
                         disabled={submitting}

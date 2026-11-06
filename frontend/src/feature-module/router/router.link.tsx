@@ -7,6 +7,7 @@ import CourseCategory from "../Courses/course-category/courseCategory";
 import CourseDetails from "../Courses/course-details/courseDetails";
 import CourseCart from "../Courses/course-cart/courseCart";
 import CourseCheckout from "../Courses/course-checkout/courseCheckout";
+import AddNewCourse from "../Courses/add-newCourse/addNewCourse";
 
 // Student Components
 import StudentDashboard from "../student/dashboard/studentDashboard";
@@ -450,7 +451,7 @@ export const instructorProtectedRoutes = [
   },
   {
     path: routes.addNewCourse,
-    element: <InstructorCourse />,
+    element: <AddNewCourse />,
     route: Route,
   },
   {

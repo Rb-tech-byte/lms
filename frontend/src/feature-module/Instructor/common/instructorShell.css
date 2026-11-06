@@ -275,41 +275,59 @@
   color: #475569;
   cursor: pointer;
   transition: all 0.15s ease;
+  text-decoration: none !important;
+  line-height: 1;
+  flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
-.ins-action-btn i { font-size: 13px; }
-.ins-action-btn:hover { background: #f8fafc; color: #0f172a; }
+.ins-action-btn i {
+  font-size: 14px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.ins-action-btn:hover {
+  background: #f8fafc;
+  color: #0f172a;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
 .ins-action-btn.is-edit,
 .ins-action-btn.btn-edit {
-  color: #0171bb;
-  background: #e8f4fc;
-  border-color: #bfdbfe;
+  color: #0171bb !important;
+  background: #e8f4fc !important;
+  border-color: #bfdbfe !important;
 }
 .ins-action-btn.is-edit:hover,
 .ins-action-btn.btn-edit:hover {
-  background: #0171bb;
-  color: #ffffff;
+  background: #0171bb !important;
+  color: #ffffff !important;
+  border-color: #0171bb !important;
 }
 .ins-action-btn.is-delete,
 .ins-action-btn.btn-delete {
-  color: #ef4444;
-  background: #fee2e2;
-  border-color: #fecaca;
+  color: #ef4444 !important;
+  background: #fee2e2 !important;
+  border-color: #fecaca !important;
 }
 .ins-action-btn.is-delete:hover,
 .ins-action-btn.btn-delete:hover {
-  background: #ef4444;
-  color: #ffffff;
+  background: #ef4444 !important;
+  color: #ffffff !important;
+  border-color: #ef4444 !important;
 }
 .ins-action-btn.is-view,
 .ins-action-btn.btn-view {
-  color: #059669;
-  background: #d1fae5;
-  border-color: #a7f3d0;
+  color: #059669 !important;
+  background: #d1fae5 !important;
+  border-color: #a7f3d0 !important;
 }
 .ins-action-btn.is-view:hover,
 .ins-action-btn.btn-view:hover {
-  background: #059669;
-  color: #ffffff;
+  background: #059669 !important;
+  color: #ffffff !important;
+  border-color: #059669 !important;
 }
 
 /* Settings navigation tabs */

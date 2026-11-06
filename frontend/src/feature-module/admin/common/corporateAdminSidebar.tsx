@@ -20,6 +20,7 @@ interface SidebarNavGroup {
     icon: string;
     badge?: string;
     isStudio?: boolean;
+    path?: string;
     accentColor?: string;
     activeGradient?: string;
   }>;
@@ -44,7 +45,8 @@ export const CorporateAdminSidebar: React.FC<CorporateAdminSidebarProps> = ({
       groupLabel: 'CONSOLE & GOVERNANCE',
       items: [
         { key: 'dashboard', title: 'Overview & KPI', icon: 'feather-grid', badge: 'LIVE', accentColor: '#38bdf8', activeGradient: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)' },
-        { key: 'api-gateway', title: 'API & Endpoints', icon: 'feather-terminal', badge: '85+ API', accentColor: '#c084fc', activeGradient: 'linear-gradient(135deg, #9333ea 0%, #6d28d9 100%)' },
+        { key: 'api-gateway', title: 'Admin & APIs', icon: 'feather-terminal', badge: '85+ API', accentColor: '#c084fc', activeGradient: 'linear-gradient(135deg, #9333ea 0%, #6d28d9 100%)' },
+        { key: 'api-docs', title: 'API Hub', icon: 'feather-code', badge: 'OPENAPI', path: '/pages/api-docs', accentColor: '#38bdf8', activeGradient: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)' },
         { key: 'certificates', title: 'Beautiful Diplomas', icon: 'feather-award', badge: '6 THEMES', accentColor: '#fbbf24', activeGradient: 'linear-gradient(135deg, #d97706 0%, #b45309 100%)' },
         { key: 'courses', title: 'Courses Catalog', icon: 'feather-book-open', badge: 'CUD', accentColor: '#34d399', activeGradient: 'linear-gradient(135deg, #059669 0%, #047857 100%)' },
         { key: 'categories', title: 'Faculties & Cats', icon: 'feather-folder', badge: 'CUD', accentColor: '#fb923c', activeGradient: 'linear-gradient(135deg, #ea580c 0%, #c2410c 100%)' },
@@ -167,7 +169,9 @@ export const CorporateAdminSidebar: React.FC<CorporateAdminSidebarProps> = ({
                     <button
                       type="button"
                       onClick={() => {
-                        if (item.isStudio) {
+                        if (item.path) {
+                          navigate(item.path);
+                        } else if (item.isStudio) {
                           onSelectView('courses');
                         } else {
                           onSelectView(item.key);

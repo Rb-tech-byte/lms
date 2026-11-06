@@ -17,6 +17,8 @@ const AdminSidebar = () => {
 
   const menuItems = [
     { title: 'Dashboard', path: '/admin/dashboard', icon: 'isax isax-element-4' },
+    { title: 'Admin & APIs', path: '/admin/dashboard?tab=api-gateway', icon: 'isax isax-Hierarchy-2' },
+    { title: 'API Hub', path: '/pages/api-docs', icon: 'isax isax-code-circle' },
     { title: 'Site Administration (All 9 Areas)', path: '/admin/dashboard?tab=siteadmin', icon: 'isax isax-category-2' },
     { title: 'Course Models & Features', path: '/admin/dashboard?tab=courses', icon: 'isax isax-book' },
     { title: 'Plugin Management', path: '/admin/dashboard?tab=plugins', icon: 'isax isax-cpu' },

@@ -206,38 +206,6 @@ const Header: React.FC = () => {
                 <span>Diplomas</span>
               </Link>
 
-              <Link
-                to="/pages/api-docs"
-                className="px-2 py-1 rounded-pill text-decoration-none fw-bold d-inline-flex align-items-center gap-1"
-                style={{
-                  fontSize: '12.5px',
-                  whiteSpace: 'nowrap',
-                  flexShrink: 0,
-                  color: location.pathname.includes('api-docs') ? '#ffffff' : '#0284c7',
-                  background: location.pathname.includes('api-docs') ? '#0284c7' : 'rgba(2,132,199,0.13)',
-                  border: '1px solid rgba(2,132,199,0.35)',
-                }}
-              >
-                <i className="isax isax-code-circle" style={{ fontSize: '13px' }} />
-                <span>API Hub</span>
-              </Link>
-
-              <Link
-                to="/admin/dashboard?tab=api-gateway"
-                className="px-2 py-1 rounded-pill text-decoration-none fw-bold d-inline-flex align-items-center gap-1"
-                style={{
-                  fontSize: '12.5px',
-                  whiteSpace: 'nowrap',
-                  flexShrink: 0,
-                  color: location.pathname.includes('/admin') ? '#ffffff' : '#9333ea',
-                  background: location.pathname.includes('/admin') ? 'linear-gradient(135deg, #9333ea 0%, #6366f1 100%)' : 'rgba(147,51,234,0.13)',
-                  border: '1px solid rgba(147,51,234,0.4)',
-                }}
-              >
-                <i className="isax isax-Hierarchy-2" style={{ fontSize: '13px' }} />
-                <span>Admin &amp; APIs</span>
-              </Link>
-
               {isAuthenticated && user && (
                 <Link
                   to={user.dashboardUrl}

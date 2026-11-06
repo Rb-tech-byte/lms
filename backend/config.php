@@ -37,9 +37,9 @@ if (file_exists($envFile)) {
 $CFG->dbtype    = getenv('MOODLE_DB_TYPE') ?: 'mariadb';
 $CFG->dblibrary = 'native';
 $CFG->dbhost    = getenv('MOODLE_DB_HOST') ?: '127.0.0.1';
-$CFG->dbname    = getenv('MOODLE_DB_NAME') ?: 'moodle_out';
-$CFG->dbuser    = getenv('MOODLE_DB_USER') ?: 'root';
-$CFG->dbpass    = getenv('MOODLE_DB_PASSWORD') !== false ? (string)getenv('MOODLE_DB_PASSWORD') : (getenv('MOODLE_DB_PASS') !== false ? (string)getenv('MOODLE_DB_PASS') : '');
+$CFG->dbname    = getenv('MOODLE_DB_NAME') ?: 'lms_lms';
+$CFG->dbuser    = getenv('MOODLE_DB_USER') ?: 'lms_out';
+$CFG->dbpass    = (getenv('MOODLE_DB_PASSWORD') !== false && getenv('MOODLE_DB_PASSWORD') !== '') ? (string)getenv('MOODLE_DB_PASSWORD') : ((getenv('MOODLE_DB_PASS') !== false && getenv('MOODLE_DB_PASS') !== '') ? (string)getenv('MOODLE_DB_PASS') : 'PA+JaP*0elAzFlEr');
 $CFG->prefix    = getenv('MOODLE_DB_PREFIX') ?: 'mdl_';
 
 $CFG->dboptions = [

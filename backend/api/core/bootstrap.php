@@ -11,6 +11,9 @@ define('OUTLMS_API_BOOTSTRAPPED', true);
 
 define('AJAX_SCRIPT', true);
 define('NO_MOODLE_COOKIES', true);
+if (php_sapi_name() === 'cli' && !defined('CLI_SCRIPT')) {
+    define('CLI_SCRIPT', true);
+}
 $moodleRoot = file_exists(dirname(__DIR__, 2) . '/config.php') ? dirname(__DIR__, 2) : dirname(__DIR__, 3) . '/moodle-backend';
 require_once $moodleRoot . '/config.php';
 require_once $CFG->libdir . '/adminlib.php';

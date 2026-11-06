@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Open University of Tanzania LMS
  * Native Administrative Web Service & Management API
@@ -776,6 +776,12 @@ if (in_array($action, [
         }
 
         if ($action === 'public_catalog') {
+            $catalogCacheFile = sys_get_temp_dir() . '/outlms_public_catalog_cache.json';
+            $forceRefresh = !empty($_GET['force_refresh']) || !empty($input['force_refresh']);
+            if (!$forceRefresh && file_exists($catalogCacheFile) && (time() - filemtime($catalogCacheFile) < 180)) {
+                echo file_get_contents($catalogCacheFile);
+                exit(0);
+            }
             $courses = $DB->get_records_sql(
                 "SELECT c.id, c.fullname, c.shortname, c.summary, c.category, c.startdate, c.visible,
                         cc.name as category_name, cc.idnumber as category_code
@@ -932,7 +938,7 @@ if (in_array($action, [
                 ];
             }
             $totalUsers = (int)$DB->count_records('user', ['deleted' => 0]);
-            echo json_encode([
+            $catalogJson = json_encode([
                 'success' => true,
                 'courses' => $formattedCourses,
                 'categories' => $formattedCategories,
@@ -944,6 +950,8 @@ if (in_array($action, [
                     'satisfactionRate' => '99.2%',
                 ],
             ]);
+            @file_put_contents($catalogCacheFile, $catalogJson);
+            echo $catalogJson;
             exit(0);
         }
 
@@ -1060,6 +1068,12 @@ if (in_array($action, [
         }
 
         if ($action === 'public_instructors') {
+            $instructorsCacheFile = sys_get_temp_dir() . '/outlms_public_instructors_cache.json';
+            $forceRefresh = !empty($_GET['force_refresh']) || !empty($input['force_refresh']);
+            if (!$forceRefresh && file_exists($instructorsCacheFile) && (time() - filemtime($instructorsCacheFile) < 180)) {
+                echo file_get_contents($instructorsCacheFile);
+                exit(0);
+            }
             $courseMediaMap = get_outlms_course_media_map($DB);
             $dbCourses = $DB->get_records_sql(
                 "SELECT c.id, c.fullname, c.shortname, c.summary, c.category, cc.name as category_name
@@ -1181,11 +1195,13 @@ if (in_array($action, [
                     'courses' => array_slice($courseList, 0, 2),
                 ],
             ];
-            echo json_encode([
+            $instJson = json_encode([
                 'success' => true,
                 'count' => count($instructors),
                 'instructors' => $instructors,
             ]);
+            @file_put_contents($instructorsCacheFile, $instJson);
+            echo $instJson;
             exit(0);
         }
 

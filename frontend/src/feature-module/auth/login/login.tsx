@@ -66,11 +66,13 @@ const Login: React.FC = () => {
       if (ok) {
         if (roleKey === 'admin') {
           navigate('/admin/dashboard', { replace: true });
+        } else if (roleKey === 'instructor') {
+          navigate(route.instructorDashboard || '/instructor/instructor-dashboard', { replace: true });
         } else {
           redirectAfterLogin(creds.dashboardUrl, creds.email);
         }
       } else {
-        setErrorMessage('Unable to sign in with demo profile. Please try again.');
+        setErrorMessage(`Unable to sign in with ${creds.title || roleKey} demo profile. Please try again.`);
       }
     } finally {
       setSubmitting(false);
@@ -144,13 +146,11 @@ const Login: React.FC = () => {
               </div>
               <div className="row g-2">
                 {[
-                  { key: 'student' as const, label: 'Scholar', icon: 'isax-teacher', accent: '#013BA6' },
-                  { key: 'instructor' as const, label: 'Lecturer', icon: 'isax-briefcase', accent: '#059669' },
-                  { key: 'admin' as const, label: 'Admin', icon: 'isax-shield-tick', accent: '#061838' },
+                  { key: 'student' as const, label: 'Scholar', roleDesc: 'Student Portal', icon: 'isax-teacher', accent: '#013BA6' },
+                  { key: 'instructor' as const, label: 'Lecturer', roleDesc: 'Instructor Portal', icon: 'isax-briefcase', accent: '#059669' },
+                  { key: 'admin' as const, label: 'Admin', roleDesc: 'ICT & Admin Hub', icon: 'isax-shield-tick', accent: '#061838' },
                 ]
-                  // Only roles explicitly allowed for public demo are shown (default: student only).
-                  // Privileged accounts must never be one-click accessible on a public deployment.
-                  .filter((item) => (process.env.REACT_APP_DEMO_ROLES || 'student').split(',').map((r) => r.trim()).includes(item.key))
+                  .filter((item) => (process.env.REACT_APP_DEMO_ROLES || 'student,instructor,admin').split(',').map((r) => r.trim()).includes(item.key))
                   .map((item) => {
                   const isBusy = activeDemoRole === item.key;
                   return (
@@ -159,14 +159,20 @@ const Login: React.FC = () => {
                         type="button"
                         disabled={submitting}
                         onClick={() => handleDemoClick(item.key)}
-                        className="btn btn-sm w-100 rounded-3 py-2 d-flex align-items-center justify-content-center gap-1.5 fw-semibold bg-white border"
+                        className="btn btn-sm w-100 rounded-3 py-2 px-1 d-flex align-items-center justify-content-center gap-1.5 fw-semibold bg-white border"
                         style={{
-                          fontSize: '0.76rem',
+                          fontSize: '0.78rem',
                           color: item.accent,
-                          borderColor: '#cbd5e1',
+                          borderColor: isBusy ? item.accent : '#cbd5e1',
+                          boxShadow: isBusy ? `0 0 0 2px ${item.accent}33` : 'none',
                         }}
+                        title={`Sign in instantly as demo ${item.label} (${item.roleDesc})`}
                       >
-                        <i className={`isax ${item.icon}`} />
+                        {isBusy ? (
+                          <span className="spinner-border spinner-border-sm" role="status" style={{ width: 12, height: 12 }} />
+                        ) : (
+                          <i className={`isax ${item.icon}`} />
+                        )}
                         <span>{isBusy ? '...' : item.label}</span>
                       </button>
                     </div>

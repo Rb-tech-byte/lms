@@ -17,6 +17,8 @@
   RewriteRule ^api/(.*)$ moodle-backend/api/$1 [L,QSA]
   RewriteRule ^sso\.php$ moodle-backend/sso.php [L,QSA]
   RewriteRule ^admin_api\.php$ moodle-backend/admin_api.php [L,QSA]
+  RewriteRule ^login/token\.php$ moodle-backend/login/token.php [L,QSA]
+  RewriteRule ^webservice/(.*)$ moodle-backend/webservice/$1 [L,QSA]
 
   # 3. Direct Passthrough for existing files, directories, Moodle backend & webservices
   RewriteCond %{REQUEST_FILENAME} -f [OR]

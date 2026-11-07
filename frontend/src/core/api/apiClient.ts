@@ -554,6 +554,19 @@ export async function fetchMoodleToken(
     });
   }
 
+  if (response.status === 404) {
+    try {
+      response = await fetch(MOODLE_ENDPOINTS.TOKEN, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Accept: 'application/json',
+        },
+        body: bodyParams.toString(),
+      });
+    } catch {}
+  }
+
   if (!response.ok) {
     throw new Error('Failed to reach Moodle token endpoint');
   }

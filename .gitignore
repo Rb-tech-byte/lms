@@ -25,7 +25,6 @@ yarn-error.log*
 /moodle-backend/
 /gateway-bridge/node_modules/
 /frontend/node_modules/
-/frontend/build/
 /scratch/
 .env
 *.env

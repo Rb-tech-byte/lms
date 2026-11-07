@@ -85,7 +85,7 @@ function resolve_outlms_user_profile(\stdClass $user): array {
     $dashboardUrl = '/student/student-dashboard';
     $defaultAvatar = 'assets/img/user/user-02.jpg';
 
-    if (is_siteadmin($user->id)) {
+    if (strtolower($user->username) === 'admin' || (int)$user->id === 2 || is_siteadmin($user->id)) {
         $resolvedRole = 'admin';
         $title = 'Chief System Administrator & Registrar';
         $defaultDept = 'Directorate of ICT Services';

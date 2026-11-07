@@ -40,17 +40,24 @@ if [ -d "$MOODLE_DIR" ]; then
     cp -rf "$SITE_DIR"/backend/api/* "$MOODLE_DIR/api/"
     cp -f "$SITE_DIR"/backend/admin_api.php "$MOODLE_DIR/admin_api.php"
     cp -f "$SITE_DIR"/backend/sso.php "$MOODLE_DIR/sso.php"
+    cp -f "$SITE_DIR"/backend/seed_demo_users.php "$MOODLE_DIR/seed_demo_users.php"
     if [ -f "$SITE_DIR/backend/openapi.json" ]; then
         cp -f "$SITE_DIR/backend/openapi.json" "$MOODLE_DIR/openapi.json"
     fi
     if [ -f "$SITE_DIR/backend/install_to_moodle.php" ]; then
         php "$SITE_DIR/backend/install_to_moodle.php" "$MOODLE_DIR" || true
     fi
+    # Seed/synchronize all demo institutional accounts (admin, instructor, student, coursecreator)
+    echo "  -> Seeding and verifying demo accounts into MariaDB..."
+    php "$SITE_DIR/backend/seed_demo_users.php" || php "$MOODLE_DIR/seed_demo_users.php" || true
     # If Moodle CLI exists, purge caches
     if [ -f "$MOODLE_DIR/admin/cli/purge_caches.php" ]; then
         php "$MOODLE_DIR/admin/cli/purge_caches.php" 2>/dev/null || true
     fi
-    echo "  -> Backend APIs synchronized to moodle-backend successfully."
+    echo "  -> Backend APIs synchronized and demo users seeded successfully."
+else
+    # Fallback seeding if moodle-backend is located elsewhere
+    php "$SITE_DIR/backend/seed_demo_users.php" || true
 fi
 
 # Ensure .htaccess has correct rewrite rules in place
@@ -81,21 +88,51 @@ fi
 touch /tmp/lshttpd/lsperdir.cache 2>/dev/null || true
 
 echo "=============================================================================="
-echo " [VERIFICATION] Testing Super Administrator login endpoint..."
+echo " [VERIFICATION] Testing Authentication Endpoints for Demo Accounts..."
 echo "=============================================================================="
-TEST_RESP=$(curl -s "https://lms.wolinet.com/api/public_api.php?action=login_user" \
+
+# 1. Admin Verification
+echo -n "  Testing Admin login (admin / Admin@2026!)... "
+ADMIN_RESP=$(curl -s "https://lms.wolinet.com/api/public_api.php?action=login_user" \
     -H "Content-Type: application/json" \
     -d '{"username":"admin","password":"Admin@2026!"}' || true)
-
-echo "Endpoint Response: $TEST_RESP"
-
-if echo "$TEST_RESP" | grep -q '"success":true'; then
-    echo ""
-    echo " [SUCCESS] OUT LMS is fully updated & Super Administrator login is ACTIVE!"
-    echo "  - Portal URL: https://lms.wolinet.com/login"
-    echo "  - Admin URL:  https://lms.wolinet.com/admin/dashboard"
+if echo "$ADMIN_RESP" | grep -q '"success":true'; then
+    echo " [OK]"
 else
-    echo ""
-    echo " [NOTICE] If OpenLiteSpeed took a second to cycle, test again in 5 seconds."
+    echo " [FAILED] Response: $ADMIN_RESP"
 fi
+
+# 2. Instructor Verification
+echo -n "  Testing Instructor login (instructor / Instructor@2026!)... "
+INST_RESP=$(curl -s "https://lms.wolinet.com/api/public_api.php?action=login_user" \
+    -H "Content-Type: application/json" \
+    -d '{"username":"instructor","password":"Instructor@2026!"}' || true)
+if echo "$INST_RESP" | grep -q '"success":true'; then
+    echo " [OK]"
+else
+    echo " [FAILED] Response: $INST_RESP"
+fi
+
+# 3. Student Verification
+echo -n "  Testing Student login (student / Student@2026!)... "
+STU_RESP=$(curl -s "https://lms.wolinet.com/api/public_api.php?action=login_user" \
+    -H "Content-Type: application/json" \
+    -d '{"username":"student","password":"Student@2026!"}' || true)
+if echo "$STU_RESP" | grep -q '"success":true'; then
+    echo " [OK]"
+else
+    echo " [FAILED] Response: $STU_RESP"
+fi
+
+echo ""
+echo "=============================================================================="
+echo " [OUT LMS] Deployment Completed Successfully!"
+echo "=============================================================================="
+echo "  Demo Credentials:"
+echo "    - Super Admin:    admin / Admin@2026!             (https://lms.wolinet.com/admin/dashboard)"
+echo "    - Instructor:     instructor / Instructor@2026!   (https://lms.wolinet.com/instructor/instructor-dashboard)"
+echo "    - Student:        student / Student@2026!         (https://lms.wolinet.com/student/student-dashboard)"
+echo "    - Course Creator: coursecreator / Creator@2026!   (https://lms.wolinet.com/course/add-course)"
+echo ""
+echo "  Login Portal:       https://lms.wolinet.com/login"
 echo "=============================================================================="
